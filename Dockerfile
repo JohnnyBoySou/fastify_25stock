@@ -73,13 +73,22 @@ COPY package*.json pnpm-lock.yaml* ./
 # Copiar schema do Prisma ANTES de instalar dependências
 COPY --from=builder /app/prisma ./prisma
 
-# Instalar APENAS dependências de produção e gerar Prisma
-# Isso garante que o Prisma seja gerado corretamente no ambiente final
-RUN pnpm install --prod --no-frozen-lockfile && \
-    pnpm exec prisma generate && \
-    echo "=== Prisma gerado no runner ===" && \
-    ls -la /app/node_modules/.prisma 2>/dev/null || echo "Tentando localizar .prisma..." && \
-    find /app -name ".prisma" -type d 2>/dev/null
+# Configurar variáveis de ambiente para o Prisma gerar a engine correta
+# CRÍTICO: Deve ser ANTES de gerar o Prisma
+ENV PRISMA_CLI_BINARY_TARGETS="linux-musl-openssl-3.0.x"
+ENV PRISMA_ENGINES_MIRROR="https://binaries.prisma.sh"
+
+# Instalar APENAS dependências de produção
+RUN pnpm install --prod --no-frozen-lockfile
+
+# Gerar Prisma com as configurações corretas para Alpine Linux
+RUN pnpm exec prisma generate && \
+    echo "=== Verificando Prisma gerado ===" && \
+    ls -la /app/node_modules/.prisma/client/ 2>/dev/null && \
+    echo "=== Verificando engines baixadas ===" && \
+    ls -la /app/node_modules/.prisma/client/*.so.node 2>/dev/null || \
+    ls -la /app/node_modules/.prisma/client/libquery* 2>/dev/null || \
+    echo "WARNING: Engines não encontradas!"
 
 # Copiar código compilado
 COPY --from=builder /app/dist ./dist
