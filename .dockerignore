@@ -10,7 +10,6 @@ dist
 build
 .next
 .nuxt
-src/generated
 
 # Environment files
 .env

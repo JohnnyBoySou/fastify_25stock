@@ -1,5 +1,5 @@
 import type { AuthUser } from '../features/auth/auth.interfaces'
-import type { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from '../generated/prisma'
 import type { StoreRole } from '../middlewares/authorization.middleware'
 
 declare module 'fastify' {

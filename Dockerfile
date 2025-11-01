@@ -26,6 +26,9 @@ RUN pnpm install --no-frozen-lockfile --prod
 # ================================
 FROM base AS builder
 
+# Configurar variáveis de ambiente para o Prisma gerar a engine correta
+ENV PRISMA_CLI_BINARY_TARGETS="native,linux-musl-openssl-3.0.x"
+
 # Copiar código fonte ANTES de instalar dependências
 # Isso garante que o schema.prisma esteja disponível
 COPY prisma ./prisma
@@ -36,18 +39,17 @@ RUN pnpm install --no-frozen-lockfile
 # Copiar o resto do código fonte
 COPY . .
 
-# Gerar cliente Prisma com o engine correto para Alpine Linux
-# Forçar geração no local correto
-RUN pnpm exec prisma generate
+# Gerar cliente Prisma com o engine correto para Alpine Linux (irá para src/generated/prisma)
+RUN pnpm exec prisma generate && \
+    echo "=== Verificando Prisma gerado no builder ===" && \
+    ls -la /app/src/generated/prisma/ 2>/dev/null && \
+    echo "=== Verificando engines no builder ===" && \
+    ls -la /app/src/generated/prisma/*.so.node 2>/dev/null || \
+    ls -la /app/src/generated/prisma/libquery* 2>/dev/null || \
+    echo "WARNING: Engines não encontradas no builder!"
 
 # Compilar TypeScript
 RUN pnpm run build
-
-# Verificar onde o Prisma foi gerado
-RUN echo "=== Verificando localização do Prisma gerado ===" && \
-    find /app -name ".prisma" -type d 2>/dev/null && \
-    echo "=== Listando conteúdo do .prisma ===" && \
-    find /app -path "*/.prisma/client" -type d -exec ls -la {} \; 2>/dev/null || true
 
 # ================================
 # STAGE 3: Production
@@ -57,9 +59,6 @@ FROM node:22-alpine AS runner
 # Instalar dependências necessárias para o Alpine
 RUN apk add --no-cache libc6-compat openssl openssl-dev
 
-# Instalar pnpm globalmente
-RUN npm install -g pnpm
-
 # Criar usuário não-root para segurança
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 fastify
@@ -67,35 +66,29 @@ RUN adduser --system --uid 1001 fastify
 # Configurar diretório de trabalho
 WORKDIR /app
 
-# Copiar package.json e pnpm-lock.yaml
-COPY package*.json pnpm-lock.yaml* ./
+# Copiar dependências de produção do stage deps
+COPY --from=deps /app/node_modules ./node_modules
 
-# Copiar schema do Prisma ANTES de instalar dependências
-COPY --from=builder /app/prisma ./prisma
-
-# Configurar variáveis de ambiente para o Prisma gerar a engine correta
-# CRÍTICO: Deve ser ANTES de gerar o Prisma
-ENV PRISMA_CLI_BINARY_TARGETS="linux-musl-openssl-3.0.x"
-ENV PRISMA_ENGINES_MIRROR="https://binaries.prisma.sh"
-
-# Instalar APENAS dependências de produção
-RUN pnpm install --prod --no-frozen-lockfile
-
-# Gerar Prisma com as configurações corretas para Alpine Linux
-RUN pnpm exec prisma generate && \
-    echo "=== Verificando Prisma gerado ===" && \
-    ls -la /app/node_modules/.prisma/client/ 2>/dev/null && \
-    echo "=== Verificando engines baixadas ===" && \
-    ls -la /app/node_modules/.prisma/client/*.so.node 2>/dev/null || \
-    ls -la /app/node_modules/.prisma/client/libquery* 2>/dev/null || \
-    echo "WARNING: Engines não encontradas!"
-
-# Copiar código compilado
+# Copiar código compilado do builder
 COPY --from=builder /app/dist ./dist
 
-# Configurar variáveis de ambiente para o Prisma encontrar o engine
-ENV PRISMA_QUERY_ENGINE_LIBRARY="/app/node_modules/.prisma/client/libquery_engine-linux-musl-openssl-3.0.x.so.node"
-ENV PRISMA_QUERY_ENGINE_BINARY="/app/node_modules/.prisma/client/query-engine-linux-musl-openssl-3.0.x"
+# Copiar o diretório gerado do Prisma (com engines corretas para Alpine)
+COPY --from=builder /app/src/generated ./src/generated
+
+# Copiar package.json
+COPY package.json ./
+
+# Verificar se o Prisma foi copiado corretamente
+RUN echo "=== Verificando Prisma copiado para produção ===" && \
+    ls -la /app/src/generated/prisma/ 2>/dev/null && \
+    echo "=== Verificando engines Alpine ===" && \
+    ls -la /app/src/generated/prisma/*.so.node 2>/dev/null || \
+    ls -la /app/src/generated/prisma/libquery* 2>/dev/null || \
+    echo "WARNING: Engines não encontradas!"
+
+# Configurar variáveis de ambiente para o Prisma encontrar o engine no output customizado
+ENV PRISMA_QUERY_ENGINE_LIBRARY="/app/src/generated/prisma/libquery_engine-linux-musl-openssl-3.0.x.so.node"
+ENV PRISMA_QUERY_ENGINE_BINARY="/app/src/generated/prisma/query-engine-linux-musl-openssl-3.0.x"
 
 # Configurar permissões
 RUN chown -R fastify:nodejs /app
