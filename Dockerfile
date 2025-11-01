@@ -26,17 +26,28 @@ RUN pnpm install --no-frozen-lockfile --prod
 # ================================
 FROM base AS builder
 
+# Copiar código fonte ANTES de instalar dependências
+# Isso garante que o schema.prisma esteja disponível
+COPY prisma ./prisma
+
 # Instalar todas as dependências (dev + prod)
 RUN pnpm install --no-frozen-lockfile
 
-# Copiar código fonte
+# Copiar o resto do código fonte
 COPY . .
 
 # Gerar cliente Prisma com o engine correto para Alpine Linux
-RUN npx prisma generate
+# Forçar geração no local correto
+RUN pnpm exec prisma generate
 
 # Compilar TypeScript
 RUN pnpm run build
+
+# Verificar onde o Prisma foi gerado
+RUN echo "=== Verificando localização do Prisma gerado ===" && \
+    find /app -name ".prisma" -type d 2>/dev/null && \
+    echo "=== Listando conteúdo do .prisma ===" && \
+    find /app -path "*/.prisma/client" -type d -exec ls -la {} \; 2>/dev/null || true
 
 # ================================
 # STAGE 3: Production
@@ -46,6 +57,9 @@ FROM node:22-alpine AS runner
 # Instalar dependências necessárias para o Alpine
 RUN apk add --no-cache libc6-compat openssl openssl-dev
 
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
 # Criar usuário não-root para segurança
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 fastify
@@ -53,25 +67,22 @@ RUN adduser --system --uid 1001 fastify
 # Configurar diretório de trabalho
 WORKDIR /app
 
-# Copiar dependências de produção
-COPY --from=deps /app/node_modules ./node_modules
+# Copiar package.json e pnpm-lock.yaml
+COPY package*.json pnpm-lock.yaml* ./
+
+# Copiar schema do Prisma ANTES de instalar dependências
+COPY --from=builder /app/prisma ./prisma
+
+# Instalar APENAS dependências de produção e gerar Prisma
+# Isso garante que o Prisma seja gerado corretamente no ambiente final
+RUN pnpm install --prod --no-frozen-lockfile && \
+    pnpm exec prisma generate && \
+    echo "=== Prisma gerado no runner ===" && \
+    ls -la /app/node_modules/.prisma 2>/dev/null || echo "Tentando localizar .prisma..." && \
+    find /app -name ".prisma" -type d 2>/dev/null
 
 # Copiar código compilado
 COPY --from=builder /app/dist ./dist
-
-# Copiar schema do Prisma (necessário para migrations em runtime)
-COPY --from=builder /app/prisma ./prisma
-
-# Copiar arquivos necessários
-COPY package.json ./
-
-# Copiar o diretório .prisma gerado no builder para node_modules
-# PRECISA ser após copiar node_modules mas antes de mudar as permissões
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
-# Verificar se o .prisma foi copiado corretamente
-RUN ls -la /app/node_modules/ | grep "\.prisma" || echo "WARNING: .prisma directory not found"
-RUN ls -la /app/node_modules/.prisma/ 2>/dev/null || echo "WARNING: Cannot list .prisma contents"
 
 # Configurar variáveis de ambiente para o Prisma encontrar o engine
 ENV PRISMA_QUERY_ENGINE_LIBRARY="/app/node_modules/.prisma/client/libquery_engine-linux-musl-openssl-3.0.x.so.node"
@@ -80,9 +91,7 @@ ENV PRISMA_QUERY_ENGINE_BINARY="/app/node_modules/.prisma/client/query-engine-li
 # Configurar permissões
 RUN chown -R fastify:nodejs /app
 
-# Verificar se os arquivos do Prisma foram copiados (antes de mudar para usuário não-root)
-RUN ls -la /app/node_modules/.prisma/client/ || echo "Prisma client not found"
-
+# Mudar para usuário não-root
 USER fastify
 
 # Expor porta
