@@ -25,7 +25,10 @@ export async function Auth(request: FastifyRequest, reply: FastifyReply) {
     const token = authHeader.slice(7)
     const secret = process.env.JWT_SECRET
     if (!secret) {
-      throw new Error('JWT secret not configured')
+      request.log.error('JWT_SECRET não configurado nas variáveis de ambiente')
+      return reply.status(500).send({
+        error: 'Internal server error - JWT secret not configured',
+      })
     }
 
     const payload = jwt.verify(token, secret) as JWTPayload
