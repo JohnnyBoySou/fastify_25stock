@@ -25,6 +25,8 @@ import { PushSubscriptionRoutes } from '@/features/push-subscription/push-subscr
 import { QuoteRoutes } from '@/features/quote/quote.routes'
 import { RoadmapRoutes } from '@/features/roadmap/roadmap.routes'
 import { StoreRoutes } from '@/features/store/store.routes'
+import { DocumentRoutes } from '@/features/document/document.routes'
+import { FolderRoutes } from '@/features/document/folder.routes'
 //import { PermissionRoutes } from '@/features/permission/permission.routes'
 import { SubscriptionRoutes } from '@/features/subscription/subscription.routes'
 import { SupplierRoutes } from '@/features/supplier/supplier.routes'
@@ -168,7 +170,8 @@ async function startServer() {
         await fastify.register(FlowRoutes, { prefix: '/flows' })
         await fastify.register(FlowExecutionRoutes, { prefix: '' })
         await fastify.register(PushSubscriptionRoutes, { prefix: '/push-subscriptions' })
-
+        await fastify.register(DocumentRoutes, { prefix: '/documents' })
+        await fastify.register(FolderRoutes, { prefix: '/folders' })
         await fastify.register(PolarRoutes, { prefix: '/polar' })
         await fastify.register(StoreRoutes, { prefix: '/store' })
         await fastify.register(ProfileRoutes, { prefix: '/profile' })
