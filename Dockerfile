@@ -1,54 +1,51 @@
-# Use Node.js 22 Alpine como base (menor tamanho)
-FROM node:22-alpine AS base
+# Use Bun como base (menor tamanho e mais rápido)
+FROM oven/bun:1-alpine AS base
 
 # Instalar dependências necessárias para o Alpine
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl openssl-dev
 
 # Configurar diretório de trabalho
 WORKDIR /app
-
-# Copiar arquivos de dependências
-COPY package*.json pnpm-lock.yaml* ./
-
-# Instalar pnpm globalmente
-RUN npm install -g pnpm
 
 # ================================
 # STAGE 1: Dependencies
 # ================================
 FROM base AS deps
 
+# Copiar arquivos de dependências
+COPY package.json bun.lockb* ./
+
 # Instalar dependências de produção
-RUN pnpm install --no-frozen-lockfile --prod
+RUN bun install --frozen-lockfile --production
 
 # ================================
 # STAGE 2: Build
 # ================================
 FROM base AS builder
 
-# Configurar variáveis de ambiente para o Prisma gerar a engine correta
-ENV PRISMA_CLI_BINARY_TARGETS="native,linux-musl-openssl-3.0.x"
-
 # Copiar código fonte ANTES de instalar dependências
 # Isso garante que o schema.prisma esteja disponível
 COPY prisma ./prisma
 
+# Copiar arquivos de dependências
+COPY package.json bun.lockb* ./
+
 # Instalar todas as dependências (dev + prod)
-RUN pnpm install --no-frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # Copiar o resto do código fonte
 COPY . .
 
 # Gerar cliente Prisma com o engine correto para Alpine Linux
-RUN pnpm exec prisma generate
+RUN bun exec prisma generate
 
 # Compilar TypeScript
-RUN pnpm run build
+RUN bun run build
 
 # ================================
 # STAGE 3: Production
 # ================================
-FROM node:22-alpine AS runner
+FROM oven/bun:1-alpine AS runner
 
 # Instalar dependências necessárias para o Alpine
 RUN apk add --no-cache libc6-compat openssl openssl-dev
