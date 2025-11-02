@@ -123,6 +123,4 @@ export const InvoiceCommands = {
       },
     })
   },
-
-  
 }

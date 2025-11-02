@@ -24,11 +24,9 @@ export interface StockAlertResult {
   message?: string
 }
 
-export class StockAlertService {
-  /**
-   * Verifica se uma movimentação deve gerar alertas de estoque
-   */
-  static async checkStockAlerts(
+export const StockAlertService = {
+  
+  async checkStockAlerts(
     productId: string,
     storeId: string,
     movementType: 'ENTRADA' | 'SAIDA' | 'PERDA',
@@ -165,44 +163,28 @@ export class StockAlertService {
 
   /**
    * Determina o tipo de alerta baseado no estoque atual e anterior
-   */
-  private static determineAlertType(
-    currentStock: number,
-    previousStock: number,
-    stockMin: number,
-    stockMax: number,
-    alertPercentage: number
-  ): 'LOW_STOCK' | 'CRITICAL_STOCK' | 'OVERSTOCK' | 'STOCK_RECOVERED' | null {
-    // Calcular limite de alerta baseado na porcentagem
+   */ 
+  determineAlertType(currentStock: number, previousStock: number, stockMin: number, stockMax: number, alertPercentage: number): 'LOW_STOCK' | 'CRITICAL_STOCK' | 'OVERSTOCK' | 'STOCK_RECOVERED' | null {
     const alertThreshold = Math.round(stockMin * (alertPercentage / 100))
-
-    // Estoque crítico (zero ou negativo)
     if (currentStock <= 0) {
       return 'CRITICAL_STOCK'
     }
-
-    // Estoque baixo (abaixo do limite de alerta)
     if (currentStock <= alertThreshold && currentStock > 0) {
       return 'LOW_STOCK'
     }
-
-    // Estoque recuperado (voltou acima do limite de alerta)
     if (currentStock > alertThreshold && previousStock <= alertThreshold) {
       return 'STOCK_RECOVERED'
     }
-
-    // Estoque excessivo (acima do máximo)
     if (currentStock > stockMax && previousStock <= stockMax) {
       return 'OVERSTOCK'
     }
-
-    return null
+      return null
   }
 
   /**
    * Cria notificações para usuários da loja
    */
-  private static async createStockAlertNotifications(
+  async createStockAlertNotifications(
     alertData: StockAlertData,
     alertType: 'LOW_STOCK' | 'CRITICAL_STOCK' | 'OVERSTOCK' | 'STOCK_RECOVERED',
     store: any
@@ -210,12 +192,12 @@ export class StockAlertService {
     const notifications = []
 
     // Determinar prioridade e tipo da notificação
-    const { priority, notificationType } = this.getNotificationConfig(alertType)
+    const { priority, notificationType } = getNotificationConfig(alertType)
 
     // Criar notificação para o dono da loja
     const ownerNotification = await NotificationCommands.create({
       userId: store.ownerId,
-      title: this.getAlertTitle(alertType),
+      title: getAlertTitle(alertType),
       message: this.generateAlertMessage(alertData, alertType),
       type: notificationType,
       priority,

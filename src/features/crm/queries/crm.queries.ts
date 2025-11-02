@@ -139,7 +139,7 @@ export const CrmQueries = {
     }
   },
 
-  async search(term: string, limit = 10, storeId: string) {
+  async search(term: string, storeId: string, limit = 10) {
     return await db.crmClient.findMany({
       where: {
         storeId,

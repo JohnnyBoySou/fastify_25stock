@@ -2,7 +2,6 @@ import { polar } from '@/plugins/polar'
 import { db } from '@/plugins/prisma'
 
 export const PolarQueries = {
-  
   async list({ page, limit }: { page: number; limit: number }) {
     try {
       const { result } = await polar.products.list({
@@ -32,9 +31,8 @@ export const PolarQueries = {
         limit: 10,
       })
       console.log(result)
-      const freeProduct = result.items.find(
-        (product) =>
-          product.prices.some((price: any) => price.amountType === 'free')
+      const freeProduct = result.items.find((product) =>
+        product.prices.some((price: any) => price.amountType === 'free')
       )
 
       return freeProduct || null
@@ -43,6 +41,4 @@ export const PolarQueries = {
       return null
     }
   },
-
- 
 }

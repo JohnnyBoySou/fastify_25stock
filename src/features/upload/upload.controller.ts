@@ -1,4 +1,6 @@
-import path from 'path'
+import path from 'node:path'
+import fs from 'node:fs/promises'
+import os from 'node:os'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { UploadCommands } from './commands/upload.commands'
 import { UploadQueries } from './queries/upload.queries'
@@ -118,8 +120,7 @@ export const UploadController = {
           media.url.replace('/uploads/', '')
         )
         await uploadService.deleteFile(filePath)
-      } catch (fileError) {
-        // Log do erro mas não falha a operação
+      } catch {
         request.log.warn(`Arquivo físico não encontrado: ${media.url}`)
       }
 
@@ -405,7 +406,7 @@ export const UploadController = {
       const { id } = request.params
       const { entityType, entityId, isPrimary } = request.body
 
-      let result
+      let result: any
 
       switch (entityType) {
         case 'product':
@@ -464,20 +465,18 @@ export const UploadController = {
       const { id } = request.params
       const { entityType, entityId } = request.body
 
-      let result
-
       switch (entityType) {
         case 'product':
-          result = await UploadCommands.detachFromProduct(id, entityId)
+          await UploadCommands.detachFromProduct(id, entityId)
           break
         case 'supplier':
-          result = await UploadCommands.detachFromSupplier(id, entityId)
+          await UploadCommands.detachFromSupplier(id, entityId)
           break
         case 'user':
-          result = await UploadCommands.detachFromUser(id, entityId)
+          await UploadCommands.detachFromUser(id, entityId)
           break
         case 'store':
-          result = await UploadCommands.detachFromStore(id, entityId)
+          await UploadCommands.detachFromStore(id, entityId)
           break
         default:
           return reply.status(400).send({
@@ -512,10 +511,8 @@ export const UploadController = {
       const { id } = request.params
       const { entityType, entityId } = request.body
 
-      let result
-
       if (entityType === 'product') {
-        result = await UploadCommands.setPrimaryForProduct(id, entityId)
+        await UploadCommands.setPrimaryForProduct(id, entityId)
       } else {
         return reply.status(400).send({
           error: 'Primary media is only supported for products',
@@ -610,30 +607,24 @@ export const UploadController = {
         fileSize = buffer.length
 
         // Salvar em arquivo temporário
-        const tempPath = require('path').join(
-          require('os').tmpdir(),
-          `temp-${Date.now()}-${data.filename}`
-        )
-        await require('fs').promises.writeFile(tempPath, buffer)
+        const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${data.filename}`)
+        await fs.writeFile(tempPath, buffer)
         filePath = tempPath
 
         console.log(`Arquivo temporário criado: ${tempPath}`)
-      } else if (data.file && data.file.toBuffer) {
+      } else if (data.file?.toBuffer) {
         // Método 2: Usar toBuffer do data.file
         console.log('Convertendo stream para buffer usando data.file.toBuffer...')
         const buffer = await data.file.toBuffer()
         fileSize = buffer.length
 
         // Salvar em arquivo temporário
-        const tempPath = require('path').join(
-          require('os').tmpdir(),
-          `temp-${Date.now()}-${data.filename}`
-        )
-        await require('fs').promises.writeFile(tempPath, buffer)
+        const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${data.filename}`)
+        await fs.writeFile(tempPath, buffer)
         filePath = tempPath
 
         console.log(`Arquivo temporário criado: ${tempPath}`)
-      } else if (data.file && data.file.bytesRead) {
+      } else if (data.file?.bytesRead) {
         // Método 3: Arquivo já salvo temporariamente
         filePath = data.file.path || data.file.filepath || data.file.filename
         fileSize = data.file.bytesRead
@@ -680,9 +671,9 @@ export const UploadController = {
       })
 
       // Limpar arquivo temporário se foi criado
-      if (filePath && filePath.includes('temp-')) {
+      if (filePath?.includes('temp-')) {
         try {
-          await require('fs').promises.unlink(filePath)
+          await fs.unlink(filePath)
           console.log(`Arquivo temporário removido: ${filePath}`)
         } catch (cleanupError) {
           console.warn(`Erro ao remover arquivo temporário ${filePath}:`, cleanupError)
@@ -849,7 +840,7 @@ export const UploadController = {
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'text/plain',
         ],
-        uploadDir: uploadService['uploadDir'],
+        uploadDir: uploadService.getUploadDir(),
         entityTypes: ['product', 'supplier', 'user', 'store', 'general'],
       }
 

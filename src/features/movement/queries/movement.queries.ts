@@ -266,7 +266,7 @@ export const MovementQueries = {
           product: {
             name: {
               contains: term,
-              mode: 'insensitive',
+              mode: 'insensitive' as const,
             },
           },
         },
@@ -274,7 +274,7 @@ export const MovementQueries = {
           store: {
             name: {
               contains: term,
-              mode: 'insensitive',
+              mode: 'insensitive' as const,
             },
           },
         },
@@ -282,14 +282,14 @@ export const MovementQueries = {
           supplier: {
             corporateName: {
               contains: term,
-              mode: 'insensitive',
+              mode: 'insensitive' as const,
             },
           },
         },
         {
           batch: {
             contains: term,
-            mode: 'insensitive',
+            mode: 'insensitive' as const,
           },
         },
       ],
@@ -627,9 +627,9 @@ export const MovementQueries = {
 
     let stock = 0
     for (const movement of movements) {
-      if (movement.type === 'ENTRADA') {
+      if (movement.type === 'INBOUND') {
         stock += movement.quantity
-      } else if (movement.type === 'SAIDA' || movement.type === 'PERDA') {
+      } else if (movement.type === 'OUTBOUND' || movement.type === 'LOSS') {
         stock -= movement.quantity
       }
     }
@@ -640,9 +640,9 @@ export const MovementQueries = {
   async getStats() {
     const [
       total,
-      entrada,
-      saida,
-      perda,
+      inbound,
+      outbound,
+      loss,
       totalValue,
       averageValue,
       _byType,
@@ -651,9 +651,9 @@ export const MovementQueries = {
       bySupplier,
     ] = await Promise.all([
       db.movement.count(),
-      db.movement.count({ where: { type: 'ENTRADA' } }),
-      db.movement.count({ where: { type: 'SAIDA' } }),
-      db.movement.count({ where: { type: 'PERDA' } }),
+      db.movement.count({ where: { type: 'INBOUND' } }),
+      db.movement.count({ where: { type: 'OUTBOUND' } }),
+      db.movement.count({ where: { type: 'LOSS' } }),
       db.movement.aggregate({
         _sum: {
           price: true,
@@ -740,31 +740,31 @@ export const MovementQueries = {
 
     return {
       total,
-      entrada,
-      saida,
-      perda,
+      inbound: inbound as number,
+      outbound: outbound as number,
+      loss: loss as number,
       totalValue: totalValue._sum.price || 0,
       averageValue: averageValue._avg.price || 0,
       byType: {
-        ENTRADA: entrada,
-        SAIDA: saida,
-        PERDA: perda,
+        INBOUND: inbound as number,
+        OUTBOUND: outbound as number,
+        LOSS: loss as number,
       },
       byStore: byStore.map((item) => ({
-        storeId: item.storeId!,
+        storeId: item.storeId as string,
         storeName: storeMap.get(item.storeId) || 'Unknown',
         count: item._count.id,
         totalValue: item._sum.price || 0,
       })),
       byProduct: byProduct.map((item) => ({
-        productId: item.productId!,
+        productId: item.productId as string,
         productName: productMap.get(item.productId) || 'Unknown',
         count: item._count.id,
         totalQuantity: item._sum.quantity || 0,
       })),
       bySupplier: bySupplier.map((item) => ({
-        supplierId: item.supplierId!,
-        supplierName: supplierMap.get(item.supplierId!) || 'Unknown',
+        supplierId: item.supplierId as string,
+        supplierName: supplierMap.get(item.supplierId as string) || 'Unknown',
         count: item._count.id,
         totalValue: item._sum.price || 0,
       })),
@@ -1163,7 +1163,7 @@ export const MovementQueries = {
       })),
       bySupplier: bySupplier.map((item) => ({
         supplierId: item.supplierId,
-        supplierName: supplierMap.get(item.supplierId!) || 'Unknown',
+        supplierName: supplierMap.get(item.supplierId as string) || 'Unknown',
         count: item._count.id,
         value: item._sum.price || 0,
       })),
@@ -1238,13 +1238,13 @@ export const MovementQueries = {
 
     // Calcular estatísticas
     const totalMovements = movements.length
-    const entradaMovements = movements.filter((m) => m.type === 'ENTRADA')
-    const saidaMovements = movements.filter((m) => m.type === 'SAIDA')
-    const perdaMovements = movements.filter((m) => m.type === 'PERDA')
+    const inboundMovements = movements.filter((m) => m.type === 'INBOUND')
+    const outboundMovements = movements.filter((m) => m.type === 'OUTBOUND')
+    const lossMovements = movements.filter((m) => m.type === 'LOSS')
 
-    const totalEntrada = entradaMovements.reduce((sum, m) => sum + m.quantity, 0)
-    const totalSaida = saidaMovements.reduce((sum, m) => sum + m.quantity, 0)
-    const totalPerda = perdaMovements.reduce((sum, m) => sum + m.quantity, 0)
+    const totalInbound = inboundMovements.reduce((sum, m) => sum + m.quantity, 0)
+    const totalOutbound = outboundMovements.reduce((sum, m) => sum + m.quantity, 0)
+    const totalLoss = lossMovements.reduce((sum, m) => sum + m.quantity, 0)
 
     const totalValue = movements.reduce((sum, m) => sum + (Number(m.price) || 0), 0)
     const averageValue = totalMovements > 0 ? totalValue / totalMovements : 0
@@ -1279,17 +1279,17 @@ export const MovementQueries = {
       },
       statistics: {
         totalMovements,
-        entrada: {
-          count: entradaMovements.length,
-          quantity: totalEntrada,
+        inbound: {
+          count: inboundMovements.length,
+          quantity: totalInbound,
         },
         saida: {
-          count: saidaMovements.length,
-          quantity: totalSaida,
+          count: outboundMovements.length,
+          quantity: totalOutbound,
         },
         perda: {
-          count: perdaMovements.length,
-          quantity: totalPerda,
+          count: lossMovements.length,
+          quantity: totalLoss,
         },
         totalValue,
         averageValue,

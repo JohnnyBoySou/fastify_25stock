@@ -100,7 +100,7 @@ export const InvoiceQueries = {
     }
 
     const where: any = {
-        subscriptionId,
+      subscriptionId,
     }
 
     if (status) {
@@ -274,7 +274,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-              user: true,
+            user: true,
           },
         },
       },

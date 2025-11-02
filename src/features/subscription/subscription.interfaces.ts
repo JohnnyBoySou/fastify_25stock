@@ -1,9 +1,9 @@
 import type { FastifyRequest } from 'fastify'
 
 // Interfaces para Plan
-export interface CreatePlanRequest extends FastifyRequest {
+export interface CreateSubscriptionRequest extends FastifyRequest {
   body: {
-    name: string
+    userId: string
     description?: string
     price: number
     interval: 'MONTHLY' | 'YEARLY'
@@ -11,10 +11,10 @@ export interface CreatePlanRequest extends FastifyRequest {
   }
 }
 
-export interface UpdatePlanRequest extends FastifyRequest {
+export interface UpdateSubscriptionRequest extends FastifyRequest {
   params: { id: string }
   body: {
-    name?: string
+    userId?: string
     description?: string
     price?: number
     interval?: 'MONTHLY' | 'YEARLY'
@@ -22,11 +22,11 @@ export interface UpdatePlanRequest extends FastifyRequest {
   }
 }
 
-export interface GetPlanRequest extends FastifyRequest {
+export interface GetSubscriptionRequest extends FastifyRequest {
   params: { id: string }
 }
 
-export interface ListPlansRequest extends FastifyRequest {
+export interface ListSubscriptionsRequest extends FastifyRequest {
   query: {
     page?: number
     limit?: number
@@ -35,24 +35,24 @@ export interface ListPlansRequest extends FastifyRequest {
   }
 }
 
-export interface DeletePlanRequest extends FastifyRequest {
+export interface DeleteSubscriptionRequest extends FastifyRequest {
   params: { id: string }
 }
 
-export interface UpdatePlanStatusRequest extends FastifyRequest {
+export interface UpdateSubscriptionStatusRequest extends FastifyRequest {
   params: { id: string }
   body: {
     active: boolean
   }
 }
 
-export interface ComparePlansRequest extends FastifyRequest {
+export interface CompareSubscriptionsRequest extends FastifyRequest {
   query: {
-    planIds: string[]
+    subscriptionIds: string[]
   }
 }
 
-export interface GetPlanCustomersRequest extends FastifyRequest {
+export interface GetSubscriptionCustomersRequest extends FastifyRequest {
   params: { id: string }
   query: {
     page?: number
@@ -61,9 +61,9 @@ export interface GetPlanCustomersRequest extends FastifyRequest {
   }
 }
 
-export interface PlanResponse {
+export interface SubscriptionResponse {
   id: string
-  name: string
+  userId: string
   description?: string
   price: number
   interval: 'MONTHLY' | 'YEARLY'
@@ -74,7 +74,7 @@ export interface PlanResponse {
 }
 
 export interface PlanComparisonResponse {
-  plans: PlanResponse[]
+  subscriptions: SubscriptionResponse[]
   comparison: {
     priceRange: {
       min: number
@@ -85,17 +85,17 @@ export interface PlanComparisonResponse {
   }
 }
 
-export interface PlanStatsResponse {
+export interface SubscriptionStatsResponse {
   total: number
   active: number
   inactive: number
-  monthlyPlans: number
-  yearlyPlans: number
+  monthlySubscriptions: number
+  yearlySubscriptions: number
   totalRevenue: number
   averagePrice: number
 }
 
-export enum PlanInterval {
+export enum SubscriptionInterval {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
 }

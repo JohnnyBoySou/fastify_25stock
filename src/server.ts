@@ -18,16 +18,15 @@ import { FlowRoutes } from '@/features/flow/flow.routes'
 import { InvoiceRoutes } from '@/features/invoice/invoice.routes'
 import { MovementRoutes } from '@/features/movement/movement.routes'
 import { NotificationRoutes } from '@/features/notification/notification.routes'
-//import { PermissionRoutes } from '@/features/permission/permission.routes'
-import { SubscriptionRoutes } from '@/features/subscription/subscription.routes'
 import { PolarRoutes } from '@/features/polar/polar.routes'
 import { ProductRoutes } from '@/features/product/product.routes'
 import { ProfileRoutes } from '@/features/profile/profile.routes'
 import { PushSubscriptionRoutes } from '@/features/push-subscription/push-subscription.routes'
 import { QuoteRoutes } from '@/features/quote/quote.routes'
-import { ReportRoutes } from '@/features/report/report.routes'
 import { RoadmapRoutes } from '@/features/roadmap/roadmap.routes'
 import { StoreRoutes } from '@/features/store/store.routes'
+//import { PermissionRoutes } from '@/features/permission/permission.routes'
+import { SubscriptionRoutes } from '@/features/subscription/subscription.routes'
 import { SupplierRoutes } from '@/features/supplier/supplier.routes'
 import { UploadRoutes } from '@/features/upload/upload.route'
 import { UserPreferencesRoutes } from '@/features/user-preferences/user-preferences.routes'
@@ -158,7 +157,6 @@ async function startServer() {
         await fastify.register(CategoryRoutes, { prefix: '/categories' })
         await fastify.register(MovementRoutes, { prefix: '/movements' })
         //await fastify.register(PermissionRoutes, { prefix: '/permissions' })
-        await fastify.register(ReportRoutes, { prefix: '/reports' })
         await fastify.register(NotificationRoutes, { prefix: '/notifications' })
         await fastify.register(ChatRoutes, { prefix: '/chat' })
         await fastify.register(RoadmapRoutes, { prefix: '/roadmaps' })

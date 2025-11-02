@@ -120,8 +120,8 @@ export const WorkflowEngine = {
           // Trigger já foi executado
           break
 
-        case 'condition':
-          const conditionResult = await this.evaluateCondition(
+        case 'condition': {
+          const conditionResult = await ConditionEvaluator.evaluate(
             node.data.config as ConditionConfig,
             context
           )
@@ -139,9 +139,10 @@ export const WorkflowEngine = {
             return
           }
           break
+        }
 
         case 'action':
-        case 'notification':
+        case 'notification': {
           const actionResult = await ActionExecutor.executeAction(
             node.data.config as ActionConfig,
             context
@@ -155,6 +156,7 @@ export const WorkflowEngine = {
             timestamp: new Date(),
           })
           break
+        }
       }
 
       // Buscar próximos nodes conectados

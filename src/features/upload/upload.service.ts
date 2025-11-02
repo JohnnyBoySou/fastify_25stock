@@ -1,6 +1,6 @@
-import { randomUUID } from 'crypto'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { randomUUID } from 'node:crypto'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 
 // === CONFIGURAÇÕES ===
 const UPLOAD_DIR = path.join(process.cwd(), 'src', 'uploads')
@@ -136,7 +136,7 @@ export class UploadService {
       try {
         await fs.access(file.path)
       } catch (error) {
-        throw new Error(`Arquivo temporário não encontrado: ${file.path}`)
+        throw new Error(`Arquivo temporário não encontrado: ${file.path} ${error}`)
       }
 
       // Determinar diretório de destino
@@ -261,6 +261,7 @@ export class UploadService {
         stats,
       }
     } catch (error) {
+      console.error(error)
       return { exists: false }
     }
   }
@@ -276,7 +277,8 @@ export class UploadService {
         return stats.then((s) => s.isFile()).catch(() => false)
       })
     } catch (error) {
-      return []
+      console.error(error)
+      throw new Error(`Erro ao listar arquivos da entidade: ${error.message}`)
     }
   }
 
@@ -373,10 +375,14 @@ export class UploadService {
   formatFileSize(bytes: number): string {
     const sizes = ['B', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i]
+    return `${Math.round((bytes / 1024 ** i) * 100) / 100} ${sizes[i]}`
   }
 
   // Obter ícone baseado no tipo
+  getUploadDir(): string {
+    return this.uploadDir
+  }
+
   getFileIcon(mimetype: string): string {
     if (mimetype.startsWith('image/')) return '🖼️'
     if (mimetype.startsWith('video/')) return '🎥'

@@ -37,64 +37,66 @@ export const PolarCommands = {
       const data = event?.data || {}
 
       // Helpers
-      const findOrCreateCustomerByUserId = async (userId: string) => {
-        let customer = await db.customer.findFirst({ where: { userId } })
-        if (!customer) {
-          customer = await db.customer.create({ data: { userId, status: 'ACTIVE' } as any })
+      const findOrCreateSubscriptionByUserId = async (userId: string) => {
+        let subscription = await db.subscription.findUnique({ where: { userId } })
+        if (!subscription) {
+          subscription = await db.subscription.create({
+            data: {
+              userId,
+              status: 'ACTIVE',
+            },
+          })
         }
-        return customer
+        return subscription
       }
 
-      const findCustomerByPolarOrEmail = async (opts: {
+      const findSubscriptionByPolarOrEmail = async (opts: {
         polarCustomerId?: string | null
         email?: string | null
       }) => {
         const { polarCustomerId, email } = opts
         if (polarCustomerId) {
-          const byPolar = await db.customer.findFirst({ where: { polarCustomerId } })
+          const byPolar = await db.subscription.findUnique({
+            where: { polarCustomerId },
+          })
           if (byPolar) return byPolar
         }
         if (email) {
           const user = await db.user.findFirst({ where: { email } })
-          if (user) return await findOrCreateCustomerByUserId(user.id)
+          if (user) return await findOrCreateSubscriptionByUserId(user.id)
         }
         return null
       }
 
-      const resolvePlanByPolarProduct = async (polarProductId?: string | null) => {
-        if (!polarProductId) return null
-        return await db.plan.findFirst({ where: { polarProductId } })
-      }
-
-      const setCustomerPlanAndStatus = async (
-        customerId: string,
-        planId: string | null,
-        status: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'TRIAL',
+      const setSubscriptionPlanAndStatus = async (
+        subscriptionId: string,
+        polarProductId: string | null,
+        status: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'TRIAL' | 'EXPIRED' | 'PAST_DUE',
         renewalDate?: Date | null,
         trialEndsAt?: Date | null
       ) => {
-        return await db.customer.update({
-          where: { id: customerId },
+        return await db.subscription.update({
+          where: { id: subscriptionId },
           data: {
-            planId: planId || undefined,
+            polarProductId: polarProductId || null,
             status,
-            renewalDate: renewalDate || null,
+            currentPeriodEnd: renewalDate || null,
             trialEndsAt: trialEndsAt || null,
           },
         })
       }
 
       const upsertInvoice = async (
-        customerId: string,
+        subscriptionId: string,
         amountCents?: number | null,
         polarInvoiceId?: string | null,
-        status: 'PENDING' | 'PAID' | 'FAILED' = 'PENDING',
+        status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED' = 'PENDING',
         paymentDate?: Date | null
       ) => {
         if (!amountCents && !polarInvoiceId) return null
-        const amount = amountCents ? (Number(amountCents) / 100).toFixed(2) : '0.00'
+        const amount = amountCents ? Number(amountCents) / 100 : 0
         const existing = polarInvoiceId
-          ? await db.invoice.findFirst({ where: { polarInvoiceId } })
+          ? await db.invoice.findUnique({ where: { polarInvoiceId } })
           : null
         if (existing) {
           return await db.invoice.update({
@@ -107,8 +109,8 @@ export const PolarCommands = {
         }
         return await db.invoice.create({
           data: {
-            customerId,
-            amount: amount as any,
+            subscriptionId,
+            amount,
             status,
             polarInvoiceId: polarInvoiceId || null,
             paymentDate: paymentDate || null,
@@ -127,22 +129,27 @@ export const PolarCommands = {
           const polarSubscriptionId = checkout?.subscription_id as string | undefined
 
           if (userIdFromMetadata) {
-            const customer = await findOrCreateCustomerByUserId(userIdFromMetadata)
-            await db.customer.update({
-              where: { id: customer.id },
+            const subscription = await findOrCreateSubscriptionByUserId(userIdFromMetadata)
+            await db.subscription.update({
+              where: { id: subscription.id },
               data: {
-                polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-                polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null,
+                polarCustomerId: polarCustomerId || subscription.polarCustomerId || null,
+                polarSubscriptionId:
+                  polarSubscriptionId || subscription.polarSubscriptionId || null,
               },
             })
           } else if (polarCustomerId) {
-            const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email: null })
-            if (customer) {
-              await db.customer.update({
-                where: { id: customer.id },
+            const subscription = await findSubscriptionByPolarOrEmail({
+              polarCustomerId,
+              email: null,
+            })
+            if (subscription) {
+              await db.subscription.update({
+                where: { id: subscription.id },
                 data: {
                   polarCustomerId,
-                  polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null,
+                  polarSubscriptionId:
+                    polarSubscriptionId || subscription.polarSubscriptionId || null,
                 },
               })
             }
@@ -156,13 +163,13 @@ export const PolarCommands = {
           const polarCustomerId = subscription?.customer_id as string | undefined
           const polarSubscriptionId = subscription?.id as string | undefined
           if (polarCustomerId || polarSubscriptionId) {
-            const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email: null })
-            if (customer) {
-              await db.customer.update({
-                where: { id: customer.id },
+            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null })
+            if (sub) {
+              await db.subscription.update({
+                where: { id: sub.id },
                 data: {
-                  polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-                  polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null,
+                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null,
                 },
               })
             }
@@ -173,27 +180,22 @@ export const PolarCommands = {
         // === NOVOS EVENTOS DE ORDER ===
         case 'order.created':
         case 'order.updated': {
-          // Mantemos referência a customer/product, mas não mudamos status/plano até pagamento
+          // Mantemos referência a subscription/product, mas não mudamos status/plano até pagamento
           const order = data
           const polarCustomerId: string | undefined = order?.customer_id || order?.customerId
           const email: string | undefined = order?.customer?.email || order?.email
           const productId: string | undefined = order?.product_id || order?.productId
 
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email })
-          if (customer) {
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email })
+          if (sub) {
             // Vincular ids Polar conhecidos
-            await db.customer.update({
-              where: { id: customer.id },
+            await db.subscription.update({
+              where: { id: sub.id },
               data: {
-                polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
+                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                polarProductId: productId || sub.polarProductId || null,
               },
             })
-
-            // Opcional: pré-vincular plano se existir correspondência
-            const plan = await resolvePlanByPolarProduct(productId)
-            if (plan && customer.planId !== plan.id) {
-              await db.customer.update({ where: { id: customer.id }, data: { planId: plan.id } })
-            }
           }
           break
         }
@@ -208,19 +210,12 @@ export const PolarCommands = {
           const invoiceId: string | undefined = order?.invoice_id || order?.invoiceId
           const currentPeriodEndIso: string | undefined = order?.current_period_end
 
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email })
-          if (!customer) break
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email })
+          if (!sub) break
 
-          const plan = await resolvePlanByPolarProduct(productId)
           const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null
-          await setCustomerPlanAndStatus(
-            customer.id,
-            plan ? plan.id : null,
-            'ACTIVE',
-            renewalDate,
-            null
-          )
-          await upsertInvoice(customer.id, amountCents, invoiceId || null, 'PAID', new Date())
+          await setSubscriptionPlanAndStatus(sub.id, productId || null, 'ACTIVE', renewalDate, null)
+          await upsertInvoice(sub.id, amountCents, invoiceId || null, 'PAID', new Date())
           break
         }
 
@@ -230,10 +225,10 @@ export const PolarCommands = {
           const email: string | undefined = order?.customer?.email || order?.email
           const invoiceId: string | undefined = order?.invoice_id || order?.invoiceId
 
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email })
-          if (!customer) break
-          await setCustomerPlanAndStatus(customer.id, customer.planId, 'INACTIVE', null, null)
-          await upsertInvoice(customer.id, null, invoiceId || null, 'FAILED', null)
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email })
+          if (!sub) break
+          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, 'INACTIVE', null, null)
+          await upsertInvoice(sub.id, null, invoiceId || null, 'REFUNDED', null)
           break
         }
 
@@ -247,17 +242,20 @@ export const PolarCommands = {
               ? data.active_subscriptions[0]
               : null
 
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email })
-          if (!customer) break
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email })
+          if (!sub) break
 
           const productId: string | undefined = activeSub?.product_id
-          const plan = await resolvePlanByPolarProduct(productId)
-          const statusMap: Record<string, 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'TRIAL'> = {
+          const statusMap: Record<
+            string,
+            'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'TRIAL' | 'EXPIRED' | 'PAST_DUE'
+          > = {
             active: 'ACTIVE',
             trialing: 'TRIAL',
             canceled: 'CANCELLED',
             paused: 'INACTIVE',
-            past_due: 'INACTIVE',
+            past_due: 'PAST_DUE',
+            expired: 'EXPIRED',
           } as const
 
           const subStatus: string | undefined = activeSub?.status
@@ -267,17 +265,17 @@ export const PolarCommands = {
             : null
           const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null
 
-          await db.customer.update({
-            where: { id: customer.id },
+          await db.subscription.update({
+            where: { id: sub.id },
             data: {
-              polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-              polarSubscriptionId: activeSub?.id || customer.polarSubscriptionId || null,
+              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null,
             },
           })
 
-          await setCustomerPlanAndStatus(
-            customer.id,
-            plan ? plan.id : null,
+          await setSubscriptionPlanAndStatus(
+            sub.id,
+            productId || null,
             mappedStatus,
             renewalDate,
             trialEndsAt

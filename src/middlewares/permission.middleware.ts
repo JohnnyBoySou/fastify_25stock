@@ -2,13 +2,13 @@
  * ================================
  * MIDDLEWARE DE PERMISSÕES
  * ================================
- * 
+ *
  * Este middleware verifica e valida as permissões do usuário autenticado.
  * Bloqueia o acesso caso o usuário não tenha a permissão necessária.
- * 
+ *
  * @param resource - Nome do recurso (ex: 'USERS', 'PRODUCTS', 'ORDERS')
  * @param action - Ação desejada (ex: 'CREATE', 'READ', 'UPDATE', 'DELETE')
- * 
+ *
  * @example
  * // Em uma rota:
  * fastify.get('/users', {
@@ -49,7 +49,6 @@ export const Permission = (resource: string, action: string) => {
 
       // Se tiver a permissão, continua o fluxo
       // (não retorna nada, deixa o Fastify continuar)
-
     } catch (error: unknown) {
       request.log.error(error)
       return reply.status(500).send({

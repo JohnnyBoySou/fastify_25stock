@@ -1,6 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-
-import crypto from 'crypto'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import { PolarCommands } from './commands/polar.commands'
 import type { CreateCheckoutRequest, ListPolarRequest } from './polar.interfaces'
 import { PolarQueries } from './queries/polar.queries'
@@ -91,13 +90,13 @@ export const PolarController = {
         }
       }
 
-      const computed = crypto.createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex')
+      const computed = createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex')
       const valid = (() => {
         try {
           const a = Buffer.from(computed, 'hex')
           const b = Buffer.from(receivedHash, 'hex')
           if (a.length !== b.length) return false
-          return crypto.timingSafeEqual(a, b)
+          return timingSafeEqual(a, b)
         } catch {
           return false
         }

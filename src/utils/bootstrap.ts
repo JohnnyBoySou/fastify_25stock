@@ -146,12 +146,12 @@ class BootstrapUI {
     this.hooksSetup = true
     this.fastifyInstance = fastify
     const requestId = () => `${Date.now()}-${Math.random()}`
-    
+
     fastify.addHook('onRequest', async (request) => {
       const id = requestId()
       ;(request as any).__logId = id
       this.requestStartTimes.set(id, Date.now())
-      
+
       // Sempre capturar no buffer, mas só renderizar se estiver em modo de logs
       const timestamp = new Date().toISOString()
       const method = request.method
@@ -162,7 +162,7 @@ class BootstrapUI {
     fastify.addHook('onResponse', async (request, reply) => {
       const id = (request as any).__logId
       const startTime = this.requestStartTimes.get(id || '')
-      
+
       if (startTime) {
         const timestamp = new Date().toISOString()
         const method = request.method
@@ -170,7 +170,7 @@ class BootstrapUI {
         const statusCode = reply.statusCode
         const responseTime = Date.now() - startTime
         this.requestStartTimes.delete(id || '')
-        
+
         // Sempre capturar no buffer
         this.addLog(
           `[${timestamp}] ${method} ${url} ${statusCode} ${responseTime.toFixed(2)}ms`,
@@ -196,11 +196,11 @@ class BootstrapUI {
     // Interceptar console.log
     console.log = (...args: any[]) => {
       // Sempre capturar no buffer
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ')
+      const message = args
+        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
+        .join(' ')
       this.addLog(message, 'log', false) // false = não renderizar agora
-      
+
       // Se não estiver em modo de logs, mostrar normalmente
       if (!this.logMode) {
         this.originalConsoleLog?.apply(console, args)
@@ -209,11 +209,11 @@ class BootstrapUI {
 
     // Interceptar console.error
     console.error = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ')
+      const message = args
+        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
+        .join(' ')
       this.addLog(message, 'error', false)
-      
+
       if (!this.logMode) {
         this.originalConsoleError?.apply(console, args)
       }
@@ -221,11 +221,11 @@ class BootstrapUI {
 
     // Interceptar console.warn
     console.warn = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ')
+      const message = args
+        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
+        .join(' ')
       this.addLog(message, 'warn', false)
-      
+
       if (!this.logMode) {
         this.originalConsoleWarn?.apply(console, args)
       }
@@ -233,11 +233,11 @@ class BootstrapUI {
 
     // Interceptar console.info
     console.info = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ')
+      const message = args
+        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
+        .join(' ')
       this.addLog(message, 'info', false)
-      
+
       if (!this.logMode) {
         this.originalConsoleInfo?.apply(console, args)
       }
@@ -251,7 +251,11 @@ class BootstrapUI {
     if (this.originalConsoleInfo) console.info = this.originalConsoleInfo
   }
 
-  private addLog(message: string, type: 'log' | 'error' | 'warn' | 'info' = 'log', shouldRender = true) {
+  private addLog(
+    message: string,
+    type: 'log' | 'error' | 'warn' | 'info' = 'log',
+    shouldRender = true
+  ) {
     const timestamp = new Date().toLocaleTimeString('pt-BR')
     const colors = {
       log: this.colors.info,
@@ -259,10 +263,10 @@ class BootstrapUI {
       warn: this.colors.warning,
       info: this.colors.info,
     }
-    
+
     const coloredMessage = `[${timestamp}] ${colors[type](message)}`
     this.logBuffer.push(coloredMessage)
-    
+
     // Manter apenas as últimas N linhas
     if (this.logBuffer.length > this.maxLogLines) {
       this.logBuffer.shift()
@@ -288,7 +292,7 @@ class BootstrapUI {
 
   private renderLogs() {
     this.clearScreen()
-    
+
     // Header
     console.log('')
     console.log(
@@ -313,9 +317,9 @@ class BootstrapUI {
     if (logsToShow.length === 0) {
       console.log(this.colors.dim('  Aguardando logs...'))
     } else {
-      logsToShow.forEach(log => {
+      for (const log of logsToShow) {
         console.log(`  ${log}`)
-      })
+      }
     }
 
     console.log('')
@@ -386,7 +390,7 @@ class BootstrapUI {
 
   showServerInfo(fastify: FastifyInstance, port: number, host: string) {
     this.fastifyInstance = fastify
-    
+
     // Configurar listener de teclado e interceptação de console
     if (!this.keyListener) {
       this.setupKeyboardListener()

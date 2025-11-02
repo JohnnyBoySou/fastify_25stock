@@ -154,7 +154,7 @@ export const ActionExecutor = {
     // Buscar subscriptions de cada usuário
     const subscriptionsResults = await Promise.all(
       config.userIds.map(async (userId: string) => {
-        const subscriptions = await db.pushSubscription.findMany({
+        const subscriptions = await db.subscription.findMany({
           where: { userId },
         })
         return subscriptions
@@ -211,13 +211,9 @@ export const ActionExecutor = {
 
         // Se subscription expirou, deletar do banco
         if (error.message.includes('expired') || error.message.includes('invalid')) {
-          await db.pushSubscription
-            .delete({
-              where: { id: subscription.id },
-            })
-            .catch(() => {
-              // Ignorar erro de deleção
-            })
+          await db.subscription.delete({
+            where: { id: subscription.id },
+          })
         }
       }
     })

@@ -11,18 +11,17 @@ export async function PushSubscriptionRoutes(fastify: FastifyInstance) {
   // Rotas autenticadas
   fastify.post('/', {
     schema: PushSubscriptionSchemas.create,
-   
+
     handler: PushSubscriptionController.create,
   })
 
   fastify.delete('/:id', {
     schema: PushSubscriptionSchemas.delete,
-   
+
     handler: PushSubscriptionController.delete,
   })
 
   fastify.get('/user/:userId', {
-   
     handler: PushSubscriptionController.listByUser,
   })
 

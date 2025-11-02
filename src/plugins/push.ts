@@ -85,7 +85,7 @@ export const pushPlugin = async (fastify: FastifyInstance) => {
 
         const result = await webpush.sendNotification(subscription, notificationPayload)
 
-        fastify.log.info(`Push notification sent successfully`)
+        fastify.log.info('Push notification sent successfully')
         return result
       } catch (error: any) {
         fastify.log.error(`Error sending push notification: ${error.message}`)

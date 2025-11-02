@@ -1,11 +1,11 @@
 import type { FastifySchema } from 'fastify'
 
-export const createPlanSchema: FastifySchema = {
+export const createSubscriptionSchema: FastifySchema = {
   body: {
     type: 'object',
-    required: ['name', 'price', 'interval'],
+    required: ['userId', 'price', 'interval'],
     properties: {
-      name: { type: 'string', minLength: 1 },
+      userId: { type: 'string' },
       description: { type: 'string' },
       price: { type: 'number', minimum: 0.01 },
       interval: {
@@ -43,7 +43,7 @@ export const createPlanSchema: FastifySchema = {
   },
 }
 
-export const updatePlanSchema: FastifySchema = {
+export const updateSubscriptionSchema: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -92,7 +92,7 @@ export const updatePlanSchema: FastifySchema = {
   },
 }
 
-export const getPlanSchema: FastifySchema = {
+export const getSubscriptionSchema: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -137,7 +137,7 @@ export const getPlanSchema: FastifySchema = {
   },
 }
 
-export const listPlansSchema: FastifySchema = {
+export const listSubscriptionsSchema: FastifySchema = {
   querystring: {
     type: 'object',
     properties: {
@@ -185,7 +185,7 @@ export const listPlansSchema: FastifySchema = {
   },
 }
 
-export const deletePlanSchema: FastifySchema = {
+export const deleteSubscriptionSchema: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -198,7 +198,7 @@ export const deletePlanSchema: FastifySchema = {
   },
 }
 
-export const updatePlanStatusSchema: FastifySchema = {
+export const updateSubscriptionStatusSchema: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -230,12 +230,12 @@ export const updatePlanStatusSchema: FastifySchema = {
   },
 }
 
-export const comparePlansSchema: FastifySchema = {
+export const compareSubscriptionsSchema: FastifySchema = {
   querystring: {
     type: 'object',
-    required: ['planIds'],
+    required: ['subscriptionIds'],
     properties: {
-      planIds: {
+      subscriptionIds: {
         type: 'array',
         items: { type: 'string', minLength: 1 },
         minItems: 1,
@@ -247,7 +247,7 @@ export const comparePlansSchema: FastifySchema = {
     200: {
       type: 'object',
       properties: {
-        plans: {
+        subscriptions: {
           type: 'array',
           items: {
             type: 'object',
@@ -292,7 +292,7 @@ export const comparePlansSchema: FastifySchema = {
   },
 }
 
-export const getPlanCustomersSchema: FastifySchema = {
+export const getSubscriptionCustomersSchema: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -315,7 +315,7 @@ export const getPlanCustomersSchema: FastifySchema = {
     200: {
       type: 'object',
       properties: {
-        plan: {
+        subscription: {
           type: 'object',
           properties: {
             id: { type: 'string' },
@@ -343,7 +343,7 @@ export const getPlanCustomersSchema: FastifySchema = {
                   phone: { type: 'string', nullable: true },
                 },
               },
-              plan: {
+              subscription: {
                 type: 'object',
                 properties: {
                   id: { type: 'string' },
@@ -381,7 +381,7 @@ export const getPlanCustomersSchema: FastifySchema = {
   },
 }
 
-export const getPlanStatsSchema: FastifySchema = {
+export const getSubscriptionStatsSchema: FastifySchema = {
   response: {
     200: {
       type: 'object',
@@ -389,8 +389,8 @@ export const getPlanStatsSchema: FastifySchema = {
         total: { type: 'number' },
         active: { type: 'number' },
         inactive: { type: 'number' },
-        monthlyPlans: { type: 'number' },
-        yearlyPlans: { type: 'number' },
+        monthlySubscriptions: { type: 'number' },
+        yearlySubscriptions: { type: 'number' },
         totalCustomers: { type: 'number' },
         totalRevenue: { type: 'number' },
         averagePrice: { type: 'number' },
@@ -399,14 +399,14 @@ export const getPlanStatsSchema: FastifySchema = {
   },
 }
 
-export const PlanSchemas = {
-  create: createPlanSchema,
-  update: updatePlanSchema,
-  get: getPlanSchema,
-  delete: deletePlanSchema,
-  list: listPlansSchema,
-  updateStatus: updatePlanStatusSchema,
-  compare: comparePlansSchema,
-  getCustomers: getPlanCustomersSchema,
-  getStats: getPlanStatsSchema,
+export const SubscriptionSchemas = {
+  create: createSubscriptionSchema,
+  update: updateSubscriptionSchema,
+  get: getSubscriptionSchema,
+  delete: deleteSubscriptionSchema,
+  list: listSubscriptionsSchema,
+  updateStatus: updateSubscriptionStatusSchema,
+  compare: compareSubscriptionsSchema,
+  getCustomers: getSubscriptionCustomersSchema,
+  getStats: getSubscriptionStatsSchema,
 }

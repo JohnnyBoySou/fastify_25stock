@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export interface InvoicePdfData {
   invoice: {
@@ -340,7 +340,7 @@ Obrigado por escolher nossos serviços!
     `
   }
 
-  async getInvoiceTemplate(invoiceId: string): Promise<string | null> {
+  async getInvoiceTemplate(): Promise<string | null> {
     try {
       const templatePath = path.join(this.templatesPath, 'invoice.html')
 

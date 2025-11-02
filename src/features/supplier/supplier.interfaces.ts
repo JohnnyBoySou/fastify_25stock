@@ -64,7 +64,8 @@ export interface GetSuppliersByStateRequest extends FastifyRequest {
 
 export interface SearchSuppliersRequest extends FastifyRequest {
   query: {
-    q: string
+    search: string
+    page?: number
     limit?: number
   }
 }

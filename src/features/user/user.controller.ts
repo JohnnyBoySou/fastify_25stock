@@ -155,21 +155,6 @@ export const UserController = {
     }
   },
 
-  async getByRole(request: FastifyRequest<{ Params: { role: string } }>, reply: FastifyReply) {
-    try {
-      const { role } = request.params
-
-      const users = await UserQueries.getByRole(role)
-
-      return reply.send({ users })
-    } catch (error) {
-      request.log.error(error)
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
   async getActive(request: FastifyRequest, reply: FastifyReply) {
     try {
       const users = await UserQueries.getActive()

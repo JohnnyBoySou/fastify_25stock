@@ -102,12 +102,10 @@ export async function NotificationRoutes(fastify: FastifyInstance) {
   })
 
   fastify.delete('/expired', {
-
     handler: NotificationController.deleteExpired,
   })
 
   fastify.delete('/user/:userId', {
-
     handler: NotificationController.deleteByUser,
   })
 

@@ -1,35 +1,5 @@
 import { db } from '@/plugins/prisma'
-
 import type { UnitOfMeasure } from '../product.interfaces'
-
-// Função auxiliar para obter a loja do usuário autenticado
-export const getUserStore = async (userId: string) => {
-  // Primeiro, verificar se o usuário é dono de alguma loja
-  const ownedStore = await db.store.findFirst({
-    where: { ownerId: userId },
-    select: { id: true, name: true },
-  })
-
-  if (ownedStore) {
-    return ownedStore
-  }
-
-  // Se não for dono, verificar se tem acesso a alguma loja como usuário
-  const storeUser = await db.storeUser.findFirst({
-    where: { userId },
-    include: {
-      store: {
-        select: { id: true, name: true },
-      },
-    },
-  })
-
-  if (storeUser) {
-    return storeUser.store
-  }
-
-  throw new Error('User has no associated store')
-}
 
 export const ProductCommands = {
   async create(data: {
@@ -336,7 +306,7 @@ export const ProductCommands = {
   async updateStock(
     productId: string,
     quantity: number,
-    type: 'ENTRADA' | 'SAIDA' | 'PERDA',
+    type: 'INBOUND' | 'OUTBOUND' | 'LOSS',
     note?: string,
     userId?: string
   ) {
@@ -351,7 +321,7 @@ export const ProductCommands = {
 
     // Calcular novo estoque
     let newStock = 0
-    if (type === 'ENTRADA') {
+    if (type === 'INBOUND') {
       newStock = quantity // Para entrada, adiciona a quantidade
     } else {
       newStock = -quantity // Para saída e perda, subtrai a quantidade
@@ -360,7 +330,7 @@ export const ProductCommands = {
     // Criar movimentação
     const movement = await db.movement.create({
       data: {
-        type,
+        type: type as 'INBOUND' | 'OUTBOUND' | 'LOSS',
         quantity,
         storeId: product.storeId,
         productId,
@@ -399,7 +369,7 @@ export const ProductCommands = {
   async createMovement(
     productId: string,
     data: {
-      type: 'ENTRADA' | 'SAIDA' | 'PERDA'
+      type: 'INBOUND' | 'OUTBOUND' | 'LOSS'
       quantity: number
       supplierId?: string
       batch?: string
@@ -432,7 +402,7 @@ export const ProductCommands = {
     // Criar movimentação
     const movement = await db.movement.create({
       data: {
-        type: data.type,
+        type: data.type as 'INBOUND' | 'OUTBOUND' | 'LOSS',
         quantity: data.quantity,
         storeId: product.storeId,
         productId,
@@ -505,17 +475,16 @@ export const ProductCommands = {
     })
 
     let currentStock = 0
-    movements.forEach((movement) => {
-      if (movement.type === 'ENTRADA') {
+    for (const movement of movements) {
+      if (movement.type === 'INBOUND') {
         currentStock += movement.quantity
       } else {
         currentStock -= movement.quantity
       }
-    })
+    }
 
     // Determinar status do estoque
     let status: 'OK' | 'LOW' | 'CRITICAL' | 'OVERSTOCK' = 'OK'
-    const stockPercentage = (currentStock / product.stockMax) * 100
 
     if (currentStock <= 0) {
       status = 'CRITICAL'

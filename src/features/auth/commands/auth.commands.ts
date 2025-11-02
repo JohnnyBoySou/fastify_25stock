@@ -1,11 +1,11 @@
-import { promisify } from 'node:util'
 import crypto from 'node:crypto'
+import { promisify } from 'node:util'
 import jwt from 'jsonwebtoken'
 
 import type { JWTPayload } from '../auth.interfaces'
 
-import { db } from '@/plugins/prisma'
 import { PolarQueries } from '@/features/polar/queries/polar.queries'
+import { db } from '@/plugins/prisma'
 import { EmailService } from '@/services/email/email.service'
 import { OAuth2Client } from 'google-auth-library'
 import { PolarCommands } from '../../polar/commands/polar.commands'
@@ -156,22 +156,22 @@ export const AuthCommands = {
     // Get user's store through storeId
     const store = user.storeId
       ? await db.store.findUnique({
-        where: { id: user.storeId },
-        select: {
-          id: true,
-          name: true,
-          cnpj: true,
-          email: true,
-          phone: true,
-          status: true,
-          cep: true,
-          city: true,
-          state: true,
-          address: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      })
+          where: { id: user.storeId },
+          select: {
+            id: true,
+            name: true,
+            cnpj: true,
+            email: true,
+            phone: true,
+            status: true,
+            cep: true,
+            city: true,
+            state: true,
+            address: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        })
       : null
 
     // Generate JWT token (no roles in new schema - permissions are granular)
@@ -421,7 +421,6 @@ export const AuthCommands = {
   },
 
   async refreshToken(userId: string) {
-    // Find user
     const user = await db.user.findUnique({
       where: { id: userId, status: true },
     })
@@ -430,7 +429,6 @@ export const AuthCommands = {
       throw new Error('User not found')
     }
 
-    // Generate new JWT token (no roles in new schema)
     const token = AuthCommands.generateJWT({
       userId: user.id,
       email: user.email,
@@ -439,7 +437,6 @@ export const AuthCommands = {
     return { token, message: 'Token refreshed successfully' }
   },
 
-  // Helper methods
   generateJWT(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
     const secret = process.env.JWT_SECRET || 'your-secret-key'
     return jwt.sign(payload, secret, { expiresIn: '7d' })
@@ -457,89 +454,16 @@ export const AuthCommands = {
     return Math.floor(100000 + Math.random() * 900000).toString()
   },
 
-  // Verify JWT token
   verifyToken(token: string): JWTPayload {
     const secret = process.env.JWT_SECRET || 'your-secret-key'
     return jwt.verify(token, secret) as JWTPayload
   },
 
-  // Extract token from Authorization header
   extractToken(authHeader: string): string {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new Error('Invalid authorization header')
     }
     return authHeader.substring(7)
-  },
-
-  async updateProfile(userId: string, data: { name?: string; email?: string }) {
-    const { name, email } = data
-
-    // Check if email is being changed and if it already exists
-    if (email) {
-      const existingUser = await db.user.findFirst({
-        where: {
-          email,
-          id: { not: userId },
-        },
-      })
-
-      if (existingUser) {
-        throw new Error('Email already exists')
-      }
-    }
-
-    // Prepare update data
-    const updateData: any = {}
-    if (name) updateData.name = name
-    
-    // Generate new verification data if email is changing
-    let newVerificationCode: string | undefined
-    if (email) {
-      newVerificationCode = AuthCommands.generateVerificationCode()
-      const verificationToken = AuthCommands.generateVerificationToken()
-      const codeExpires = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
-      
-      updateData.email = email
-      updateData.emailVerified = false
-      updateData.emailVerificationCode = newVerificationCode
-      updateData.emailVerificationToken = verificationToken
-      updateData.emailVerificationCodeExpires = codeExpires
-    }
-
-    // Update user
-    const user = await db.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        isOwner: true,
-        storeId: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    })
-
-    // Send verification email if email was changed
-    if (email && newVerificationCode) {
-      try {
-        await EmailService.sendEmailVerification({
-          email: user.email,
-          name: user.name || 'Usuário',
-          verificationCode: newVerificationCode,
-          expiresIn: '15 minutos',
-        })
-        console.log(`Email changed for user ${userId} - verification code sent`)
-      } catch (error) {
-        console.error('Failed to send verification email:', error)
-      }
-    }
-
-    return user
   },
 
   async googleLogin(token: string) {
@@ -640,22 +564,22 @@ export const AuthCommands = {
       // Buscar store do usuário através de storeId
       const store = user.storeId
         ? await db.store.findUnique({
-          where: { id: user.storeId },
-          select: {
-            id: true,
-            name: true,
-            cnpj: true,
-            email: true,
-            phone: true,
-            status: true,
-            cep: true,
-            city: true,
-            state: true,
-            address: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        })
+            where: { id: user.storeId },
+            select: {
+              id: true,
+              name: true,
+              cnpj: true,
+              email: true,
+              phone: true,
+              status: true,
+              cep: true,
+              city: true,
+              state: true,
+              address: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          })
         : null
 
       // Gerar JWT token (no roles in new schema)

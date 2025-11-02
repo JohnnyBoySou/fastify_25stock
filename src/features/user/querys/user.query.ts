@@ -9,7 +9,7 @@ export const UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -32,7 +32,7 @@ export const UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -52,7 +52,7 @@ export const UserQueries = {
         email: true,
         password: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -98,7 +98,7 @@ export const UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -120,30 +120,6 @@ export const UserQueries = {
     return PaginationUtils.transformPaginationResult(result, 'users')
   },
 
-  async getByRole(role: string) {
-    const users = await db.user.findMany({
-      where: {
-        roles: {
-          has: role,
-        },
-        status: true,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        status: true,
-        emailVerified: true,
-        lastLoginAt: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    })
-
-    return users
-  },
-
   async getActive() {
     const users = await db.user.findMany({
       where: { status: true },
@@ -151,7 +127,7 @@ export const UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+
         emailVerified: true,
         lastLoginAt: true,
         createdAt: true,
@@ -202,7 +178,7 @@ export const UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+
         emailVerified: true,
       },
       take: limit,

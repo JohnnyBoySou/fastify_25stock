@@ -158,7 +158,7 @@ export const CategoryQueries = {
     const { page = 1, limit = 10 } = params
     const skip = (page - 1) * limit
 
-    const where = {
+    const where: any = {
       storeId,
       OR: [
         { name: { contains: term, mode: 'insensitive' } },
@@ -627,7 +627,7 @@ export const CategoryQueries = {
     })
 
     // Agrupar por período
-    const groupedData = this.groupByPeriod(categories, period)
+    const groupedData = CategoryQueries.groupByPeriod(categories, period)
 
     // Calcular estatísticas
     const totalCategories = categories.length
@@ -636,7 +636,7 @@ export const CategoryQueries = {
 
     // Calcular crescimento
     const periods = Object.keys(groupedData).sort()
-    const growthRate = this.calculateGrowthRate(groupedData, periods)
+    const growthRate = CategoryQueries.calculateGrowthRate(groupedData, periods)
 
     return {
       data: groupedData,
@@ -729,7 +729,7 @@ export const CategoryQueries = {
     })
 
     // Agrupar por período
-    const groupedData = this.groupByPeriod(categories, period)
+    const groupedData = CategoryQueries.groupByPeriod(categories, period)
 
     // Calcular estatísticas detalhadas
     const totalCategories = categories.length
@@ -738,10 +738,10 @@ export const CategoryQueries = {
 
     // Calcular crescimento
     const periods = Object.keys(groupedData).sort()
-    const growthRate = this.calculateGrowthRate(groupedData, periods)
+    const growthRate = CategoryQueries.calculateGrowthRate(groupedData, periods)
 
     // Calcular estatísticas por período
-    const periodStats = this.calculatePeriodStats(groupedData, periods)
+    const periodStats = CategoryQueries.calculatePeriodStats(groupedData, periods)
 
     return {
       data: groupedData,
@@ -762,9 +762,9 @@ export const CategoryQueries = {
 
   // Métodos auxiliares privados
   groupByPeriod(categories: any[], period: string) {
-    const grouped: { [key: string]: any[] } = {}
+    const grouped: Record<string, any[]> = {}
 
-    categories.forEach((category) => {
+    for (const category of categories) {
       const date = new Date(category.createdAt)
       let key: string
 
@@ -773,9 +773,11 @@ export const CategoryQueries = {
           key = date.toISOString().split('T')[0] // YYYY-MM-DD
           break
         case 'week':
-          const weekStart = new Date(date)
-          weekStart.setDate(date.getDate() - date.getDay())
-          key = weekStart.toISOString().split('T')[0]
+          {
+            const weekStart = new Date(date)
+            weekStart.setDate(date.getDate() - date.getDay())
+            key = weekStart.toISOString().split('T')[0]
+          }
           break
         case 'month':
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
@@ -783,24 +785,22 @@ export const CategoryQueries = {
         case 'year':
           key = String(date.getFullYear())
           break
-        default:
-          key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
       }
 
       if (!grouped[key]) {
         grouped[key] = []
       }
       grouped[key].push(category)
-    })
+    }
 
     // Converter para formato de dados do gráfico
     const chartData: { [key: string]: { count: number; categories: any[] } } = {}
-    Object.keys(grouped).forEach((key) => {
+    for (const key of Object.keys(grouped)) {
       chartData[key] = {
         count: grouped[key].length,
         categories: grouped[key],
       }
-    })
+    }
 
     return chartData
   },
@@ -1039,10 +1039,10 @@ export const CategoryQueries = {
     })
 
     // Agrupar por período e calcular tendência
-    const groupedData = this.groupByPeriod(categories, period)
+    const groupedData = CategoryQueries.groupByPeriod(categories, period)
     const trendData: { [key: string]: { active: number; inactive: number; total: number } } = {}
 
-    Object.keys(groupedData).forEach((periodKey) => {
+    for (const periodKey of Object.keys(groupedData)) {
       const periodCategories = groupedData[periodKey].categories
       const active = periodCategories.filter((cat) => cat.status).length
       const inactive = periodCategories.filter((cat) => !cat.status).length
@@ -1052,7 +1052,7 @@ export const CategoryQueries = {
         inactive,
         total: active + inactive,
       }
-    })
+    }
 
     return {
       trendData,

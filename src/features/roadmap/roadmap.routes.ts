@@ -17,12 +17,10 @@ export async function RoadmapRoutes(fastify: FastifyInstance) {
   })
 
   fastify.get('/stats', {
-
     handler: RoadmapController.getStats,
   })
 
   fastify.get('/search', {
-
     handler: RoadmapController.search,
   })
 
@@ -59,39 +57,32 @@ export async function RoadmapRoutes(fastify: FastifyInstance) {
 
   // Ações específicas em IDs
   fastify.patch('/:id/status', {
-
     handler: RoadmapController.updateStatus,
   })
 
   // === MILESTONE ROUTES (nested) ===
   // Rotas de milestone específicas ANTES das rotas dinâmicas
   fastify.get('/:roadmapId/milestones/stats', {
-
     handler: MilestoneController.getStats,
   })
 
   fastify.get('/:roadmapId/milestones/upcoming', {
-
     handler: MilestoneController.getUpcoming,
   })
 
   fastify.get('/:roadmapId/milestones/overdue', {
-
     handler: MilestoneController.getOverdue,
   })
 
   fastify.get('/:roadmapId/milestones/in-progress', {
-
     handler: MilestoneController.getInProgress,
   })
 
   fastify.get('/:roadmapId/milestones/timeline', {
-
     handler: MilestoneController.getTimeline,
   })
 
   fastify.get('/:roadmapId/milestones/search', {
-
     handler: MilestoneController.search,
   })
 

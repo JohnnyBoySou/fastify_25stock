@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
+import type { FastifyInstance } from 'fastify'
 import { SupplierResponsibleController } from './supplier-responsible.controller'
 import { SupplierResponsibleSchemas } from './supplier-responsible.schema'
 
@@ -11,7 +11,7 @@ export async function SupplierResponsibleRoutes(fastify: FastifyInstance) {
   // CRUD básico
   fastify.post('/:supplierId/responsibles', {
     schema: SupplierResponsibleSchemas.create,
-    
+
     handler: SupplierResponsibleController.create,
   })
 
@@ -27,13 +27,13 @@ export async function SupplierResponsibleRoutes(fastify: FastifyInstance) {
 
   fastify.put('/:supplierId/responsibles/:responsibleId', {
     schema: SupplierResponsibleSchemas.update,
-    
+
     handler: SupplierResponsibleController.update,
   })
 
   fastify.delete('/:supplierId/responsibles/:responsibleId', {
     schema: SupplierResponsibleSchemas.delete,
-    
+
     handler: SupplierResponsibleController.delete,
   })
 
@@ -66,12 +66,10 @@ export async function SupplierResponsibleRoutes(fastify: FastifyInstance) {
 
   // Funções de comando
   fastify.patch('/:supplierId/responsibles/:responsibleId/toggle-status', {
-    
     handler: SupplierResponsibleController.toggleStatus,
   })
 
   fastify.post('/:supplierId/responsibles/bulk', {
-    
     handler: SupplierResponsibleController.bulkCreate,
   })
 }

@@ -1,6 +1,6 @@
-import type { AuthUser } from '../features/auth/auth.interfaces'
-import type { PrismaClient } from '../generated/prisma'
-import type { StoreRole } from '../middlewares/authorization.middleware'
+// src/types/fastify.d.ts
+import type { AuthUser } from '@/features/auth/auth.interfaces'
+import type { PrismaClient } from '@/generated/prisma'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -8,9 +8,13 @@ declare module 'fastify' {
   }
 
   interface FastifyRequest {
-    user?: AuthUser
+    /** Usuário autenticado via JWT */
+    user?: Omit<AuthUser, 'password'>
+
+    /** Token JWT puro extraído do header Authorization */
     token?: string
-    storeRole?: StoreRole
+
+    /** Dados básicos da store associada à requisição */
     store?: {
       id: string
       name: string

@@ -1,64 +1,66 @@
 /**
- * ================================
- * MIDDLEWARE DE AUTENTICAÇÃO
- * ================================
- * 
- * Este middleware verifica e valida tokens JWT nas requisições.
- * Retorna o usuário autenticado.
- * 
+ * ===========================================
+ * 🔐 MIDDLEWARE DE AUTENTICAÇÃO (Refatorado)
+ * ===========================================
+ *
+ * - Verifica e valida tokens JWT.
+ * - Anexa o usuário autenticado ao objeto `request.user`.
+ * - Retorna erro 401/403 conforme o tipo de falha.
+ *
  */
 
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { JWTPayload } from '../features/auth/auth.interfaces'
-import { AuthCommands } from '../features/auth/commands/auth.commands'
-import { AuthQueries } from '../features/auth/queries/auth.queries'
+import type { JWTPayload } from '@/features/auth/auth.interfaces'
+import { db } from '@/plugins/prisma'
+import jwt from 'jsonwebtoken'
 
-export const Auth = async (request: FastifyRequest, reply: FastifyReply) => {
+export async function Auth(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const header = request.headers.authorization
-
-    if (!header) {
-      return reply.status(401).send({
-        error: 'Authorization header required',
-      })
+    const authHeader = request.headers.authorization
+    if (!authHeader?.startsWith('Bearer ')) {
+      return reply.status(401).send({ error: 'Authorization header missing or invalid' })
     }
 
-    const token = AuthCommands.extractToken(header)
-    const payload: JWTPayload = AuthCommands.verifyToken(token)
-    const user = await AuthQueries.getUserProfile(payload.userId)
+    // Extração + verificação do token
+    const token = authHeader.slice(7)
+    const secret = process.env.JWT_SECRET
+    if (!secret) {
+      throw new Error('JWT secret not configured')
+    }
 
-    if (!user || !user.status) {
-      return reply.status(401).send({
-        error: 'User not found or inactive',
-      })
+    const payload = jwt.verify(token, secret) as JWTPayload
+
+    // Busca o usuário autenticado
+    const user = await db.user.findUnique({
+      where: { id: payload.userId, status: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        emailVerified: true,
+        status: true,
+        lastLoginAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    if (!user) {
+      return reply.status(403).send({ error: 'User not found or inactive' })
     }
 
     request.user = user
 
-    return
-  } catch (error: unknown) {
-    request.log.error(error)
-
-    if (error instanceof Error && error.message === 'Invalid authorization header') {
-      return reply.status(401).send({
-        error: 'Invalid authorization header format',
-      })
+    return user
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return reply.status(401).send({ error: 'Token expired' })
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      return reply.status(401).send({ error: 'Invalid token' })
     }
 
-    if (error instanceof Error && error.name === 'JsonWebTokenError') {
-      return reply.status(401).send({
-        error: 'Invalid token',
-      })
-    }
-
-    if (error instanceof Error && error.name === 'TokenExpiredError') {
-      return reply.status(401).send({
-        error: 'Token expired',
-      })
-    }
-
-    return reply.status(500).send({
-      error: 'Internal server error',
-    })
+    console.error('Auth middleware error:', error)
+    return reply.status(500).send({ error: 'Internal server error' })
   }
 }

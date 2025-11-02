@@ -38,11 +38,6 @@ export async function UserRoutes(fastify: FastifyInstance) {
     handler: UserController.getByEmail,
   })
 
-  // GET /users/role/:role - Buscar usuários por role
-  fastify.get('/role/:role', {
-    handler: UserController.getByRole,
-  })
-
   // GET /users/active - Buscar usuários ativos
   fastify.get('/active', {
     handler: UserController.getActive,

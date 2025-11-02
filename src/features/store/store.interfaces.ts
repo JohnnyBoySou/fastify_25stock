@@ -29,8 +29,6 @@ export interface UpdateStoreRequest extends FastifyRequest {
   }
 }
 
-export interface GetStoreRequest extends FastifyRequest {
-}
+export interface GetStoreRequest extends FastifyRequest {}
 
-export interface DeleteStoreRequest extends FastifyRequest {
-}
+export interface DeleteStoreRequest extends FastifyRequest {}

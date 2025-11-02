@@ -344,35 +344,35 @@ export const UserPreferencesQueries = {
         auto: 0,
       }
 
-      themeStats.forEach((stat) => {
+      for (const stat of themeStats) {
         if (stat.theme === 'light') themeDistribution.light = stat._count.theme
         if (stat.theme === 'dark') themeDistribution.dark = stat._count.theme
         if (stat.theme === 'auto') themeDistribution.auto = stat._count.theme
-      })
+      }
 
       // Processar estatísticas de idioma
       const languageDistribution: { [key: string]: number } = {}
-      languageStats.forEach((stat) => {
+      for (const stat of languageStats) {
         languageDistribution[stat.language] = stat._count.language
-      })
+      }
 
       // Processar estatísticas de moeda
       const currencyDistribution: { [key: string]: number } = {}
-      currencyStats.forEach((stat) => {
+      for (const stat of currencyStats) {
         currencyDistribution[stat.currency] = stat._count.currency
-      })
+      }
 
       // Processar estatísticas de notificações
       let notificationsEnabled = 0
       let notificationsDisabled = 0
 
-      notificationsStats.forEach((stat) => {
+      for (const stat of notificationsStats) {
         if (stat.emailNotifications) {
           notificationsEnabled = stat._count.emailNotifications
         } else {
           notificationsDisabled = stat._count.emailNotifications
         }
-      })
+      }
 
       return {
         totalPreferences,

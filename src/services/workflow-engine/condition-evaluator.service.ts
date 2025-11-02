@@ -53,7 +53,8 @@ export const ConditionEvaluator = {
 
     if (logicalOperator === 'AND') {
       return results.every((r) => r === true)
-    } else if (logicalOperator === 'OR') {
+    }
+    if (logicalOperator === 'OR') {
       return results.some((r) => r === true)
     }
 

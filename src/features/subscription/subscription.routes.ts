@@ -1,7 +1,7 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
-import { PlanController } from './plan.controller'
-import { PlanSchemas } from './plan.schema'
+import type { FastifyInstance } from 'fastify'
+import { SubscriptionController } from './subscription.controller'
+import { SubscriptionSchemas } from './subscription.schema'
 
 export async function SubscriptionRoutes(fastify: FastifyInstance) {
   // Middlewares para todas as rotas
@@ -10,63 +10,56 @@ export async function SubscriptionRoutes(fastify: FastifyInstance) {
 
   // CRUD básico
   fastify.post('/', {
-    schema: PlanSchemas.create,
-    
-    handler: PlanController.create,
+    schema: SubscriptionSchemas.create,
+    handler: SubscriptionController.create,
   })
 
   fastify.get('/', {
-    schema: PlanSchemas.list,
-    handler: PlanController.list,
+    schema: SubscriptionSchemas.list,
+    handler: SubscriptionController.list,
   })
 
   fastify.get('/:id', {
-    schema: PlanSchemas.get,
-    handler: PlanController.get,
+    schema: SubscriptionSchemas.get,
+    handler: SubscriptionController.get,
   })
 
   fastify.put('/:id', {
-    schema: PlanSchemas.update,
-    
-    handler: PlanController.update,
+    schema: SubscriptionSchemas.update,
+    handler: SubscriptionController.update,
   })
 
   fastify.delete('/:id', {
-    schema: PlanSchemas.delete,
-    
-    handler: PlanController.delete,
+    schema: SubscriptionSchemas.delete,
+    handler: SubscriptionController.delete,
   })
 
   fastify.delete('/:id/force', {
-    schema: PlanSchemas.delete,
-    
-    handler: PlanController.forceDelete,
+    schema: SubscriptionSchemas.delete,
+    handler: SubscriptionController.forceDelete,
   })
 
   // Funções adicionais
   fastify.get('/active', {
-    handler: PlanController.getActive,
+    handler: SubscriptionController.getActive,
   })
 
   fastify.get('/stats', {
-    
-    handler: PlanController.getStats,
+    handler: SubscriptionController.getStats,
   })
 
   fastify.get('/compare', {
-    schema: PlanSchemas.compare,
-    handler: PlanController.compare,
+    schema: SubscriptionSchemas.compare,
+    handler: SubscriptionController.compare,
   })
 
   fastify.get('/:id/customers', {
-    schema: PlanSchemas.getCustomers,
-    
-    handler: PlanController.getCustomers,
+    schema: SubscriptionSchemas.getCustomers,
+    handler: SubscriptionController.getCustomers,
   })
 
   fastify.patch('/:id/status', {
-    schema: PlanSchemas.updateStatus,
-    
-    handler: PlanController.updateStatus,
+    schema: SubscriptionSchemas.updateStatus,
+    handler: SubscriptionController.updateStatus,
   })
 }

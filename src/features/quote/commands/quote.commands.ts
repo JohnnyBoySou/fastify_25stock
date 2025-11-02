@@ -58,20 +58,37 @@ export const QuoteCommands = {
     // Calcular total final
     const total = subtotal.minus(quoteData.discount || 0).plus(quoteData.interest || 0)
 
+    // Extrair userId do quoteData para usar connect ao invés de campo direto
+    const { userId, ...restQuoteData } = quoteData
+
+    // Buscar storeId do usuário
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { storeId: true },
+    })
+
+    if (!user || !user.storeId) {
+      throw new Error('User must be associated with a store')
+    }
+
     // Criar quote com items e installments
     const quote = await db.quote.create({
       data: {
-        ...quoteData,
+        ...restQuoteData,
+        user: { connect: { id: userId } },
+        store: { connect: { id: user.storeId } },
         subtotal: new Decimal(subtotal),
         total: new Decimal(total),
         expiresAt: quoteData.expiresAt ? new Date(quoteData.expiresAt) : null,
+        discount: quoteData.discount ? new Decimal(quoteData.discount) : null,
+        interest: quoteData.interest ? new Decimal(quoteData.interest) : null,
         items: {
           create: itemsWithSubtotal.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             subtotal: new Decimal(item.subtotal),
-            discount: item.discount,
+            discount: item.discount ? new Decimal(item.discount) : null,
             note: item.note,
           })),
         },
@@ -180,14 +197,6 @@ export const QuoteCommands = {
 
       // Calcular novo subtotal
       subtotal = new Decimal(0)
-      const itemsWithSubtotal = items.map((item) => {
-        const itemSubtotal = new Decimal(item.quantity * item.unitPrice).minus(item.discount || 0)
-        subtotal = subtotal.plus(itemSubtotal)
-        return {
-          ...item,
-          subtotal: itemSubtotal.toNumber(),
-        }
-      })
 
       // Calcular novo total
       const discount = updateData.discount || existingQuote.discount || 0
@@ -462,7 +471,7 @@ export const QuoteCommands = {
     for (const item of quote.items) {
       try {
         const movement = await MovementCommands.create({
-          type: 'SAIDA',
+          type: 'OUTBOUND',
           quantity: item.quantity,
           storeId: item.product.storeId,
           productId: item.productId,

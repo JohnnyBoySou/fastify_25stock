@@ -62,13 +62,12 @@ export interface ActionConfig {
     // Email
     to?: string | string[]
     subject?: string
-    body?: string
 
     // Webhook
     url?: string
     method?: 'GET' | 'POST' | 'PUT'
     headers?: Record<string, string>
-    body?: any
+    body?: string | Record<string, unknown>
 
     // Internal Notification
     userIds?: string[]
@@ -82,7 +81,7 @@ export interface ActionConfig {
     // Push Notification
     icon?: string
     badge?: string
-    data?: any
+    data?: Record<string, unknown>
     actions?: Array<{
       action: string
       title: string

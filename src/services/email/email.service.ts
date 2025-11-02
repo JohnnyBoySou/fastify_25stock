@@ -195,7 +195,7 @@ export const EmailService = {
       const result = await resend.emails.send({
         from: process.env.FROM_EMAIL || 'noreply@25stock.com',
         to: data.email,
-        subject: `Confirmação de Email - 25Stock`,
+        subject: 'Confirmação de Email - 25Stock',
         html,
         text,
       })

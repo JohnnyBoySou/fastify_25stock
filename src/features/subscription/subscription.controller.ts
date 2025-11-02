@@ -1,28 +1,28 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { PlanCommands } from './commands/plan.commands'
+import { SubscriptionCommands } from './commands/subscription.commands'
 import type {
-  ComparePlansRequest,
-  CreatePlanRequest,
-  DeletePlanRequest,
-  GetPlanCustomersRequest,
-  GetPlanRequest,
-  ListPlansRequest,
-  PlanInterval,
-  UpdatePlanRequest,
-  UpdatePlanStatusRequest,
-} from './plan.interfaces'
-import { PlanQueries } from './queries/plan.queries'
+  CreateSubscriptionRequest,
+  DeleteSubscriptionRequest,
+  GetSubscriptionCustomersRequest,
+  GetSubscriptionRequest,
+  ListSubscriptionsRequest,
+  SubscriptionInterval,
+  CompareSubscriptionsRequest,
+  UpdateSubscriptionRequest,
+  UpdateSubscriptionStatusRequest,
+} from './subscription.interfaces'
+import { SubscriptionQueries } from './queries/subscription.queries'
 
-export const PlanController = {
+export const SubscriptionController = {
   // === CRUD BÁSICO ===
-  async create(request: CreatePlanRequest, reply: FastifyReply) {
+  async create(request: CreateSubscriptionRequest, reply: FastifyReply) {
     try {
-      const { name, description, price, interval, features } = request.body
-      const result = await PlanCommands.create({
-        name,
+      const { userId, description, price, interval, features } = request.body
+      const result = await SubscriptionCommands.create({
+        userId,
         description,
         price,
-        interval: interval as unknown as PlanInterval,
+        interval: interval as unknown as SubscriptionInterval,
         features,
       })
 
@@ -42,11 +42,11 @@ export const PlanController = {
     }
   },
 
-  async get(request: GetPlanRequest, reply: FastifyReply) {
+  async get(request: GetSubscriptionRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
 
-      const result = await PlanQueries.getById(id)
+      const result = await SubscriptionQueries.getById(id)
 
       if (!result) {
         return reply.status(404).send({
@@ -70,18 +70,18 @@ export const PlanController = {
     }
   },
 
-  async update(request: UpdatePlanRequest, reply: FastifyReply) {
+  async update(request: UpdateSubscriptionRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
       const updateData = { ...request.body }
 
-      const result = await PlanCommands.update(
+      const result = await SubscriptionCommands.update(
         id,
         updateData as unknown as {
-          name?: string
+          userId?: string
           description?: string
           price?: number
-          interval?: PlanInterval
+          interval?: SubscriptionInterval
           features?: any
         }
       )
@@ -108,30 +108,30 @@ export const PlanController = {
     }
   },
 
-  async delete(request: DeletePlanRequest, reply: FastifyReply) {
+  async delete(request: DeleteSubscriptionRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
 
-      await PlanCommands.delete(id)
+      await SubscriptionCommands.delete(id)
 
       return reply.status(204).send()
     } catch (error: any) {
       request.log.error(error)
 
-      if (error.message === 'Plan not found') {
+      if (error.message === 'Subscription not found') {
         return reply.status(404).send({
           error: error.message,
         })
       }
 
       if (
-        error.message.includes('Cannot delete plan') &&
+        error.message.includes('Cannot delete subscription') &&
         error.message.includes('associated customers')
       ) {
         return reply.status(400).send({
           error: error.message,
           suggestion:
-            'Use DELETE /plans/:id/force to delete the plan and remove all customer associations',
+            'Use DELETE /subscriptions/:id/force to delete the subscription and remove all customer associations',
         })
       }
 
@@ -141,17 +141,17 @@ export const PlanController = {
     }
   },
 
-  async forceDelete(request: DeletePlanRequest, reply: FastifyReply) {
+  async forceDelete(request: DeleteSubscriptionRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
 
-      await PlanCommands.forceDelete(id)
+      await SubscriptionCommands.forceDelete(id)
 
       return reply.status(204).send()
     } catch (error: any) {
       request.log.error(error)
 
-      if (error.message === 'Plan not found') {
+      if (error.message === 'Subscription not found') {
         return reply.status(404).send({
           error: error.message,
         })
@@ -163,10 +163,10 @@ export const PlanController = {
     }
   },
 
-  async list(request: ListPlansRequest, reply: FastifyReply) {
+  async list(request: ListSubscriptionsRequest, reply: FastifyReply) {
     try {
       const { page = 1, limit = 10, search, interval } = request.query
-      const result = await PlanQueries.list({
+      const result = await SubscriptionQueries.list({
         page,
         limit,
         search,
@@ -185,9 +185,9 @@ export const PlanController = {
   // === FUNÇÕES ADICIONAIS (QUERIES) ===
   async getActive(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const result = await PlanQueries.getActive()
+      const result = await SubscriptionQueries.getActive()
 
-      return reply.send({ plans: result })
+      return reply.send({ subscriptions: result })
     } catch (error) {
       request.log.error(error)
       return reply.status(500).send({
@@ -196,22 +196,22 @@ export const PlanController = {
     }
   },
 
-  async compare(request: ComparePlansRequest, reply: FastifyReply) {
+  async compare(request: CompareSubscriptionsRequest, reply: FastifyReply) {
     try {
-      const { planIds } = request.query
-      const result = await PlanQueries.compare(planIds)
+      const { subscriptionIds } = request.query
+      const result = await SubscriptionQueries.compare(subscriptionIds)
 
       return reply.send(result)
     } catch (error: any) {
       request.log.error(error)
 
-      if (error.message === 'At least one plan ID is required for comparison') {
+      if (error.message === 'At least one subscription ID is required for comparison') {
         return reply.status(400).send({
           error: error.message,
         })
       }
 
-      if (error.message === 'No plans found for comparison') {
+      if (error.message === 'No subscriptions found for comparison') {
         return reply.status(404).send({
           error: error.message,
         })
@@ -223,12 +223,12 @@ export const PlanController = {
     }
   },
 
-  async getCustomers(request: GetPlanCustomersRequest, reply: FastifyReply) {
+  async getCustomers(request: GetSubscriptionCustomersRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
       const { page = 1, limit = 10, status } = request.query
 
-      const result = await PlanQueries.getCustomers(id, {
+      const result = await SubscriptionQueries.getCustomers(id, {
         page,
         limit,
         status,
@@ -252,7 +252,7 @@ export const PlanController = {
 
   async getStats(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const result = await PlanQueries.getStats()
+      const result = await SubscriptionQueries.getStats()
 
       return reply.send(result)
     } catch (error) {
@@ -264,18 +264,18 @@ export const PlanController = {
   },
 
   // === FUNÇÕES ADICIONAIS (COMMANDS) ===
-  async updateStatus(request: UpdatePlanStatusRequest, reply: FastifyReply) {
+  async updateStatus(request: UpdateSubscriptionStatusRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
       const { active } = request.body
 
-      const result = await PlanCommands.updateStatus(id, active)
+      const result = await SubscriptionCommands.updateStatus(id, active)
 
       return reply.send(result)
     } catch (error: any) {
       request.log.error(error)
 
-      if (error.message === 'Plan not found') {
+      if (error.message === 'Subscription not found') {
         return reply.status(404).send({
           error: error.message,
         })

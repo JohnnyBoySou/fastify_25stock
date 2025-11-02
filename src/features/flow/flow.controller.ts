@@ -210,7 +210,6 @@ export const FlowController = {
   async test(request: FastifyRequest<TestFlowRequest>, reply: FastifyReply) {
     try {
       const { id } = request.params
-      const { triggerData } = request.body
 
       // Buscar o flow
       const flow = await FlowQueries.getById(id)
@@ -224,7 +223,7 @@ export const FlowController = {
       // TODO: Implementar execução do workflow de teste
       // Por enquanto, retornar mock
       return reply.send({
-        executionId: 'test-' + Date.now(),
+        executionId: `test-${Date.now()}`,
         status: 'success',
         executionLog: [
           {

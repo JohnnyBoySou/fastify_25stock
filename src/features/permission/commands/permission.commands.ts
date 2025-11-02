@@ -1,219 +1,246 @@
-import { type Action, type StoreRole, UserRole } from '@/middlewares/authorization.middleware'
-import type { PermissionConditions } from '@/middlewares/granular-permissions.middleware'
+import type { PermissionAction, PermissionResource } from '../permission.interfaces'
+import { db } from '@/plugins/prisma'
+import { AVAILABLE_PERMISSIONS, getPermissionDefinition } from '../permission.constants'
 
 // ================================
-// GESTÃO DE PERMISSÕES CUSTOMIZADAS
+// PERMISSION COMMANDS
 // ================================
 
-export const createUserPermission = async (
-  prisma: any,
-  data: {
+export const PermissionCommands = {
+  // Atribuir permissões a usuário
+  async assignToUser(data: {
     userId: string
-    action: Action
-    resource?: string
-    storeId?: string
-    grant: boolean
-    conditions?: PermissionConditions
-    expiresAt?: string
-    reason?: string
-    createdBy: string
-  }
-) => {
-  return await prisma.userPermission.create({
-    data: {
-      userId: data.userId,
-      action: data.action,
-      resource: data.resource,
-      storeId: data.storeId,
-      grant: data.grant,
-      conditions: data.conditions ? JSON.stringify(data.conditions) : null,
-      expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
-      reason: data.reason,
-      createdBy: data.createdBy,
-    },
-  })
-}
+    permissions: Array<{ resource: PermissionResource; action: PermissionAction }>
+    assignedBy: string
+    scope?: string
+    expiresAt?: Date | null
+    conditions?: any
+  }) {
+    // Verificar se usuário existe
+    const user = await db.user.findUnique({
+      where: { id: data.userId },
+    })
 
-export const updateUserPermission = async (
-  prisma: any,
-  id: string,
-  data: {
-    action?: Action
-    resource?: string
-    storeId?: string
-    grant?: boolean
-    conditions?: PermissionConditions
-    expiresAt?: string
-    reason?: string
-  }
-) => {
-  return await prisma.userPermission.update({
-    where: { id },
-    data: {
-      ...data,
-      conditions: data.conditions ? JSON.stringify(data.conditions) : undefined,
-      expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
-    },
-  })
-}
-
-export const deleteUserPermission = async (prisma: any, id: string) => {
-  return await prisma.userPermission.delete({
-    where: { id },
-  })
-}
-
-// ================================
-// GESTÃO DE PERMISSÕES POR LOJA
-// ================================
-
-export const setStoreUserPermissions = async (
-  prisma: any,
-  data: {
-    userId: string
-    storeId: string
-    storeRole: StoreRole
-    permissions: Action[]
-    conditions?: PermissionConditions
-    expiresAt?: string
-    createdBy: string
-  }
-) => {
-  return await prisma.storePermission.upsert({
-    where: {
-      userId_storeId: {
-        userId: data.userId,
-        storeId: data.storeId,
-      },
-    },
-    update: {
-      storeRole: data.storeRole,
-      permissions: JSON.stringify(data.permissions),
-      conditions: data.conditions ? JSON.stringify(data.conditions) : null,
-      expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
-      createdBy: data.createdBy,
-    },
-    create: {
-      userId: data.userId,
-      storeId: data.storeId,
-      storeRole: data.storeRole,
-      permissions: JSON.stringify(data.permissions),
-      conditions: data.conditions ? JSON.stringify(data.conditions) : null,
-      expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
-      createdBy: data.createdBy,
-    },
-  })
-}
-
-export const deleteStoreUserPermissions = async (prisma: any, userId: string, storeId: string) => {
-  return await prisma.storePermission.delete({
-    where: {
-      userId_storeId: {
-        userId,
-        storeId,
-      },
-    },
-  })
-}
-
-// ================================
-// OPERAÇÕES ESPECIAIS
-// ================================
-
-export const bulkCreateUserPermissions = async (
-  prisma: any,
-  permissions: Array<{
-    userId: string
-    action: Action
-    resource?: string
-    storeId?: string
-    grant: boolean
-    conditions?: PermissionConditions
-    expiresAt?: string
-    reason?: string
-    createdBy: string
-  }>
-) => {
-  return await prisma.userPermission.createMany({
-    data: permissions.map((permission) => ({
-      ...permission,
-      conditions: permission.conditions ? JSON.stringify(permission.conditions) : null,
-      expiresAt: permission.expiresAt ? new Date(permission.expiresAt) : null,
-    })),
-  })
-}
-
-export const bulkUpdateUserPermissions = async (
-  prisma: any,
-  updates: Array<{
-    id: string
-    data: {
-      action?: Action
-      resource?: string
-      storeId?: string
-      grant?: boolean
-      conditions?: PermissionConditions
-      expiresAt?: string
-      reason?: string
+    if (!user) {
+      throw new Error('User not found')
     }
-  }>
-) => {
-  const transactions = updates.map((update) =>
-    prisma.userPermission.update({
-      where: { id: update.id },
-      data: {
-        ...update.data,
-        conditions: update.data.conditions ? JSON.stringify(update.data.conditions) : undefined,
-        expiresAt: update.data.expiresAt ? new Date(update.data.expiresAt) : undefined,
+
+    // Verificar se todas as permissões estão na lista pré-definida
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    )
+
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(', ')}`
+      )
+    }
+
+    // Buscar permissões já atribuídas
+    const existingPermissions = await db.userPermission.findMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action,
+        })),
       },
     })
-  )
 
-  return await prisma.$transaction(transactions)
-}
+    // Criar mapa de permissões existentes
+    const existingMap = new Map(
+      existingPermissions.map((ep) => [`${ep.resource}:${ep.action}`, ep])
+    )
 
-export const bulkDeleteUserPermissions = async (prisma: any, ids: string[]) => {
-  return await prisma.userPermission.deleteMany({
-    where: {
-      id: {
-        in: ids,
-      },
-    },
-  })
-}
+    // Filtrar apenas permissões novas
+    const newPermissions = data.permissions.filter(
+      (p) => !existingMap.has(`${p.resource}:${p.action}`)
+    )
 
-export const expireUserPermissions = async (prisma: any, userIds: string[], reason?: string) => {
-  return await prisma.userPermission.updateMany({
-    where: {
-      userId: {
-        in: userIds,
+    if (newPermissions.length === 0) {
+      return {
+        message: 'All permissions already assigned',
+        assigned: 0,
+      }
+    }
+
+    // Criar novas atribuições
+    await db.userPermission.createMany({
+      data: newPermissions.map((p) => ({
+        userId: data.userId,
+        resource: p.resource,
+        action: p.action,
+        scope: data.scope || null,
+        grant: true,
+        expiresAt: data.expiresAt || null,
+        conditions: data.conditions ? JSON.stringify(data.conditions) : null,
+      })),
+      skipDuplicates: true,
+    })
+
+    return {
+      message: 'Permissions assigned successfully',
+      assigned: newPermissions.length,
+      permissions: newPermissions.map((p) => ({
+        resource: p.resource,
+        action: p.action,
+      })),
+    }
+  },
+
+  // Remover permissões de usuário
+  async removeFromUser(data: {
+    userId: string
+    permissions: Array<{ resource: PermissionResource; action: PermissionAction }>
+  }) {
+    // Verificar se usuário existe
+    const user = await db.user.findUnique({
+      where: { id: data.userId },
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const result = await db.userPermission.deleteMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action,
+        })),
       },
-      expiresAt: {
-        gt: new Date(),
-      },
-    },
+    })
+
+    return {
+      message: 'Permissions removed successfully',
+      removed: result.count,
+    }
+  },
+
+  // Remover todas as permissões de um usuário
+  async removeAllFromUser(userId: string) {
+    // Verificar se usuário existe
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const result = await db.userPermission.deleteMany({
+      where: { userId },
+    })
+
+    return {
+      message: 'All permissions removed successfully',
+      removed: result.count,
+    }
+  },
+
+  // Sincronizar permissões de usuário (substitui todas)
+  async syncUserPermissions(data: {
+    userId: string
+    permissions: Array<{ resource: PermissionResource; action: PermissionAction }>
+    assignedBy: string
+    scope?: string
+    expiresAt?: Date | null
+    conditions?: any
+  }) {
+    // Verificar se usuário existe
+    const user = await db.user.findUnique({
+      where: { id: data.userId },
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    // Verificar se todas as permissões estão na lista pré-definida
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    )
+
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(', ')}`
+      )
+    }
+
+    // Usar transação para garantir atomicidade
+    return await db.$transaction(async (tx: any) => {
+      // Remover todas as permissões atuais
+      await tx.userPermission.deleteMany({
+        where: { userId: data.userId },
+      })
+
+      // Adicionar novas permissões
+      if (data.permissions.length > 0) {
+        await tx.userPermission.createMany({
+          data: data.permissions.map((p) => ({
+            userId: data.userId,
+            resource: p.resource,
+            action: p.action,
+            scope: data.scope || null,
+            grant: true,
+            expiresAt: data.expiresAt || null,
+            conditions: data.conditions ? JSON.stringify(data.conditions) : null,
+          })),
+        })
+      }
+
+      return {
+        message: 'Permissions synchronized successfully',
+        total: data.permissions.length,
+        permissions: data.permissions,
+      }
+    })
+  },
+
+  // Atualizar uma permissão específica de usuário
+  async updateUserPermission(
+    userId: string,
+    resource: PermissionResource,
+    action: PermissionAction,
     data: {
-      expiresAt: new Date(),
-      reason: reason || 'Bulk expiration',
-    },
-  })
-}
+      grant?: boolean
+      scope?: string | null
+      expiresAt?: Date | null
+      conditions?: any
+    }
+  ) {
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    })
 
-export const extendUserPermissions = async (
-  prisma: any,
-  userIds: string[],
-  newExpiryDate: string,
-  reason?: string
-) => {
-  return await prisma.userPermission.updateMany({
-    where: {
-      userId: {
-        in: userIds,
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const permission = await db.userPermission.findFirst({
+      where: {
+        userId,
+        resource,
+        action,
       },
-    },
-    data: {
-      expiresAt: new Date(newExpiryDate),
-      reason: reason || 'Bulk extension',
-    },
-  })
+    })
+
+    if (!permission) {
+      throw new Error('Permission not found for this user')
+    }
+
+    return await db.userPermission.update({
+      where: {
+        id: permission.id,
+      },
+      data: {
+        grant: data.grant !== undefined ? data.grant : permission.grant,
+        scope: data.scope !== undefined ? data.scope : permission.scope,
+        expiresAt: data.expiresAt !== undefined ? data.expiresAt : permission.expiresAt,
+        conditions:
+          data.conditions !== undefined ? JSON.stringify(data.conditions) : permission.conditions,
+      },
+    })
+  },
 }

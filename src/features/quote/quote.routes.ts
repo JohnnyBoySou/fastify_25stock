@@ -1,10 +1,9 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
+import type { FastifyInstance } from 'fastify'
 import { QuoteController } from './quote.controller'
 import { QuoteSchemas } from './quote.schema'
 
 export async function QuoteRoutes(fastify: FastifyInstance) {
-
   // Middlewares para todas as rotas
   fastify.addHook('preHandler', Middlewares.auth)
   fastify.addHook('preHandler', Middlewares.store)
@@ -33,14 +32,14 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
 
   fastify.delete('/:id', {
     schema: QuoteSchemas.delete,
-    
+
     handler: QuoteController.delete,
   })
 
   // Funções adicionais
   fastify.patch('/:id/status', {
     schema: QuoteSchemas.updateStatus,
-    
+
     handler: QuoteController.updateStatus,
   })
 
@@ -54,7 +53,7 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.publish,
   })
 
@@ -68,19 +67,19 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.send,
   })
 
   fastify.post('/:id/convert', {
     schema: QuoteSchemas.convertToMovement,
-    
+
     handler: QuoteController.convertToMovements,
   })
 
   fastify.get('/stats', {
     schema: QuoteSchemas.getStats,
-    
+
     handler: QuoteController.getStats,
   })
 
@@ -115,7 +114,7 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.getByUser,
   })
 
@@ -150,7 +149,7 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.getByStatus,
   })
 
@@ -166,7 +165,7 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.search,
   })
 
@@ -180,7 +179,7 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.getRecent,
   })
 
@@ -194,12 +193,11 @@ export async function QuoteRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    
+
     handler: QuoteController.getAnalytics,
   })
 
   fastify.post('/mark-expired', {
-    
     handler: QuoteController.markExpired,
   })
 

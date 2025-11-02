@@ -239,7 +239,7 @@ export const CrmController = {
         })
       }
 
-      const result = await CrmQueries.search(q, limit, storeId)
+      const result = await CrmQueries.search(q, storeId, limit)
 
       return reply.send({ clients: result })
     } catch (error) {

@@ -238,7 +238,7 @@ export const SupplierController = {
 
   async search(request: SearchSuppliersRequest, reply: FastifyReply) {
     try {
-      const { q, page = 1, limit = 10 } = request.query
+      const { search, page = 1, limit = 10 } = request.query
       const storeId = request.store?.id
 
       if (!storeId) {
@@ -247,7 +247,7 @@ export const SupplierController = {
         })
       }
 
-      const result = await SupplierQueries.search(q, storeId, { page, limit })
+      const result = await SupplierQueries.search(search, storeId, { page, limit })
 
       return reply.send(result)
     } catch (error) {

@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
+import type { FastifyInstance } from 'fastify'
 import { StoreController } from './store.controller'
 import { StoreSchemas } from './store.schema'
 
@@ -17,7 +17,7 @@ export async function StoreRoutes(fastify: FastifyInstance) {
 
   fastify.put('/', {
     schema: StoreSchemas.update,
-    preHandler: [Middlewares.auth, Middlewares.store],  
+    preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.update,
   })
 

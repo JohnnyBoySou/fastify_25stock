@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
+import type { FastifyInstance } from 'fastify'
 import { MovementController } from './movement.controller'
 import { MovementSchemas } from './movement.schema'
 

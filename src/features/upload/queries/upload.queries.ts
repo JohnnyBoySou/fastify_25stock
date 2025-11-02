@@ -185,7 +185,7 @@ export const UploadQueries = {
     let media: any = null
 
     switch (entityType) {
-      case 'product':
+      case 'product': {
         const productMedia = await db.productMedia.findFirst({
           where: {
             productId: entityId,
@@ -197,14 +197,16 @@ export const UploadQueries = {
         })
         media = productMedia
         break
+      }
 
       case 'supplier':
       case 'user':
-      case 'store':
+      case 'store': {
         // Para essas entidades, pegar a primeira mídia (não têm conceito de principal)
         const firstMedia = await this.getEntityMedia(entityType, entityId)
         media = firstMedia[0] || null
         break
+      }
 
       default:
         throw new Error('Invalid entity type')

@@ -17,7 +17,7 @@ interface LoopStatesMap {
 const loopStates: LoopStatesMap = {}
 
 export const LoopController = {
-  checkLoop(nodeId: string, executionId: string, executionPath: string[]): boolean {
+  checkLoop(nodeId: string, executionPath: string[]): boolean {
     // Contar quantas vezes este node já foi visitado no path
     const visitCount = executionPath.filter((id) => id === nodeId).length
 

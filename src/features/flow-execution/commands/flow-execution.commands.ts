@@ -77,7 +77,7 @@ export const FlowExecutionCommands = {
         select: { startedAt: true },
       })
 
-      const duration = startTime ? Date.now() - startTime.startedAt.getTime() : undefined
+      const durationMs = startTime ? Date.now() - startTime.startedAt.getTime() : undefined
 
       const execution = await db.flowExecution.update({
         where: { id: executionId },
@@ -85,7 +85,7 @@ export const FlowExecutionCommands = {
           status: success ? 'SUCCESS' : 'FAILED',
           error,
           completedAt: new Date(),
-          duration,
+          durationMs,
         },
       })
 

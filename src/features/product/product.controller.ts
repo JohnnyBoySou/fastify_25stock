@@ -1,15 +1,9 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { ProductCommands, getUserStore } from './commands/product.commands'
-import type {
-  CreateProductMovementRequest,
-  GetProductMovementsRequest,
-  UpdateStockRequest,
-  VerifySkuRequest,
-} from './product.interfaces'
+import { ProductCommands } from './commands/product.commands'
+import type { VerifySkuRequest } from './product.interfaces'
 import { ProductQueries } from './queries/product.queries'
 
 export const ProductController = {
-  // === CRUD BÁSICO ===
   async create(request: FastifyRequest, reply: FastifyReply) {
     try {
       const {
@@ -35,8 +29,7 @@ export const ProductController = {
           })
         }
 
-        const userStore = await getUserStore(request.user.id)
-        finalStoreId = userStore.id
+        finalStoreId = request.store?.id
       }
 
       const result = await ProductCommands.create({
@@ -258,7 +251,6 @@ export const ProductController = {
     }
   },
 
-  // === FUNÇÕES ADICIONAIS (QUERIES) ===
   async getActive(request: FastifyRequest, reply: FastifyReply) {
     try {
       const storeId = request.store?.id
@@ -324,72 +316,6 @@ export const ProductController = {
     }
   },
 
-  async getByCategory(
-    request: FastifyRequest<{ Params: { categoryId: string } }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { categoryId } = request.params
-      const storeId = request.store?.id
-
-      if (!storeId) {
-        return reply.status(400).send({
-          error: 'Store context required',
-        })
-      }
-
-      const result = await ProductQueries.getByCategory(categoryId, storeId)
-
-      return reply.send({ products: result })
-    } catch (error) {
-      request.log.error(error)
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getBySupplier(
-    request: FastifyRequest<{ Params: { supplierId: string } }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { supplierId } = request.params
-      const storeId = request.store?.id
-
-      if (!storeId) {
-        return reply.status(400).send({
-          error: 'Store context required',
-        })
-      }
-
-      const result = await ProductQueries.getBySupplier(supplierId, storeId)
-
-      return reply.send({ products: result })
-    } catch (error) {
-      request.log.error(error)
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getByStore(request: FastifyRequest<{ Params: { storeId: string } }>, reply: FastifyReply) {
-    try {
-      const { storeId } = request.params
-
-      const result = await ProductQueries.getByStore(storeId)
-
-      return reply.send({ products: result })
-    } catch (error) {
-      request.log.error(error)
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  // === FUNÇÕES ADICIONAIS (COMMANDS) ===
   async updateStatus(
     request: FastifyRequest<{ Params: { id: string }; Body: { status: boolean } }>,
     reply: FastifyReply
@@ -416,307 +342,12 @@ export const ProductController = {
     }
   },
 
-  // === FUNÇÕES ADICIONAIS DE PRODUTO ===
   async verifySku(request: VerifySkuRequest, reply: FastifyReply) {
     try {
       const { id: productId } = request.params
       const { sku } = request.body
 
       const result = await ProductCommands.verifySku(productId, sku)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async updateStock(request: UpdateStockRequest, reply: FastifyReply) {
-    try {
-      const { id: productId } = request.params
-      const { quantity, type, note } = request.body
-      const userId = request.user?.id
-
-      const result = await ProductCommands.updateStock(productId, quantity, type, note, userId)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getMovements(request: GetProductMovementsRequest, reply: FastifyReply) {
-    try {
-      const { id: productId } = request.params
-      const { page = 1, limit = 10, type, startDate, endDate } = request.query
-
-      const result = await ProductQueries.getProductMovements(productId, {
-        page,
-        limit,
-        type,
-        startDate,
-        endDate,
-      })
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async createMovement(request: CreateProductMovementRequest, reply: FastifyReply) {
-    try {
-      const { id: productId } = request.params
-      const { type, quantity, supplierId, batch, expiration, price, note } = request.body
-      const userId = request.user?.id
-
-      const result = await ProductCommands.createMovement(productId, {
-        type,
-        quantity,
-        supplierId,
-        batch,
-        expiration,
-        price,
-        note,
-        userId,
-      })
-
-      return reply.status(201).send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      if (error.message === 'Supplier not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getStock(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-    try {
-      const { id: productId } = request.params
-
-      const result = await ProductCommands.getProductStock(productId)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getStockHistory(
-    request: FastifyRequest<{
-      Params: { id: string }
-      Querystring: { limit?: number }
-    }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { id: productId } = request.params
-      const { limit = 30 } = request.query
-
-      const result = await ProductQueries.getProductStockHistory(productId, limit)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getLowStock(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const storeId = request.store?.id
-
-      if (!storeId) {
-        return reply.status(400).send({
-          error: 'Store context required',
-        })
-      }
-
-      const result = await ProductQueries.getLowStockProducts(storeId)
-
-      return reply.send({ products: result })
-    } catch (error: any) {
-      request.log.error(error)
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getAnalytics(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-    try {
-      const { id: productId } = request.params
-
-      const result = await ProductQueries.getProductAnalytics(productId)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  // === MÉTODOS PARA GERENCIAR CATEGORIAS DO PRODUTO ===
-  async addCategories(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as any
-      const { categoryIds } = request.body as any
-
-      const result = await ProductCommands.addCategories(id, categoryIds)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      if (
-        error.message.includes('Categories not found') ||
-        error.message.includes('already associated')
-      ) {
-        return reply.status(400).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async removeCategories(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as any
-      const { categoryIds } = request.body as any
-
-      const result = await ProductCommands.removeCategories(id, categoryIds)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async setCategories(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as any
-      const { categoryIds } = request.body as any
-
-      const result = await ProductCommands.setCategories(id, categoryIds)
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Product not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      if (error.message.includes('Categories not found')) {
-        return reply.status(400).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
-  async getCategories(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as any
-
-      const result = await ProductQueries.getCategories(id)
 
       return reply.send(result)
     } catch (error: any) {

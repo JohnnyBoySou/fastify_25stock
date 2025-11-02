@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import { Middlewares } from '@/middlewares'
+import type { FastifyInstance } from 'fastify'
 import { CategoryController } from './category.controller'
 import { CategorySchemas } from './category.schema'
 

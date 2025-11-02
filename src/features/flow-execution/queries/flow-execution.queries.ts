@@ -171,9 +171,9 @@ export const FlowExecutionQueries = {
         db.flowExecution.findMany({
           where: {
             flowId,
-            duration: { not: null },
+            durationMs: { not: null },
           },
-          select: { duration: true },
+          select: { durationMs: true },
         }),
       ])
 
@@ -184,14 +184,14 @@ export const FlowExecutionQueries = {
         cancelled: 0,
       }
 
-      byStatus.forEach((item: any) => {
+      for (const item of byStatus) {
         statusMap[item.status.toLowerCase()] = item._count
-      })
+      }
 
       const triggerMap: Record<string, number> = {}
-      byTrigger.forEach((item: any) => {
+      for (const item of byTrigger) {
         triggerMap[item.triggerType] = item._count
-      })
+      }
 
       const completedDurations = durations
         .filter((d: any) => d.duration !== null)

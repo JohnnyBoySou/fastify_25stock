@@ -1,29 +1,22 @@
 import { CategoryQueries } from '@/features/category/queries/category.queries'
 import { MovementQueries } from '@/features/movement/queries/movement.queries'
 import { ProductQueries } from '@/features/product/queries/product.queries'
-import { StoreQueries } from '@/features/store/queries/store.queries'
 import { SupplierQueries } from '@/features/supplier/queries/supplier.queries'
 import { db } from '@/plugins/prisma'
 
 // Toolbox para acesso aos serviços do sistema
-export class ChatToolbox {
-  private prisma: any
-
-  constructor(prisma: any) {
-    this.prisma = prisma
-  }
-
+export const ChatToolbox = {
   // === SERVIÇOS DE PRODUTOS ===
   async getProducts(params: any) {
     return await ProductQueries.list(params)
-  }
+  },
 
   async getProductById(id: string, storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for product queries')
     }
     return await ProductQueries.getById(id, storeId)
-  }
+  },
 
   async searchProducts(
     term: string,
@@ -34,138 +27,92 @@ export class ChatToolbox {
     } = {}
   ) {
     return await ProductQueries.search(term, params)
-  }
+  },
 
   async getActiveProducts(storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for product queries')
     }
     return await ProductQueries.getActive(storeId)
-  }
+  },
 
   async getProductStats(storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for product queries')
     }
     return await ProductQueries.getStats(storeId)
-  }
-
-  async getLowStockProducts(storeId?: string) {
-    return await ProductQueries.getLowStockProducts(storeId)
-  }
-
-  // === SERVIÇOS DE LOJAS ===
-  async getStores(params: any) {
-    return await StoreQueries.list(params)
-  }
-
-  async getStoreById(id: string) {
-    return await StoreQueries.getById(id)
-  }
-
-  async searchStores(term: string, limit = 10) {
-    return await StoreQueries.search(term, limit)
-  }
-
-  async getActiveStores() {
-    return await StoreQueries.getActive()
-  }
-
-  async getStoreStats() {
-    return await StoreQueries.getStats()
-  }
+  },
 
   // === SERVIÇOS DE CATEGORIAS ===
   async getCategories(params: any) {
     return await CategoryQueries.list(params)
-  }
+  },
 
   async getCategoryById(id: string) {
     return await CategoryQueries.getById(id)
-  }
+  },
 
   async searchCategories(term: string, limit = 10, storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for category queries')
     }
     return await CategoryQueries.search(term, storeId, { limit })
-  }
+  },
 
   async getActiveCategories(storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for category queries')
     }
     return await CategoryQueries.getActive(storeId)
-  }
+  },
 
   async getCategoryStats(storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for category queries')
     }
     return await CategoryQueries.getStats(storeId)
-  }
+  },
 
   async getCategoryHierarchy(storeId?: string) {
     if (!storeId) {
       throw new Error('Store ID is required for category queries')
     }
     return await CategoryQueries.getHierarchy(storeId)
-  }
+  },
 
   // === SERVIÇOS DE FORNECEDORES ===
   async getSuppliers(params: any) {
     return await SupplierQueries.list(params)
-  }
+  },
 
   async getSupplierById(id: string) {
     return await SupplierQueries.getById(id)
-  }
+  },
 
   async searchSuppliers(term: string, limit = 10) {
     return await SupplierQueries.search(term, String(limit))
-  }
+  },
 
   async getActiveSuppliers() {
     return await SupplierQueries.getActive()
-  }
+  },
 
   async getSupplierStats() {
     return await SupplierQueries.getStats()
-  }
+  },
 
   // === SERVIÇOS DE MOVIMENTAÇÕES ===
   async getMovements(params: any) {
     return await MovementQueries.list(params)
-  }
+  },
 
   async getMovementById(id: string) {
     return await MovementQueries.getById(id)
-  }
+  },
 
   async getMovementStats() {
     return await MovementQueries.getStats()
-  }
-
-  async getRecentMovements(limit = 10) {
-    return
-    //return await MovementQueries.getRecent(limit);
-  }
-
-  // === SERVIÇOS DE RELATÓRIOS ===
-  async getReports(params: any) {
-    return
-    //return await ReportQueries.list(params);
-  }
-
-  async getReportById(id: string) {
-    return
-    //return await ReportQueries.getById(id);
-  }
-
-  async getReportStats() {
-    return
-    //return await ReportQueries.getStats();
-  }
+  },
 
   // === MÉTODO PARA EXECUTAR COMANDOS DINÂMICOS ===
   async executeCommand(command: string, params: any = {}) {
@@ -174,22 +121,18 @@ export class ChatToolbox {
     switch (service) {
       case 'products':
         return await this.executeProductCommand(method, params)
-      case 'stores':
-        return await this.executeStoreCommand(method, params)
       case 'categories':
         return await this.executeCategoryCommand(method, params)
       case 'suppliers':
         return await this.executeSupplierCommand(method, params)
       case 'movements':
         return await this.executeMovementCommand(method, params)
-      case 'reports':
-        return await this.executeReportCommand(method, params)
       default:
         throw new Error(`Unknown service: ${service}`)
     }
-  }
+  },
 
-  private async executeProductCommand(method: string, params: any) {
+  async executeProductCommand(method: string, params: any) {
     switch (method) {
       case 'list':
         return await this.getProducts(params)
@@ -201,31 +144,12 @@ export class ChatToolbox {
         return await this.getActiveProducts()
       case 'getStats':
         return await this.getProductStats()
-      case 'getLowStock':
-        return await this.getLowStockProducts(params.storeId)
       default:
         throw new Error(`Unknown product method: ${method}`)
     }
-  }
+  },
 
-  private async executeStoreCommand(method: string, params: any) {
-    switch (method) {
-      case 'list':
-        return await this.getStores(params)
-      case 'getById':
-        return await this.getStoreById(params.id)
-      case 'search':
-        return await this.searchStores(params.term, params.limit)
-      case 'getActive':
-        return await this.getActiveStores()
-      case 'getStats':
-        return await this.getStoreStats()
-      default:
-        throw new Error(`Unknown store method: ${method}`)
-    }
-  }
-
-  private async executeCategoryCommand(method: string, params: any) {
+  async executeCategoryCommand(method: string, params: any) {
     switch (method) {
       case 'list':
         return await this.getCategories(params)
@@ -242,9 +166,9 @@ export class ChatToolbox {
       default:
         throw new Error(`Unknown category method: ${method}`)
     }
-  }
+  },
 
-  private async executeSupplierCommand(method: string, params: any) {
+  async executeSupplierCommand(method: string, params: any) {
     switch (method) {
       case 'list':
         return await this.getSuppliers(params)
@@ -259,9 +183,9 @@ export class ChatToolbox {
       default:
         throw new Error(`Unknown supplier method: ${method}`)
     }
-  }
+  },
 
-  private async executeMovementCommand(method: string, params: any) {
+  async executeMovementCommand(method: string, params: any) {
     switch (method) {
       case 'list':
         return await this.getMovements(params)
@@ -269,25 +193,10 @@ export class ChatToolbox {
         return await this.getMovementById(params.id)
       case 'getStats':
         return await this.getMovementStats()
-      case 'getRecent':
-        return await this.getRecentMovements(params.limit)
       default:
         throw new Error(`Unknown movement method: ${method}`)
     }
-  }
-
-  private async executeReportCommand(method: string, params: any) {
-    switch (method) {
-      case 'list':
-        return await this.getReports(params)
-      case 'getById':
-        return await this.getReportById(params.id)
-      case 'getStats':
-        return await this.getReportStats()
-      default:
-        throw new Error(`Unknown report method: ${method}`)
-    }
-  }
+  },
 }
 
 export const ChatQueries = {
@@ -474,7 +383,7 @@ export const ChatQueries = {
           select: {
             id: true,
             content: true,
-            isFromUser: true,
+            role: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -497,12 +406,12 @@ export const ChatQueries = {
     // Transformar mensagens para formato cronológico com identificação
     const formattedMessages: any[] = []
 
-    for (const message of session.messages) {
+    for (const message of session.messages as unknown as any[]) {
       // Adicionar mensagem do usuário
       formattedMessages.push({
         id: `${message.id}_user`,
         content: message.content,
-        isUser: true,
+        role: message.role,
         createdAt: message.createdAt,
         updatedAt: message.updatedAt,
       })
@@ -593,7 +502,6 @@ export const ChatQueries = {
             'products.search - Buscar produtos por termo',
             'products.getActive - Listar produtos ativos',
             'products.getStats - Estatísticas de produtos',
-            'products.getLowStock - Produtos com estoque baixo',
           ],
         },
         stores: {

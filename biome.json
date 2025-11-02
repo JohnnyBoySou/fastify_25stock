@@ -28,7 +28,7 @@
     "attributePosition": "auto"
   },
   "organizeImports": {
-    "enabled": true
+    "enabled": false
   },
   "linter": {
     "enabled": true,

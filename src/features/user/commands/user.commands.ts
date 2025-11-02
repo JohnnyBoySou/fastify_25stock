@@ -26,13 +26,11 @@ export const UserCommands = {
         email: data.email,
         password: hashedPassword,
         name: data.name,
-        roles: data.roles || ['user'],
       },
       select: {
         id: true,
         email: true,
         name: true,
-        roles: true,
         status: true,
         createdAt: true,
       },
@@ -86,10 +84,10 @@ export const UserCommands = {
         id: true,
         email: true,
         name: true,
-        roles: true,
         status: true,
         emailVerified: true,
         updatedAt: true,
+        isOwner: true,
       },
     })
 

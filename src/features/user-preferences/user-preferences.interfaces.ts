@@ -31,7 +31,6 @@ export interface UserPreferencesData {
   itemsPerPage?: number
 
   // Business Preferences
-  defaultStoreId?: string
   autoRefresh?: boolean
   refreshInterval?: number
 
@@ -105,7 +104,6 @@ export interface UserPreferencesResponse {
   dashboardLayout?: any
   defaultPage?: string
   itemsPerPage: number
-  defaultStoreId?: string
   autoRefresh: boolean
   refreshInterval: number
   customSettings?: any

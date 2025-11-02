@@ -75,9 +75,14 @@ export const InvoiceController = {
   async updateInvoiceStatus(request: UpdateInvoiceStatusRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
-        const { status, paymentDate, gatewayPaymentId } = request.body
+      const { status, paymentDate, gatewayPaymentId } = request.body
 
-      const result = await InvoiceCommands.updateStatus(id, status as unknown as InvoiceStatus, paymentDate ? new Date(paymentDate) : undefined, gatewayPaymentId)
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        status as unknown as InvoiceStatus,
+        paymentDate ? new Date(paymentDate) : undefined,
+        gatewayPaymentId
+      )
 
       return reply.send(result)
     } catch (error: any) {
@@ -308,7 +313,12 @@ export const InvoiceController = {
       const { id } = request.params
       const { gatewayPaymentId } = request.body
 
-      const result = await InvoiceCommands.updateStatus(id, 'PENDING' as unknown as InvoiceStatus , undefined, gatewayPaymentId)
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        'PENDING' as unknown as InvoiceStatus,
+        undefined,
+        gatewayPaymentId
+      )
 
       return reply.send(result)
     } catch (error: any) {
@@ -335,7 +345,6 @@ export const InvoiceController = {
   async sendEmail(request: SendInvoiceEmailRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
-      const { email, includePdf } = request.body
 
       const invoice = await InvoiceQueries.getById(id)
 
@@ -379,7 +388,12 @@ export const InvoiceController = {
       const { id } = request.params
       const { gatewayPaymentId } = request.body
 
-      const result = await InvoiceCommands.updateStatus(id, 'PAID' as unknown as InvoiceStatus, undefined, gatewayPaymentId)
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        'PAID' as unknown as InvoiceStatus,
+        undefined,
+        gatewayPaymentId
+      )
 
       return reply.send(result)
     } catch (error: any) {
@@ -401,7 +415,12 @@ export const InvoiceController = {
     try {
       const { id } = request.params
 
-      const result = await InvoiceCommands.updateStatus(id, 'FAILED' as unknown as InvoiceStatus, undefined, undefined)
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        'FAILED' as unknown as InvoiceStatus,
+        undefined,
+        undefined
+      )
 
       return reply.send(result)
     } catch (error: any) {

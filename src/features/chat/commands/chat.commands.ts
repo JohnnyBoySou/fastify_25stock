@@ -1,6 +1,5 @@
 import { db } from '@/plugins/prisma'
 import { ChatToolbox } from '../queries/chat.query'
-import { ChatQueries } from '../queries/chat.query'
 
 export const ChatCommands = {
   // === CRIAÇÃO DE SESSÃO ===
@@ -31,7 +30,7 @@ export const ChatCommands = {
     const chatMessage = await db.chatMessage.create({
       data: {
         content: data.content,
-        isFromUser: data.isFromUser,
+        role: data.isFromUser ? 'USER' : 'ASSISTANT',
         sessionId: data.sessionId,
         context: data.context || {},
         options: data.options || {},
@@ -76,102 +75,6 @@ export const ChatCommands = {
       sessionId = session.id
     }
 
-    // Criar toolbox para acesso aos serviços
-    const toolbox = new ChatToolbox(db)
-
-    // Analisar a mensagem e executar comandos específicos se necessário
-    let systemData = ''
-    const message = data.message.toLowerCase()
-
-    // Detectar comandos específicos na mensagem
-    if (
-      message.includes('produto') ||
-      message.includes('estoque') ||
-      message.includes('inventário')
-    ) {
-      try {
-        const products = await toolbox.executeCommand('products.list', {
-          limit: 10,
-          ...(data.context?.storeId && { storeId: data.context.storeId }),
-        })
-        systemData += `\nDADOS DE PRODUTOS DISPONÍVEIS:\n${JSON.stringify(products, null, 2)}\n`
-      } catch (error) {
-        systemData += `\nErro ao buscar produtos: ${error.message}\n`
-      }
-    }
-
-    if (message.includes('categoria') || message.includes('categorias')) {
-      try {
-        const categories = await toolbox.executeCommand('categories.list', { limit: 10 })
-        systemData += `\nDADOS DE CATEGORIAS DISPONÍVEIS:\n${JSON.stringify(categories, null, 2)}\n`
-      } catch (error) {
-        systemData += `\nErro ao buscar categorias: ${error.message}\n`
-      }
-    }
-
-    if (message.includes('loja') || message.includes('lojas') || message.includes('store')) {
-      try {
-        const stores = await toolbox.executeCommand('stores.list', { limit: 10 })
-        systemData += `\nDADOS DE LOJAS DISPONÍVEIS:\n${JSON.stringify(stores, null, 2)}\n`
-      } catch (error) {
-        systemData += `\nErro ao buscar lojas: ${error.message}\n`
-      }
-    }
-
-    if (
-      message.includes('fornecedor') ||
-      message.includes('fornecedores') ||
-      message.includes('supplier')
-    ) {
-      try {
-        const suppliers = await toolbox.executeCommand('suppliers.list', { limit: 10 })
-        systemData += `\nDADOS DE FORNECEDORES DISPONÍVEIS:\n${JSON.stringify(suppliers, null, 2)}\n`
-      } catch (error) {
-        systemData += `\nErro ao buscar fornecedores: ${error.message}\n`
-      }
-    }
-
-    if (
-      message.includes('movimentação') ||
-      message.includes('movimentações') ||
-      message.includes('movimento')
-    ) {
-      try {
-        const movements = await toolbox.executeCommand('movements.list', { limit: 10 })
-        systemData += `\nDADOS DE MOVIMENTAÇÕES DISPONÍVEIS:\n${JSON.stringify(movements, null, 2)}\n`
-      } catch (error) {
-        systemData += `\nErro ao buscar movimentações: ${error.message}\n`
-      }
-    }
-
-    // Construir prompt com contexto do sistema e dados obtidos
-    const toolboxInfo = await ChatQueries.getToolbox()
-    const systemPrompt = `
-Você é um assistente inteligente para um sistema de gestão de estoque. 
-Você tem acesso aos seguintes serviços através da toolbox:
-
-${JSON.stringify(toolboxInfo, null, 2)}
-
-${systemData}
-
-Para acessar os serviços, use comandos no formato: service.method
-Exemplo: products.list, stores.getById, categories.search
-
-Responda de forma útil e precisa, sempre em português.
-Use os dados fornecidos acima para responder às perguntas do usuário de forma específica e precisa.
-
-Mensagem do usuário: ${data.message}
-`
-
-    // Executar prompt no LLM
-    let response: string
-    if (data.options) {
-      response = systemPrompt
-    } else {
-      response = systemPrompt
-    }
-
-    // Salvar mensagem no banco
     const chatMessage = await ChatCommands.createMessage({
       content: data.message,
       isFromUser: true,
@@ -180,10 +83,8 @@ Mensagem do usuário: ${data.message}
       options: data.options || {},
     })
 
-    // Atualizar timestamp da sessão
     await ChatCommands.updateSessionTimestamp(sessionId)
 
-    // Atualizar título inteligente da sessão
     await ChatCommands.updateSessionTitleIntelligent(sessionId)
 
     return chatMessage
@@ -314,12 +215,25 @@ Mensagem do usuário: ${data.message}
     // Buscar todas as mensagens da sessão
     const messages = await db.chatMessage.findMany({
       where: { sessionId },
-      select: { content: true, isFromUser: true },
+      select: { content: true, role: true },
       orderBy: { createdAt: 'asc' },
     })
 
+    // Transformar mensagens para o formato esperado
+    const formattedMessages: Array<{ message: string; response: string }> = []
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].role === 'USER') {
+        const nextMessage = messages[i + 1]
+        const response = nextMessage?.role === 'ASSISTANT' ? nextMessage.content : ''
+        formattedMessages.push({
+          message: messages[i].content,
+          response,
+        })
+      }
+    }
+
     // Gerar título inteligente
-    const smartTitle = await ChatCommands.generateSmartTitle(messages as any)
+    const smartTitle = await ChatCommands.generateSmartTitle(formattedMessages)
 
     // Atualizar título da sessão
     await db.chatSession.update({
@@ -332,8 +246,7 @@ Mensagem do usuário: ${data.message}
 
   // === EXECUÇÃO DE COMANDO DA TOOLBOX ===
   async executeToolboxCommand(command: string, params: any = {}) {
-    const toolbox = new ChatToolbox(db)
-    return await toolbox.executeCommand(command, params)
+    return await ChatToolbox.executeCommand(command, params)
   },
 
   // === EXECUÇÃO DE COMANDO COM CONTEXTO ===
@@ -345,8 +258,6 @@ Mensagem do usuário: ${data.message}
       userId?: string
     }
   }) {
-    const toolbox = new ChatToolbox(db)
-
     // Aplicar contexto aos parâmetros se necessário
     const enrichedParams = {
       ...data.params,
@@ -354,7 +265,7 @@ Mensagem do usuário: ${data.message}
       ...(data.context?.userId && { userId: data.context.userId }),
     }
 
-    return await toolbox.executeCommand(data.command, enrichedParams)
+    return await ChatToolbox.executeCommand(data.command, enrichedParams)
   },
 
   // === DELETAR SESSÃO ===
