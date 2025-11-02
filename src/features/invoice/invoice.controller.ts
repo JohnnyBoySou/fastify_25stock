@@ -72,34 +72,6 @@ export const InvoiceController = {
     }
   },
 
-  async updateInvoiceStatus(request: UpdateInvoiceStatusRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params
-      const { status, paymentDate, gatewayPaymentId } = request.body
-
-      const result = await InvoiceCommands.updateStatus(
-        id,
-        status as unknown as InvoiceStatus,
-        paymentDate ? new Date(paymentDate) : undefined,
-        gatewayPaymentId
-      )
-
-      return reply.send(result)
-    } catch (error: any) {
-      request.log.error(error)
-
-      if (error.message === 'Invoice not found') {
-        return reply.status(404).send({
-          error: error.message,
-        })
-      }
-
-      return reply.status(500).send({
-        error: 'Internal server error',
-      })
-    }
-  },
-
   async delete(request: DeleteInvoiceRequest, reply: FastifyReply) {
     try {
       const { id } = request.params

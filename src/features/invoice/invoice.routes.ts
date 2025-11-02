@@ -16,19 +16,12 @@ export async function InvoiceRoutes(fastify: FastifyInstance) {
 
   fastify.get('/', {
     schema: InvoiceSchemas.list,
-
     handler: InvoiceController.list,
   })
 
   fastify.get('/:id', {
     schema: InvoiceSchemas.get,
-
     handler: InvoiceController.get,
-  })
-
-  fastify.patch('/:id/status', {
-    schema: InvoiceSchemas.update,
-    handler: InvoiceController.updateInvoiceStatus,
   })
 
   fastify.delete('/:id', {
@@ -60,20 +53,16 @@ export async function InvoiceRoutes(fastify: FastifyInstance) {
 
   fastify.get('/revenue', {
     schema: InvoiceSchemas.getRevenue,
-
     handler: InvoiceController.getRevenue,
   })
 
   fastify.get('/:id/pdf', {
     schema: InvoiceSchemas.getPdf,
-
     handler: InvoiceController.getPdf,
   })
 
-  // Funções de gerenciamento
   fastify.patch('/:id/status', {
     schema: InvoiceSchemas.updateStatus,
-
     handler: InvoiceController.updateStatus,
   })
 
@@ -84,19 +73,16 @@ export async function InvoiceRoutes(fastify: FastifyInstance) {
 
   fastify.post('/:id/send-email', {
     schema: InvoiceSchemas.sendEmail,
-
     handler: InvoiceController.sendEmail,
   })
 
   fastify.patch('/:id/mark-paid', {
     schema: InvoiceSchemas.markAsPaid,
-
     handler: InvoiceController.markAsPaid,
   })
 
   fastify.patch('/:id/mark-failed', {
     schema: InvoiceSchemas.markAsFailed,
-
     handler: InvoiceController.markAsFailed,
   })
 }
