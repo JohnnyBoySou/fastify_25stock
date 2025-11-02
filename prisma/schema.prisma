@@ -67,6 +67,10 @@ model User {
   media         UserMedia[]
   uploadedMedia Media[]
   quotes        Quote[]
+  createdDocumentFolders DocumentFolder[] @relation("FolderCreatedBy")
+  createdDocuments Document[] @relation("DocumentCreatedBy")
+  updatedDocuments Document[] @relation("DocumentUpdatedBy")
+  createdDocumentVersions DocumentVersion[] @relation("DocumentVersionCreatedBy")
 
   subscription Subscription?
 
@@ -216,6 +220,8 @@ model Store {
   notifications Notification[]
   quotes        Quote[]
   chatSessions  ChatSession[]
+  documentFolders DocumentFolder[]
+  documents     Document[]
 
   // Configurações adicionais (JSON flexível)
   settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }
@@ -1484,3 +1490,135 @@ enum ChatMessageRole {
   TOOL       // Execução de ferramenta (ex: busca, ação)
 }
 
+/// ===============================
+///  DOCUMENT MANAGEMENT STRUCTURE
+///  - Sistema de criação, edição e organização de documentos internos.
+///  - Cada documento pertence a uma Store e pode ser criado/editado por um User.
+///  - Suporte a pastas, versionamento, templates e automações.
+/// ===============================
+
+model DocumentFolder {
+  id          String    @id @default(cuid())
+  storeId     String
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  color       String?    // opcional: cor para exibição no front
+  icon        String?    // ex: "folder", "file-text"
+  parentId    String?    // subpastas
+  parent      DocumentFolder? @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children    DocumentFolder[] @relation("FolderHierarchy")
+
+  // Controle e auditoria
+  createdById String?
+  createdBy   User?      @relation("FolderCreatedBy", fields: [createdById], references: [id])
+  deletedAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  documents   Document[]
+
+  @@map("document_folders")
+  @@index([storeId])
+  @@index([parentId])
+  @@index([deletedAt])
+  @@unique([storeId, name])
+}
+
+model Document {
+  id            String   @id @default(cuid())
+
+  storeId       String
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  folderId      String?
+  folder        DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  title         String
+  type          DocumentType     @default(TEXT)    // texto, PDF, DOCX
+  format        DocumentFormat?  // "markdown", "html", "json", "docx", etc.
+  content       Json?            // conteúdo serializado (Tiptap JSON, por exemplo)
+  path          String?          // caminho no storage local/S3
+  version       Int              @default(1)
+  size          Int?
+  mimeType      String?
+  visibility    DocumentVisibility @default(PRIVATE)
+
+  // Controle de autoria
+  createdById   String?
+  createdBy     User? @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById   String?
+  updatedBy     User? @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  // Status e controle
+  status        DocumentStatus   @default(ACTIVE)
+  pinned        Boolean          @default(false)
+  deletedAt     DateTime?
+
+  // Auditoria
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  lastAccessedAt DateTime?
+
+  // Relacionamentos
+  versions      DocumentVersion[]
+
+  @@map("documents")
+  @@index([storeId])
+  @@index([folderId])
+  @@index([status])
+  @@index([deletedAt])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([title])
+}
+
+model DocumentVersion {
+  id          String   @id @default(cuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  version     Int
+  content     Json?
+  createdById String?
+  createdBy   User?    @relation("DocumentVersionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@map("document_versions")
+  @@unique([documentId, version])
+  @@index([documentId])
+  @@index([createdById])
+}
+
+/// ===============================
+///  ENUMS
+/// ===============================
+
+enum DocumentType {
+  TEXT       // conteúdo JSON (Tiptap, Markdown, etc.)
+  DOCX       // arquivo do Word
+  PDF        // documento PDF
+  TEMPLATE   // modelo reutilizável
+  OTHER
+}
+
+enum DocumentFormat {
+  MARKDOWN
+  HTML
+  JSON
+  DOCX
+  PDF
+}
+
+enum DocumentStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum DocumentVisibility {
+  PRIVATE
+  PUBLIC
+  INTERNAL
+}

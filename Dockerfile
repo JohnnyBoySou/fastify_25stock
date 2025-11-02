@@ -20,7 +20,7 @@ FROM base AS deps
 COPY package.json bun.lockb* ./
 
 # Instalar dependências de produção (com cache mount para acelerar builds)
-RUN --mount=type=cache,id=bun-cache-prod,target=/root/.bun/install/cache \
+RUN --mount=type=cache,id=buildkit:bun-cache-prod,target=/root/.bun/install/cache \
     bun install --frozen-lockfile --production
 
 # ================================
@@ -32,7 +32,7 @@ FROM base AS builder
 COPY package.json bun.lockb* ./
 
 # Instalar todas as dependências (dev + prod) primeiro (com cache mount)
-RUN --mount=type=cache,id=bun-cache-dev,target=/root/.bun/install/cache \
+RUN --mount=type=cache,id=buildkit:bun-cache-dev,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
 # Copiar schema do Prisma (necessário para generate)
