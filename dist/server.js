@@ -62,7 +62,7 @@ var require_library = __commonJS({
     });
     var as = ue((Ng, ss) => {
       "use strict";
-      var Fc = require("os"), os2 = require("tty"), de = hi(), { env: G } = process, Qe;
+      var Fc = require("os"), os3 = require("tty"), de = hi(), { env: G } = process, Qe;
       de("no-color") || de("no-colors") || de("color=false") || de("color=never") ? Qe = 0 : (de("color") || de("colors") || de("color=true") || de("color=always")) && (Qe = 1);
       "FORCE_COLOR" in G && (G.FORCE_COLOR === "true" ? Qe = 1 : G.FORCE_COLOR === "false" ? Qe = 0 : Qe = G.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(G.FORCE_COLOR, 10), 3));
       function yi(e) {
@@ -97,7 +97,7 @@ var require_library = __commonJS({
         let r = bi(e, e && e.isTTY);
         return yi(r);
       }
-      ss.exports = { supportsColor: Mc, stdout: yi(bi(true, os2.isatty(1))), stderr: yi(bi(true, os2.isatty(2))) };
+      ss.exports = { supportsColor: Mc, stdout: yi(bi(true, os3.isatty(1))), stderr: yi(bi(true, os3.isatty(2))) };
     });
     var cs = ue((Lg, us) => {
       "use strict";
@@ -1010,16 +1010,16 @@ ${c}`);
     M.default.join(__dirname, "../libquery_engine-rhel-openssl-3.0.x.so.node");
     M.default.join(__dirname, "../query_engine-windows.dll.node");
     var Si = O(require("fs"));
-    var fs2 = gr("chmodPlusX");
+    var fs3 = gr("chmodPlusX");
     function Ri(e) {
       if (process.platform === "win32") return;
       let r = Si.default.statSync(e), t = r.mode | 64 | 8 | 1;
       if (r.mode === t) {
-        fs2(`Execution permissions of ${e} are fine`);
+        fs3(`Execution permissions of ${e} are fine`);
         return;
       }
       let n = t.toString(8).slice(-3);
-      fs2(`Have to call chmodPlusX on ${e}`), Si.default.chmodSync(e, n);
+      fs3(`Have to call chmodPlusX on ${e}`), Si.default.chmodSync(e, n);
     }
     function Ai(e) {
       let r = e.e, t = (a) => `Prisma cannot find the required \`${a}\` system library in your system`, n = r.message.includes("cannot open shared object file"), i = `Please refer to the documentation about Prisma's system requirements: ${wi("https://pris.ly/d/system-requirements")}`, o = `Unable to require(\`${Ce(e.id)}\`).`, s = hr({ message: r.message, code: r.code }).with({ code: "ENOENT" }, () => "File does not exist.").when(({ message: a }) => n && a.includes("libz"), () => `${t("libz")}. Please install it and try again.`).when(({ message: a }) => n && a.includes("libgcc_s"), () => `${t("libgcc_s")}. Please install it and try again.`).when(({ message: a }) => n && a.includes("libssl"), () => {
@@ -6611,19 +6611,19 @@ var require_prisma = __commonJS({
           }
         }
       },
-      "inlineSchema": 'generator client {\n  provider = "prisma-client-js"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\n// ========== user.prisma ==========\n/// ===============================\n///  USER & STORE STRUCTURE\n///  - Cada usu\xE1rio pertence a uma \xFAnica loja.\n///  - Dono (isOwner = true) \xE9 o criador da loja.\n///  - Permiss\xF5es s\xE3o granulares (ACL).\n///  - Soft delete com deletedAt.\n/// ===============================\n\nmodel User {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  email    String  @unique\n  password String\n  name     String?\n  phone    String?\n\n  // Associa\xE7\xE3o direta com a loja\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Controle de status e hierarquia\n  isOwner     Boolean   @default(false)\n  status      Boolean   @default(true)\n  deletedAt   DateTime?\n  deletedById String?\n  deletedBy   User?     @relation("UserDeleted", fields: [deletedById], references: [id])\n  suspendedAt DateTime? // bloqueio tempor\xE1rio\n\n  invitedById       String?\n  invitedBy         User?     @relation("UserInviter", fields: [invitedById], references: [id])\n  acceptedAt        DateTime?\n  inviteCode        String?   @unique\n  pendingInvitation Boolean   @default(false)\n\n  ownedStore Store? @relation("StoreOwner")\n\n  // Auditoria e seguran\xE7a\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  lastLoginAt  DateTime?\n  lastActiveAt DateTime?\n\n  emailVerified                Boolean   @default(false)\n  emailVerificationToken       String?\n  emailVerificationCode        String?\n  emailVerificationCodeExpires DateTime?\n  resetPasswordToken           String?\n  resetPasswordExpires         DateTime?\n\n  // Rela\xE7\xF5es\n  permissions   UserPermission[]\n  preferences   UserPreferences?\n  notifications Notification[]\n  media         UserMedia[]\n  uploadedMedia Media[]\n  quotes        Quote[]\n\n  subscription Subscription?\n\n  auditLogs      AuditLog[]\n  movements      Movement[]\n  roadmaps       Roadmap[]\n  createdFlows   Flow[]\n  flowExecutions FlowExecution[]\n  crmClients     CrmClient[]\n  chatSessions   ChatSession[]\n\n  // Rela\xE7\xF5es auto-referenciais\n  invitedUsers User[] @relation("UserInviter")\n  deletedUsers User[] @relation("UserDeleted")\n\n  // \xCDndices estrat\xE9gicos\n  @@index([storeId])\n  @@index([storeId, isOwner])\n  @@index([status])\n  @@index([deletedAt])\n  @@map("users")\n}\n\nmodel UserPermission {\n  id     String @id @default(cuid())\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  action     String // Ex: "create", "update", "delete"\n  resource   String // Ex: "product", "supplier"\n  scope      String? // m\xF3dulo l\xF3gico ex: "inventory", "crm"\n  grant      Boolean   @default(true)\n  expiresAt  DateTime? // expira\xE7\xE3o da permiss\xE3o (tempor\xE1ria)\n  conditions Json? // Ex: { "category": "Bebidas" }\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, action, resource])\n  @@index([userId])\n  @@index([resource])\n  @@index([scope])\n  @@map("user_permissions")\n}\n\nmodel UserPreferences {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // ===== THEME & UI =====\n  theme            String  @default("light")\n  primaryColor     String?\n  sidebarCollapsed Boolean @default(false)\n  compactMode      Boolean @default(false)\n  uiScale          Float   @default(1.0) // escala visual (zoom/acessibilidade)\n\n  // ===== LANGUAGE & LOCALIZATION =====\n  language     String @default("pt-BR")\n  currency     String @default("BRL")\n  timezone     String @default("America/Sao_Paulo")\n  dateFormat   String @default("DD/MM/YYYY")\n  timeFormat   String @default("24h")\n  numberFormat String @default("pt-BR")\n\n  // ===== NOTIFICATION PREFERENCES =====\n  emailNotifications Boolean @default(true)\n  pushNotifications  Boolean @default(true)\n  smsNotifications   Boolean @default(false)\n  notificationTypes  Json?\n\n  // ===== DASHBOARD & LAYOUT =====\n  dashboardLayout Json?\n  defaultPage     String?\n  itemsPerPage    Int     @default(20)\n\n  // ===== BEHAVIOR =====\n  autoRefresh     Boolean @default(true)\n  refreshInterval Int     @default(30)\n\n  // ===== ADVANCED =====\n  customSettings      Json?\n  aiAssistantSettings Json? // IA / LLM settings por usu\xE1rio\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId])\n  @@map("user_preferences")\n}\n\n// ========== store.prisma ==========\n/// ===============================\n///  STORE STRUCTURE\n///  - Cada loja tem um \xFAnico dono (ownerId).\n///  - Usu\xE1rios pertencem diretamente \xE0 loja.\n///  - Suporte a soft delete e auditoria.\n///  - Base pronta para IA, billing e opera\xE7\xF5es.\n/// ===============================\n\nmodel Store {\n  id      String  @id @default(cuid())\n  ownerId String? @unique\n  owner   User?   @relation("StoreOwner", fields: [ownerId], references: [id])\n\n  // Identifica\xE7\xE3o e dados b\xE1sicos\n  name        String\n  cnpj        String  @unique\n  email       String?\n  phone       String?\n  description String? // opcional: pode ser mostrado no dashboard\n  logoUrl     String? // opcional: imagem da loja\n  website     String? // opcional\n\n  // Endere\xE7o\n  cep     String?\n  city    String?\n  state   String?\n  address String?\n\n  // Controle e status\n  status      Boolean   @default(true)\n  deletedAt   DateTime? // soft delete (loja desativada)\n  suspendedAt DateTime? // bloqueio tempor\xE1rio (ex: problema no pagamento)\n  plan        String? // nome do plano atual (sincronizado com tabela de billing)\n  timezone    String?   @default("America/Sao_Paulo")\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Rela\xE7\xF5es com m\xF3dulos do sistema\n  users          User[] // todos os usu\xE1rios dessa loja\n  products       Product[]\n  categories     Category[]\n  suppliers      Supplier[]\n  movements      Movement[]\n  media          StoreMedia[]\n  uploadedMedia  Media[]\n  roadmaps       Roadmap[]\n  crmStages      CrmStage[]\n  crmClients     CrmClient[]\n  flows          Flow[]\n  flowExecutions FlowExecution[]\n  auditLogs      AuditLog[]\n  notifications  Notification[]\n  quotes         Quote[]\n  chatSessions   ChatSession[]\n\n  // Configura\xE7\xF5es adicionais (JSON flex\xEDvel)\n  settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }\n\n  // \xCDndices estrat\xE9gicos\n  @@index([status])\n  @@index([deletedAt])\n  @@index([ownerId])\n  @@index([city])\n  @@index([state])\n}\n\n// ========== product.prisma ==========\n/// ===============================\n///  PRODUCT STRUCTURE\n///  - Cada produto pertence a uma loja.\n///  - Pode ter um fornecedor vinculado.\n///  - Suporte a categorias, m\xEDdia, controle de estoque e rastreabilidade.\n///  - Soft delete e campos para IA e relat\xF3rios.\n/// ===============================\n\nmodel Product {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name          String\n  sku           String? @unique // SKU interno (opcional)\n  barcode       String? @unique // EAN/UPC opcional\n  referenceCode String? // c\xF3digo interno curto (ex: "PRD-001")\n  description   String?\n\n  // Unidade e precifica\xE7\xE3o\n  unitOfMeasure  UnitOfMeasure\n  referencePrice Decimal       @db.Decimal(10, 2) // pre\xE7o de refer\xEAncia\n  costPrice      Decimal?      @db.Decimal(10, 2) // custo m\xE9dio\n  markupPercent  Decimal?      @db.Decimal(5, 2) // margem sobre o custo (%)\n  currency       String        @default("BRL")\n\n  // Estoque\n  stockCurrent    Int     @default(0)\n  stockMin        Int     @default(0)\n  stockMax        Int     @default(0)\n  alertPercentage Int     @default(20) @db.SmallInt\n  allowNegative   Boolean @default(false)\n\n  // Controle de lote / validade (para alimentos, medicamentos etc.)\n  batchTracked   Boolean   @default(false)\n  expirationDate DateTime? // validade do produto principal (se aplic\xE1vel)\n\n  // Associa\xE7\xE3o\n  storeId    String\n  supplierId String?\n  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Rela\xE7\xF5es\n  movements  Movement[]\n  categories ProductCategory[]\n  media      ProductMedia[]\n  quotes     QuoteItem[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["bebida", "perec\xEDvel"]\n  metadata Json? // ex: { "ncm": "2202.10.00", "origem": "nacional" }\n\n  // \xCDndices e constraints\n  @@index([storeId])\n  @@index([supplierId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n  @@index([sku])\n}\n\nenum UnitOfMeasure {\n  UNIDADE\n  KG\n  L\n  ML\n  M\n  CM\n  MM\n  UN\n  DZ\n  CX\n  PCT\n  KIT\n  PAR\n  H\n  D\n}\n\n// ========== category.prisma ==========\n/// ===============================\n///  CATEGORY STRUCTURE\n///  - Cada loja possui suas pr\xF3prias categorias.\n///  - Suporte a subcategorias (hierarquia).\n///  - Soft delete, cor, \xEDcone e metadados.\n///  - Associada a produtos via tabela ProductCategory.\n/// ===============================\n\nmodel Category {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e exibi\xE7\xE3o\n  name        String\n  description String?\n  code        String? // c\xF3digo interno (opcional, ex: CAT-001)\n  color       String? // cor no painel ex: "#3B82F6"\n  icon        String? // \xEDcone do front ex: "box", "truck", "chart"\n\n  // Hierarquia\n  parentId String?\n  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])\n  children Category[] @relation("CategoryHierarchy")\n\n  // Loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e controle\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products ProductCategory[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["perec\xEDvel", "embalagem"]\n  metadata Json? // ex: { "priority": 1, "visibleInMenu": true }\n\n  // Restri\xE7\xF5es e \xEDndices\n  @@unique([code, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n}\n\nmodel ProductCategory {\n  id         String   @id @default(cuid())\n  productId  String\n  categoryId String\n  createdAt  DateTime @default(now())\n\n  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, categoryId])\n  @@index([categoryId])\n  @@index([productId])\n}\n\n// ========== supplier.prisma ==========\n/// ===============================\n///  SUPPLIER STRUCTURE\n///  - Fornecedor pertence a uma loja.\n///  - Pode ter v\xE1rios respons\xE1veis (SupplierResponsible).\n///  - Suporte a m\xEDdia, auditoria e soft delete.\n/// ===============================\n\nmodel Supplier {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  corporateName String // Raz\xE3o social\n  tradeName     String? // Nome fantasia\n  cnpj          String\n  ie            String? // Inscri\xE7\xE3o estadual opcional\n  email         String?\n  phone         String?\n  website       String?\n  description   String? // Observa\xE7\xE3o interna\n\n  // Localiza\xE7\xE3o\n  cep        String?\n  city       String?\n  state      String?\n  address    String?\n  complement String?\n\n  // Relacionamento com a loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products     Product[]\n  movements    Movement[]\n  responsibles SupplierResponsible[]\n  media        SupplierMedia[]\n\n  // Configura\xE7\xF5es / metadados (extens\xEDvel)\n  tags     Json? // Ex: ["distribuidor", "nacional"]\n  metadata Json? // Ex: { "frete": "pr\xF3prio", "tempoEntrega": "48h" }\n\n  @@unique([cnpj, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n}\n\nmodel SupplierResponsible {\n  id         String   @id @default(cuid())\n  supplierId String\n  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  name        String\n  role        String? // cargo ex: "Vendas", "Financeiro", "Log\xEDstica"\n  phone       String?\n  email       String?\n  cpf         String?\n  whatsapp    Boolean   @default(false) // se esse contato \xE9 via WhatsApp\n  mainContact Boolean   @default(false) // define se \xE9 o contato principal\n  notes       String? // observa\xE7\xF5es internas\n  status      Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  deletedAt   DateTime? // soft delete\n\n  @@index([supplierId])\n  @@index([status])\n  @@index([mainContact])\n}\n\n// ========== movement.prisma ==========\n/// ===============================\n///  MOVEMENT STRUCTURE\n///  - Registra qualquer entrada, sa\xEDda ou perda de produto.\n///  - Controla saldo, custo e origem.\n///  - \xC9 base para relat\xF3rios, IA e auditoria de estoque.\n/// ===============================\n\nmodel Movement {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e contexto\n  type          MovementType // ENTRADA, SAIDA, PERDA\n  origin        MovementOrigin? // motivo ou contexto da movimenta\xE7\xE3o\n  referenceCode String? // c\xF3digo externo opcional (nota, pedido, etc.)\n  note          String? // observa\xE7\xF5es gerais\n\n  // Estoque e valores\n  quantity      Int\n  price         Decimal?  @db.Decimal(10, 2) // valor unit\xE1rio da movimenta\xE7\xE3o\n  totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price\n  balanceBefore Int? // estoque antes da movimenta\xE7\xE3o\n  balanceAfter  Int? // estoque ap\xF3s a movimenta\xE7\xE3o\n  batch         String? // lote\n  expiration    DateTime? // validade (se aplic\xE1vel)\n\n  // Relacionamentos\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  supplierId String?\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  userId String? // quem registrou\n  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  // Verifica\xE7\xE3o e controle\n  verified         Boolean   @default(false)\n  verifiedAt       DateTime?\n  verifiedBy       String?\n  verificationNote String?\n\n  // Cancelamento\n  cancelled          Boolean   @default(false)\n  cancelledAt        DateTime?\n  cancelledBy        String?\n  cancellationReason String?\n\n  // Auditoria e status\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete, se precisar reverter algo manualmente\n\n  // Metadados e IA\n  metadata Json? // dados extras: { "source": "import", "autoGenerated": true }\n\n  // \xCDndices e otimiza\xE7\xF5es\n  @@index([storeId])\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n  @@index([cancelled])\n  @@index([verified])\n}\n\n/// ===============================\n///  MOVEMENT ENUMS\n///  - Type = dire\xE7\xE3o da movimenta\xE7\xE3o (entrada/sa\xEDda/perda)\n///  - Origin = motivo ou contexto da movimenta\xE7\xE3o\n/// ===============================\n\nenum MovementType {\n  INBOUND // Entrada de produtos no estoque\n  OUTBOUND // Sa\xEDda de produtos\n  LOSS // Perda ou descarte\n}\n\nenum MovementOrigin {\n  PURCHASE // Compra de fornecedor\n  SALE // Venda a cliente\n  RETURN // Devolu\xE7\xE3o de cliente\n  SUPPLIER_RETURN // Devolu\xE7\xE3o ao fornecedor\n  ADJUSTMENT // Ajuste manual de estoque\n  TRANSFER // Transfer\xEAncia entre locais\n  INVENTORY // Ajuste por contagem/invent\xE1rio\n  DAMAGE // Quebra ou dano\n  EXPIRATION // Produto vencido\n  OTHER // Outro motivo n\xE3o especificado  \n}\n\n// ========== billing.prisma ==========\n/// ===============================\n///  BILLING (Polar.sh Integration)\n///  - Polar \xE9 o sistema de cobran\xE7a principal.\n///  - O backend apenas espelha status e refer\xEAncias.\n/// ===============================\n\nmodel Subscription {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Polar references\n  polarCustomerId     String? @unique\n  polarSubscriptionId String? @unique\n  polarProductId      String? // plano ativo no Polar\n  polarPlanName       String? // redund\xE2ncia para exibi\xE7\xE3o r\xE1pida no painel\n\n  // Status tracking\n  status           SubscriptionStatus @default(ACTIVE)\n  currentPeriodEnd DateTime? // data de renova\xE7\xE3o ou expira\xE7\xE3o\n  trialEndsAt      DateTime?\n  cancelledAt      DateTime?\n  renewalCount     Int                @default(0)\n\n  // Dados financeiros b\xE1sicos\n  priceAmount   Decimal?      @db.Decimal(10, 2)\n  priceInterval PlanInterval? // MONTHLY, YEARLY (espelhado do Polar)\n  currency      String?       @default("BRL")\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  invoices  Invoice[]\n\n  @@index([status])\n  @@index([polarSubscriptionId])\n  @@index([userId])\n}\n\nmodel Invoice {\n  id             String       @id @default(cuid())\n  subscriptionId String\n  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)\n\n  // Dados do Polar\n  polarInvoiceId String?       @unique\n  amount         Decimal       @db.Decimal(10, 2)\n  currency       String?       @default("BRL")\n  status         InvoiceStatus @default(PENDING)\n  paymentDate    DateTime?\n  dueDate        DateTime?\n  createdAt      DateTime      @default(now())\n\n  @@index([status])\n  @@index([subscriptionId])\n}\n\nenum SubscriptionStatus {\n  ACTIVE\n  INACTIVE\n  CANCELLED\n  TRIAL\n  EXPIRED\n  PAST_DUE\n}\n\nenum PlanInterval {\n  MONTHLY\n  YEARLY\n}\n\nenum InvoiceStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n}\n\n// ========== quote.prisma ==========\n/// ===============================\n///  QUOTATION (QUOTE) STRUCTURE\n///  - Or\xE7amentos criados pelos usu\xE1rios.\n///  - Possuem link p\xFAblico seguro (publicId + authCode).\n///  - Base para aprova\xE7\xF5es, convers\xF5es e vendas.\n/// ===============================\n\nmodel Quote {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  storeId      String\n  store        Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId       String\n  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  customerId   String? // futuro: cliente vinculado (CRM)\n  customerName String? // nome do cliente externo (sem login)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n  publicId    String  @unique @default(uuid()) // usado no link p\xFAblico\n  authCode    String  @default(uuid()) // valida acesso sem login\n\n  // Status e controle\n  status       QuoteStatus @default(DRAFT)\n  expiresAt    DateTime?\n  viewedAt     DateTime?\n  approvedAt   DateTime?\n  rejectedAt   DateTime?\n  convertedAt  DateTime?\n  canceledAt   DateTime?\n  approvalNote String? // observa\xE7\xE3o do cliente (motivo ou coment\xE1rio)\n  ipAddress    String? // IP de quem visualizou/aprovou\n  viewedBy     String? // email ou nome informado ao visualizar\n\n  // Valores\n  subtotal Decimal  @db.Decimal(10, 2)\n  discount Decimal? @db.Decimal(10, 2)\n  interest Decimal? @db.Decimal(10, 2)\n  total    Decimal  @db.Decimal(10, 2)\n  currency String   @default("BRL")\n\n  // Pagamento\n  paymentType    PaymentType @default(UNDEFINED)\n  paymentTerms   String? // ex: "6x sem juros"\n  paymentDueDays Int? // ex: 15 dias no boleto\n\n  // Observa\xE7\xF5es e anota\xE7\xF5es\n  observations  String?\n  notesInternal String? // observa\xE7\xE3o vis\xEDvel apenas internamente (n\xE3o p\xFAblica)\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete\n\n  // Rela\xE7\xF5es\n  items        QuoteItem[]\n  installments QuoteInstallment[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([publicId])\n  @@index([createdAt])\n}\n\n/// ===============================\n///  QUOTE ITEM\n///  - Produtos inclu\xEDdos no or\xE7amento.\n/// ===============================\n\nmodel QuoteItem {\n  id        String   @id @default(cuid())\n  quoteId   String\n  productId String\n  quantity  Int\n  unitPrice Decimal  @db.Decimal(10, 2)\n  subtotal  Decimal  @db.Decimal(10, 2)\n  discount  Decimal? @db.Decimal(10, 2)\n  note      String?\n\n  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  @@unique([quoteId, productId])\n  @@index([quoteId])\n}\n\n/// ===============================\n///  QUOTE INSTALLMENTS\n///  - Parcelas de pagamento do or\xE7amento.\n/// ===============================\n\nmodel QuoteInstallment {\n  id       String    @id @default(cuid())\n  quoteId  String\n  number   Int // n\xFAmero da parcela\n  dueDate  DateTime\n  amount   Decimal   @db.Decimal(10, 2)\n  interest Decimal?  @db.Decimal(10, 2)\n  paidAt   DateTime?\n\n  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n\n  @@index([quoteId])\n  @@map("quote_installments")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum PaymentType {\n  UNDEFINED\n  PIX\n  BOLETO\n  CREDIT_CARD\n  CASH\n  TRANSFER\n}\n\nenum QuoteStatus {\n  DRAFT // Em edi\xE7\xE3o\n  PUBLISHED // Link p\xFAblico ativo\n  SENT // Enviado ao cliente\n  VIEWED // Cliente visualizou\n  APPROVED // Cliente aprovou\n  REJECTED // Cliente recusou\n  EXPIRED // Passou da validade\n  CONVERTED // Virou venda\n  CANCELED // Cancelado\n}\n\n// ========== notification.prisma ==========\n/// ===============================\n///  NOTIFICATION STRUCTURE\n///  - Sistema unificado de notifica\xE7\xF5es.\n///  - Cada notifica\xE7\xE3o pertence a um usu\xE1rio e loja.\n///  - Pode ser enviada via v\xE1rios canais (push, email, sms).\n///  - Base para alertas autom\xE1ticos, workflows e IA.\n/// ===============================\n\nmodel Notification {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  userId  String\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  // Conte\xFAdo\n  title    String\n  message  String\n  type     NotificationType     @default(INFO)\n  priority NotificationPriority @default(MEDIUM)\n\n  // Estado de leitura\n  isRead Boolean   @default(false)\n  readAt DateTime?\n\n  // Entrega e canais\n  channel       NotificationChannel @default(IN_APP)\n  sentAt        DateTime?\n  deliveredAt   DateTime?\n  deliveryError String?\n\n  // Expira\xE7\xE3o e a\xE7\xE3o\n  actionUrl String?\n  expiresAt DateTime?\n  data      Json? // dados adicionais (ex: { productId, movementId, severity })\n\n  // Auditoria e controle\n  deletedAt DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // \xCDndices\n  @@index([userId])\n  @@index([storeId])\n  @@index([type])\n  @@index([isRead])\n  @@index([priority])\n  @@index([createdAt])\n  @@map("notifications")\n}\n\nenum NotificationType {\n  INFO // Informa\xE7\xE3o geral\n  SUCCESS // Sucesso/confirma\xE7\xE3o\n  WARNING // Aviso ou aten\xE7\xE3o\n  ERROR // Erro ou falha\n  STOCK_ALERT // Alerta de estoque baixo\n  MOVEMENT // Movimenta\xE7\xE3o de estoque\n  PERMISSION // Permiss\xE3o / acesso\n  SYSTEM // Sistema / manuten\xE7\xE3o\n  BILLING // Assinatura, cobran\xE7a, pagamento\n  WORKFLOW // Fluxo automatizado\n}\n\nenum NotificationPriority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}\n\nenum NotificationChannel {\n  IN_APP // Notifica\xE7\xE3o interna do app\n  PUSH // Push Notification\n  EMAIL // E-mail\n  SMS // SMS\n  SYSTEM // Notifica\xE7\xE3o do sistema\n}\n\n// ========== audit.prisma ==========\n/// ===============================\n///  AUDIT LOG STRUCTURE\n///  - Rastreia todas as a\xE7\xF5es importantes do sistema.\n///  - Cada log registra o que mudou, quem fez e onde.\n///  - Base para auditorias, relat\xF3rios e seguran\xE7a.\n/// ===============================\n\nmodel AuditLog {\n  id String @id @default(cuid())\n\n  // Entidade e a\xE7\xE3o auditada\n  entity   AuditEntity\n  entityId String?\n  action   AuditAction\n\n  // Contexto e origem\n  userId    String?\n  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n  storeId   String? // para rastrear logs por loja\n  store     Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  ipAddress String? // IP de origem da a\xE7\xE3o\n  userAgent String? // navegador / dispositivo\n  source    String? // origem da a\xE7\xE3o: "web", "mobile", "api", "system"\n\n  // Dados de mudan\xE7a\n  before   Json? // estado anterior do registro\n  after    Json? // estado ap\xF3s a mudan\xE7a\n  metadata Json? // informa\xE7\xF5es adicionais (ex: rota, payload, headers)\n\n  // Auditoria temporal\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // \xCDndices e otimiza\xE7\xE3o\n  @@index([entity])\n  @@index([storeId])\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n  @@map("audit_logs")\n}\n\nenum AuditAction {\n  CREATE\n  UPDATE\n  DELETE\n  LOGIN\n  LOGOUT\n  VERIFY\n  RESTORE\n}\n\nenum AuditEntity {\n  USER\n  STORE\n  PRODUCT\n  SUPPLIER\n  MOVEMENT\n  CATEGORY\n  QUOTE\n  FLOW\n  SYSTEM\n}\n\n// ========== media.prisma ==========\n/// ===============================\n///  MEDIA STRUCTURE\n///  - Representa qualquer arquivo enviado (imagem, v\xEDdeo, documento).\n///  - Associ\xE1vel a produto, fornecedor, loja ou usu\xE1rio.\n///  - Cont\xE9m informa\xE7\xF5es t\xE9cnicas e de origem.\n/// ===============================\n\nmodel Media {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  url       String // link p\xFAblico (Cloudinary, S3, Supabase, etc.)\n  name      String? // nome do arquivo original\n  type      String? // MIME type (ex: image/png, application/pdf)\n  extension String? // extens\xE3o (ex: jpg, pdf)\n  size      Int? // tamanho em bytes\n  hash      String? // hash opcional (para evitar duplica\xE7\xF5es)\n\n  // Origem e propriedade\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  uploadedById String?\n  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)\n\n  // Armazenamento e provider\n  provider    StorageProvider @default(SYSTEM)\n  storagePath String? // caminho interno no provider (ex: /products/uuid.png)\n  bucket      String? // bucket do S3 / Supabase\n  visibility  MediaVisibility @default(PRIVATE) // controle de acesso\n  status      MediaStatus     @default(ACTIVE)\n\n  // Metadados\n  metadata Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Rela\xE7\xF5es\n  productMedia  ProductMedia[]\n  supplierMedia SupplierMedia[]\n  userMedia     UserMedia[]\n  storeMedia    StoreMedia[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([uploadedById])\n  @@index([status])\n  @@index([visibility])\n  @@index([deletedAt])\n  @@map("media")\n}\n\n/// ===============================\n///  RELATION TABLES (many-to-many)\n///  - Permitem anexar m\xFAltiplos arquivos a produtos, usu\xE1rios, etc.\n/// ===============================\n\nmodel ProductMedia {\n  id        String  @id @default(cuid())\n  productId String\n  mediaId   String\n  isPrimary Boolean @default(false)\n  altText   String? // descri\xE7\xE3o alternativa para SEO / acessibilidade\n  sortOrder Int     @default(0)\n\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, mediaId])\n  @@index([productId])\n  @@map("product_media")\n}\n\nmodel SupplierMedia {\n  id         String @id @default(cuid())\n  supplierId String\n  mediaId    String\n\n  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([supplierId, mediaId])\n  @@map("supplier_media")\n}\n\nmodel UserMedia {\n  id      String @id @default(cuid())\n  userId  String\n  mediaId String\n\n  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, mediaId])\n  @@map("user_media")\n}\n\nmodel StoreMedia {\n  id      String @id @default(cuid())\n  storeId String\n  mediaId String\n\n  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([storeId, mediaId])\n  @@map("store_media")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum StorageProvider {\n  SYSTEM // Armazenamento local padr\xE3o\n  S3 // Amazon S3 / R2 / Wasabi\n  SUPABASE // Supabase Storage\n  CLOUDINARY // Cloudinary\n  GOOGLE_DRIVE // Google Drive API\n}\n\nenum MediaVisibility {\n  PRIVATE // vis\xEDvel apenas internamente\n  PUBLIC // acess\xEDvel publicamente\n  RESTRICTED // acess\xEDvel sob regra (ex: usu\xE1rios logados)\n}\n\nenum MediaStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n  PROCESSING\n}\n\n// ========== roadmap.prisma ==========\n/// ===============================\n///  ROADMAP STRUCTURE\n///  - Representa planos, metas ou projetos.\n///  - Pode estar associado a uma loja ou usu\xE1rio.\n///  - Cont\xE9m milestones (etapas com progresso e status).\n/// ===============================\n\nmodel Roadmap {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId  String?\n  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o e descri\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle e status\n  status     RoadmapStatus     @default(ACTIVE)\n  visibility RoadmapVisibility @default(PRIVATE)\n  priority   RoadmapPriority   @default(MEDIUM)\n  progress   Int               @default(0) // progresso geral (m\xE9dia das milestones)\n  archived   Boolean           @default(false)\n  deletedAt  DateTime? // soft delete\n\n  // Datas\n  startDate DateTime?\n  endDate   DateTime?\n\n  // Auditoria\n  createdById String?\n  updatedById String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  // Rela\xE7\xF5es\n  milestones Milestone[]\n\n  // Metadados\n  tags     Json? // ex: ["estoque", "IA", "meta de venda"]\n  metadata Json? // configura\xE7\xF5es extras ou IA\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([archived])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("roadmaps")\n}\n\n/// ===============================\n///  MILESTONE STRUCTURE\n///  - Etapas dentro de um roadmap.\n///  - Controla progresso, status e prazos.\n/// ===============================\n\nmodel Milestone {\n  id        String  @id @default(cuid())\n  roadmapId String\n  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle\n  status      MilestoneStatus @default(PENDING)\n  progress    Int             @default(0) // % conclu\xEDda (0\u2013100)\n  order       Int             @default(0) // posi\xE7\xE3o na timeline\n  priority    RoadmapPriority @default(MEDIUM)\n  blockedById String? // milestone dependente (opcional)\n  blockedBy   Milestone?      @relation("MilestoneDependency", fields: [blockedById], references: [id])\n  blocking    Milestone[]     @relation("MilestoneDependency") // milestones bloqueados por este\n\n  // Datas\n  startDate   DateTime?\n  endDate     DateTime?\n  completedAt DateTime?\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Metadados\n  metadata Json? // informa\xE7\xF5es adicionais ou IA\n\n  // \xCDndices\n  @@index([roadmapId])\n  @@index([status])\n  @@index([priority])\n  @@index([order])\n  @@map("milestones")\n}\n\nenum RoadmapStatus {\n  ACTIVE\n  COMPLETED\n  ARCHIVED\n}\n\nenum RoadmapVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n\nenum RoadmapPriority {\n  LOW\n  MEDIUM\n  HIGH\n  CRITICAL\n}\n\nenum MilestoneStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  BLOCKED\n}\n\n// ========== crm.prisma ==========\n/// ===============================\n///  CRM STAGE STRUCTURE\n///  - Etapa (coluna) do pipeline de CRM.\n///  - Cada loja possui seu pr\xF3prio conjunto de etapas.\n/// ===============================\n\nmodel CrmStage {\n  id          String   @id @default(cuid())\n  storeId     String\n  name        String\n  color       String? // cor no front-end\n  order       Int      @default(0) // posi\xE7\xE3o na ordem do pipeline\n  description String? // ex: "Clientes interessados"\n  isDefault   Boolean  @default(false) // primeira etapa padr\xE3o\n  isFinal     Boolean  @default(false) // etapa de fechamento (ganho/perda)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  store   Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  clients CrmClient[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([order])\n  @@map("crm_stages")\n}\n\n/// ===============================\n///  CRM CLIENT STRUCTURE\n///  - Representa um cliente / lead dentro do pipeline.\n///  - Pode se mover entre etapas (Kanban).\n/// ===============================\n\nmodel CrmClient {\n  id              String          @id @default(cuid())\n  storeId         String\n  stageId         String?\n  name            String\n  email           String?\n  phone           String?\n  cpfCnpj         String?\n  company         String?\n  position        String? // cargo (ex: comprador, gerente)\n  source          String? // origem do lead (ex: site, whatsapp, indica\xE7\xE3o)\n  status          CrmClientStatus @default(ACTIVE)\n  tags            Json? // ex: ["venda recorrente", "novo cliente"]\n  notes           String?\n  lastContactAt   DateTime?\n  nextContactAt   DateTime?\n  lastInteraction Json? // ex: { type: "call", date: "2025-10-31", userId: "..." }\n  ownerId         String? // respons\xE1vel pelo cliente\n  owner           User?           @relation(fields: [ownerId], references: [id], onDelete: SetNull)\n  archivedAt      DateTime? // lead arquivado\n  deletedAt       DateTime? // soft delete\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n\n  store Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  stage CrmStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)\n\n  @@index([storeId])\n  @@index([stageId])\n  @@index([ownerId])\n  @@index([status])\n  @@index([archivedAt])\n  @@map("crm_clients")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum CrmClientStatus {\n  ACTIVE // Lead ativo no pipeline\n  WON // Neg\xF3cio fechado com sucesso\n  LOST // Neg\xF3cio perdido\n  INACTIVE // Cliente desativado\n  ARCHIVED // Lead arquivado manualmente\n}\n\n// ========== flow.prisma ==========\n/// ===============================\n///  FLOW AUTOMATION STRUCTURE\n///  - Sistema de automa\xE7\xE3o baseado em nodes.\n///  - Cada flow pertence a uma loja e a um usu\xE1rio.\n///  - Pode conter triggers, conditions, actions e notifications.\n///  - Base para IA, notifica\xE7\xF5es autom\xE1ticas e rotinas.\n/// ===============================\n\nmodel Flow {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name        String\n  description String?\n  version     Int     @default(1) // para controle de vers\xF5es\n  category    String? // ex: "notifica\xE7\xE3o", "estoque", "CRM"\n\n  // Estrutura do workflow (ReactFlow)\n  nodes    Json // array de nodes\n  edges    Json // conex\xF5es entre nodes\n  metadata Json? // metadados do flow (layout, vari\xE1veis globais, etc.)\n\n  // Controle de status\n  status    FlowStatus @default(DRAFT)\n  isPublic  Boolean    @default(false)\n  deletedAt DateTime? // soft delete\n\n  // Associa\xE7\xE3o\n  storeId   String\n  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  createdBy String\n  creator   User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)\n\n  // Auditoria\n  createdAt  DateTime             @default(now())\n  updatedAt  DateTime             @updatedAt\n  lastRunAt  DateTime?\n  lastStatus FlowExecutionStatus?\n\n  // Rela\xE7\xF5es\n  flowNodes  FlowNode[]\n  executions FlowExecution[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("flows")\n}\n\nmodel FlowNode {\n  id           String       @id @default(cuid())\n  flowId       String\n  nodeId       String // ID do node (ReactFlow ID)\n  type         FlowNodeType\n  name         String? // nome vis\xEDvel no editor\n  config       Json // configura\xE7\xE3o do node (ex: { "trigger": "stock_low" })\n  order        Int          @default(0)\n  parentNodeId String? // para nodes agrupados\n  position     Json? // posi\xE7\xE3o no editor (x, y)\n  metadata     Json? // metadados adicionais\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  @@unique([flowId, nodeId])\n  @@index([type])\n  @@index([order])\n  @@map("flow_nodes")\n}\n\nmodel FlowExecution {\n  id     String @id @default(cuid())\n  flowId String\n  flow   Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  // Execu\xE7\xE3o\n  status       FlowExecutionStatus @default(RUNNING)\n  triggerType  String // ex: "stock_alert", "manual", "schedule"\n  triggerData  Json // payload do evento disparador\n  context      Json? // contexto adicional (ex: { "productId": "...", "userId": "..." })\n  executionLog Json? // logs detalhados (por node)\n  error        String?\n  durationMs   Int? // dura\xE7\xE3o total\n  startedAt    DateTime            @default(now())\n  completedAt  DateTime?\n\n  // Auditoria\n  executedById String?\n  executedBy   User?   @relation(fields: [executedById], references: [id], onDelete: SetNull)\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  @@index([flowId])\n  @@index([status])\n  @@index([startedAt])\n  @@index([storeId])\n  @@map("flow_executions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum FlowStatus {\n  ACTIVE\n  INACTIVE\n  DRAFT\n}\n\nenum FlowNodeType {\n  TRIGGER\n  CONDITION\n  ACTION\n  NOTIFICATION\n}\n\nenum FlowExecutionStatus {\n  SUCCESS\n  FAILED\n  RUNNING\n  CANCELLED\n}\n\n// ========== chat.prisma ==========\n/// ===============================\n///  CHAT FEATURE (AI ASSISTANT)\n///  - Sistema de chat com IA integrado ao 25Stock.\n///  - Cada sess\xE3o pertence a um usu\xE1rio (e opcionalmente a uma loja).\n///  - Permite m\xFAltiplas sess\xF5es simult\xE2neas.\n/// ===============================\n\nmodel ChatSession {\n  id          String    @id @default(cuid())\n  userId      String\n  storeId     String?\n  title       String? // t\xEDtulo exibido no hist\xF3rico (ex: "Reajuste de pre\xE7os")\n  model       String? // modelo usado (ex: gpt-4-turbo)\n  temperature Float? // temperatura padr\xE3o da sess\xE3o\n  context     Json? // contexto global da sess\xE3o (loja, user, hist\xF3rico)\n  metadata    Json? // dados adicionais (ex: tags, origem)\n  active      Boolean   @default(true)\n  isPinned    Boolean   @default(false) // fixado no topo\n  deletedAt   DateTime? // soft delete\n\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastActivityAt DateTime? // \xFAltima mensagem trocada\n\n  // Rela\xE7\xF5es\n  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  store    Store?        @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  messages ChatMessage[]\n\n  @@index([userId])\n  @@index([storeId])\n  @@index([createdAt])\n  @@index([deletedAt])\n  @@map("chat_sessions")\n}\n\n/// ===============================\n///  CHAT MESSAGE\n///  - Cada mensagem trocada (usu\xE1rio \u2194 IA)\n/// ===============================\n\nmodel ChatMessage {\n  id        String          @id @default(cuid())\n  sessionId String\n  role      ChatMessageRole @default(USER)\n  content   String\n  tokens    Int? // n\xFAmero de tokens consumidos\n  model     String? // modelo usado nessa resposta (pode mudar)\n  context   Json? // contexto adicional (dados da loja, produto, etc.)\n  options   Json? // par\xE2metros de gera\xE7\xE3o (temperature, top_p, etc.)\n  error     String? // erro da gera\xE7\xE3o (se houver)\n  cost      Decimal?        @db.Decimal(10, 4) // custo da requisi\xE7\xE3o\n  latencyMs Int? // dura\xE7\xE3o da requisi\xE7\xE3o\n  isFinal   Boolean         @default(false) // resposta finalizada\n  createdAt DateTime        @default(now())\n  updatedAt DateTime        @updatedAt\n\n  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n\n  @@index([sessionId])\n  @@index([role])\n  @@index([createdAt])\n  @@map("chat_messages")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum ChatMessageRole {\n  USER // Usu\xE1rio humano\n  ASSISTANT // Resposta da IA\n  SYSTEM // Mensagem de sistema ou contexto\n  TOOL // Execu\xE7\xE3o de ferramenta (ex: busca, a\xE7\xE3o)\n}\n',
-      "inlineSchemaHash": "f0a7840c68f962807e95612e844921595d2b30e4c6bdc982a96dbe81af568e3a",
+      "inlineSchema": 'generator client {\n  provider      = "prisma-client-js"\n  output        = "../src/generated/prisma"\n  binaryTargets = "native"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\n// ========== user.prisma ==========\n/// ===============================\n///  USER & STORE STRUCTURE\n///  - Cada usu\xE1rio pertence a uma \xFAnica loja.\n///  - Dono (isOwner = true) \xE9 o criador da loja.\n///  - Permiss\xF5es s\xE3o granulares (ACL).\n///  - Soft delete com deletedAt.\n/// ===============================\n\nmodel User {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  email    String  @unique\n  password String\n  name     String?\n  phone    String?\n\n  // Associa\xE7\xE3o direta com a loja\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Controle de status e hierarquia\n  isOwner     Boolean   @default(false)\n  status      Boolean   @default(true)\n  deletedAt   DateTime?\n  deletedById String?\n  deletedBy   User?     @relation("UserDeleted", fields: [deletedById], references: [id])\n  suspendedAt DateTime? // bloqueio tempor\xE1rio\n\n  invitedById       String?\n  invitedBy         User?     @relation("UserInviter", fields: [invitedById], references: [id])\n  acceptedAt        DateTime?\n  inviteCode        String?   @unique\n  pendingInvitation Boolean   @default(false)\n\n  ownedStore Store? @relation("StoreOwner")\n\n  // Auditoria e seguran\xE7a\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  lastLoginAt  DateTime?\n  lastActiveAt DateTime?\n\n  emailVerified                Boolean   @default(false)\n  emailVerificationToken       String?\n  emailVerificationCode        String?\n  emailVerificationCodeExpires DateTime?\n  resetPasswordToken           String?\n  resetPasswordExpires         DateTime?\n\n  // Rela\xE7\xF5es\n  permissions   UserPermission[]\n  preferences   UserPreferences?\n  notifications Notification[]\n  media         UserMedia[]\n  uploadedMedia Media[]\n  quotes        Quote[]\n\n  subscription Subscription?\n\n  auditLogs      AuditLog[]\n  movements      Movement[]\n  roadmaps       Roadmap[]\n  createdFlows   Flow[]\n  flowExecutions FlowExecution[]\n  crmClients     CrmClient[]\n  chatSessions   ChatSession[]\n\n  // Rela\xE7\xF5es auto-referenciais\n  invitedUsers User[] @relation("UserInviter")\n  deletedUsers User[] @relation("UserDeleted")\n\n  // \xCDndices estrat\xE9gicos\n  @@index([storeId])\n  @@index([storeId, isOwner])\n  @@index([status])\n  @@index([deletedAt])\n  @@map("users")\n}\n\nmodel UserPermission {\n  id     String @id @default(cuid())\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  action     String // Ex: "create", "update", "delete"\n  resource   String // Ex: "product", "supplier"\n  scope      String? // m\xF3dulo l\xF3gico ex: "inventory", "crm"\n  grant      Boolean   @default(true)\n  expiresAt  DateTime? // expira\xE7\xE3o da permiss\xE3o (tempor\xE1ria)\n  conditions Json? // Ex: { "category": "Bebidas" }\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, action, resource])\n  @@index([userId])\n  @@index([resource])\n  @@index([scope])\n  @@map("user_permissions")\n}\n\nmodel UserPreferences {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // ===== THEME & UI =====\n  theme            String  @default("light")\n  primaryColor     String?\n  sidebarCollapsed Boolean @default(false)\n  compactMode      Boolean @default(false)\n  uiScale          Float   @default(1.0) // escala visual (zoom/acessibilidade)\n\n  // ===== LANGUAGE & LOCALIZATION =====\n  language     String @default("pt-BR")\n  currency     String @default("BRL")\n  timezone     String @default("America/Sao_Paulo")\n  dateFormat   String @default("DD/MM/YYYY")\n  timeFormat   String @default("24h")\n  numberFormat String @default("pt-BR")\n\n  // ===== NOTIFICATION PREFERENCES =====\n  emailNotifications Boolean @default(true)\n  pushNotifications  Boolean @default(true)\n  smsNotifications   Boolean @default(false)\n  notificationTypes  Json?\n\n  // ===== DASHBOARD & LAYOUT =====\n  dashboardLayout Json?\n  defaultPage     String?\n  itemsPerPage    Int     @default(20)\n\n  // ===== BEHAVIOR =====\n  autoRefresh     Boolean @default(true)\n  refreshInterval Int     @default(30)\n\n  // ===== ADVANCED =====\n  customSettings      Json?\n  aiAssistantSettings Json? // IA / LLM settings por usu\xE1rio\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId])\n  @@map("user_preferences")\n}\n\n// ========== store.prisma ==========\n/// ===============================\n///  STORE STRUCTURE\n///  - Cada loja tem um \xFAnico dono (ownerId).\n///  - Usu\xE1rios pertencem diretamente \xE0 loja.\n///  - Suporte a soft delete e auditoria.\n///  - Base pronta para IA, billing e opera\xE7\xF5es.\n/// ===============================\n\nmodel Store {\n  id      String  @id @default(cuid())\n  ownerId String? @unique\n  owner   User?   @relation("StoreOwner", fields: [ownerId], references: [id])\n\n  // Identifica\xE7\xE3o e dados b\xE1sicos\n  name        String\n  cnpj        String  @unique\n  email       String?\n  phone       String?\n  description String? // opcional: pode ser mostrado no dashboard\n  logoUrl     String? // opcional: imagem da loja\n  website     String? // opcional\n\n  // Endere\xE7o\n  cep     String?\n  city    String?\n  state   String?\n  address String?\n\n  // Controle e status\n  status      Boolean   @default(true)\n  deletedAt   DateTime? // soft delete (loja desativada)\n  suspendedAt DateTime? // bloqueio tempor\xE1rio (ex: problema no pagamento)\n  plan        String? // nome do plano atual (sincronizado com tabela de billing)\n  timezone    String?   @default("America/Sao_Paulo")\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Rela\xE7\xF5es com m\xF3dulos do sistema\n  users          User[] // todos os usu\xE1rios dessa loja\n  products       Product[]\n  categories     Category[]\n  suppliers      Supplier[]\n  movements      Movement[]\n  media          StoreMedia[]\n  uploadedMedia  Media[]\n  roadmaps       Roadmap[]\n  crmStages      CrmStage[]\n  crmClients     CrmClient[]\n  flows          Flow[]\n  flowExecutions FlowExecution[]\n  auditLogs      AuditLog[]\n  notifications  Notification[]\n  quotes         Quote[]\n  chatSessions   ChatSession[]\n\n  // Configura\xE7\xF5es adicionais (JSON flex\xEDvel)\n  settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }\n\n  // \xCDndices estrat\xE9gicos\n  @@index([status])\n  @@index([deletedAt])\n  @@index([ownerId])\n  @@index([city])\n  @@index([state])\n}\n\n// ========== product.prisma ==========\n/// ===============================\n///  PRODUCT STRUCTURE\n///  - Cada produto pertence a uma loja.\n///  - Pode ter um fornecedor vinculado.\n///  - Suporte a categorias, m\xEDdia, controle de estoque e rastreabilidade.\n///  - Soft delete e campos para IA e relat\xF3rios.\n/// ===============================\n\nmodel Product {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name          String\n  sku           String? @unique // SKU interno (opcional)\n  barcode       String? @unique // EAN/UPC opcional\n  referenceCode String? // c\xF3digo interno curto (ex: "PRD-001")\n  description   String?\n\n  // Unidade e precifica\xE7\xE3o\n  unitOfMeasure  UnitOfMeasure\n  referencePrice Decimal       @db.Decimal(10, 2) // pre\xE7o de refer\xEAncia\n  costPrice      Decimal?      @db.Decimal(10, 2) // custo m\xE9dio\n  markupPercent  Decimal?      @db.Decimal(5, 2) // margem sobre o custo (%)\n  currency       String        @default("BRL")\n\n  // Estoque\n  stockCurrent    Int     @default(0)\n  stockMin        Int     @default(0)\n  stockMax        Int     @default(0)\n  alertPercentage Int     @default(20) @db.SmallInt\n  allowNegative   Boolean @default(false)\n\n  // Controle de lote / validade (para alimentos, medicamentos etc.)\n  batchTracked   Boolean   @default(false)\n  expirationDate DateTime? // validade do produto principal (se aplic\xE1vel)\n\n  // Associa\xE7\xE3o\n  storeId    String\n  supplierId String?\n  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Rela\xE7\xF5es\n  movements  Movement[]\n  categories ProductCategory[]\n  media      ProductMedia[]\n  quotes     QuoteItem[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["bebida", "perec\xEDvel"]\n  metadata Json? // ex: { "ncm": "2202.10.00", "origem": "nacional" }\n\n  // \xCDndices e constraints\n  @@index([storeId])\n  @@index([supplierId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n  @@index([sku])\n}\n\nenum UnitOfMeasure {\n  UNIDADE\n  KG\n  L\n  ML\n  M\n  CM\n  MM\n  UN\n  DZ\n  CX\n  PCT\n  KIT\n  PAR\n  H\n  D\n}\n\n// ========== category.prisma ==========\n/// ===============================\n///  CATEGORY STRUCTURE\n///  - Cada loja possui suas pr\xF3prias categorias.\n///  - Suporte a subcategorias (hierarquia).\n///  - Soft delete, cor, \xEDcone e metadados.\n///  - Associada a produtos via tabela ProductCategory.\n/// ===============================\n\nmodel Category {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e exibi\xE7\xE3o\n  name        String\n  description String?\n  code        String? // c\xF3digo interno (opcional, ex: CAT-001)\n  color       String? // cor no painel ex: "#3B82F6"\n  icon        String? // \xEDcone do front ex: "box", "truck", "chart"\n\n  // Hierarquia\n  parentId String?\n  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])\n  children Category[] @relation("CategoryHierarchy")\n\n  // Loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e controle\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products ProductCategory[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["perec\xEDvel", "embalagem"]\n  metadata Json? // ex: { "priority": 1, "visibleInMenu": true }\n\n  // Restri\xE7\xF5es e \xEDndices\n  @@unique([code, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n}\n\nmodel ProductCategory {\n  id         String   @id @default(cuid())\n  productId  String\n  categoryId String\n  createdAt  DateTime @default(now())\n\n  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, categoryId])\n  @@index([categoryId])\n  @@index([productId])\n}\n\n// ========== supplier.prisma ==========\n/// ===============================\n///  SUPPLIER STRUCTURE\n///  - Fornecedor pertence a uma loja.\n///  - Pode ter v\xE1rios respons\xE1veis (SupplierResponsible).\n///  - Suporte a m\xEDdia, auditoria e soft delete.\n/// ===============================\n\nmodel Supplier {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  corporateName String // Raz\xE3o social\n  tradeName     String? // Nome fantasia\n  cnpj          String\n  ie            String? // Inscri\xE7\xE3o estadual opcional\n  email         String?\n  phone         String?\n  website       String?\n  description   String? // Observa\xE7\xE3o interna\n\n  // Localiza\xE7\xE3o\n  cep        String?\n  city       String?\n  state      String?\n  address    String?\n  complement String?\n\n  // Relacionamento com a loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products     Product[]\n  movements    Movement[]\n  responsibles SupplierResponsible[]\n  media        SupplierMedia[]\n\n  // Configura\xE7\xF5es / metadados (extens\xEDvel)\n  tags     Json? // Ex: ["distribuidor", "nacional"]\n  metadata Json? // Ex: { "frete": "pr\xF3prio", "tempoEntrega": "48h" }\n\n  @@unique([cnpj, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n}\n\nmodel SupplierResponsible {\n  id         String   @id @default(cuid())\n  supplierId String\n  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  name        String\n  role        String? // cargo ex: "Vendas", "Financeiro", "Log\xEDstica"\n  phone       String?\n  email       String?\n  cpf         String?\n  whatsapp    Boolean   @default(false) // se esse contato \xE9 via WhatsApp\n  mainContact Boolean   @default(false) // define se \xE9 o contato principal\n  notes       String? // observa\xE7\xF5es internas\n  status      Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  deletedAt   DateTime? // soft delete\n\n  @@index([supplierId])\n  @@index([status])\n  @@index([mainContact])\n}\n\n// ========== movement.prisma ==========\n/// ===============================\n///  MOVEMENT STRUCTURE\n///  - Registra qualquer entrada, sa\xEDda ou perda de produto.\n///  - Controla saldo, custo e origem.\n///  - \xC9 base para relat\xF3rios, IA e auditoria de estoque.\n/// ===============================\n\nmodel Movement {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e contexto\n  type          MovementType // ENTRADA, SAIDA, PERDA\n  origin        MovementOrigin? // motivo ou contexto da movimenta\xE7\xE3o\n  referenceCode String? // c\xF3digo externo opcional (nota, pedido, etc.)\n  note          String? // observa\xE7\xF5es gerais\n\n  // Estoque e valores\n  quantity      Int\n  price         Decimal?  @db.Decimal(10, 2) // valor unit\xE1rio da movimenta\xE7\xE3o\n  totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price\n  balanceBefore Int? // estoque antes da movimenta\xE7\xE3o\n  balanceAfter  Int? // estoque ap\xF3s a movimenta\xE7\xE3o\n  batch         String? // lote\n  expiration    DateTime? // validade (se aplic\xE1vel)\n\n  // Relacionamentos\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  supplierId String?\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  userId String? // quem registrou\n  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  // Verifica\xE7\xE3o e controle\n  verified         Boolean   @default(false)\n  verifiedAt       DateTime?\n  verifiedBy       String?\n  verificationNote String?\n\n  // Cancelamento\n  cancelled          Boolean   @default(false)\n  cancelledAt        DateTime?\n  cancelledBy        String?\n  cancellationReason String?\n\n  // Auditoria e status\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete, se precisar reverter algo manualmente\n\n  // Metadados e IA\n  metadata Json? // dados extras: { "source": "import", "autoGenerated": true }\n\n  // \xCDndices e otimiza\xE7\xF5es\n  @@index([storeId])\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n  @@index([cancelled])\n  @@index([verified])\n}\n\n/// ===============================\n///  MOVEMENT ENUMS\n///  - Type = dire\xE7\xE3o da movimenta\xE7\xE3o (entrada/sa\xEDda/perda)\n///  - Origin = motivo ou contexto da movimenta\xE7\xE3o\n/// ===============================\n\nenum MovementType {\n  INBOUND // Entrada de produtos no estoque\n  OUTBOUND // Sa\xEDda de produtos\n  LOSS // Perda ou descarte\n}\n\nenum MovementOrigin {\n  PURCHASE // Compra de fornecedor\n  SALE // Venda a cliente\n  RETURN // Devolu\xE7\xE3o de cliente\n  SUPPLIER_RETURN // Devolu\xE7\xE3o ao fornecedor\n  ADJUSTMENT // Ajuste manual de estoque\n  TRANSFER // Transfer\xEAncia entre locais\n  INVENTORY // Ajuste por contagem/invent\xE1rio\n  DAMAGE // Quebra ou dano\n  EXPIRATION // Produto vencido\n  OTHER // Outro motivo n\xE3o especificado  \n}\n\n// ========== billing.prisma ==========\n/// ===============================\n///  BILLING (Polar.sh Integration)\n///  - Polar \xE9 o sistema de cobran\xE7a principal.\n///  - O backend apenas espelha status e refer\xEAncias.\n/// ===============================\n\nmodel Subscription {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Polar references\n  polarCustomerId     String? @unique\n  polarSubscriptionId String? @unique\n  polarProductId      String? // plano ativo no Polar\n  polarPlanName       String? // redund\xE2ncia para exibi\xE7\xE3o r\xE1pida no painel\n\n  // Status tracking\n  status           SubscriptionStatus @default(ACTIVE)\n  currentPeriodEnd DateTime? // data de renova\xE7\xE3o ou expira\xE7\xE3o\n  trialEndsAt      DateTime?\n  cancelledAt      DateTime?\n  renewalCount     Int                @default(0)\n\n  // Dados financeiros b\xE1sicos\n  priceAmount   Decimal?      @db.Decimal(10, 2)\n  priceInterval PlanInterval? // MONTHLY, YEARLY (espelhado do Polar)\n  currency      String?       @default("BRL")\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  invoices  Invoice[]\n\n  @@index([status])\n  @@index([polarSubscriptionId])\n  @@index([userId])\n}\n\nmodel Invoice {\n  id             String       @id @default(cuid())\n  subscriptionId String\n  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)\n\n  // Dados do Polar\n  polarInvoiceId String?       @unique\n  amount         Decimal       @db.Decimal(10, 2)\n  currency       String?       @default("BRL")\n  status         InvoiceStatus @default(PENDING)\n  paymentDate    DateTime?\n  dueDate        DateTime?\n  createdAt      DateTime      @default(now())\n\n  @@index([status])\n  @@index([subscriptionId])\n}\n\nenum SubscriptionStatus {\n  ACTIVE\n  INACTIVE\n  CANCELLED\n  TRIAL\n  EXPIRED\n  PAST_DUE\n}\n\nenum PlanInterval {\n  MONTHLY\n  YEARLY\n}\n\nenum InvoiceStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n}\n\n// ========== quote.prisma ==========\n/// ===============================\n///  QUOTATION (QUOTE) STRUCTURE\n///  - Or\xE7amentos criados pelos usu\xE1rios.\n///  - Possuem link p\xFAblico seguro (publicId + authCode).\n///  - Base para aprova\xE7\xF5es, convers\xF5es e vendas.\n/// ===============================\n\nmodel Quote {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  storeId      String\n  store        Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId       String\n  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  customerId   String? // futuro: cliente vinculado (CRM)\n  customerName String? // nome do cliente externo (sem login)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n  publicId    String  @unique @default(uuid()) // usado no link p\xFAblico\n  authCode    String  @default(uuid()) // valida acesso sem login\n\n  // Status e controle\n  status       QuoteStatus @default(DRAFT)\n  expiresAt    DateTime?\n  viewedAt     DateTime?\n  approvedAt   DateTime?\n  rejectedAt   DateTime?\n  convertedAt  DateTime?\n  canceledAt   DateTime?\n  approvalNote String? // observa\xE7\xE3o do cliente (motivo ou coment\xE1rio)\n  ipAddress    String? // IP de quem visualizou/aprovou\n  viewedBy     String? // email ou nome informado ao visualizar\n\n  // Valores\n  subtotal Decimal  @db.Decimal(10, 2)\n  discount Decimal? @db.Decimal(10, 2)\n  interest Decimal? @db.Decimal(10, 2)\n  total    Decimal  @db.Decimal(10, 2)\n  currency String   @default("BRL")\n\n  // Pagamento\n  paymentType    PaymentType @default(UNDEFINED)\n  paymentTerms   String? // ex: "6x sem juros"\n  paymentDueDays Int? // ex: 15 dias no boleto\n\n  // Observa\xE7\xF5es e anota\xE7\xF5es\n  observations  String?\n  notesInternal String? // observa\xE7\xE3o vis\xEDvel apenas internamente (n\xE3o p\xFAblica)\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete\n\n  // Rela\xE7\xF5es\n  items        QuoteItem[]\n  installments QuoteInstallment[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([publicId])\n  @@index([createdAt])\n}\n\n/// ===============================\n///  QUOTE ITEM\n///  - Produtos inclu\xEDdos no or\xE7amento.\n/// ===============================\n\nmodel QuoteItem {\n  id        String   @id @default(cuid())\n  quoteId   String\n  productId String\n  quantity  Int\n  unitPrice Decimal  @db.Decimal(10, 2)\n  subtotal  Decimal  @db.Decimal(10, 2)\n  discount  Decimal? @db.Decimal(10, 2)\n  note      String?\n\n  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  @@unique([quoteId, productId])\n  @@index([quoteId])\n}\n\n/// ===============================\n///  QUOTE INSTALLMENTS\n///  - Parcelas de pagamento do or\xE7amento.\n/// ===============================\n\nmodel QuoteInstallment {\n  id       String    @id @default(cuid())\n  quoteId  String\n  number   Int // n\xFAmero da parcela\n  dueDate  DateTime\n  amount   Decimal   @db.Decimal(10, 2)\n  interest Decimal?  @db.Decimal(10, 2)\n  paidAt   DateTime?\n\n  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n\n  @@index([quoteId])\n  @@map("quote_installments")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum PaymentType {\n  UNDEFINED\n  PIX\n  BOLETO\n  CREDIT_CARD\n  CASH\n  TRANSFER\n}\n\nenum QuoteStatus {\n  DRAFT // Em edi\xE7\xE3o\n  PUBLISHED // Link p\xFAblico ativo\n  SENT // Enviado ao cliente\n  VIEWED // Cliente visualizou\n  APPROVED // Cliente aprovou\n  REJECTED // Cliente recusou\n  EXPIRED // Passou da validade\n  CONVERTED // Virou venda\n  CANCELED // Cancelado\n}\n\n// ========== notification.prisma ==========\n/// ===============================\n///  NOTIFICATION STRUCTURE\n///  - Sistema unificado de notifica\xE7\xF5es.\n///  - Cada notifica\xE7\xE3o pertence a um usu\xE1rio e loja.\n///  - Pode ser enviada via v\xE1rios canais (push, email, sms).\n///  - Base para alertas autom\xE1ticos, workflows e IA.\n/// ===============================\n\nmodel Notification {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  userId  String\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  // Conte\xFAdo\n  title    String\n  message  String\n  type     NotificationType     @default(INFO)\n  priority NotificationPriority @default(MEDIUM)\n\n  // Estado de leitura\n  isRead Boolean   @default(false)\n  readAt DateTime?\n\n  // Entrega e canais\n  channel       NotificationChannel @default(IN_APP)\n  sentAt        DateTime?\n  deliveredAt   DateTime?\n  deliveryError String?\n\n  // Expira\xE7\xE3o e a\xE7\xE3o\n  actionUrl String?\n  expiresAt DateTime?\n  data      Json? // dados adicionais (ex: { productId, movementId, severity })\n\n  // Auditoria e controle\n  deletedAt DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // \xCDndices\n  @@index([userId])\n  @@index([storeId])\n  @@index([type])\n  @@index([isRead])\n  @@index([priority])\n  @@index([createdAt])\n  @@map("notifications")\n}\n\nenum NotificationType {\n  INFO // Informa\xE7\xE3o geral\n  SUCCESS // Sucesso/confirma\xE7\xE3o\n  WARNING // Aviso ou aten\xE7\xE3o\n  ERROR // Erro ou falha\n  STOCK_ALERT // Alerta de estoque baixo\n  MOVEMENT // Movimenta\xE7\xE3o de estoque\n  PERMISSION // Permiss\xE3o / acesso\n  SYSTEM // Sistema / manuten\xE7\xE3o\n  BILLING // Assinatura, cobran\xE7a, pagamento\n  WORKFLOW // Fluxo automatizado\n}\n\nenum NotificationPriority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}\n\nenum NotificationChannel {\n  IN_APP // Notifica\xE7\xE3o interna do app\n  PUSH // Push Notification\n  EMAIL // E-mail\n  SMS // SMS\n  SYSTEM // Notifica\xE7\xE3o do sistema\n}\n\n// ========== audit.prisma ==========\n/// ===============================\n///  AUDIT LOG STRUCTURE\n///  - Rastreia todas as a\xE7\xF5es importantes do sistema.\n///  - Cada log registra o que mudou, quem fez e onde.\n///  - Base para auditorias, relat\xF3rios e seguran\xE7a.\n/// ===============================\n\nmodel AuditLog {\n  id String @id @default(cuid())\n\n  // Entidade e a\xE7\xE3o auditada\n  entity   AuditEntity\n  entityId String?\n  action   AuditAction\n\n  // Contexto e origem\n  userId    String?\n  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n  storeId   String? // para rastrear logs por loja\n  store     Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  ipAddress String? // IP de origem da a\xE7\xE3o\n  userAgent String? // navegador / dispositivo\n  source    String? // origem da a\xE7\xE3o: "web", "mobile", "api", "system"\n\n  // Dados de mudan\xE7a\n  before   Json? // estado anterior do registro\n  after    Json? // estado ap\xF3s a mudan\xE7a\n  metadata Json? // informa\xE7\xF5es adicionais (ex: rota, payload, headers)\n\n  // Auditoria temporal\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // \xCDndices e otimiza\xE7\xE3o\n  @@index([entity])\n  @@index([storeId])\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n  @@map("audit_logs")\n}\n\nenum AuditAction {\n  CREATE\n  UPDATE\n  DELETE\n  LOGIN\n  LOGOUT\n  VERIFY\n  RESTORE\n}\n\nenum AuditEntity {\n  USER\n  STORE\n  PRODUCT\n  SUPPLIER\n  MOVEMENT\n  CATEGORY\n  QUOTE\n  FLOW\n  SYSTEM\n}\n\n// ========== media.prisma ==========\n/// ===============================\n///  MEDIA STRUCTURE\n///  - Representa qualquer arquivo enviado (imagem, v\xEDdeo, documento).\n///  - Associ\xE1vel a produto, fornecedor, loja ou usu\xE1rio.\n///  - Cont\xE9m informa\xE7\xF5es t\xE9cnicas e de origem.\n/// ===============================\n\nmodel Media {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  url       String // link p\xFAblico (Cloudinary, S3, Supabase, etc.)\n  name      String? // nome do arquivo original\n  type      String? // MIME type (ex: image/png, application/pdf)\n  extension String? // extens\xE3o (ex: jpg, pdf)\n  size      Int? // tamanho em bytes\n  hash      String? // hash opcional (para evitar duplica\xE7\xF5es)\n\n  // Origem e propriedade\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  uploadedById String?\n  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)\n\n  // Armazenamento e provider\n  provider    StorageProvider @default(SYSTEM)\n  storagePath String? // caminho interno no provider (ex: /products/uuid.png)\n  bucket      String? // bucket do S3 / Supabase\n  visibility  MediaVisibility @default(PRIVATE) // controle de acesso\n  status      MediaStatus     @default(ACTIVE)\n\n  // Metadados\n  metadata Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Rela\xE7\xF5es\n  productMedia  ProductMedia[]\n  supplierMedia SupplierMedia[]\n  userMedia     UserMedia[]\n  storeMedia    StoreMedia[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([uploadedById])\n  @@index([status])\n  @@index([visibility])\n  @@index([deletedAt])\n  @@map("media")\n}\n\n/// ===============================\n///  RELATION TABLES (many-to-many)\n///  - Permitem anexar m\xFAltiplos arquivos a produtos, usu\xE1rios, etc.\n/// ===============================\n\nmodel ProductMedia {\n  id        String  @id @default(cuid())\n  productId String\n  mediaId   String\n  isPrimary Boolean @default(false)\n  altText   String? // descri\xE7\xE3o alternativa para SEO / acessibilidade\n  sortOrder Int     @default(0)\n\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, mediaId])\n  @@index([productId])\n  @@map("product_media")\n}\n\nmodel SupplierMedia {\n  id         String @id @default(cuid())\n  supplierId String\n  mediaId    String\n\n  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([supplierId, mediaId])\n  @@map("supplier_media")\n}\n\nmodel UserMedia {\n  id      String @id @default(cuid())\n  userId  String\n  mediaId String\n\n  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, mediaId])\n  @@map("user_media")\n}\n\nmodel StoreMedia {\n  id      String @id @default(cuid())\n  storeId String\n  mediaId String\n\n  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([storeId, mediaId])\n  @@map("store_media")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum StorageProvider {\n  SYSTEM // Armazenamento local padr\xE3o\n  S3 // Amazon S3 / R2 / Wasabi\n  SUPABASE // Supabase Storage\n  CLOUDINARY // Cloudinary\n  GOOGLE_DRIVE // Google Drive API\n}\n\nenum MediaVisibility {\n  PRIVATE // vis\xEDvel apenas internamente\n  PUBLIC // acess\xEDvel publicamente\n  RESTRICTED // acess\xEDvel sob regra (ex: usu\xE1rios logados)\n}\n\nenum MediaStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n  PROCESSING\n}\n\n// ========== roadmap.prisma ==========\n/// ===============================\n///  ROADMAP STRUCTURE\n///  - Representa planos, metas ou projetos.\n///  - Pode estar associado a uma loja ou usu\xE1rio.\n///  - Cont\xE9m milestones (etapas com progresso e status).\n/// ===============================\n\nmodel Roadmap {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId  String?\n  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o e descri\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle e status\n  status     RoadmapStatus     @default(ACTIVE)\n  visibility RoadmapVisibility @default(PRIVATE)\n  priority   RoadmapPriority   @default(MEDIUM)\n  progress   Int               @default(0) // progresso geral (m\xE9dia das milestones)\n  archived   Boolean           @default(false)\n  deletedAt  DateTime? // soft delete\n\n  // Datas\n  startDate DateTime?\n  endDate   DateTime?\n\n  // Auditoria\n  createdById String?\n  updatedById String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  // Rela\xE7\xF5es\n  milestones Milestone[]\n\n  // Metadados\n  tags     Json? // ex: ["estoque", "IA", "meta de venda"]\n  metadata Json? // configura\xE7\xF5es extras ou IA\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([archived])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("roadmaps")\n}\n\n/// ===============================\n///  MILESTONE STRUCTURE\n///  - Etapas dentro de um roadmap.\n///  - Controla progresso, status e prazos.\n/// ===============================\n\nmodel Milestone {\n  id        String  @id @default(cuid())\n  roadmapId String\n  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle\n  status      MilestoneStatus @default(PENDING)\n  progress    Int             @default(0) // % conclu\xEDda (0\u2013100)\n  order       Int             @default(0) // posi\xE7\xE3o na timeline\n  priority    RoadmapPriority @default(MEDIUM)\n  blockedById String? // milestone dependente (opcional)\n  blockedBy   Milestone?      @relation("MilestoneDependency", fields: [blockedById], references: [id])\n  blocking    Milestone[]     @relation("MilestoneDependency") // milestones bloqueados por este\n\n  // Datas\n  startDate   DateTime?\n  endDate     DateTime?\n  completedAt DateTime?\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Metadados\n  metadata Json? // informa\xE7\xF5es adicionais ou IA\n\n  // \xCDndices\n  @@index([roadmapId])\n  @@index([status])\n  @@index([priority])\n  @@index([order])\n  @@map("milestones")\n}\n\nenum RoadmapStatus {\n  ACTIVE\n  COMPLETED\n  ARCHIVED\n}\n\nenum RoadmapVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n\nenum RoadmapPriority {\n  LOW\n  MEDIUM\n  HIGH\n  CRITICAL\n}\n\nenum MilestoneStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  BLOCKED\n}\n\n// ========== crm.prisma ==========\n/// ===============================\n///  CRM STAGE STRUCTURE\n///  - Etapa (coluna) do pipeline de CRM.\n///  - Cada loja possui seu pr\xF3prio conjunto de etapas.\n/// ===============================\n\nmodel CrmStage {\n  id          String   @id @default(cuid())\n  storeId     String\n  name        String\n  color       String? // cor no front-end\n  order       Int      @default(0) // posi\xE7\xE3o na ordem do pipeline\n  description String? // ex: "Clientes interessados"\n  isDefault   Boolean  @default(false) // primeira etapa padr\xE3o\n  isFinal     Boolean  @default(false) // etapa de fechamento (ganho/perda)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  store   Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  clients CrmClient[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([order])\n  @@map("crm_stages")\n}\n\n/// ===============================\n///  CRM CLIENT STRUCTURE\n///  - Representa um cliente / lead dentro do pipeline.\n///  - Pode se mover entre etapas (Kanban).\n/// ===============================\n\nmodel CrmClient {\n  id              String          @id @default(cuid())\n  storeId         String\n  stageId         String?\n  name            String\n  email           String?\n  phone           String?\n  cpfCnpj         String?\n  company         String?\n  position        String? // cargo (ex: comprador, gerente)\n  source          String? // origem do lead (ex: site, whatsapp, indica\xE7\xE3o)\n  status          CrmClientStatus @default(ACTIVE)\n  tags            Json? // ex: ["venda recorrente", "novo cliente"]\n  notes           String?\n  lastContactAt   DateTime?\n  nextContactAt   DateTime?\n  lastInteraction Json? // ex: { type: "call", date: "2025-10-31", userId: "..." }\n  ownerId         String? // respons\xE1vel pelo cliente\n  owner           User?           @relation(fields: [ownerId], references: [id], onDelete: SetNull)\n  archivedAt      DateTime? // lead arquivado\n  deletedAt       DateTime? // soft delete\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n\n  store Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  stage CrmStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)\n\n  @@index([storeId])\n  @@index([stageId])\n  @@index([ownerId])\n  @@index([status])\n  @@index([archivedAt])\n  @@map("crm_clients")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum CrmClientStatus {\n  ACTIVE // Lead ativo no pipeline\n  WON // Neg\xF3cio fechado com sucesso\n  LOST // Neg\xF3cio perdido\n  INACTIVE // Cliente desativado\n  ARCHIVED // Lead arquivado manualmente\n}\n\n// ========== flow.prisma ==========\n/// ===============================\n///  FLOW AUTOMATION STRUCTURE\n///  - Sistema de automa\xE7\xE3o baseado em nodes.\n///  - Cada flow pertence a uma loja e a um usu\xE1rio.\n///  - Pode conter triggers, conditions, actions e notifications.\n///  - Base para IA, notifica\xE7\xF5es autom\xE1ticas e rotinas.\n/// ===============================\n\nmodel Flow {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name        String\n  description String?\n  version     Int     @default(1) // para controle de vers\xF5es\n  category    String? // ex: "notifica\xE7\xE3o", "estoque", "CRM"\n\n  // Estrutura do workflow (ReactFlow)\n  nodes    Json // array de nodes\n  edges    Json // conex\xF5es entre nodes\n  metadata Json? // metadados do flow (layout, vari\xE1veis globais, etc.)\n\n  // Controle de status\n  status    FlowStatus @default(DRAFT)\n  isPublic  Boolean    @default(false)\n  deletedAt DateTime? // soft delete\n\n  // Associa\xE7\xE3o\n  storeId   String\n  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  createdBy String\n  creator   User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)\n\n  // Auditoria\n  createdAt  DateTime             @default(now())\n  updatedAt  DateTime             @updatedAt\n  lastRunAt  DateTime?\n  lastStatus FlowExecutionStatus?\n\n  // Rela\xE7\xF5es\n  flowNodes  FlowNode[]\n  executions FlowExecution[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("flows")\n}\n\nmodel FlowNode {\n  id           String       @id @default(cuid())\n  flowId       String\n  nodeId       String // ID do node (ReactFlow ID)\n  type         FlowNodeType\n  name         String? // nome vis\xEDvel no editor\n  config       Json // configura\xE7\xE3o do node (ex: { "trigger": "stock_low" })\n  order        Int          @default(0)\n  parentNodeId String? // para nodes agrupados\n  position     Json? // posi\xE7\xE3o no editor (x, y)\n  metadata     Json? // metadados adicionais\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  @@unique([flowId, nodeId])\n  @@index([type])\n  @@index([order])\n  @@map("flow_nodes")\n}\n\nmodel FlowExecution {\n  id     String @id @default(cuid())\n  flowId String\n  flow   Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  // Execu\xE7\xE3o\n  status       FlowExecutionStatus @default(RUNNING)\n  triggerType  String // ex: "stock_alert", "manual", "schedule"\n  triggerData  Json // payload do evento disparador\n  context      Json? // contexto adicional (ex: { "productId": "...", "userId": "..." })\n  executionLog Json? // logs detalhados (por node)\n  error        String?\n  durationMs   Int? // dura\xE7\xE3o total\n  startedAt    DateTime            @default(now())\n  completedAt  DateTime?\n\n  // Auditoria\n  executedById String?\n  executedBy   User?   @relation(fields: [executedById], references: [id], onDelete: SetNull)\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  @@index([flowId])\n  @@index([status])\n  @@index([startedAt])\n  @@index([storeId])\n  @@map("flow_executions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum FlowStatus {\n  ACTIVE\n  INACTIVE\n  DRAFT\n}\n\nenum FlowNodeType {\n  TRIGGER\n  CONDITION\n  ACTION\n  NOTIFICATION\n}\n\nenum FlowExecutionStatus {\n  SUCCESS\n  FAILED\n  RUNNING\n  CANCELLED\n}\n\n// ========== chat.prisma ==========\n/// ===============================\n///  CHAT FEATURE (AI ASSISTANT)\n///  - Sistema de chat com IA integrado ao 25Stock.\n///  - Cada sess\xE3o pertence a um usu\xE1rio (e opcionalmente a uma loja).\n///  - Permite m\xFAltiplas sess\xF5es simult\xE2neas.\n/// ===============================\n\nmodel ChatSession {\n  id          String    @id @default(cuid())\n  userId      String\n  storeId     String?\n  title       String? // t\xEDtulo exibido no hist\xF3rico (ex: "Reajuste de pre\xE7os")\n  model       String? // modelo usado (ex: gpt-4-turbo)\n  temperature Float? // temperatura padr\xE3o da sess\xE3o\n  context     Json? // contexto global da sess\xE3o (loja, user, hist\xF3rico)\n  metadata    Json? // dados adicionais (ex: tags, origem)\n  active      Boolean   @default(true)\n  isPinned    Boolean   @default(false) // fixado no topo\n  deletedAt   DateTime? // soft delete\n\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastActivityAt DateTime? // \xFAltima mensagem trocada\n\n  // Rela\xE7\xF5es\n  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  store    Store?        @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  messages ChatMessage[]\n\n  @@index([userId])\n  @@index([storeId])\n  @@index([createdAt])\n  @@index([deletedAt])\n  @@map("chat_sessions")\n}\n\n/// ===============================\n///  CHAT MESSAGE\n///  - Cada mensagem trocada (usu\xE1rio \u2194 IA)\n/// ===============================\n\nmodel ChatMessage {\n  id        String          @id @default(cuid())\n  sessionId String\n  role      ChatMessageRole @default(USER)\n  content   String\n  tokens    Int? // n\xFAmero de tokens consumidos\n  model     String? // modelo usado nessa resposta (pode mudar)\n  context   Json? // contexto adicional (dados da loja, produto, etc.)\n  options   Json? // par\xE2metros de gera\xE7\xE3o (temperature, top_p, etc.)\n  error     String? // erro da gera\xE7\xE3o (se houver)\n  cost      Decimal?        @db.Decimal(10, 4) // custo da requisi\xE7\xE3o\n  latencyMs Int? // dura\xE7\xE3o da requisi\xE7\xE3o\n  isFinal   Boolean         @default(false) // resposta finalizada\n  createdAt DateTime        @default(now())\n  updatedAt DateTime        @updatedAt\n\n  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n\n  @@index([sessionId])\n  @@index([role])\n  @@index([createdAt])\n  @@map("chat_messages")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum ChatMessageRole {\n  USER // Usu\xE1rio humano\n  ASSISTANT // Resposta da IA\n  SYSTEM // Mensagem de sistema ou contexto\n  TOOL // Execu\xE7\xE3o de ferramenta (ex: busca, a\xE7\xE3o)\n}\n',
+      "inlineSchemaHash": "af5e5d601a9d3c66d82a3a2b9c8496857ae5f51f95e70ab26427db6ea9945f44",
       "copyEngine": true
     };
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     config.dirname = __dirname;
-    if (!fs2.existsSync(path4.join(__dirname, "schema.prisma"))) {
+    if (!fs3.existsSync(path4.join(__dirname, "schema.prisma"))) {
       const alternativePaths = [
         "src/generated/prisma",
         "generated/prisma"
       ];
       const alternativePath = alternativePaths.find((altPath) => {
-        return fs2.existsSync(path4.join(process.cwd(), altPath, "schema.prisma"));
+        return fs3.existsSync(path4.join(process.cwd(), altPath, "schema.prisma"));
       }) ?? alternativePaths[0];
       config.dirname = path4.join(process.cwd(), alternativePath);
       config.isBundled = true;
@@ -6648,7 +6648,7 @@ var require_prisma = __commonJS({
 });
 
 // src/server.ts
-var import_node_path = __toESM(require("path"));
+var import_node_path3 = __toESM(require("path"));
 var import_cors = __toESM(require("@fastify/cors"));
 var import_fastify = __toESM(require("fastify"));
 
@@ -6719,7 +6719,7 @@ var pushPlugin = async (fastify2) => {
           actions: payload.actions
         });
         const result = await import_web_push.default.sendNotification(subscription2, notificationPayload);
-        fastify2.log.info(`Push notification sent successfully`);
+        fastify2.log.info("Push notification sent successfully");
         return result;
       } catch (error) {
         fastify2.log.error(`Error sending push notification: ${error.message}`);
@@ -6918,36 +6918,28 @@ var BootstrapUI = class {
     this.originalConsoleWarn = console.warn;
     this.originalConsoleInfo = console.info;
     console.log = (...args) => {
-      const message = args.map(
-        (arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(" ");
+      const message = args.map((arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)).join(" ");
       this.addLog(message, "log", false);
       if (!this.logMode) {
         this.originalConsoleLog?.apply(console, args);
       }
     };
     console.error = (...args) => {
-      const message = args.map(
-        (arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(" ");
+      const message = args.map((arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)).join(" ");
       this.addLog(message, "error", false);
       if (!this.logMode) {
         this.originalConsoleError?.apply(console, args);
       }
     };
     console.warn = (...args) => {
-      const message = args.map(
-        (arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(" ");
+      const message = args.map((arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)).join(" ");
       this.addLog(message, "warn", false);
       if (!this.logMode) {
         this.originalConsoleWarn?.apply(console, args);
       }
     };
     console.info = (...args) => {
-      const message = args.map(
-        (arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(" ");
+      const message = args.map((arg) => typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)).join(" ");
       this.addLog(message, "info", false);
       if (!this.logMode) {
         this.originalConsoleInfo?.apply(console, args);
@@ -7010,9 +7002,9 @@ var BootstrapUI = class {
     if (logsToShow.length === 0) {
       console.log(this.colors.dim("  Aguardando logs..."));
     } else {
-      logsToShow.forEach((log) => {
+      for (const log of logsToShow) {
         console.log(`  ${log}`);
-      });
+      }
     }
     console.log("");
     console.log(
@@ -7139,477 +7131,9 @@ var BootstrapUI = class {
 };
 var bootstrapUI = new BootstrapUI();
 
-// src/features/user-preferences/queries/user-preferences.query.ts
-var UserPreferencesQueries = {
-  // ================================
-  // GET OPERATIONS
-  // ================================
-  async getById(id) {
-    try {
-      const preferences = await db.userPreferences.findUnique({
-        where: { id },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        }
-      });
-      if (!preferences) {
-        throw new Error("User preferences not found");
-      }
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences: ${error.message}`);
-    }
-  },
-  async getByUserId(userId) {
-    try {
-      const preferences = await db.userPreferences.findUnique({
-        where: { userId },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        }
-      });
-      if (!preferences) {
-        throw new Error("User preferences not found");
-      }
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences: ${error.message}`);
-    }
-  },
-  async getByUserIdOrCreate(userId) {
-    try {
-      const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { id: true, name: true, email: true }
-      });
-      if (!user) {
-        throw new Error("User not found");
-      }
-      let preferences = await db.userPreferences.findUnique({
-        where: { userId },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        }
-      });
-      if (!preferences) {
-        preferences = await db.userPreferences.create({
-          data: {
-            userId,
-            theme: "light",
-            language: "pt-BR",
-            currency: "BRL",
-            timezone: "America/Sao_Paulo",
-            dateFormat: "DD/MM/YYYY",
-            timeFormat: "24h",
-            numberFormat: "pt-BR",
-            emailNotifications: true,
-            pushNotifications: true,
-            smsNotifications: false,
-            itemsPerPage: 20,
-            autoRefresh: true,
-            refreshInterval: 30
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
-          }
-        });
-      }
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get or create user preferences: ${error.message}`);
-    }
-  },
-  // ================================
-  // LIST OPERATIONS
-  // ================================
-  async list(filters = {}) {
-    try {
-      const {
-        page = 1,
-        limit = 10,
-        search,
-        theme,
-        language,
-        currency,
-        timezone,
-        hasCustomSettings,
-        notificationsEnabled
-      } = filters;
-      const skip2 = (page - 1) * limit;
-      const where = {};
-      if (search) {
-        where.OR = [
-          {
-            user: {
-              name: {
-                contains: search,
-                mode: "insensitive"
-              }
-            }
-          },
-          {
-            user: {
-              email: {
-                contains: search,
-                mode: "insensitive"
-              }
-            }
-          }
-        ];
-      }
-      if (theme) {
-        where.theme = theme;
-      }
-      if (language) {
-        where.language = language;
-      }
-      if (currency) {
-        where.currency = currency;
-      }
-      if (timezone) {
-        where.timezone = timezone;
-      }
-      if (hasCustomSettings !== void 0) {
-        if (hasCustomSettings) {
-          where.customSettings = {
-            not: null
-          };
-        } else {
-          where.customSettings = null;
-        }
-      }
-      if (notificationsEnabled !== void 0) {
-        where.emailNotifications = notificationsEnabled;
-      }
-      const [preferences, total] = await Promise.all([
-        db.userPreferences.findMany({
-          where,
-          skip: skip2,
-          take: limit,
-          orderBy: {
-            updatedAt: "desc"
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
-          }
-        }),
-        db.userPreferences.count({ where })
-      ]);
-      return {
-        preferences,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit)
-        }
-      };
-    } catch (error) {
-      throw new Error(`Failed to list user preferences: ${error.message}`);
-    }
-  },
-  // ================================
-  // SEARCH OPERATIONS
-  // ================================
-  async search(searchTerm, limit = 10) {
-    try {
-      const preferences = await db.userPreferences.findMany({
-        where: {
-          OR: [
-            {
-              user: {
-                name: {
-                  contains: searchTerm,
-                  mode: "insensitive"
-                }
-              }
-            },
-            {
-              user: {
-                email: {
-                  contains: searchTerm,
-                  mode: "insensitive"
-                }
-              }
-            },
-            {
-              language: {
-                contains: searchTerm,
-                mode: "insensitive"
-              }
-            },
-            {
-              currency: {
-                contains: searchTerm,
-                mode: "insensitive"
-              }
-            }
-          ]
-        },
-        take: limit,
-        orderBy: {
-          updatedAt: "desc"
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        }
-      });
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to search user preferences: ${error.message}`);
-    }
-  },
-  // ================================
-  // STATS OPERATIONS
-  // ================================
-  async getStats() {
-    try {
-      const [
-        totalPreferences,
-        themeStats,
-        languageStats,
-        currencyStats,
-        itemsPerPageStats,
-        notificationsStats
-      ] = await Promise.all([
-        db.userPreferences.count(),
-        db.userPreferences.groupBy({
-          by: ["theme"],
-          _count: {
-            theme: true
-          }
-        }),
-        db.userPreferences.groupBy({
-          by: ["language"],
-          _count: {
-            language: true
-          }
-        }),
-        db.userPreferences.groupBy({
-          by: ["currency"],
-          _count: {
-            currency: true
-          }
-        }),
-        db.userPreferences.aggregate({
-          _avg: {
-            itemsPerPage: true
-          }
-        }),
-        db.userPreferences.groupBy({
-          by: ["emailNotifications"],
-          _count: {
-            emailNotifications: true
-          }
-        })
-      ]);
-      const themeDistribution = {
-        light: 0,
-        dark: 0,
-        auto: 0
-      };
-      themeStats.forEach((stat) => {
-        if (stat.theme === "light") themeDistribution.light = stat._count.theme;
-        if (stat.theme === "dark") themeDistribution.dark = stat._count.theme;
-        if (stat.theme === "auto") themeDistribution.auto = stat._count.theme;
-      });
-      const languageDistribution = {};
-      languageStats.forEach((stat) => {
-        languageDistribution[stat.language] = stat._count.language;
-      });
-      const currencyDistribution = {};
-      currencyStats.forEach((stat) => {
-        currencyDistribution[stat.currency] = stat._count.currency;
-      });
-      let notificationsEnabled = 0;
-      let notificationsDisabled = 0;
-      notificationsStats.forEach((stat) => {
-        if (stat.emailNotifications) {
-          notificationsEnabled = stat._count.emailNotifications;
-        } else {
-          notificationsDisabled = stat._count.emailNotifications;
-        }
-      });
-      return {
-        totalPreferences,
-        themeDistribution,
-        languageDistribution,
-        currencyDistribution,
-        averageItemsPerPage: Math.round(itemsPerPageStats._avg.itemsPerPage || 20),
-        notificationsEnabled,
-        notificationsDisabled
-      };
-    } catch (error) {
-      throw new Error(`Failed to get user preferences stats: ${error.message}`);
-    }
-  },
-  // ================================
-  // FILTER OPERATIONS
-  // ================================
-  async getByTheme(theme) {
-    try {
-      const preferences = await db.userPreferences.findMany({
-        where: { theme },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: "desc"
-        }
-      });
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences by theme: ${error.message}`);
-    }
-  },
-  async getByLanguage(language) {
-    try {
-      const preferences = await db.userPreferences.findMany({
-        where: { language },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: "desc"
-        }
-      });
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences by language: ${error.message}`);
-    }
-  },
-  async getByCurrency(currency) {
-    try {
-      const preferences = await db.userPreferences.findMany({
-        where: { currency },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: "desc"
-        }
-      });
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences by currency: ${error.message}`);
-    }
-  },
-  async getWithCustomSettings() {
-    try {
-      const preferences = await db.userPreferences.findMany({
-        where: {
-          customSettings: {
-            not: null
-          }
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: "desc"
-        }
-      });
-      return preferences;
-    } catch (error) {
-      throw new Error(`Failed to get user preferences with custom settings: ${error.message}`);
-    }
-  },
-  // ================================
-  // VALIDATION OPERATIONS
-  // ================================
-  async validatePreferences(data) {
-    try {
-      const errors = [];
-      const warnings = [];
-      if (data.theme && !["light", "dark", "auto"].includes(data.theme)) {
-        errors.push("Theme must be one of: light, dark, auto");
-      }
-      if (data.dateFormat && !["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"].includes(data.dateFormat)) {
-        errors.push("Date format must be one of: DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD");
-      }
-      if (data.timeFormat && !["12h", "24h"].includes(data.timeFormat)) {
-        errors.push("Time format must be one of: 12h, 24h");
-      }
-      if (data.itemsPerPage && (data.itemsPerPage < 5 || data.itemsPerPage > 100)) {
-        warnings.push("Items per page should be between 5 and 100");
-      }
-      if (data.refreshInterval && (data.refreshInterval < 10 || data.refreshInterval > 300)) {
-        warnings.push("Refresh interval should be between 10 and 300 seconds");
-      }
-      return {
-        isValid: errors.length === 0,
-        errors,
-        warnings
-      };
-    } catch (error) {
-      throw new Error(`Failed to validate user preferences: ${error.message}`);
-    }
-  }
-};
-
 // src/features/auth/commands/auth.commands.ts
-var import_node_util = require("util");
 var import_node_crypto = __toESM(require("crypto"));
+var import_node_util = require("util");
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 
 // src/plugins/polar.ts
@@ -8207,7 +7731,7 @@ var EmailService = {
       const result = await resend.emails.send({
         from: process.env.FROM_EMAIL || "noreply@25stock.com",
         to: data.email,
-        subject: `Confirma\xE7\xE3o de Email - 25Stock`,
+        subject: "Confirma\xE7\xE3o de Email - 25Stock",
         html,
         text
       });
@@ -8267,44 +7791,47 @@ var PolarCommands = {
     try {
       const type = event?.type || "";
       const data = event?.data || {};
-      const findOrCreateCustomerByUserId = async (userId) => {
-        let customer = await db.customer.findFirst({ where: { userId } });
-        if (!customer) {
-          customer = await db.customer.create({ data: { userId, status: "ACTIVE" } });
+      const findOrCreateSubscriptionByUserId = async (userId) => {
+        let subscription3 = await db.subscription.findUnique({ where: { userId } });
+        if (!subscription3) {
+          subscription3 = await db.subscription.create({
+            data: {
+              userId,
+              status: "ACTIVE"
+            }
+          });
         }
-        return customer;
+        return subscription3;
       };
-      const findCustomerByPolarOrEmail = async (opts) => {
+      const findSubscriptionByPolarOrEmail = async (opts) => {
         const { polarCustomerId, email } = opts;
         if (polarCustomerId) {
-          const byPolar = await db.customer.findFirst({ where: { polarCustomerId } });
+          const byPolar = await db.subscription.findUnique({
+            where: { polarCustomerId }
+          });
           if (byPolar) return byPolar;
         }
         if (email) {
           const user = await db.user.findFirst({ where: { email } });
-          if (user) return await findOrCreateCustomerByUserId(user.id);
+          if (user) return await findOrCreateSubscriptionByUserId(user.id);
         }
         return null;
       };
-      const resolvePlanByPolarProduct = async (polarProductId) => {
-        if (!polarProductId) return null;
-        return await db.plan.findFirst({ where: { polarProductId } });
-      };
-      const setCustomerPlanAndStatus = async (customerId, planId, status, renewalDate, trialEndsAt) => {
-        return await db.customer.update({
-          where: { id: customerId },
+      const setSubscriptionPlanAndStatus = async (subscriptionId, polarProductId, status, renewalDate, trialEndsAt) => {
+        return await db.subscription.update({
+          where: { id: subscriptionId },
           data: {
-            planId: planId || void 0,
+            polarProductId: polarProductId || null,
             status,
-            renewalDate: renewalDate || null,
+            currentPeriodEnd: renewalDate || null,
             trialEndsAt: trialEndsAt || null
           }
         });
       };
-      const upsertInvoice = async (customerId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
+      const upsertInvoice = async (subscriptionId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
         if (!amountCents && !polarInvoiceId) return null;
-        const amount = amountCents ? (Number(amountCents) / 100).toFixed(2) : "0.00";
-        const existing = polarInvoiceId ? await db.invoice.findFirst({ where: { polarInvoiceId } }) : null;
+        const amount = amountCents ? Number(amountCents) / 100 : 0;
+        const existing = polarInvoiceId ? await db.invoice.findUnique({ where: { polarInvoiceId } }) : null;
         if (existing) {
           return await db.invoice.update({
             where: { id: existing.id },
@@ -8316,7 +7843,7 @@ var PolarCommands = {
         }
         return await db.invoice.create({
           data: {
-            customerId,
+            subscriptionId,
             amount,
             status,
             polarInvoiceId: polarInvoiceId || null,
@@ -8332,22 +7859,25 @@ var PolarCommands = {
           const polarCustomerId = checkout?.customer_id;
           const polarSubscriptionId = checkout?.subscription_id;
           if (userIdFromMetadata) {
-            const customer = await findOrCreateCustomerByUserId(userIdFromMetadata);
-            await db.customer.update({
-              where: { id: customer.id },
+            const subscription3 = await findOrCreateSubscriptionByUserId(userIdFromMetadata);
+            await db.subscription.update({
+              where: { id: subscription3.id },
               data: {
-                polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-                polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null
+                polarCustomerId: polarCustomerId || subscription3.polarCustomerId || null,
+                polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
               }
             });
           } else if (polarCustomerId) {
-            const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email: null });
-            if (customer) {
-              await db.customer.update({
-                where: { id: customer.id },
+            const subscription3 = await findSubscriptionByPolarOrEmail({
+              polarCustomerId,
+              email: null
+            });
+            if (subscription3) {
+              await db.subscription.update({
+                where: { id: subscription3.id },
                 data: {
                   polarCustomerId,
-                  polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null
+                  polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
                 }
               });
             }
@@ -8360,13 +7890,13 @@ var PolarCommands = {
           const polarCustomerId = subscription2?.customer_id;
           const polarSubscriptionId = subscription2?.id;
           if (polarCustomerId || polarSubscriptionId) {
-            const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email: null });
-            if (customer) {
-              await db.customer.update({
-                where: { id: customer.id },
+            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null });
+            if (sub) {
+              await db.subscription.update({
+                where: { id: sub.id },
                 data: {
-                  polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-                  polarSubscriptionId: polarSubscriptionId || customer.polarSubscriptionId || null
+                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null
                 }
               });
             }
@@ -8380,18 +7910,15 @@ var PolarCommands = {
           const polarCustomerId = order?.customer_id || order?.customerId;
           const email = order?.customer?.email || order?.email;
           const productId = order?.product_id || order?.productId;
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email });
-          if (customer) {
-            await db.customer.update({
-              where: { id: customer.id },
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (sub) {
+            await db.subscription.update({
+              where: { id: sub.id },
               data: {
-                polarCustomerId: polarCustomerId || customer.polarCustomerId || null
+                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                polarProductId: productId || sub.polarProductId || null
               }
             });
-            const plan = await resolvePlanByPolarProduct(productId);
-            if (plan && customer.planId !== plan.id) {
-              await db.customer.update({ where: { id: customer.id }, data: { planId: plan.id } });
-            }
           }
           break;
         }
@@ -8403,18 +7930,11 @@ var PolarCommands = {
           const amountCents = order?.amount || order?.amount_cents || order?.total_amount_cents;
           const invoiceId = order?.invoice_id || order?.invoiceId;
           const currentPeriodEndIso = order?.current_period_end;
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email });
-          if (!customer) break;
-          const plan = await resolvePlanByPolarProduct(productId);
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
           const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null;
-          await setCustomerPlanAndStatus(
-            customer.id,
-            plan ? plan.id : null,
-            "ACTIVE",
-            renewalDate,
-            null
-          );
-          await upsertInvoice(customer.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
+          await setSubscriptionPlanAndStatus(sub.id, productId || null, "ACTIVE", renewalDate, null);
+          await upsertInvoice(sub.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
           break;
         }
         case "order.refunded": {
@@ -8422,41 +7942,41 @@ var PolarCommands = {
           const polarCustomerId = order?.customer_id || order?.customerId;
           const email = order?.customer?.email || order?.email;
           const invoiceId = order?.invoice_id || order?.invoiceId;
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email });
-          if (!customer) break;
-          await setCustomerPlanAndStatus(customer.id, customer.planId, "INACTIVE", null, null);
-          await upsertInvoice(customer.id, null, invoiceId || null, "FAILED", null);
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, "INACTIVE", null, null);
+          await upsertInvoice(sub.id, null, invoiceId || null, "REFUNDED", null);
           break;
         }
         case "customer.state_changed": {
           const email = data?.email;
           const polarCustomerId = data?.id;
           const activeSub = Array.isArray(data?.active_subscriptions) && data.active_subscriptions.length > 0 ? data.active_subscriptions[0] : null;
-          const customer = await findCustomerByPolarOrEmail({ polarCustomerId, email });
-          if (!customer) break;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
           const productId = activeSub?.product_id;
-          const plan = await resolvePlanByPolarProduct(productId);
           const statusMap = {
             active: "ACTIVE",
             trialing: "TRIAL",
             canceled: "CANCELLED",
             paused: "INACTIVE",
-            past_due: "INACTIVE"
+            past_due: "PAST_DUE",
+            expired: "EXPIRED"
           };
           const subStatus = activeSub?.status;
           const mappedStatus = subStatus && statusMap[subStatus] ? statusMap[subStatus] : "ACTIVE";
           const renewalDate = activeSub?.current_period_end ? new Date(activeSub.current_period_end) : null;
           const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null;
-          await db.customer.update({
-            where: { id: customer.id },
+          await db.subscription.update({
+            where: { id: sub.id },
             data: {
-              polarCustomerId: polarCustomerId || customer.polarCustomerId || null,
-              polarSubscriptionId: activeSub?.id || customer.polarSubscriptionId || null
+              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null
             }
           });
-          await setCustomerPlanAndStatus(
-            customer.id,
-            plan ? plan.id : null,
+          await setSubscriptionPlanAndStatus(
+            sub.id,
+            productId || null,
             mappedStatus,
             renewalDate,
             trialEndsAt
@@ -8835,7 +8355,6 @@ var AuthCommands = {
     });
     return { token, message: "Token refreshed successfully" };
   },
-  // Helper methods
   generateJWT(payload) {
     const secret = process.env.JWT_SECRET || "your-secret-key";
     return import_jsonwebtoken.default.sign(payload, secret, { expiresIn: "7d" });
@@ -8849,74 +8368,15 @@ var AuthCommands = {
   generateVerificationCode() {
     return Math.floor(1e5 + Math.random() * 9e5).toString();
   },
-  // Verify JWT token
   verifyToken(token) {
     const secret = process.env.JWT_SECRET || "your-secret-key";
     return import_jsonwebtoken.default.verify(token, secret);
   },
-  // Extract token from Authorization header
   extractToken(authHeader) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new Error("Invalid authorization header");
     }
     return authHeader.substring(7);
-  },
-  async updateProfile(userId, data) {
-    const { name, email } = data;
-    if (email) {
-      const existingUser = await db.user.findFirst({
-        where: {
-          email,
-          id: { not: userId }
-        }
-      });
-      if (existingUser) {
-        throw new Error("Email already exists");
-      }
-    }
-    const updateData = {};
-    if (name) updateData.name = name;
-    let newVerificationCode;
-    if (email) {
-      newVerificationCode = AuthCommands.generateVerificationCode();
-      const verificationToken = AuthCommands.generateVerificationToken();
-      const codeExpires = new Date(Date.now() + 15 * 60 * 1e3);
-      updateData.email = email;
-      updateData.emailVerified = false;
-      updateData.emailVerificationCode = newVerificationCode;
-      updateData.emailVerificationToken = verificationToken;
-      updateData.emailVerificationCodeExpires = codeExpires;
-    }
-    const user = await db.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        isOwner: true,
-        storeId: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    if (email && newVerificationCode) {
-      try {
-        await EmailService.sendEmailVerification({
-          email: user.email,
-          name: user.name || "Usu\xE1rio",
-          verificationCode: newVerificationCode,
-          expiresIn: "15 minutos"
-        });
-        console.log(`Email changed for user ${userId} - verification code sent`);
-      } catch (error) {
-        console.error("Failed to send verification email:", error);
-      }
-    }
-    return user;
   },
   async googleLogin(token) {
     if (!process.env.GOOGLE_CLIENT_ID) {
@@ -9040,321 +8500,8 @@ var AuthCommands = {
   }
 };
 
-// src/features/auth/queries/auth.queries.ts
-var AuthQueries = {
-  async getById(id) {
-    const user = await prisma.user.findUnique({
-      where: { id, status: true },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    return user;
-  },
-  async getByEmail(email) {
-    const user = await prisma.user.findUnique({
-      where: { email, status: true },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    return user;
-  },
-  async getByResetToken(token) {
-    const user = await prisma.user.findFirst({
-      where: {
-        resetPasswordToken: token,
-        resetPasswordExpires: {
-          gt: /* @__PURE__ */ new Date()
-        },
-        status: true
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    return user;
-  },
-  async getByVerificationToken(token) {
-    const user = await prisma.user.findFirst({
-      where: {
-        emailVerificationToken: token,
-        emailVerified: false,
-        status: true
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    return user;
-  },
-  async getActiveUsers() {
-    const users = await prisma.user.findMany({
-      where: { status: true },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  async getVerifiedUsers() {
-    const users = await prisma.user.findMany({
-      where: {
-        status: true,
-        emailVerified: true
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  async getUnverifiedUsers() {
-    const users = await prisma.user.findMany({
-      where: {
-        status: true,
-        emailVerified: false
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  async getUserStats() {
-    const [totalUsers, activeUsers, verifiedUsers, unverifiedUsers, recentLogins] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.user.count({ where: { status: true } }),
-      this.prisma.user.count({
-        where: {
-          status: true,
-          emailVerified: true
-        }
-      }),
-      this.prisma.user.count({
-        where: {
-          status: true,
-          emailVerified: false
-        }
-      }),
-      this.prisma.user.count({
-        where: {
-          status: true,
-          lastLoginAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1e3)
-            // Last 7 days
-          }
-        }
-      })
-    ]);
-    return {
-      totalUsers,
-      activeUsers,
-      verifiedUsers,
-      unverifiedUsers,
-      recentLogins
-    };
-  },
-  async searchUsers(searchTerm, limit = 10) {
-    const users = await prisma.user.findMany({
-      where: {
-        status: true,
-        OR: [
-          { name: { contains: searchTerm, mode: "insensitive" } },
-          { email: { contains: searchTerm, mode: "insensitive" } }
-        ]
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true
-      },
-      take: limit,
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  async getUsersWithPendingVerification() {
-    const users = await prisma.user.findMany({
-      where: {
-        status: true,
-        emailVerified: false,
-        emailVerificationToken: {
-          not: null
-        }
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        emailVerificationToken: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  async getUsersWithPendingReset() {
-    const users = await prisma.user.findMany({
-      where: {
-        status: true,
-        resetPasswordToken: {
-          not: null
-        },
-        resetPasswordExpires: {
-          gt: /* @__PURE__ */ new Date()
-        }
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        resetPasswordToken: true,
-        resetPasswordExpires: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
-  // Verify if user exists by email
-  async userExists(email) {
-    const count = await prisma.user.count({
-      where: { email }
-    });
-    return count > 0;
-  },
-  // Verify if email is already verified
-  async isEmailVerified(email) {
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: { emailVerified: true }
-    });
-    return user?.emailVerified || false;
-  },
-  // Get user profile for authenticated user
-  async getUserProfile(userId) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId, status: true },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        emailVerified: true,
-        status: true,
-        lastLoginAt: true,
-        phone: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    return user;
-  },
-  async getUserPlan(userId) {
-    const subscription2 = await prisma.subscription.findUnique({
-      where: { userId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
-          }
-        }
-      }
-    });
-    return subscription2 || null;
-  },
-  async getStoreByOwner(userId) {
-    const store = await prisma.store.findFirst({
-      where: {
-        ownerId: userId,
-        status: true
-      },
-      select: {
-        id: true,
-        name: true,
-        cnpj: true,
-        email: true,
-        phone: true,
-        status: true,
-        cep: true,
-        city: true,
-        state: true,
-        address: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-    return store;
-  }
-};
-
 // src/features/auth/auth.controller.ts
 var AuthController = {
-  // === AUTH CRUD ===
   async register(request, reply) {
     try {
       const { name, email, password, phone } = request.body;
@@ -9391,8 +8538,7 @@ var AuthController = {
         user: result.user,
         store: result.store,
         token: result.token,
-        message: "Login successful",
-        preferences: await UserPreferencesQueries.getByUserIdOrCreate(result.user.id)
+        message: "Login successful"
       });
     } catch (error) {
       request.log.error(error);
@@ -9575,195 +8721,6 @@ var AuthController = {
       });
     }
   },
-  async logout(request, reply) {
-    try {
-      return reply.send({
-        message: "Logout successful"
-      });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  // === QUERIES ===
-  async getProfile(request, reply) {
-    try {
-      const authHeader = request.headers.authorization;
-      if (!authHeader) {
-        return reply.status(401).send({
-          error: "Authorization header required"
-        });
-      }
-      const token = AuthCommands.extractToken(authHeader);
-      const payload = AuthCommands.verifyToken(token);
-      const user = await AuthQueries.getUserProfile(payload.userId);
-      const plan = await AuthQueries.getUserPlan(payload.userId);
-      return reply.send({ user: { ...user, plan } });
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Invalid authorization header" || error.message === "User not found") {
-        return reply.status(401).send({
-          error: "Invalid token"
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async updateProfile(request, reply) {
-    try {
-      const authHeader = request.headers.authorization;
-      if (!authHeader) {
-        return reply.status(401).send({
-          error: "Authorization header required"
-        });
-      }
-      const token = AuthCommands.extractToken(authHeader);
-      const payload = AuthCommands.verifyToken(token);
-      const { name, email } = request.body;
-      if (!name && !email) {
-        return reply.status(400).send({
-          error: "At least one field (name or email) must be provided"
-        });
-      }
-      const user = await AuthCommands.updateProfile(payload.userId, { name, email });
-      return reply.send({
-        user,
-        message: "Profile updated successfully"
-      });
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Invalid authorization header") {
-        return reply.status(401).send({
-          error: "Invalid token"
-        });
-      }
-      if (error.message === "Email already exists") {
-        return reply.status(409).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getProfilePermissions(request, reply) {
-    try {
-      const authHeader = request.headers.authorization;
-      if (!authHeader) {
-        return reply.status(401).send({
-          error: "Authorization header required"
-        });
-      }
-      const token = AuthCommands.extractToken(authHeader);
-      const payload = AuthCommands.verifyToken(token);
-      const { storeId, active, page, limit } = request.query;
-      const permissions = await AuthQueries.getProfilePermissions(payload.userId, {
-        storeId,
-        active,
-        page,
-        limit
-      });
-      return reply.send(permissions);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Invalid authorization header") {
-        return reply.status(401).send({
-          error: "Invalid token"
-        });
-      }
-      if (error.message === "User not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getActive(request, reply) {
-    try {
-      const users = await AuthQueries.getActiveUsers();
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getVerified(request, reply) {
-    try {
-      const users = await AuthQueries.getVerifiedUsers();
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getUnverified(request, reply) {
-    try {
-      const users = await AuthQueries.getUnverifiedUsers();
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getStats(request, reply) {
-    try {
-      const stats = await AuthQueries.getUserStats();
-      return reply.send(stats);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async search(request, reply) {
-    try {
-      const { q, limit = 10 } = request.query;
-      const users = await AuthQueries.searchUsers(q, limit);
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getPendingVerification(request, reply) {
-    try {
-      const users = await AuthQueries.getUsersWithPendingVerification();
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getPendingReset(request, reply) {
-    try {
-      const users = await AuthQueries.getUsersWithPendingReset();
-      return reply.send({ users });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
   async googleLogin(request, reply) {
     try {
       const { id_token } = request.body;
@@ -9772,8 +8729,7 @@ var AuthController = {
         user: result.user,
         store: result.store,
         token: result.token,
-        message: "Google login successful",
-        preferences: await UserPreferencesQueries.getByUserIdOrCreate(result.user.id)
+        message: "Google login successful"
       });
     } catch (error) {
       request.log.error(error);
@@ -10168,102 +9124,6 @@ var refreshTokenSchema = {
     }
   }
 };
-var logoutSchema = {
-  headers: {
-    type: "object",
-    properties: {
-      authorization: {
-        type: "string",
-        description: "Bearer token"
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        message: { type: "string" }
-      }
-    },
-    401: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var updateProfileSchema = {
-  headers: {
-    type: "object",
-    properties: {
-      authorization: {
-        type: "string",
-        description: "Bearer token"
-      }
-    }
-  },
-  body: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        minLength: 2,
-        maxLength: 100,
-        description: "User full name"
-      },
-      email: {
-        type: "string",
-        format: "email",
-        description: "User email address"
-      }
-    },
-    additionalProperties: false
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        user: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            name: { type: "string" },
-            email: { type: "string" },
-            emailVerified: { type: "boolean" },
-            status: { type: "boolean" },
-            roles: {
-              type: "array",
-              items: { type: "string" }
-            },
-            lastLoginAt: { type: ["string", "null"], format: "date-time" },
-            createdAt: { type: "string", format: "date-time" },
-            updatedAt: { type: "string", format: "date-time" }
-          }
-        },
-        message: { type: "string" }
-      }
-    },
-    400: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    401: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    409: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
 var googleLoginSchema = {
   body: {
     type: "object",
@@ -10330,263 +9190,106 @@ var googleLoginSchema = {
     }
   }
 };
-var getProfilePermissionsSchema = {
-  headers: {
-    type: "object",
-    properties: {
-      authorization: {
-        type: "string",
-        description: "Bearer token"
-      }
-    }
-  },
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: {
-        type: "string",
-        description: "Store ID to filter permissions"
-      },
-      active: {
-        type: "boolean",
-        description: "Filter active permissions only"
-      },
-      page: {
-        type: "number",
-        minimum: 1,
-        default: 1,
-        description: "Page number for pagination"
-      },
-      limit: {
-        type: "number",
-        minimum: 1,
-        maximum: 100,
-        default: 10,
-        description: "Number of items per page"
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        userId: { type: "string" },
-        userRoles: {
-          type: "array",
-          items: { type: "string" }
-        },
-        storeId: { type: ["string", "null"] },
-        effectivePermissions: {
-          type: "array",
-          items: { type: "string" }
-        },
-        customPermissions: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              action: { type: "string" },
-              resource: { type: ["string", "null"] },
-              storeId: { type: ["string", "null"] },
-              grant: { type: "boolean" },
-              conditions: { type: ["object", "null"] },
-              expiresAt: { type: ["string", "null"], format: "date-time" },
-              reason: { type: ["string", "null"] },
-              createdAt: { type: "string", format: "date-time" },
-              createdBy: { type: "string" },
-              creator: {
-                type: ["object", "null"],
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" }
-                }
-              }
-            }
-          }
-        },
-        storePermissions: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              storeId: { type: "string" },
-              storeRole: { type: "string" },
-              permissions: {
-                type: "array",
-                items: { type: "string" }
-              },
-              conditions: { type: ["object", "null"] },
-              expiresAt: { type: ["string", "null"], format: "date-time" },
-              createdAt: { type: "string", format: "date-time" },
-              createdBy: { type: "string" },
-              store: {
-                type: ["object", "null"],
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" }
-                }
-              },
-              creator: {
-                type: ["object", "null"],
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" }
-                }
-              }
-            }
-          }
-        },
-        pagination: {
-          type: ["object", "null"],
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            pages: { type: "number" }
-          }
-        }
-      }
-    },
-    401: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
+var AuthSchemas = {
+  register: registerSchema,
+  login: loginSchema,
+  forgotPassword: forgotPasswordSchema,
+  verifyResetCode: verifyResetCodeSchema,
+  resetPassword: resetPasswordSchema,
+  verifyEmail: verifyEmailSchema,
+  verifyEmailCode: verifyEmailCodeSchema,
+  resendVerification: resendVerificationSchema,
+  refreshToken: refreshTokenSchema,
+  googleLogin: googleLoginSchema
 };
 
 // src/features/auth/auth.routes.ts
 async function AuthRoutes(fastify2) {
   fastify2.post("/signup", {
-    schema: registerSchema,
+    schema: AuthSchemas.register,
     handler: AuthController.register
   });
   fastify2.post("/signin", {
-    schema: loginSchema,
+    schema: AuthSchemas.login,
     handler: AuthController.login
   });
   fastify2.post("/forgot-password", {
-    schema: forgotPasswordSchema,
+    schema: AuthSchemas.forgotPassword,
     handler: AuthController.forgotPassword
   });
   fastify2.post("/verify-reset-code", {
-    schema: verifyResetCodeSchema,
+    schema: AuthSchemas.verifyResetCode,
     handler: AuthController.verifyResetCode
   });
   fastify2.post("/reset-password", {
-    schema: resetPasswordSchema,
+    schema: AuthSchemas.resetPassword,
     handler: AuthController.resetPassword
   });
   fastify2.post("/verify-email", {
-    schema: verifyEmailSchema,
+    schema: AuthSchemas.verifyEmail,
     handler: AuthController.verifyEmail
   });
   fastify2.post("/verify-email-code", {
-    schema: verifyEmailCodeSchema,
+    schema: AuthSchemas.verifyEmailCode,
     handler: AuthController.verifyEmailCode
   });
   fastify2.post("/google", {
-    schema: googleLoginSchema,
+    schema: AuthSchemas.googleLogin,
     handler: AuthController.googleLogin
   });
   fastify2.post("/resend-verification", {
-    schema: resendVerificationSchema,
+    schema: AuthSchemas.resendVerification,
     handler: AuthController.resendVerification
   });
   fastify2.post("/refresh-token", {
-    schema: refreshTokenSchema,
+    schema: AuthSchemas.refreshToken,
     handler: AuthController.refreshToken
-  });
-  fastify2.post("/logout", {
-    schema: logoutSchema,
-    handler: AuthController.logout
-  });
-  fastify2.get("/profile", {
-    handler: AuthController.getProfile
-  });
-  fastify2.put("/profile", {
-    schema: updateProfileSchema,
-    handler: AuthController.updateProfile
-  });
-  fastify2.get("/profile/permissions", {
-    schema: getProfilePermissionsSchema,
-    handler: AuthController.getProfilePermissions
-  });
-  fastify2.get("/users/active", {
-    handler: AuthController.getActive
-  });
-  fastify2.get("/users/verified", {
-    handler: AuthController.getVerified
-  });
-  fastify2.get("/users/unverified", {
-    handler: AuthController.getUnverified
-  });
-  fastify2.get("/stats", {
-    handler: AuthController.getStats
-  });
-  fastify2.get("/search", {
-    handler: AuthController.search
-  });
-  fastify2.get("/users/pending-verification", {
-    handler: AuthController.getPendingVerification
-  });
-  fastify2.get("/users/pending-reset", {
-    handler: AuthController.getPendingReset
   });
 }
 
 // src/middlewares/auth.middleware.ts
-var Auth = async (request, reply) => {
+var import_jsonwebtoken2 = __toESM(require("jsonwebtoken"));
+async function Auth(request, reply) {
   try {
-    const header = request.headers.authorization;
-    if (!header) {
-      return reply.status(401).send({
-        error: "Authorization header required"
-      });
+    const authHeader = request.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      return reply.status(401).send({ error: "Authorization header missing or invalid" });
     }
-    const token = AuthCommands.extractToken(header);
-    const payload = AuthCommands.verifyToken(token);
-    const user = await AuthQueries.getUserProfile(payload.userId);
-    if (!user || !user.status) {
-      return reply.status(401).send({
-        error: "User not found or inactive"
-      });
+    const token = authHeader.slice(7);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error("JWT secret not configured");
+    }
+    const payload = import_jsonwebtoken2.default.verify(token, secret);
+    const user = await db.user.findUnique({
+      where: { id: payload.userId, status: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        emailVerified: true,
+        status: true,
+        lastLoginAt: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+    if (!user) {
+      return reply.status(403).send({ error: "User not found or inactive" });
     }
     request.user = user;
-    return;
+    return user;
   } catch (error) {
-    request.log.error(error);
-    if (error instanceof Error && error.message === "Invalid authorization header") {
-      return reply.status(401).send({
-        error: "Invalid authorization header format"
-      });
+    if (error instanceof import_jsonwebtoken2.default.TokenExpiredError) {
+      return reply.status(401).send({ error: "Token expired" });
     }
-    if (error instanceof Error && error.name === "JsonWebTokenError") {
-      return reply.status(401).send({
-        error: "Invalid token"
-      });
+    if (error instanceof import_jsonwebtoken2.default.JsonWebTokenError) {
+      return reply.status(401).send({ error: "Invalid token" });
     }
-    if (error instanceof Error && error.name === "TokenExpiredError") {
-      return reply.status(401).send({
-        error: "Token expired"
-      });
-    }
-    return reply.status(500).send({
-      error: "Internal server error"
-    });
+    console.error("Auth middleware error:", error);
+    return reply.status(500).send({ error: "Internal server error" });
   }
-};
+}
 
 // src/middlewares/permission.middleware.ts
 var Permission = (resource, action) => {
@@ -10624,10 +9327,7 @@ var Store = async (request, reply) => {
   try {
     const store = await db.store.findFirst({
       where: {
-        OR: [
-          { ownerId: request.user?.id },
-          { users: { some: { id: request.user?.id } } }
-        ]
+        OR: [{ ownerId: request.user?.id }, { users: { some: { id: request.user?.id } } }]
       },
       select: { id: true, name: true }
     });
@@ -11419,12 +10119,12 @@ var CategoryQueries = {
         createdAt: "asc"
       }
     });
-    const groupedData = this.groupByPeriod(categories, period);
+    const groupedData = CategoryQueries.groupByPeriod(categories, period);
     const totalCategories = categories.length;
     const activeCategories = categories.filter((cat) => cat.status).length;
     const inactiveCategories = totalCategories - activeCategories;
     const periods = Object.keys(groupedData).sort();
-    const growthRate = this.calculateGrowthRate(groupedData, periods);
+    const growthRate = CategoryQueries.calculateGrowthRate(groupedData, periods);
     return {
       data: groupedData,
       metadata: {
@@ -11493,13 +10193,13 @@ var CategoryQueries = {
         createdAt: "asc"
       }
     });
-    const groupedData = this.groupByPeriod(categories, period);
+    const groupedData = CategoryQueries.groupByPeriod(categories, period);
     const totalCategories = categories.length;
     const activeCategories = categories.filter((cat) => cat.status).length;
     const inactiveCategories = totalCategories - activeCategories;
     const periods = Object.keys(groupedData).sort();
-    const growthRate = this.calculateGrowthRate(groupedData, periods);
-    const periodStats = this.calculatePeriodStats(groupedData, periods);
+    const growthRate = CategoryQueries.calculateGrowthRate(groupedData, periods);
+    const periodStats = CategoryQueries.calculatePeriodStats(groupedData, periods);
     return {
       data: groupedData,
       periodStats,
@@ -11519,7 +10219,7 @@ var CategoryQueries = {
   // Métodos auxiliares privados
   groupByPeriod(categories, period) {
     const grouped = {};
-    categories.forEach((category) => {
+    for (const category of categories) {
       const date = new Date(category.createdAt);
       let key;
       switch (period) {
@@ -11527,9 +10227,11 @@ var CategoryQueries = {
           key = date.toISOString().split("T")[0];
           break;
         case "week":
-          const weekStart = new Date(date);
-          weekStart.setDate(date.getDate() - date.getDay());
-          key = weekStart.toISOString().split("T")[0];
+          {
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            key = weekStart.toISOString().split("T")[0];
+          }
           break;
         case "month":
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -11537,21 +10239,19 @@ var CategoryQueries = {
         case "year":
           key = String(date.getFullYear());
           break;
-        default:
-          key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       }
       if (!grouped[key]) {
         grouped[key] = [];
       }
       grouped[key].push(category);
-    });
+    }
     const chartData = {};
-    Object.keys(grouped).forEach((key) => {
+    for (const key of Object.keys(grouped)) {
       chartData[key] = {
         count: grouped[key].length,
         categories: grouped[key]
       };
-    });
+    }
     return chartData;
   },
   calculateGrowthRate(groupedData, periods) {
@@ -11741,9 +10441,9 @@ var CategoryQueries = {
         updatedAt: "asc"
       }
     });
-    const groupedData = this.groupByPeriod(categories, period);
+    const groupedData = CategoryQueries.groupByPeriod(categories, period);
     const trendData = {};
-    Object.keys(groupedData).forEach((periodKey) => {
+    for (const periodKey of Object.keys(groupedData)) {
       const periodCategories = groupedData[periodKey].categories;
       const active = periodCategories.filter((cat) => cat.status).length;
       const inactive = periodCategories.filter((cat) => !cat.status).length;
@@ -11752,7 +10452,7 @@ var CategoryQueries = {
         inactive,
         total: active + inactive
       };
-    });
+    }
     return {
       trendData,
       metadata: {
@@ -13563,9 +12263,9 @@ var MovementQueries = {
     });
     let stock = 0;
     for (const movement of movements) {
-      if (movement.type === "ENTRADA") {
+      if (movement.type === "INBOUND") {
         stock += movement.quantity;
-      } else if (movement.type === "SAIDA" || movement.type === "PERDA") {
+      } else if (movement.type === "OUTBOUND" || movement.type === "LOSS") {
         stock -= movement.quantity;
       }
     }
@@ -13574,9 +12274,9 @@ var MovementQueries = {
   async getStats() {
     const [
       total,
-      entrada,
-      saida,
-      perda,
+      inbound,
+      outbound,
+      loss,
       totalValue,
       averageValue,
       _byType,
@@ -13585,9 +12285,9 @@ var MovementQueries = {
       bySupplier
     ] = await Promise.all([
       db.movement.count(),
-      db.movement.count({ where: { type: "ENTRADA" } }),
-      db.movement.count({ where: { type: "SAIDA" } }),
-      db.movement.count({ where: { type: "PERDA" } }),
+      db.movement.count({ where: { type: "INBOUND" } }),
+      db.movement.count({ where: { type: "OUTBOUND" } }),
+      db.movement.count({ where: { type: "LOSS" } }),
       db.movement.aggregate({
         _sum: {
           price: true
@@ -13663,15 +12363,15 @@ var MovementQueries = {
     );
     return {
       total,
-      entrada,
-      saida,
-      perda,
+      inbound,
+      outbound,
+      loss,
       totalValue: totalValue._sum.price || 0,
       averageValue: averageValue._avg.price || 0,
       byType: {
-        ENTRADA: entrada,
-        SAIDA: saida,
-        PERDA: perda
+        INBOUND: inbound,
+        OUTBOUND: outbound,
+        LOSS: loss
       },
       byStore: byStore.map((item) => ({
         storeId: item.storeId,
@@ -14079,12 +12779,12 @@ var MovementQueries = {
       }
     });
     const totalMovements = movements.length;
-    const entradaMovements = movements.filter((m) => m.type === "ENTRADA");
-    const saidaMovements = movements.filter((m) => m.type === "SAIDA");
-    const perdaMovements = movements.filter((m) => m.type === "PERDA");
-    const totalEntrada = entradaMovements.reduce((sum, m) => sum + m.quantity, 0);
-    const totalSaida = saidaMovements.reduce((sum, m) => sum + m.quantity, 0);
-    const totalPerda = perdaMovements.reduce((sum, m) => sum + m.quantity, 0);
+    const inboundMovements = movements.filter((m) => m.type === "INBOUND");
+    const outboundMovements = movements.filter((m) => m.type === "OUTBOUND");
+    const lossMovements = movements.filter((m) => m.type === "LOSS");
+    const totalInbound = inboundMovements.reduce((sum, m) => sum + m.quantity, 0);
+    const totalOutbound = outboundMovements.reduce((sum, m) => sum + m.quantity, 0);
+    const totalLoss = lossMovements.reduce((sum, m) => sum + m.quantity, 0);
     const totalValue = movements.reduce((sum, m) => sum + (Number(m.price) || 0), 0);
     const averageValue = totalMovements > 0 ? totalValue / totalMovements : 0;
     const stores = [...new Set(movements.map((m) => m.storeId))];
@@ -14115,17 +12815,17 @@ var MovementQueries = {
       },
       statistics: {
         totalMovements,
-        entrada: {
-          count: entradaMovements.length,
-          quantity: totalEntrada
+        inbound: {
+          count: inboundMovements.length,
+          quantity: totalInbound
         },
         saida: {
-          count: saidaMovements.length,
-          quantity: totalSaida
+          count: outboundMovements.length,
+          quantity: totalOutbound
         },
         perda: {
-          count: perdaMovements.length,
-          quantity: totalPerda
+          count: lossMovements.length,
+          quantity: totalLoss
         },
         totalValue,
         averageValue
@@ -14156,13 +12856,13 @@ async function calculateCurrentStock(productId) {
     }
   });
   let currentStock = 0;
-  movements.forEach((movement) => {
-    if (movement.type === "ENTRADA") {
+  for (const movement of movements) {
+    if (movement.type === "INBOUND") {
       currentStock += movement.quantity;
     } else {
       currentStock -= movement.quantity;
     }
-  });
+  }
   return currentStock;
 }
 var ProductQueries = {
@@ -14435,559 +13135,6 @@ var ProductQueries = {
       active,
       inactive
     };
-  },
-  async getByCategory(categoryId, storeId) {
-    const products = await db.product.findMany({
-      where: {
-        categories: {
-          some: {
-            categoryId
-          }
-        }
-      },
-      orderBy: { createdAt: "desc" },
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                code: true,
-                color: true,
-                icon: true
-              }
-            }
-          }
-        },
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true,
-            cnpj: true,
-            tradeName: true
-          }
-        },
-        store: {
-          select: {
-            id: true,
-            name: true,
-            cnpj: true
-          }
-        }
-      }
-    });
-    const productsWithStock = await Promise.all(
-      products.map(async (product) => {
-        const currentStock = await calculateCurrentStock(product.id);
-        return {
-          ...product,
-          categories: product.categories.map((pc) => pc.category),
-          currentStock
-        };
-      })
-    );
-    return productsWithStock;
-  },
-  async getBySupplier(supplierId, storeId) {
-    const products = await db.product.findMany({
-      where: { supplierId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                code: true,
-                color: true,
-                icon: true
-              }
-            }
-          }
-        },
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true,
-            cnpj: true,
-            tradeName: true
-          }
-        },
-        store: {
-          select: {
-            id: true,
-            name: true,
-            cnpj: true
-          }
-        }
-      }
-    });
-    const productsWithStock = await Promise.all(
-      products.map(async (product) => {
-        const currentStock = await calculateCurrentStock(product.id);
-        return {
-          ...product,
-          currentStock
-        };
-      })
-    );
-    return productsWithStock;
-  },
-  async getByStore(storeId) {
-    const products = await db.product.findMany({
-      where: { storeId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                code: true,
-                color: true,
-                icon: true
-              }
-            }
-          }
-        },
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true,
-            cnpj: true,
-            tradeName: true
-          }
-        },
-        store: {
-          select: {
-            id: true,
-            name: true,
-            cnpj: true
-          }
-        }
-      }
-    });
-    const productsWithStock = await Promise.all(
-      products.map(async (product) => {
-        const currentStock = await calculateCurrentStock(product.id);
-        return {
-          ...product,
-          categories: product.categories.map((pc) => pc.category),
-          currentStock
-        };
-      })
-    );
-    return productsWithStock;
-  },
-  // === FUNÇÕES ADICIONAIS DE PRODUTO ===
-  async getProductMovements(productId, params) {
-    const { page = 1, limit = 10, type, startDate, endDate } = params;
-    const skip2 = (page - 1) * limit;
-    const product = await db.product.findUnique({
-      where: { id: productId }
-    });
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    const where = {
-      productId
-    };
-    if (type) {
-      where.type = type;
-    }
-    if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) {
-        where.createdAt.gte = new Date(startDate);
-      }
-      if (endDate) {
-        where.createdAt.lte = new Date(endDate);
-      }
-    }
-    const [items, total] = await Promise.all([
-      db.movement.findMany({
-        where,
-        skip: skip2,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          product: {
-            select: {
-              id: true,
-              name: true,
-              unitOfMeasure: true
-            }
-          },
-          supplier: {
-            select: {
-              id: true,
-              corporateName: true,
-              cnpj: true
-            }
-          },
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          },
-          store: {
-            select: {
-              id: true,
-              name: true,
-              cnpj: true
-            }
-          }
-        }
-      }),
-      db.movement.count({ where })
-    ]);
-    return {
-      items,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  async getProductStockHistory(productId, limit = 30) {
-    const product = await db.product.findUnique({
-      where: { id: productId }
-    });
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    const movements = await db.movement.findMany({
-      where: { productId },
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: {
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true,
-            cnpj: true
-          }
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-    let currentStock = 0;
-    const stockHistory = movements.map((movement) => {
-      if (movement.type === "ENTRADA") {
-        currentStock += movement.quantity;
-      } else {
-        currentStock -= movement.quantity;
-      }
-      return {
-        ...movement,
-        balanceAfter: currentStock
-      };
-    }).reverse();
-    return {
-      product: {
-        id: product.id,
-        name: product.name,
-        stockMin: product.stockMin,
-        stockMax: product.stockMax,
-        alertPercentage: product.alertPercentage
-      },
-      currentStock,
-      history: stockHistory
-    };
-  },
-  async getLowStockProducts(storeId) {
-    const where = {
-      status: true
-    };
-    if (storeId) {
-      where.storeId = storeId;
-    }
-    const products = await db.product.findMany({
-      where,
-      include: {
-        movements: {
-          select: {
-            type: true,
-            quantity: true
-          }
-        },
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
-          }
-        },
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true
-          }
-        },
-        store: {
-          select: {
-            id: true,
-            name: true
-          }
-        }
-      }
-    });
-    const lowStockProducts = products.filter((product) => {
-      let currentStock = 0;
-      product.movements.forEach((movement) => {
-        if (movement.type === "ENTRADA") {
-          currentStock += movement.quantity;
-        } else {
-          currentStock -= movement.quantity;
-        }
-      });
-      return currentStock <= product.stockMin;
-    }).map((product) => {
-      let currentStock = 0;
-      product.movements.forEach((movement) => {
-        if (movement.type === "ENTRADA") {
-          currentStock += movement.quantity;
-        } else {
-          currentStock -= movement.quantity;
-        }
-      });
-      return {
-        ...product,
-        categories: product.categories.map((pc) => pc.category),
-        currentStock,
-        stockStatus: currentStock <= 0 ? "CRITICAL" : "LOW"
-      };
-    });
-    return lowStockProducts;
-  },
-  async getProductAnalytics(productId) {
-    const product = await db.product.findUnique({
-      where: { id: productId }
-    });
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    const movements = await db.movement.findMany({
-      where: { productId },
-      include: {
-        supplier: {
-          select: {
-            id: true,
-            corporateName: true
-          }
-        }
-      }
-    });
-    const totalMovements = movements.length;
-    const entradaMovements = movements.filter((m) => m.type === "ENTRADA");
-    const saidaMovements = movements.filter((m) => m.type === "SAIDA");
-    const perdaMovements = movements.filter((m) => m.type === "PERDA");
-    const totalEntrada = entradaMovements.reduce((sum, m) => sum + m.quantity, 0);
-    const totalSaida = saidaMovements.reduce((sum, m) => sum + m.quantity, 0);
-    const totalPerda = perdaMovements.reduce((sum, m) => sum + m.quantity, 0);
-    const currentStock = totalEntrada - totalSaida - totalPerda;
-    const monthlyMovements = movements.reduce(
-      (acc, movement) => {
-        const month = movement.createdAt.toISOString().substring(0, 7);
-        if (!acc[month]) {
-          acc[month] = { entrada: 0, saida: 0, perda: 0 };
-        }
-        acc[month][movement.type.toLowerCase()] += movement.quantity;
-        return acc;
-      },
-      {}
-    );
-    const supplierStats = movements.filter((m) => m.supplierId).reduce(
-      (acc, movement) => {
-        const supplierId = movement.supplierId;
-        if (!acc[supplierId]) {
-          acc[supplierId] = {
-            supplier: movement.supplier,
-            totalMovements: 0,
-            totalQuantity: 0
-          };
-        }
-        acc[supplierId].totalMovements++;
-        acc[supplierId].totalQuantity += movement.quantity;
-        return acc;
-      },
-      {}
-    );
-    return {
-      product: {
-        id: product.id,
-        name: product.name,
-        stockMin: product.stockMin,
-        stockMax: product.stockMax,
-        alertPercentage: product.alertPercentage
-      },
-      currentStock,
-      statistics: {
-        totalMovements,
-        totalEntrada,
-        totalSaida,
-        totalPerda,
-        monthlyMovements,
-        supplierStats: Object.values(supplierStats)
-      }
-    };
-  },
-  // === MÉTODOS PARA GERENCIAR CATEGORIAS DO PRODUTO ===
-  async getCategories(productId) {
-    const product = await db.product.findUnique({
-      where: { id: productId }
-    });
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    const categories = await db.productCategory.findMany({
-      where: { productId },
-      select: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            code: true,
-            color: true,
-            icon: true
-          }
-        }
-      }
-    });
-    return {
-      categories: categories.map((pc) => pc.category)
-    };
-  },
-  async getProductsByCategories(categoryIds, storeId, params) {
-    const { page = 1, limit = 10, search, status } = params;
-    const skip2 = (page - 1) * limit;
-    const where = {
-      categories: {
-        some: {
-          categoryId: { in: categoryIds }
-        }
-      }
-    };
-    if (status !== void 0) {
-      where.status = status;
-    }
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } }
-      ];
-    }
-    const [products, total] = await Promise.all([
-      db.product.findMany({
-        where,
-        skip: skip2,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          categories: {
-            select: {
-              category: {
-                select: {
-                  id: true,
-                  name: true,
-                  description: true,
-                  code: true,
-                  color: true,
-                  icon: true
-                }
-              }
-            }
-          },
-          supplier: {
-            select: {
-              id: true,
-              corporateName: true,
-              cnpj: true,
-              tradeName: true
-            }
-          },
-          store: {
-            select: {
-              id: true,
-              name: true,
-              cnpj: true
-            }
-          }
-        }
-      }),
-      db.product.count({ where })
-    ]);
-    const totalPages = Math.ceil(total / limit);
-    const transformedProducts = products.map((product) => ({
-      ...product,
-      categories: product.categories.map((pc) => pc.category)
-    }));
-    return {
-      products: transformedProducts,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages
-      }
-    };
-  }
-};
-
-// src/features/store/queries/store.queries.ts
-var StoreQueries = {
-  async getById(id) {
-    const store = await db.store.findUnique({
-      where: { id },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        products: {
-          select: {
-            id: true,
-            name: true,
-            referencePrice: true,
-            status: true,
-            createdAt: true
-          }
-        },
-        _count: {
-          select: {
-            products: true,
-            users: true
-          }
-        }
-      }
-    });
-    if (!store) {
-      throw new Error("Store not found");
-    }
-    return store;
   }
 };
 
@@ -15209,144 +13356,105 @@ var SupplierQueries = {
 };
 
 // src/features/chat/queries/chat.query.ts
-var ChatToolbox = class {
-  constructor(prisma2) {
-    this.prisma = prisma2;
-  }
+var ChatToolbox = {
   // === SERVIÇOS DE PRODUTOS ===
   async getProducts(params) {
     return await ProductQueries.list(params);
-  }
+  },
   async getProductById(id, storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for product queries");
     }
     return await ProductQueries.getById(id, storeId);
-  }
+  },
   async searchProducts(term, params = {}) {
     return await ProductQueries.search(term, params);
-  }
+  },
   async getActiveProducts(storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for product queries");
     }
     return await ProductQueries.getActive(storeId);
-  }
+  },
   async getProductStats(storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for product queries");
     }
     return await ProductQueries.getStats(storeId);
-  }
-  async getLowStockProducts(storeId) {
-    return await ProductQueries.getLowStockProducts(storeId);
-  }
-  // === SERVIÇOS DE LOJAS ===
-  async getStores(params) {
-    return await StoreQueries.list(params);
-  }
-  async getStoreById(id) {
-    return await StoreQueries.getById(id);
-  }
-  async searchStores(term, limit = 10) {
-    return await StoreQueries.search(term, limit);
-  }
-  async getActiveStores() {
-    return await StoreQueries.getActive();
-  }
-  async getStoreStats() {
-    return await StoreQueries.getStats();
-  }
+  },
   // === SERVIÇOS DE CATEGORIAS ===
   async getCategories(params) {
     return await CategoryQueries.list(params);
-  }
+  },
   async getCategoryById(id) {
     return await CategoryQueries.getById(id);
-  }
+  },
   async searchCategories(term, limit = 10, storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for category queries");
     }
     return await CategoryQueries.search(term, storeId, { limit });
-  }
+  },
   async getActiveCategories(storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for category queries");
     }
     return await CategoryQueries.getActive(storeId);
-  }
+  },
   async getCategoryStats(storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for category queries");
     }
     return await CategoryQueries.getStats(storeId);
-  }
+  },
   async getCategoryHierarchy(storeId) {
     if (!storeId) {
       throw new Error("Store ID is required for category queries");
     }
     return await CategoryQueries.getHierarchy(storeId);
-  }
+  },
   // === SERVIÇOS DE FORNECEDORES ===
   async getSuppliers(params) {
     return await SupplierQueries.list(params);
-  }
+  },
   async getSupplierById(id) {
     return await SupplierQueries.getById(id);
-  }
+  },
   async searchSuppliers(term, limit = 10) {
     return await SupplierQueries.search(term, String(limit));
-  }
+  },
   async getActiveSuppliers() {
     return await SupplierQueries.getActive();
-  }
+  },
   async getSupplierStats() {
     return await SupplierQueries.getStats();
-  }
+  },
   // === SERVIÇOS DE MOVIMENTAÇÕES ===
   async getMovements(params) {
     return await MovementQueries.list(params);
-  }
+  },
   async getMovementById(id) {
     return await MovementQueries.getById(id);
-  }
+  },
   async getMovementStats() {
     return await MovementQueries.getStats();
-  }
-  async getRecentMovements(limit = 10) {
-    return;
-  }
-  // === SERVIÇOS DE RELATÓRIOS ===
-  async getReports(params) {
-    return;
-  }
-  async getReportById(id) {
-    return;
-  }
-  async getReportStats() {
-    return;
-  }
+  },
   // === MÉTODO PARA EXECUTAR COMANDOS DINÂMICOS ===
   async executeCommand(command, params = {}) {
     const [service, method] = command.split(".");
     switch (service) {
       case "products":
         return await this.executeProductCommand(method, params);
-      case "stores":
-        return await this.executeStoreCommand(method, params);
       case "categories":
         return await this.executeCategoryCommand(method, params);
       case "suppliers":
         return await this.executeSupplierCommand(method, params);
       case "movements":
         return await this.executeMovementCommand(method, params);
-      case "reports":
-        return await this.executeReportCommand(method, params);
       default:
         throw new Error(`Unknown service: ${service}`);
     }
-  }
+  },
   async executeProductCommand(method, params) {
     switch (method) {
       case "list":
@@ -15359,28 +13467,10 @@ var ChatToolbox = class {
         return await this.getActiveProducts();
       case "getStats":
         return await this.getProductStats();
-      case "getLowStock":
-        return await this.getLowStockProducts(params.storeId);
       default:
         throw new Error(`Unknown product method: ${method}`);
     }
-  }
-  async executeStoreCommand(method, params) {
-    switch (method) {
-      case "list":
-        return await this.getStores(params);
-      case "getById":
-        return await this.getStoreById(params.id);
-      case "search":
-        return await this.searchStores(params.term, params.limit);
-      case "getActive":
-        return await this.getActiveStores();
-      case "getStats":
-        return await this.getStoreStats();
-      default:
-        throw new Error(`Unknown store method: ${method}`);
-    }
-  }
+  },
   async executeCategoryCommand(method, params) {
     switch (method) {
       case "list":
@@ -15398,7 +13488,7 @@ var ChatToolbox = class {
       default:
         throw new Error(`Unknown category method: ${method}`);
     }
-  }
+  },
   async executeSupplierCommand(method, params) {
     switch (method) {
       case "list":
@@ -15414,7 +13504,7 @@ var ChatToolbox = class {
       default:
         throw new Error(`Unknown supplier method: ${method}`);
     }
-  }
+  },
   async executeMovementCommand(method, params) {
     switch (method) {
       case "list":
@@ -15423,22 +13513,8 @@ var ChatToolbox = class {
         return await this.getMovementById(params.id);
       case "getStats":
         return await this.getMovementStats();
-      case "getRecent":
-        return await this.getRecentMovements(params.limit);
       default:
         throw new Error(`Unknown movement method: ${method}`);
-    }
-  }
-  async executeReportCommand(method, params) {
-    switch (method) {
-      case "list":
-        return await this.getReports(params);
-      case "getById":
-        return await this.getReportById(params.id);
-      case "getStats":
-        return await this.getReportStats();
-      default:
-        throw new Error(`Unknown report method: ${method}`);
     }
   }
 };
@@ -15588,7 +13664,7 @@ var ChatQueries = {
           select: {
             id: true,
             content: true,
-            isFromUser: true,
+            role: true,
             createdAt: true,
             updatedAt: true
           },
@@ -15609,7 +13685,7 @@ var ChatQueries = {
       formattedMessages.push({
         id: `${message.id}_user`,
         content: message.content,
-        isUser: true,
+        role: message.role,
         createdAt: message.createdAt,
         updatedAt: message.updatedAt
       });
@@ -15684,8 +13760,7 @@ var ChatQueries = {
             "products.getById - Buscar produto por ID",
             "products.search - Buscar produtos por termo",
             "products.getActive - Listar produtos ativos",
-            "products.getStats - Estat\xEDsticas de produtos",
-            "products.getLowStock - Produtos com estoque baixo"
+            "products.getStats - Estat\xEDsticas de produtos"
           ]
         },
         stores: {
@@ -15828,7 +13903,7 @@ var ChatCommands = {
     const chatMessage = await db.chatMessage.create({
       data: {
         content: data.content,
-        isFromUser: data.isFromUser,
+        role: data.isFromUser ? "USER" : "ASSISTANT",
         sessionId: data.sessionId,
         context: data.context || {},
         options: data.options || {}
@@ -15856,100 +13931,6 @@ var ChatCommands = {
         title: data.message.substring(0, 50) + (data.message.length > 50 ? "..." : "")
       });
       sessionId = session.id;
-    }
-    const toolbox = new ChatToolbox(db);
-    let systemData = "";
-    const message = data.message.toLowerCase();
-    if (message.includes("produto") || message.includes("estoque") || message.includes("invent\xE1rio")) {
-      try {
-        const products = await toolbox.executeCommand("products.list", {
-          limit: 10,
-          ...data.context?.storeId && { storeId: data.context.storeId }
-        });
-        systemData += `
-DADOS DE PRODUTOS DISPON\xCDVEIS:
-${JSON.stringify(products, null, 2)}
-`;
-      } catch (error) {
-        systemData += `
-Erro ao buscar produtos: ${error.message}
-`;
-      }
-    }
-    if (message.includes("categoria") || message.includes("categorias")) {
-      try {
-        const categories = await toolbox.executeCommand("categories.list", { limit: 10 });
-        systemData += `
-DADOS DE CATEGORIAS DISPON\xCDVEIS:
-${JSON.stringify(categories, null, 2)}
-`;
-      } catch (error) {
-        systemData += `
-Erro ao buscar categorias: ${error.message}
-`;
-      }
-    }
-    if (message.includes("loja") || message.includes("lojas") || message.includes("store")) {
-      try {
-        const stores = await toolbox.executeCommand("stores.list", { limit: 10 });
-        systemData += `
-DADOS DE LOJAS DISPON\xCDVEIS:
-${JSON.stringify(stores, null, 2)}
-`;
-      } catch (error) {
-        systemData += `
-Erro ao buscar lojas: ${error.message}
-`;
-      }
-    }
-    if (message.includes("fornecedor") || message.includes("fornecedores") || message.includes("supplier")) {
-      try {
-        const suppliers = await toolbox.executeCommand("suppliers.list", { limit: 10 });
-        systemData += `
-DADOS DE FORNECEDORES DISPON\xCDVEIS:
-${JSON.stringify(suppliers, null, 2)}
-`;
-      } catch (error) {
-        systemData += `
-Erro ao buscar fornecedores: ${error.message}
-`;
-      }
-    }
-    if (message.includes("movimenta\xE7\xE3o") || message.includes("movimenta\xE7\xF5es") || message.includes("movimento")) {
-      try {
-        const movements = await toolbox.executeCommand("movements.list", { limit: 10 });
-        systemData += `
-DADOS DE MOVIMENTA\xC7\xD5ES DISPON\xCDVEIS:
-${JSON.stringify(movements, null, 2)}
-`;
-      } catch (error) {
-        systemData += `
-Erro ao buscar movimenta\xE7\xF5es: ${error.message}
-`;
-      }
-    }
-    const toolboxInfo = await ChatQueries.getToolbox();
-    const systemPrompt = `
-Voc\xEA \xE9 um assistente inteligente para um sistema de gest\xE3o de estoque. 
-Voc\xEA tem acesso aos seguintes servi\xE7os atrav\xE9s da toolbox:
-
-${JSON.stringify(toolboxInfo, null, 2)}
-
-${systemData}
-
-Para acessar os servi\xE7os, use comandos no formato: service.method
-Exemplo: products.list, stores.getById, categories.search
-
-Responda de forma \xFAtil e precisa, sempre em portugu\xEAs.
-Use os dados fornecidos acima para responder \xE0s perguntas do usu\xE1rio de forma espec\xEDfica e precisa.
-
-Mensagem do usu\xE1rio: ${data.message}
-`;
-    let response;
-    if (data.options) {
-      response = systemPrompt;
-    } else {
-      response = systemPrompt;
     }
     const chatMessage = await ChatCommands.createMessage({
       content: data.message,
@@ -16044,10 +14025,21 @@ Mensagem do usu\xE1rio: ${data.message}
   async updateSessionTitleIntelligent(sessionId) {
     const messages = await db.chatMessage.findMany({
       where: { sessionId },
-      select: { content: true, isFromUser: true },
+      select: { content: true, role: true },
       orderBy: { createdAt: "asc" }
     });
-    const smartTitle = await ChatCommands.generateSmartTitle(messages);
+    const formattedMessages = [];
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].role === "USER") {
+        const nextMessage = messages[i + 1];
+        const response = nextMessage?.role === "ASSISTANT" ? nextMessage.content : "";
+        formattedMessages.push({
+          message: messages[i].content,
+          response
+        });
+      }
+    }
+    const smartTitle = await ChatCommands.generateSmartTitle(formattedMessages);
     await db.chatSession.update({
       where: { id: sessionId },
       data: { title: smartTitle }
@@ -16056,18 +14048,16 @@ Mensagem do usu\xE1rio: ${data.message}
   },
   // === EXECUÇÃO DE COMANDO DA TOOLBOX ===
   async executeToolboxCommand(command, params = {}) {
-    const toolbox = new ChatToolbox(db);
-    return await toolbox.executeCommand(command, params);
+    return await ChatToolbox.executeCommand(command, params);
   },
   // === EXECUÇÃO DE COMANDO COM CONTEXTO ===
   async executeCommandWithContext(data) {
-    const toolbox = new ChatToolbox(db);
     const enrichedParams = {
       ...data.params,
       ...data.context?.storeId && { storeId: data.context.storeId },
       ...data.context?.userId && { userId: data.context.userId }
     };
-    return await toolbox.executeCommand(data.command, enrichedParams);
+    return await ChatToolbox.executeCommand(data.command, enrichedParams);
   },
   // === DELETAR SESSÃO ===
   async deleteSession(sessionId) {
@@ -17150,7 +15140,7 @@ var CrmQueries = {
       throw error;
     }
   },
-  async search(term, limit = 10, storeId) {
+  async search(term, storeId, limit = 10) {
     return await db.crmClient.findMany({
       where: {
         storeId,
@@ -17466,7 +15456,7 @@ var CrmController = {
           error: "Store context required"
         });
       }
-      const result = await CrmQueries.search(q, limit, storeId);
+      const result = await CrmQueries.search(q, storeId, limit);
       return reply.send({ clients: result });
     } catch (error) {
       request.log.error(error);
@@ -18392,14 +16382,14 @@ var FlowExecutionCommands = {
         where: { id: executionId },
         select: { startedAt: true }
       });
-      const duration = startTime ? Date.now() - startTime.startedAt.getTime() : void 0;
+      const durationMs = startTime ? Date.now() - startTime.startedAt.getTime() : void 0;
       const execution = await db.flowExecution.update({
         where: { id: executionId },
         data: {
           status: success ? "SUCCESS" : "FAILED",
           error,
           completedAt: /* @__PURE__ */ new Date(),
-          duration
+          durationMs
         }
       });
       return execution;
@@ -18548,9 +16538,9 @@ var FlowExecutionQueries = {
         db.flowExecution.findMany({
           where: {
             flowId,
-            duration: { not: null }
+            durationMs: { not: null }
           },
-          select: { duration: true }
+          select: { durationMs: true }
         })
       ]);
       const statusMap = {
@@ -18559,13 +16549,13 @@ var FlowExecutionQueries = {
         running: 0,
         cancelled: 0
       };
-      byStatus.forEach((item) => {
+      for (const item of byStatus) {
         statusMap[item.status.toLowerCase()] = item._count;
-      });
+      }
       const triggerMap = {};
-      byTrigger.forEach((item) => {
+      for (const item of byTrigger) {
         triggerMap[item.triggerType] = item._count;
-      });
+      }
       const completedDurations = durations.filter((d) => d.duration !== null).map((d) => d.duration);
       const averageDuration = completedDurations.length > 0 ? completedDurations.reduce((a, b) => a + b, 0) / completedDurations.length : 0;
       const lastExecution = await db.flowExecution.findFirst({
@@ -19464,7 +17454,6 @@ var FlowController = {
   async test(request, reply) {
     try {
       const { id } = request.params;
-      const { triggerData } = request.body;
       const flow = await FlowQueries.getById(id);
       if (!flow) {
         return reply.status(404).send({
@@ -19472,7 +17461,7 @@ var FlowController = {
         });
       }
       return reply.send({
-        executionId: "test-" + Date.now(),
+        executionId: `test-${Date.now()}`,
         status: "success",
         executionLog: [
           {
@@ -20462,7 +18451,12 @@ var InvoiceController = {
     try {
       const { id } = request.params;
       const { status, paymentDate, gatewayPaymentId } = request.body;
-      const result = await InvoiceCommands.updateStatus(id, status, paymentDate ? new Date(paymentDate) : void 0, gatewayPaymentId);
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        status,
+        paymentDate ? new Date(paymentDate) : void 0,
+        gatewayPaymentId
+      );
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -20643,7 +18637,12 @@ var InvoiceController = {
     try {
       const { id } = request.params;
       const { gatewayPaymentId } = request.body;
-      const result = await InvoiceCommands.updateStatus(id, "PENDING", void 0, gatewayPaymentId);
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        "PENDING",
+        void 0,
+        gatewayPaymentId
+      );
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -20665,7 +18664,6 @@ var InvoiceController = {
   async sendEmail(request, reply) {
     try {
       const { id } = request.params;
-      const { email, includePdf } = request.body;
       const invoice = await InvoiceQueries.getById(id);
       if (!invoice) {
         return reply.status(404).send({
@@ -20696,7 +18694,12 @@ var InvoiceController = {
     try {
       const { id } = request.params;
       const { gatewayPaymentId } = request.body;
-      const result = await InvoiceCommands.updateStatus(id, "PAID", void 0, gatewayPaymentId);
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        "PAID",
+        void 0,
+        gatewayPaymentId
+      );
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -20713,7 +18716,12 @@ var InvoiceController = {
   async markAsFailed(request, reply) {
     try {
       const { id } = request.params;
-      const result = await InvoiceCommands.updateStatus(id, "FAILED", void 0, void 0);
+      const result = await InvoiceCommands.updateStatus(
+        id,
+        "FAILED",
+        void 0,
+        void 0
+      );
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -21420,135 +19428,6 @@ async function InvoiceRoutes(fastify2) {
   });
 }
 
-// src/features/notification/commands/notification.commands.ts
-var NotificationCommands = {
-  async create(data) {
-    return await db.notification.create({
-      data: {
-        userId: data.userId,
-        title: data.title,
-        message: data.message,
-        type: data.type || "INFO",
-        priority: data.priority || "MEDIUM",
-        data: data.data,
-        actionUrl: data.actionUrl,
-        expiresAt: data.expiresAt
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-  },
-  async update(id, data) {
-    return await db.notification.update({
-      where: { id },
-      data,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-  },
-  async delete(id) {
-    return await db.notification.delete({
-      where: { id }
-    });
-  },
-  async markAsRead(id) {
-    return await db.notification.update({
-      where: { id },
-      data: {
-        isRead: true,
-        readAt: /* @__PURE__ */ new Date()
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-  },
-  async markAsUnread(id) {
-    return await db.notification.update({
-      where: { id },
-      data: {
-        isRead: false,
-        readAt: null
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-  },
-  async markAllAsRead(userId) {
-    return await db.notification.updateMany({
-      where: {
-        userId,
-        isRead: false
-      },
-      data: {
-        isRead: true,
-        readAt: /* @__PURE__ */ new Date()
-      }
-    });
-  },
-  async deleteExpired() {
-    return await db.notification.deleteMany({
-      where: {
-        expiresAt: {
-          lt: /* @__PURE__ */ new Date()
-        }
-      }
-    });
-  },
-  async deleteByUser(userId) {
-    return await db.notification.deleteMany({
-      where: { userId }
-    });
-  },
-  async markStockAlertsAsRead(userId, storeId) {
-    const whereCondition = {
-      userId,
-      isRead: false,
-      type: "STOCK_ALERT"
-    };
-    if (storeId) {
-      whereCondition.data = {
-        path: ["storeId"],
-        equals: storeId
-      };
-    }
-    return await db.notification.updateMany({
-      where: whereCondition,
-      data: {
-        isRead: true,
-        readAt: /* @__PURE__ */ new Date()
-      }
-    });
-  }
-};
-
 // src/services/workflow-engine/action-executor.service.ts
 var ActionExecutor = {
   async executeAction(actionConfig, context) {
@@ -21673,7 +19552,7 @@ var ActionExecutor = {
     const actions = config.actions || [];
     const subscriptionsResults = await Promise.all(
       config.userIds.map(async (userId) => {
-        const subscriptions = await db.pushSubscription.findMany({
+        const subscriptions = await db.subscription.findMany({
           where: { userId }
         });
         return subscriptions;
@@ -21720,9 +19599,8 @@ var ActionExecutor = {
         failed++;
         console.error("Failed to send push notification:", error.message);
         if (error.message.includes("expired") || error.message.includes("invalid")) {
-          await db.pushSubscription.delete({
+          await db.subscription.delete({
             where: { id: subscription2.id }
-          }).catch(() => {
           });
         }
       }
@@ -21809,7 +19687,8 @@ var ConditionEvaluator = {
     }
     if (logicalOperator === "AND") {
       return results.every((r) => r === true);
-    } else if (logicalOperator === "OR") {
+    }
+    if (logicalOperator === "OR") {
       return results.some((r) => r === true);
     }
     return false;
@@ -21892,7 +19771,7 @@ var ConditionEvaluator = {
 var MAX_LOOP_ITERATIONS = 100;
 var loopStates = {};
 var LoopController = {
-  checkLoop(nodeId, executionId, executionPath) {
+  checkLoop(nodeId, executionPath) {
     const visitCount = executionPath.filter((id) => id === nodeId).length;
     return visitCount >= MAX_LOOP_ITERATIONS;
   },
@@ -22016,8 +19895,8 @@ var WorkflowEngine = {
       switch (node.type) {
         case "trigger":
           break;
-        case "condition":
-          const conditionResult = await this.evaluateCondition(
+        case "condition": {
+          const conditionResult = await ConditionEvaluator.evaluate(
             node.data.config,
             context
           );
@@ -22032,8 +19911,9 @@ var WorkflowEngine = {
             return;
           }
           break;
+        }
         case "action":
-        case "notification":
+        case "notification": {
           const actionResult = await ActionExecutor.executeAction(
             node.data.config,
             context
@@ -22046,6 +19926,7 @@ var WorkflowEngine = {
             timestamp: /* @__PURE__ */ new Date()
           });
           break;
+        }
       }
       const nextEdges = edges.filter((edge) => edge.source === node.id);
       for (const edge of nextEdges) {
@@ -22230,366 +20111,6 @@ var TriggerHandler = {
   }
 };
 
-// src/services/stock-monitoring/stock-alert.service.ts
-var StockAlertService = class {
-  /**
-   * Verifica se uma movimentação deve gerar alertas de estoque
-   */
-  static async checkStockAlerts(productId, storeId, movementType, movementQuantity, movementId) {
-    try {
-      const product = await db.product.findFirst({
-        where: {
-          id: productId,
-          storeId,
-          status: true
-        },
-        include: {
-          store: {
-            select: {
-              id: true,
-              name: true,
-              ownerId: true,
-              users: {
-                select: {
-                  userId: true,
-                  user: {
-                    select: {
-                      id: true,
-                      name: true,
-                      email: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
-      if (!product) {
-        throw new Error("Product not found");
-      }
-      const movements = await db.movement.findMany({
-        where: {
-          productId,
-          cancelled: false
-        },
-        select: {
-          type: true,
-          quantity: true
-        }
-      });
-      let currentStock = 0;
-      movements.forEach((movement) => {
-        if (movement.type === "ENTRADA") {
-          currentStock += movement.quantity;
-        } else {
-          currentStock -= movement.quantity;
-        }
-      });
-      const previousStock = movementType === "ENTRADA" ? currentStock - movementQuantity : currentStock + movementQuantity;
-      const alertType = this.determineAlertType(
-        currentStock,
-        previousStock,
-        product.stockMin,
-        product.stockMax,
-        product.alertPercentage
-      );
-      if (!alertType) {
-        return {
-          alertTriggered: false,
-          alertType: null
-        };
-      }
-      const alertData = {
-        productId: product.id,
-        productName: product.name,
-        storeId: product.store.id,
-        storeName: product.store.name,
-        currentStock,
-        stockMin: product.stockMin,
-        stockMax: product.stockMax,
-        alertPercentage: product.alertPercentage,
-        previousStock,
-        movementType,
-        movementQuantity,
-        movementId
-      };
-      const notifications = await this.createStockAlertNotifications(
-        alertData,
-        alertType,
-        product.store
-      );
-      try {
-        if (alertType === "LOW_STOCK" || alertType === "CRITICAL_STOCK") {
-          await TriggerHandler.handleStockBelowMin(product);
-        } else if (alertType === "OVERSTOCK") {
-          await TriggerHandler.handleStockAboveMax(product);
-        }
-      } catch (error) {
-        console.error("Error triggering workflows for stock alert:", error);
-      }
-      return {
-        alertTriggered: true,
-        alertType,
-        notification: notifications[0],
-        // Retorna a primeira notificação como exemplo
-        message: this.generateAlertMessage(alertData, alertType)
-      };
-    } catch (error) {
-      console.error("Error checking stock alerts:", error);
-      return {
-        alertTriggered: false,
-        alertType: null
-      };
-    }
-  }
-  /**
-   * Determina o tipo de alerta baseado no estoque atual e anterior
-   */
-  static determineAlertType(currentStock, previousStock, stockMin, stockMax, alertPercentage) {
-    const alertThreshold = Math.round(stockMin * (alertPercentage / 100));
-    if (currentStock <= 0) {
-      return "CRITICAL_STOCK";
-    }
-    if (currentStock <= alertThreshold && currentStock > 0) {
-      return "LOW_STOCK";
-    }
-    if (currentStock > alertThreshold && previousStock <= alertThreshold) {
-      return "STOCK_RECOVERED";
-    }
-    if (currentStock > stockMax && previousStock <= stockMax) {
-      return "OVERSTOCK";
-    }
-    return null;
-  }
-  /**
-   * Cria notificações para usuários da loja
-   */
-  static async createStockAlertNotifications(alertData, alertType, store) {
-    const notifications = [];
-    const { priority, notificationType } = this.getNotificationConfig(alertType);
-    const ownerNotification = await NotificationCommands.create({
-      userId: store.ownerId,
-      title: this.getAlertTitle(alertType),
-      message: this.generateAlertMessage(alertData, alertType),
-      type: notificationType,
-      priority,
-      data: {
-        productId: alertData.productId,
-        productName: alertData.productName,
-        storeId: alertData.storeId,
-        storeName: alertData.storeName,
-        currentStock: alertData.currentStock,
-        stockMin: alertData.stockMin,
-        stockMax: alertData.stockMax,
-        movementType: alertData.movementType,
-        movementQuantity: alertData.movementQuantity,
-        movementId: alertData.movementId,
-        alertType
-      },
-      actionUrl: `/products/${alertData.productId}`,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1e3)
-      // 7 dias
-    });
-    notifications.push(ownerNotification);
-    const storeUsers = store.users.filter((su) => su.userId !== store.ownerId);
-    for (const storeUser of storeUsers) {
-      const userNotification = await NotificationCommands.create({
-        userId: storeUser.userId,
-        title: this.getAlertTitle(alertType),
-        message: this.generateAlertMessage(alertData, alertType),
-        type: notificationType,
-        priority,
-        data: {
-          productId: alertData.productId,
-          productName: alertData.productName,
-          storeId: alertData.storeId,
-          storeName: alertData.storeName,
-          currentStock: alertData.currentStock,
-          stockMin: alertData.stockMin,
-          stockMax: alertData.stockMax,
-          movementType: alertData.movementType,
-          movementQuantity: alertData.movementQuantity,
-          movementId: alertData.movementId,
-          alertType
-        },
-        actionUrl: `/products/${alertData.productId}`,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1e3)
-        // 7 dias
-      });
-      notifications.push(userNotification);
-    }
-    return notifications;
-  }
-  /**
-   * Obtém configuração de notificação baseada no tipo de alerta
-   */
-  static getNotificationConfig(alertType) {
-    switch (alertType) {
-      case "CRITICAL_STOCK":
-        return { priority: "URGENT", notificationType: "ERROR" };
-      case "LOW_STOCK":
-        return { priority: "HIGH", notificationType: "WARNING" };
-      case "OVERSTOCK":
-        return { priority: "MEDIUM", notificationType: "WARNING" };
-      case "STOCK_RECOVERED":
-        return { priority: "LOW", notificationType: "STOCK_ALERT" };
-      default:
-        return { priority: "MEDIUM", notificationType: "STOCK_ALERT" };
-    }
-  }
-  /**
-   * Gera título do alerta
-   */
-  static getAlertTitle(alertType) {
-    switch (alertType) {
-      case "CRITICAL_STOCK":
-        return "\u{1F6A8} Estoque Cr\xEDtico";
-      case "LOW_STOCK":
-        return "\u26A0\uFE0F Estoque Baixo";
-      case "OVERSTOCK":
-        return "\u{1F4E6} Estoque Excessivo";
-      case "STOCK_RECOVERED":
-        return "\u2705 Estoque Recuperado";
-      default:
-        return "\u{1F4CA} Alerta de Estoque";
-    }
-  }
-  /**
-   * Gera mensagem do alerta
-   */
-  static generateAlertMessage(alertData, alertType) {
-    const { productName, currentStock, stockMin, stockMax, movementType, movementQuantity } = alertData;
-    switch (alertType) {
-      case "CRITICAL_STOCK":
-        return `Produto "${productName}" est\xE1 com estoque cr\xEDtico (${currentStock} unidades). Movimenta\xE7\xE3o de ${movementType.toLowerCase()} de ${movementQuantity} unidades realizada.`;
-      case "LOW_STOCK":
-        return `Produto "${productName}" est\xE1 com estoque baixo (${currentStock} unidades). Estoque m\xEDnimo: ${stockMin} unidades. Movimenta\xE7\xE3o de ${movementType.toLowerCase()} de ${movementQuantity} unidades realizada.`;
-      case "OVERSTOCK":
-        return `Produto "${productName}" est\xE1 com estoque excessivo (${currentStock} unidades). Estoque m\xE1ximo: ${stockMax} unidades. Movimenta\xE7\xE3o de ${movementType.toLowerCase()} de ${movementQuantity} unidades realizada.`;
-      case "STOCK_RECOVERED":
-        return `Produto "${productName}" recuperou o estoque (${currentStock} unidades). Estoque m\xEDnimo: ${stockMin} unidades. Movimenta\xE7\xE3o de ${movementType.toLowerCase()} de ${movementQuantity} unidades realizada.`;
-      default:
-        return `Alerta de estoque para o produto "${productName}" (${currentStock} unidades).`;
-    }
-  }
-  /**
-   * Verifica produtos com estoque baixo em uma loja
-   */
-  static async checkLowStockProducts(storeId) {
-    try {
-      const products = await db.product.findMany({
-        where: {
-          storeId,
-          status: true
-        },
-        include: {
-          store: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        }
-      });
-      const lowStockProducts = [];
-      for (const product of products) {
-        const movements = await db.movement.findMany({
-          where: {
-            productId: product.id,
-            cancelled: false
-          },
-          select: {
-            type: true,
-            quantity: true
-          }
-        });
-        let currentStock = 0;
-        movements.forEach((movement) => {
-          if (movement.type === "ENTRADA") {
-            currentStock += movement.quantity;
-          } else {
-            currentStock -= movement.quantity;
-          }
-        });
-        const alertThreshold = Math.round(product.stockMin * (product.alertPercentage / 100));
-        if (currentStock <= alertThreshold) {
-          lowStockProducts.push({
-            productId: product.id,
-            productName: product.name,
-            currentStock,
-            stockMin: product.stockMin,
-            stockMax: product.stockMax,
-            alertPercentage: product.alertPercentage,
-            alertThreshold,
-            storeId: product.store.id,
-            storeName: product.store.name
-          });
-        }
-      }
-      return lowStockProducts;
-    } catch (error) {
-      console.error("Error checking low stock products:", error);
-      return [];
-    }
-  }
-  /**
-   * Cria notificação de resumo de estoque baixo
-   */
-  static async createLowStockSummaryNotification(storeId) {
-    try {
-      const lowStockProducts = await this.checkLowStockProducts(storeId);
-      if (lowStockProducts.length === 0) {
-        return null;
-      }
-      const store = await db.store.findUnique({
-        where: { id: storeId },
-        select: {
-          id: true,
-          name: true,
-          ownerId: true,
-          users: {
-            select: {
-              userId: true
-            }
-          }
-        }
-      });
-      if (!store) {
-        throw new Error("Store not found");
-      }
-      const criticalProducts = lowStockProducts.filter((p) => p.currentStock <= 0);
-      const lowProducts = lowStockProducts.filter((p) => p.currentStock > 0);
-      const title = `\u{1F4CA} Resumo de Estoque - ${store.name}`;
-      const message = `Encontrados ${lowStockProducts.length} produtos com estoque baixo:
-\u2022 ${criticalProducts.length} produtos cr\xEDticos (estoque zero)
-\u2022 ${lowProducts.length} produtos com estoque baixo
-
-Produtos cr\xEDticos: ${criticalProducts.map((p) => p.productName).join(", ")}`;
-      return await NotificationCommands.create({
-        userId: store.ownerId,
-        title,
-        message,
-        type: "STOCK_ALERT",
-        priority: criticalProducts.length > 0 ? "URGENT" : "HIGH",
-        data: {
-          storeId,
-          storeName: store.name,
-          lowStockProducts,
-          criticalCount: criticalProducts.length,
-          lowCount: lowProducts.length
-        },
-        actionUrl: `/reports/low-stock?storeId=${storeId}`,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1e3)
-        // 24 horas
-      });
-    } catch (error) {
-      console.error("Error creating low stock summary notification:", error);
-      return null;
-    }
-  }
-};
-
 // src/features/movement/commands/movement.commands.ts
 var MovementCommands = {
   async create(data) {
@@ -22621,24 +20142,28 @@ var MovementCommands = {
     console.log("Calculating current stock for product:", data.productId, "store:", storeId);
     const currentStock = await MovementCommands.getCurrentStock(data.productId, storeId);
     console.log("Current stock:", currentStock);
+    const balanceBefore = currentStock;
     let balanceAfter = currentStock;
-    if (data.type === "ENTRADA") {
+    if (data.type === "INBOUND") {
       balanceAfter = currentStock + data.quantity;
-    } else if (data.type === "SAIDA" || data.type === "PERDA") {
+    } else if (data.type === "OUTBOUND" || data.type === "LOSS") {
       if (currentStock < data.quantity) {
         throw new Error("Insufficient stock for this movement");
       }
       balanceAfter = currentStock - data.quantity;
     }
-    console.log("Balance after movement:", balanceAfter);
-    let expirationDate = null;
+    console.log("Balance before:", balanceBefore, "Balance after movement:", balanceAfter);
+    let expirationDate = void 0;
     if (data.expiration) {
-      expirationDate = /* @__PURE__ */ new Date(data.expiration + "T00:00:00.000Z");
+      expirationDate = /* @__PURE__ */ new Date(`${data.expiration}T00:00:00.000Z`);
     }
+    const totalValue = data.price ? data.quantity * data.price : void 0;
     console.log("Creating movement in database...");
     const movement = await db.movement.create({
       data: {
         type: data.type,
+        origin: data.origin,
+        referenceCode: data.referenceCode,
         quantity: data.quantity,
         storeId,
         productId: data.productId,
@@ -22646,8 +20171,10 @@ var MovementCommands = {
         batch: data.batch,
         expiration: expirationDate,
         price: data.price,
+        totalValue,
         note: data.note,
         userId: data.userId,
+        balanceBefore,
         balanceAfter,
         createdAt: /* @__PURE__ */ new Date(),
         updatedAt: /* @__PURE__ */ new Date()
@@ -22705,28 +20232,35 @@ var MovementCommands = {
         existingMovement.storeId
       );
       let revertedStock = currentStock;
-      if (existingMovement.type === "ENTRADA") {
+      if (existingMovement.type === "INBOUND") {
         revertedStock = currentStock - existingMovement.quantity;
-      } else if (existingMovement.type === "SAIDA" || existingMovement.type === "PERDA") {
+      } else if (existingMovement.type === "OUTBOUND" || existingMovement.type === "LOSS") {
         revertedStock = currentStock + existingMovement.quantity;
       }
       const newQuantity = data.quantity ?? existingMovement.quantity;
       const newType = data.type ?? existingMovement.type;
+      const newBalanceBefore = revertedStock;
       let newBalanceAfter = revertedStock;
-      if (newType === "ENTRADA") {
+      if (newType === "INBOUND") {
         newBalanceAfter = revertedStock + newQuantity;
-      } else if (newType === "SAIDA" || newType === "PERDA") {
+      } else if (newType === "OUTBOUND" || newType === "LOSS") {
         if (revertedStock < newQuantity) {
           throw new Error("Insufficient stock for this movement");
         }
         newBalanceAfter = revertedStock - newQuantity;
       }
       ;
+      data.balanceBefore = newBalanceBefore;
       data.balanceAfter = newBalanceAfter;
+    }
+    if (data.price !== void 0 || data.quantity !== void 0) {
+      const newPrice = data.price ?? existingMovement.price;
+      const newQuantity = data.quantity ?? existingMovement.quantity;
+      data.totalValue = newPrice ? Number(newPrice) * newQuantity : null;
     }
     let expirationDate = void 0;
     if (data.expiration) {
-      expirationDate = /* @__PURE__ */ new Date(data.expiration + "T00:00:00.000Z");
+      expirationDate = /* @__PURE__ */ new Date(`${data.expiration}T00:00:00.000Z`);
     }
     const updateData = {
       ...data,
@@ -22777,7 +20311,7 @@ var MovementCommands = {
       movement.productId,
       movement.storeId
     );
-    if (movement.type === "SAIDA" || movement.type === "PERDA") {
+    if (movement.type === "OUTBOUND" || movement.type === "LOSS") {
       if (currentStock < movement.quantity) {
         throw new Error("Cannot delete movement: insufficient stock to revert");
       }
@@ -22799,9 +20333,9 @@ var MovementCommands = {
     });
     let stock = 0;
     for (const movement of movements) {
-      if (movement.type === "ENTRADA") {
+      if (movement.type === "INBOUND") {
         stock += movement.quantity;
-      } else if (movement.type === "SAIDA" || movement.type === "PERDA") {
+      } else if (movement.type === "OUTBOUND" || movement.type === "LOSS") {
         stock -= movement.quantity;
       }
     }
@@ -22820,14 +20354,16 @@ var MovementCommands = {
     let currentStock = 0;
     const updatedMovements = [];
     for (const movement of movements) {
-      if (movement.type === "ENTRADA") {
+      const balanceBefore = currentStock;
+      if (movement.type === "INBOUND") {
         currentStock += movement.quantity;
-      } else if (movement.type === "SAIDA" || movement.type === "PERDA") {
+      } else if (movement.type === "OUTBOUND" || movement.type === "LOSS") {
         currentStock -= movement.quantity;
       }
-      if (movement.balanceAfter !== currentStock) {
+      if (movement.balanceBefore !== balanceBefore || movement.balanceAfter !== currentStock) {
         updatedMovements.push({
           id: movement.id,
+          balanceBefore,
           balanceAfter: currentStock
         });
       }
@@ -22837,7 +20373,10 @@ var MovementCommands = {
         updatedMovements.map(
           (movement) => db.movement.update({
             where: { id: movement.id },
-            data: { balanceAfter: movement.balanceAfter }
+            data: {
+              balanceBefore: movement.balanceBefore,
+              balanceAfter: movement.balanceAfter
+            }
           })
         )
       );
@@ -22936,7 +20475,7 @@ var MovementCommands = {
       movement.productId,
       movement.storeId
     );
-    if (movement.type === "SAIDA" || movement.type === "PERDA") {
+    if (movement.type === "OUTBOUND" || movement.type === "LOSS") {
       if (currentStock < movement.quantity) {
         throw new Error("Cannot cancel movement: insufficient stock to revert");
       }
@@ -22981,12 +20520,22 @@ var MovementCommands = {
     });
   },
   async getMovementReport(params) {
-    const { storeId, productId, supplierId, type, startDate, endDate, groupBy = "day" } = params;
+    const {
+      storeId,
+      productId,
+      supplierId,
+      type,
+      origin,
+      startDate,
+      endDate,
+      groupBy = "day"
+    } = params;
     const where = {};
     if (storeId) where.storeId = storeId;
     if (productId) where.productId = productId;
     if (supplierId) where.supplierId = supplierId;
     if (type) where.type = type;
+    if (origin) where.origin = origin;
     if (startDate || endDate) {
       where.createdAt = {};
       if (startDate) where.createdAt.gte = new Date(startDate);
@@ -23017,18 +20566,19 @@ var MovementCommands = {
       orderBy: { createdAt: "asc" }
     });
     const groupedData = /* @__PURE__ */ new Map();
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       let dateKey;
       const date = new Date(movement.createdAt);
       switch (groupBy) {
         case "day":
           dateKey = date.toISOString().split("T")[0];
           break;
-        case "week":
+        case "week": {
           const weekStart = new Date(date);
           weekStart.setDate(date.getDate() - date.getDay());
           dateKey = weekStart.toISOString().split("T")[0];
           break;
+        }
         case "month":
           dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
           break;
@@ -23042,47 +20592,51 @@ var MovementCommands = {
         groupedData.set(dateKey, {
           movements: 0,
           value: 0,
-          entrada: 0,
-          saida: 0,
-          perda: 0
+          inbound: 0,
+          outbound: 0,
+          loss: 0
         });
       }
-      const data2 = groupedData.get(dateKey);
-      data2.movements++;
-      data2.value += Number(movement.price) || 0;
-      if (movement.type === "ENTRADA") {
-        data2.entrada += movement.quantity;
-      } else if (movement.type === "SAIDA") {
-        data2.saida += movement.quantity;
-      } else if (movement.type === "PERDA") {
-        data2.perda += movement.quantity;
+      const groupData = groupedData.get(dateKey);
+      if (groupData) {
+        groupData.movements++;
+        groupData.value += Number(movement.totalValue) || Number(movement.price) || 0;
+        if (movement.type === "INBOUND") {
+          groupData.inbound += movement.quantity;
+        } else if (movement.type === "OUTBOUND") {
+          groupData.outbound += movement.quantity;
+        } else if (movement.type === "LOSS") {
+          groupData.loss += movement.quantity;
+        }
       }
-    });
+    }
     const data = Array.from(groupedData.entries()).map(([date, stats]) => ({
       date,
       ...stats
     }));
     const byType = {
-      ENTRADA: { count: 0, value: 0, quantity: 0 },
-      SAIDA: { count: 0, value: 0, quantity: 0 },
-      PERDA: { count: 0, value: 0, quantity: 0 }
+      INBOUND: { count: 0, value: 0, quantity: 0 },
+      OUTBOUND: { count: 0, value: 0, quantity: 0 },
+      LOSS: { count: 0, value: 0, quantity: 0 }
     };
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       const typeData = byType[movement.type];
       typeData.count++;
-      typeData.value += Number(movement.price) || 0;
+      typeData.value += Number(movement.totalValue) || Number(movement.price) || 0;
       typeData.quantity += movement.quantity;
-    });
+    }
     const storeMap = /* @__PURE__ */ new Map();
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       const storeId2 = movement.storeId;
       if (!storeMap.has(storeId2)) {
         storeMap.set(storeId2, { movements: 0, value: 0 });
       }
       const storeData = storeMap.get(storeId2);
-      storeData.movements++;
-      storeData.value += Number(movement.price) || 0;
-    });
+      if (storeData) {
+        storeData.movements++;
+        storeData.value += Number(movement.totalValue) || Number(movement.price) || 0;
+      }
+    }
     const byStore = Array.from(storeMap.entries()).map(([storeId2, stats]) => {
       const store = movements.find((m) => m.storeId === storeId2)?.store;
       return {
@@ -23092,15 +20646,17 @@ var MovementCommands = {
       };
     });
     const productMap = /* @__PURE__ */ new Map();
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       const productId2 = movement.productId;
       if (!productMap.has(productId2)) {
         productMap.set(productId2, { movements: 0, quantity: 0 });
       }
       const productData = productMap.get(productId2);
-      productData.movements++;
-      productData.quantity += movement.quantity;
-    });
+      if (productData) {
+        productData.movements++;
+        productData.quantity += movement.quantity;
+      }
+    }
     const byProduct = Array.from(productMap.entries()).map(([productId2, stats]) => {
       const product = movements.find((m) => m.productId === productId2)?.product;
       return {
@@ -23110,17 +20666,19 @@ var MovementCommands = {
       };
     });
     const supplierMap = /* @__PURE__ */ new Map();
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       if (movement.supplierId) {
         const supplierId2 = movement.supplierId;
         if (!supplierMap.has(supplierId2)) {
           supplierMap.set(supplierId2, { movements: 0, value: 0 });
         }
         const supplierData = supplierMap.get(supplierId2);
-        supplierData.movements++;
-        supplierData.value += Number(movement.price) || 0;
+        if (supplierData) {
+          supplierData.movements++;
+          supplierData.value += Number(movement.totalValue) || Number(movement.price) || 0;
+        }
       }
-    });
+    }
     const bySupplier = Array.from(supplierMap.entries()).map(([supplierId2, stats]) => {
       const supplier = movements.find((m) => m.supplierId === supplierId2)?.supplier;
       return {
@@ -23132,7 +20690,10 @@ var MovementCommands = {
     return {
       summary: {
         totalMovements: movements.length,
-        totalValue: movements.reduce((sum, m) => sum + (Number(m.price) || 0), 0),
+        totalValue: movements.reduce(
+          (sum, m) => sum + (Number(m.totalValue) || Number(m.price) || 0),
+          0
+        ),
         period: {
           startDate: startDate || new Date(Math.min(...movements.map((m) => m.createdAt.getTime()))).toISOString().split("T")[0],
           endDate: endDate || new Date(Math.max(...movements.map((m) => m.createdAt.getTime()))).toISOString().split("T")[0]
@@ -23178,30 +20739,6 @@ var MovementController = {
         note,
         userId
       });
-      console.log("Movement created successfully:", result);
-      try {
-        const stockAlert = await StockAlertService.checkStockAlerts(
-          productId,
-          storeId,
-          type,
-          quantity,
-          result.id
-        );
-        if (stockAlert.alertTriggered) {
-          console.log("Stock alert triggered:", stockAlert);
-          const resultWithAlert = {
-            ...result,
-            stockAlert: {
-              triggered: true,
-              type: stockAlert.alertType,
-              message: stockAlert.message
-            }
-          };
-          return reply.status(201).send(resultWithAlert);
-        }
-      } catch (alertError) {
-        console.error("Error checking stock alerts:", alertError);
-      }
       return reply.status(201).send(result);
     } catch (error) {
       request.log.error(error);
@@ -23241,35 +20778,6 @@ var MovementController = {
           error: "Movement not found"
         });
       }
-      console.log("MovementController.get: Returning movement:", {
-        id: result.id,
-        store: result.store,
-        product: result.product,
-        supplier: result.supplier,
-        user: result.user
-      });
-      console.log("MovementController.get: Full result JSON:", JSON.stringify(result, null, 2));
-      const serializedResult = {
-        ...result,
-        store: result.store ? {
-          id: result.store.id,
-          name: result.store.name
-        } : null,
-        product: result.product ? {
-          id: result.product.id,
-          name: result.product.name,
-          unitOfMeasure: result.product.unitOfMeasure
-        } : null,
-        supplier: result.supplier ? {
-          id: result.supplier.id,
-          corporateName: result.supplier.corporateName
-        } : null,
-        user: result.user ? {
-          id: result.user.id,
-          name: result.user.name,
-          email: result.user.email
-        } : null
-      };
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -23287,7 +20795,10 @@ var MovementController = {
     try {
       const { id } = request.params;
       const updateData = { ...request.body };
-      const result = await MovementCommands.update(id, updateData);
+      const result = await MovementCommands.update(
+        id,
+        updateData
+      );
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -23655,7 +21166,10 @@ var MovementController = {
     try {
       const { movements } = request.body;
       const userId = request.user?.id;
-      const result = await MovementCommands.createBulk(movements, userId);
+      const result = await MovementCommands.createBulk(
+        movements,
+        userId
+      );
       return reply.status(201).send(result);
     } catch (error) {
       request.log.error(error);
@@ -23787,7 +21301,7 @@ var MovementController = {
   },
   async summarize(request, reply) {
     try {
-      const result = await MovementQueries.summarize();
+      const result = await MovementQueries.getStats();
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -23833,11 +21347,10 @@ var MovementController = {
           error: "Store ID is required"
         });
       }
-      const lowStockProducts = await StockAlertService.checkLowStockProducts(finalStoreId);
       return reply.send({
-        storeId: finalStoreId,
-        lowStockCount: lowStockProducts.length,
-        products: lowStockProducts
+        storeId: finalStoreId
+        //lowStockCount: lowStockProducts.length,
+        //products: lowStockProducts,
       });
     } catch (error) {
       request.log.error(error);
@@ -23854,16 +21367,9 @@ var MovementController = {
           error: "Store ID is required"
         });
       }
-      const notification = await StockAlertService.createLowStockSummaryNotification(finalStoreId);
-      if (!notification) {
-        return reply.send({
-          message: "No low stock products found",
-          notification: null
-        });
-      }
       return reply.status(201).send({
-        message: "Low stock summary notification created",
-        notification
+        message: "Low stock summary notification created"
+        //notification,
       });
     } catch (error) {
       request.log.error(error);
@@ -24891,6 +22397,135 @@ async function MovementRoutes(fastify2) {
     handler: MovementController.createLowStockSummaryNotification
   });
 }
+
+// src/features/notification/commands/notification.commands.ts
+var NotificationCommands = {
+  async create(data) {
+    return await db.notification.create({
+      data: {
+        userId: data.userId,
+        title: data.title,
+        message: data.message,
+        type: data.type || "INFO",
+        priority: data.priority || "MEDIUM",
+        data: data.data,
+        actionUrl: data.actionUrl,
+        expiresAt: data.expiresAt
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    return await db.notification.update({
+      where: { id },
+      data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async delete(id) {
+    return await db.notification.delete({
+      where: { id }
+    });
+  },
+  async markAsRead(id) {
+    return await db.notification.update({
+      where: { id },
+      data: {
+        isRead: true,
+        readAt: /* @__PURE__ */ new Date()
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async markAsUnread(id) {
+    return await db.notification.update({
+      where: { id },
+      data: {
+        isRead: false,
+        readAt: null
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async markAllAsRead(userId) {
+    return await db.notification.updateMany({
+      where: {
+        userId,
+        isRead: false
+      },
+      data: {
+        isRead: true,
+        readAt: /* @__PURE__ */ new Date()
+      }
+    });
+  },
+  async deleteExpired() {
+    return await db.notification.deleteMany({
+      where: {
+        expiresAt: {
+          lt: /* @__PURE__ */ new Date()
+        }
+      }
+    });
+  },
+  async deleteByUser(userId) {
+    return await db.notification.deleteMany({
+      where: { userId }
+    });
+  },
+  async markStockAlertsAsRead(userId, storeId) {
+    const whereCondition = {
+      userId,
+      isRead: false,
+      type: "STOCK_ALERT"
+    };
+    if (storeId) {
+      whereCondition.data = {
+        path: ["storeId"],
+        equals: storeId
+      };
+    }
+    return await db.notification.updateMany({
+      where: whereCondition,
+      data: {
+        isRead: true,
+        readAt: /* @__PURE__ */ new Date()
+      }
+    });
+  }
+};
 
 // src/features/notification/queries/notification.queries.ts
 var NotificationQueries = {
@@ -26117,1052 +23752,8 @@ async function NotificationRoutes(fastify2) {
   });
 }
 
-// src/features/subscription/commands/plan.commands.ts
-var PlanCommands = {
-  async create(data) {
-    const existingPlan = await db.plan.findFirst({
-      where: { name: data.name }
-    });
-    if (existingPlan) {
-      throw new Error("Plan with this name already exists");
-    }
-    return await db.plan.create({
-      data: {
-        ...data,
-        interval: data.interval
-      },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true,
-            createdAt: true
-          }
-        }
-      }
-    });
-  },
-  async update(id, data) {
-    const existingPlan = await db.plan.findUnique({
-      where: { id }
-    });
-    if (!existingPlan) {
-      throw new Error("Plan not found");
-    }
-    if (data.name && data.name !== existingPlan.name) {
-      const planWithSameName = await db.plan.findFirst({
-        where: {
-          name: data.name,
-          id: { not: id }
-        }
-      });
-      if (planWithSameName) {
-        throw new Error("Plan with this name already exists");
-      }
-    }
-    return await db.plan.update({
-      where: { id },
-      data: {
-        ...data,
-        ...data.interval && { interval: data.interval }
-      },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true,
-            createdAt: true
-          }
-        }
-      }
-    });
-  },
-  async delete(id) {
-    const plan = await db.plan.findUnique({
-      where: { id },
-      include: {
-        customers: {
-          select: { id: true }
-        }
-      }
-    });
-    if (!plan) {
-      throw new Error("Plan not found");
-    }
-    if (plan.customers.length > 0) {
-      throw new Error(
-        `Cannot delete plan. It has ${plan.customers.length} associated customers. Please reassign or delete the customers first.`
-      );
-    }
-    return await db.plan.delete({
-      where: { id }
-    });
-  },
-  async forceDelete(id) {
-    const plan = await db.plan.findUnique({
-      where: { id }
-    });
-    if (!plan) {
-      throw new Error("Plan not found");
-    }
-    await db.customer.updateMany({
-      where: { planId: id },
-      data: { planId: null }
-    });
-    return await db.plan.delete({
-      where: { id }
-    });
-  },
-  async updateStatus(id, active) {
-    const plan = await db.plan.findUnique({
-      where: { id }
-    });
-    if (!plan) {
-      throw new Error("Plan not found");
-    }
-    return await db.plan.update({
-      where: { id },
-      data: {
-        // Se houvesse um campo active, seria:
-        // active: active
-      },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true,
-            createdAt: true
-          }
-        }
-      }
-    });
-  }
-};
-
-// src/features/subscription/queries/plan.queries.ts
-var PlanQueries = {
-  async getById(id) {
-    const plan = await db.plan.findUnique({
-      where: { id },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true,
-            createdAt: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
-          }
-        }
-      }
-    });
-    if (!plan) {
-      return null;
-    }
-    return {
-      ...plan,
-      customersCount: plan.customers.length
-    };
-  },
-  async list(params) {
-    const { page = 1, limit = 10, search, interval } = params;
-    const skip2 = (page - 1) * limit;
-    const where = {};
-    if (interval) {
-      where.interval = interval;
-    }
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } }
-      ];
-    }
-    const [plans, total] = await Promise.all([
-      db.plan.findMany({
-        where,
-        skip: skip2,
-        take: limit,
-        orderBy: { name: "asc" },
-        include: {
-          customers: {
-            select: {
-              id: true,
-              status: true
-            }
-          }
-        }
-      }),
-      db.plan.count({ where })
-    ]);
-    const itemsWithCount = plans.map((plan) => ({
-      ...plan,
-      customersCount: plan.customers.length
-    }));
-    return {
-      items: itemsWithCount,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  async getActive() {
-    const plans = await db.plan.findMany({
-      orderBy: { name: "asc" },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true
-          }
-        }
-      }
-    });
-    return plans.map((plan) => ({
-      ...plan,
-      customersCount: plan.customers.length
-    }));
-  },
-  async compare(planIds) {
-    if (!planIds || planIds.length === 0) {
-      throw new Error("At least one plan ID is required for comparison");
-    }
-    const plans = await db.plan.findMany({
-      where: { id: { in: planIds } },
-      orderBy: { price: "asc" },
-      include: {
-        customers: {
-          select: {
-            id: true,
-            status: true
-          }
-        }
-      }
-    });
-    if (plans.length === 0) {
-      throw new Error("No plans found for comparison");
-    }
-    const prices = plans.map((plan) => Number(plan.price));
-    const intervals = [...new Set(plans.map((plan) => plan.interval))];
-    const allFeatures = /* @__PURE__ */ new Set();
-    plans.forEach((plan) => {
-      if (plan.features && typeof plan.features === "object") {
-        Object.keys(plan.features).forEach((key) => allFeatures.add(key));
-      }
-    });
-    const plansWithCount = plans.map((plan) => ({
-      ...plan,
-      customersCount: plan.customers.length
-    }));
-    return {
-      plans: plansWithCount,
-      comparison: {
-        priceRange: {
-          min: Math.min(...prices),
-          max: Math.max(...prices)
-        },
-        intervals,
-        features: Array.from(allFeatures)
-      }
-    };
-  },
-  async getCustomers(planId, params) {
-    const { page = 1, limit = 10, status } = params;
-    const skip2 = (page - 1) * limit;
-    const plan = await db.plan.findUnique({
-      where: { id: planId }
-    });
-    if (!plan) {
-      throw new Error("Plan not found");
-    }
-    const where = {
-      planId
-    };
-    if (status) {
-      where.status = status;
-    }
-    const [customers, total] = await Promise.all([
-      db.customer.findMany({
-        where,
-        skip: skip2,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              phone: true
-            }
-          },
-          plan: {
-            select: {
-              id: true,
-              name: true,
-              price: true,
-              interval: true
-            }
-          },
-          invoices: {
-            select: {
-              id: true,
-              amount: true,
-              status: true,
-              createdAt: true
-            },
-            orderBy: { createdAt: "desc" },
-            take: 5
-            // Últimas 5 faturas
-          }
-        }
-      }),
-      db.customer.count({ where })
-    ]);
-    return {
-      plan: {
-        id: plan.id,
-        name: plan.name,
-        price: plan.price,
-        interval: plan.interval
-      },
-      customers,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  async getStats() {
-    const [total, monthlyPlans, yearlyPlans, totalCustomers, revenueData] = await Promise.all([
-      db.plan.count(),
-      db.plan.count({ where: { interval: "MONTHLY" } }),
-      db.plan.count({ where: { interval: "YEARLY" } }),
-      db.customer.count({
-        where: { status: "ACTIVE" }
-      }),
-      db.invoice.aggregate({
-        where: { status: "PAID" },
-        _sum: { amount: true },
-        _avg: { amount: true }
-      })
-    ]);
-    const planRevenue = await db.plan.findMany({
-      include: {
-        customers: {
-          where: { status: "ACTIVE" },
-          include: {
-            invoices: {
-              where: { status: "PAID" },
-              select: { amount: true }
-            }
-          }
-        }
-      }
-    });
-    let totalRevenue = 0;
-    planRevenue.forEach((plan) => {
-      plan.customers.forEach((customer) => {
-        customer.invoices.forEach((invoice) => {
-          totalRevenue += Number(invoice.amount);
-        });
-      });
-    });
-    return {
-      total,
-      active: total,
-      // Assumindo que todos os planos são ativos
-      inactive: 0,
-      monthlyPlans,
-      yearlyPlans,
-      totalCustomers,
-      totalRevenue,
-      averagePrice: revenueData._avg.amount ? Number(revenueData._avg.amount) : 0
-    };
-  }
-};
-
-// src/features/subscription/plan.controller.ts
-var PlanController = {
-  // === CRUD BÁSICO ===
-  async create(request, reply) {
-    try {
-      const { name, description, price, interval, features } = request.body;
-      const result = await PlanCommands.create({
-        name,
-        description,
-        price,
-        interval,
-        features
-      });
-      return reply.status(201).send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan with this name already exists") {
-        return reply.status(400).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async get(request, reply) {
-    try {
-      const { id } = request.params;
-      const result = await PlanQueries.getById(id);
-      if (!result) {
-        return reply.status(404).send({
-          error: "Plan not found"
-        });
-      }
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async update(request, reply) {
-    try {
-      const { id } = request.params;
-      const updateData = { ...request.body };
-      const result = await PlanCommands.update(
-        id,
-        updateData
-      );
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      if (error.message === "Plan with this name already exists") {
-        return reply.status(400).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async delete(request, reply) {
-    try {
-      const { id } = request.params;
-      await PlanCommands.delete(id);
-      return reply.status(204).send();
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      if (error.message.includes("Cannot delete plan") && error.message.includes("associated customers")) {
-        return reply.status(400).send({
-          error: error.message,
-          suggestion: "Use DELETE /plans/:id/force to delete the plan and remove all customer associations"
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async forceDelete(request, reply) {
-    try {
-      const { id } = request.params;
-      await PlanCommands.forceDelete(id);
-      return reply.status(204).send();
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async list(request, reply) {
-    try {
-      const { page = 1, limit = 10, search, interval } = request.query;
-      const result = await PlanQueries.list({
-        page,
-        limit,
-        search,
-        interval
-      });
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  // === FUNÇÕES ADICIONAIS (QUERIES) ===
-  async getActive(request, reply) {
-    try {
-      const result = await PlanQueries.getActive();
-      return reply.send({ plans: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async compare(request, reply) {
-    try {
-      const { planIds } = request.query;
-      const result = await PlanQueries.compare(planIds);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "At least one plan ID is required for comparison") {
-        return reply.status(400).send({
-          error: error.message
-        });
-      }
-      if (error.message === "No plans found for comparison") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getCustomers(request, reply) {
-    try {
-      const { id } = request.params;
-      const { page = 1, limit = 10, status } = request.query;
-      const result = await PlanQueries.getCustomers(id, {
-        page,
-        limit,
-        status
-      });
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getStats(request, reply) {
-    try {
-      const result = await PlanQueries.getStats();
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  // === FUNÇÕES ADICIONAIS (COMMANDS) ===
-  async updateStatus(request, reply) {
-    try {
-      const { id } = request.params;
-      const { active } = request.body;
-      const result = await PlanCommands.updateStatus(id, active);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Plan not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  }
-};
-
-// src/features/subscription/plan.schema.ts
-var createPlanSchema = {
-  body: {
-    type: "object",
-    required: ["name", "price", "interval"],
-    properties: {
-      name: { type: "string", minLength: 1 },
-      description: { type: "string" },
-      price: { type: "number", minimum: 0.01 },
-      interval: {
-        type: "string",
-        enum: ["MONTHLY", "YEARLY"]
-      },
-      features: { type: "object" }
-    }
-  },
-  response: {
-    201: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string", nullable: true },
-        price: { type: "number" },
-        interval: { type: "string" },
-        features: { type: "object", nullable: true },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-        customers: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              status: { type: "string" },
-              createdAt: { type: "string", format: "date-time" }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var updatePlanSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  body: {
-    type: "object",
-    properties: {
-      name: { type: "string", minLength: 1 },
-      description: { type: "string" },
-      price: { type: "number", minimum: 0.01 },
-      interval: {
-        type: "string",
-        enum: ["MONTHLY", "YEARLY"]
-      },
-      features: { type: "object" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string", nullable: true },
-        price: { type: "number" },
-        interval: { type: "string" },
-        features: { type: "object", nullable: true },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-        customers: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              status: { type: "string" },
-              createdAt: { type: "string", format: "date-time" }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var getPlanSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string", nullable: true },
-        price: { type: "number" },
-        interval: { type: "string" },
-        features: { type: "object", nullable: true },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-        customersCount: { type: "number" },
-        customers: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              status: { type: "string" },
-              createdAt: { type: "string", format: "date-time" },
-              user: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var listPlansSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 10 },
-      search: { type: "string" },
-      interval: {
-        type: "string",
-        enum: ["MONTHLY", "YEARLY"]
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        items: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string", nullable: true },
-              price: { type: "number" },
-              interval: { type: "string" },
-              features: { type: "object", nullable: true },
-              createdAt: { type: "string", format: "date-time" },
-              updatedAt: { type: "string", format: "date-time" },
-              customersCount: { type: "number" }
-            }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var deletePlanSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  response: {
-    204: { type: "null" }
-  }
-};
-var updatePlanStatusSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  body: {
-    type: "object",
-    required: ["active"],
-    properties: {
-      active: { type: "boolean" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        description: { type: "string", nullable: true },
-        price: { type: "number" },
-        interval: { type: "string" },
-        features: { type: "object", nullable: true },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" }
-      }
-    }
-  }
-};
-var comparePlansSchema = {
-  querystring: {
-    type: "object",
-    required: ["planIds"],
-    properties: {
-      planIds: {
-        type: "array",
-        items: { type: "string", minLength: 1 },
-        minItems: 1,
-        uniqueItems: true
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        plans: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string", nullable: true },
-              price: { type: "number" },
-              interval: { type: "string" },
-              features: { type: "object", nullable: true },
-              createdAt: { type: "string", format: "date-time" },
-              updatedAt: { type: "string", format: "date-time" },
-              customersCount: { type: "number" }
-            }
-          }
-        },
-        comparison: {
-          type: "object",
-          properties: {
-            priceRange: {
-              type: "object",
-              properties: {
-                min: { type: "number" },
-                max: { type: "number" }
-              }
-            },
-            intervals: {
-              type: "array",
-              items: {
-                type: "string",
-                enum: ["MONTHLY", "YEARLY"]
-              }
-            },
-            features: {
-              type: "array",
-              items: { type: "string" }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var getPlanCustomersSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  querystring: {
-    type: "object",
-    properties: {
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 10 },
-      status: {
-        type: "string",
-        enum: ["ACTIVE", "INACTIVE", "CANCELLED", "TRIAL"]
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        plan: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            name: { type: "string" },
-            price: { type: "number" },
-            interval: { type: "string" }
-          }
-        },
-        customers: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              status: { type: "string" },
-              renewalDate: { type: "string", format: "date-time", nullable: true },
-              trialEndsAt: { type: "string", format: "date-time", nullable: true },
-              createdAt: { type: "string", format: "date-time" },
-              user: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" },
-                  phone: { type: "string", nullable: true }
-                }
-              },
-              plan: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  price: { type: "number" },
-                  interval: { type: "string" }
-                }
-              },
-              invoices: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    amount: { type: "number" },
-                    status: { type: "string" },
-                    createdAt: { type: "string", format: "date-time" }
-                  }
-                }
-              }
-            }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getPlanStatsSchema = {
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        total: { type: "number" },
-        active: { type: "number" },
-        inactive: { type: "number" },
-        monthlyPlans: { type: "number" },
-        yearlyPlans: { type: "number" },
-        totalCustomers: { type: "number" },
-        totalRevenue: { type: "number" },
-        averagePrice: { type: "number" }
-      }
-    }
-  }
-};
-var PlanSchemas = {
-  create: createPlanSchema,
-  update: updatePlanSchema,
-  get: getPlanSchema,
-  delete: deletePlanSchema,
-  list: listPlansSchema,
-  updateStatus: updatePlanStatusSchema,
-  compare: comparePlansSchema,
-  getCustomers: getPlanCustomersSchema,
-  getStats: getPlanStatsSchema
-};
-
-// src/features/subscription/subscription.routes.ts
-async function SubscriptionRoutes(fastify2) {
-  fastify2.addHook("preHandler", Middlewares.auth);
-  fastify2.addHook("preHandler", Middlewares.store);
-  fastify2.post("/", {
-    schema: PlanSchemas.create,
-    handler: PlanController.create
-  });
-  fastify2.get("/", {
-    schema: PlanSchemas.list,
-    handler: PlanController.list
-  });
-  fastify2.get("/:id", {
-    schema: PlanSchemas.get,
-    handler: PlanController.get
-  });
-  fastify2.put("/:id", {
-    schema: PlanSchemas.update,
-    handler: PlanController.update
-  });
-  fastify2.delete("/:id", {
-    schema: PlanSchemas.delete,
-    handler: PlanController.delete
-  });
-  fastify2.delete("/:id/force", {
-    schema: PlanSchemas.delete,
-    handler: PlanController.forceDelete
-  });
-  fastify2.get("/active", {
-    handler: PlanController.getActive
-  });
-  fastify2.get("/stats", {
-    handler: PlanController.getStats
-  });
-  fastify2.get("/compare", {
-    schema: PlanSchemas.compare,
-    handler: PlanController.compare
-  });
-  fastify2.get("/:id/customers", {
-    schema: PlanSchemas.getCustomers,
-    handler: PlanController.getCustomers
-  });
-  fastify2.patch("/:id/status", {
-    schema: PlanSchemas.updateStatus,
-    handler: PlanController.updateStatus
-  });
-}
-
 // src/features/polar/polar.controller.ts
-var import_crypto = __toESM(require("crypto"));
+var import_node_crypto2 = require("crypto");
 var PolarController = {
   async list(request, reply) {
     try {
@@ -27234,13 +23825,13 @@ var PolarController = {
           return reply.status(400).send({ error: "Signature timestamp too old" });
         }
       }
-      const computed = import_crypto.default.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+      const computed = (0, import_node_crypto2.createHmac)("sha256", secret).update(rawBody, "utf8").digest("hex");
       const valid = (() => {
         try {
           const a = Buffer.from(computed, "hex");
           const b = Buffer.from(receivedHash, "hex");
           if (a.length !== b.length) return false;
-          return import_crypto.default.timingSafeEqual(a, b);
+          return (0, import_node_crypto2.timingSafeEqual)(a, b);
         } catch {
           return false;
         }
@@ -27382,27 +23973,6 @@ async function PolarRoutes(fastify2) {
 }
 
 // src/features/product/commands/product.commands.ts
-var getUserStore = async (userId) => {
-  const ownedStore = await db.store.findFirst({
-    where: { ownerId: userId },
-    select: { id: true, name: true }
-  });
-  if (ownedStore) {
-    return ownedStore;
-  }
-  const storeUser = await db.storeUser.findFirst({
-    where: { userId },
-    include: {
-      store: {
-        select: { id: true, name: true }
-      }
-    }
-  });
-  if (storeUser) {
-    return storeUser.store;
-  }
-  throw new Error("User has no associated store");
-};
 var ProductCommands = {
   async create(data) {
     const { categoryIds, supplierId, storeId, ...createData } = data;
@@ -27645,7 +24215,7 @@ var ProductCommands = {
       throw new Error("Product not found");
     }
     let newStock = 0;
-    if (type === "ENTRADA") {
+    if (type === "INBOUND") {
       newStock = quantity;
     } else {
       newStock = -quantity;
@@ -27770,15 +24340,14 @@ var ProductCommands = {
       }
     });
     let currentStock = 0;
-    movements.forEach((movement) => {
-      if (movement.type === "ENTRADA") {
+    for (const movement of movements) {
+      if (movement.type === "INBOUND") {
         currentStock += movement.quantity;
       } else {
         currentStock -= movement.quantity;
       }
-    });
+    }
     let status = "OK";
-    const stockPercentage = currentStock / product.stockMax * 100;
     if (currentStock <= 0) {
       status = "CRITICAL";
     } else if (currentStock <= product.stockMin) {
@@ -27966,7 +24535,6 @@ var ProductCommands = {
 
 // src/features/product/product.controller.ts
 var ProductController = {
-  // === CRUD BÁSICO ===
   async create(request, reply) {
     try {
       const {
@@ -27989,8 +24557,7 @@ var ProductController = {
             error: "Authentication required to determine store"
           });
         }
-        const userStore = await getUserStore(request.user.id);
-        finalStoreId = userStore.id;
+        finalStoreId = request.store?.id;
       }
       const result = await ProductCommands.create({
         name,
@@ -28165,7 +24732,6 @@ var ProductController = {
       });
     }
   },
-  // === FUNÇÕES ADICIONAIS (QUERIES) ===
   async getActive(request, reply) {
     try {
       const storeId = request.store?.id;
@@ -28217,55 +24783,6 @@ var ProductController = {
       });
     }
   },
-  async getByCategory(request, reply) {
-    try {
-      const { categoryId } = request.params;
-      const storeId = request.store?.id;
-      if (!storeId) {
-        return reply.status(400).send({
-          error: "Store context required"
-        });
-      }
-      const result = await ProductQueries.getByCategory(categoryId, storeId);
-      return reply.send({ products: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getBySupplier(request, reply) {
-    try {
-      const { supplierId } = request.params;
-      const storeId = request.store?.id;
-      if (!storeId) {
-        return reply.status(400).send({
-          error: "Store context required"
-        });
-      }
-      const result = await ProductQueries.getBySupplier(supplierId, storeId);
-      return reply.send({ products: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getByStore(request, reply) {
-    try {
-      const { storeId } = request.params;
-      const result = await ProductQueries.getByStore(storeId);
-      return reply.send({ products: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  // === FUNÇÕES ADICIONAIS (COMMANDS) ===
   async updateStatus(request, reply) {
     try {
       const { id } = request.params;
@@ -28284,239 +24801,11 @@ var ProductController = {
       });
     }
   },
-  // === FUNÇÕES ADICIONAIS DE PRODUTO ===
   async verifySku(request, reply) {
     try {
       const { id: productId } = request.params;
       const { sku } = request.body;
       const result = await ProductCommands.verifySku(productId, sku);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async updateStock(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const { quantity, type, note } = request.body;
-      const userId = request.user?.id;
-      const result = await ProductCommands.updateStock(productId, quantity, type, note, userId);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getMovements(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const { page = 1, limit = 10, type, startDate, endDate } = request.query;
-      const result = await ProductQueries.getProductMovements(productId, {
-        page,
-        limit,
-        type,
-        startDate,
-        endDate
-      });
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async createMovement(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const { type, quantity, supplierId, batch, expiration, price, note } = request.body;
-      const userId = request.user?.id;
-      const result = await ProductCommands.createMovement(productId, {
-        type,
-        quantity,
-        supplierId,
-        batch,
-        expiration,
-        price,
-        note,
-        userId
-      });
-      return reply.status(201).send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      if (error.message === "Supplier not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getStock(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const result = await ProductCommands.getProductStock(productId);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getStockHistory(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const { limit = 30 } = request.query;
-      const result = await ProductQueries.getProductStockHistory(productId, limit);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getLowStock(request, reply) {
-    try {
-      const storeId = request.store?.id;
-      if (!storeId) {
-        return reply.status(400).send({
-          error: "Store context required"
-        });
-      }
-      const result = await ProductQueries.getLowStockProducts(storeId);
-      return reply.send({ products: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getAnalytics(request, reply) {
-    try {
-      const { id: productId } = request.params;
-      const result = await ProductQueries.getProductAnalytics(productId);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  // === MÉTODOS PARA GERENCIAR CATEGORIAS DO PRODUTO ===
-  async addCategories(request, reply) {
-    try {
-      const { id } = request.params;
-      const { categoryIds } = request.body;
-      const result = await ProductCommands.addCategories(id, categoryIds);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      if (error.message.includes("Categories not found") || error.message.includes("already associated")) {
-        return reply.status(400).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async removeCategories(request, reply) {
-    try {
-      const { id } = request.params;
-      const { categoryIds } = request.body;
-      const result = await ProductCommands.removeCategories(id, categoryIds);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async setCategories(request, reply) {
-    try {
-      const { id } = request.params;
-      const { categoryIds } = request.body;
-      const result = await ProductCommands.setCategories(id, categoryIds);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Product not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      if (error.message.includes("Categories not found")) {
-        return reply.status(400).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getCategories(request, reply) {
-    try {
-      const { id } = request.params;
-      const result = await ProductQueries.getCategories(id);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -29532,61 +25821,9 @@ async function ProductRoutes(fastify2) {
     schema: ProductSchemas.bulkDelete,
     handler: ProductController.bulkDelete
   });
-  fastify2.get("/category/:categoryId", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          categoryId: { type: "string" }
-        },
-        required: ["categoryId"]
-      }
-    },
-    handler: ProductController.getByCategory
-  });
-  fastify2.get("/supplier/:supplierId", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          supplierId: { type: "string" }
-        },
-        required: ["supplierId"]
-      }
-    },
-    handler: ProductController.getBySupplier
-  });
-  fastify2.get("/store/:storeId", {
-    schema: {
-      params: {
-        type: "object",
-        properties: {
-          storeId: { type: "string" }
-        },
-        required: ["storeId"]
-      }
-    },
-    handler: ProductController.getByStore
-  });
   fastify2.patch("/:id/status", {
     schema: ProductSchemas.updateStatus,
     handler: ProductController.updateStatus
-  });
-  fastify2.post("/:id/categories", {
-    schema: ProductSchemas.addCategories,
-    handler: ProductController.addCategories
-  });
-  fastify2.delete("/:id/categories", {
-    schema: ProductSchemas.removeCategories,
-    handler: ProductController.removeCategories
-  });
-  fastify2.put("/:id/categories", {
-    schema: ProductSchemas.setCategories,
-    handler: ProductController.setCategories
-  });
-  fastify2.get("/:id/categories", {
-    schema: ProductSchemas.getCategories,
-    handler: ProductController.getCategories
   });
 }
 
@@ -30224,19 +26461,31 @@ var QuoteCommands = {
       };
     });
     const total = subtotal.minus(quoteData.discount || 0).plus(quoteData.interest || 0);
+    const { userId, ...restQuoteData } = quoteData;
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { storeId: true }
+    });
+    if (!user || !user.storeId) {
+      throw new Error("User must be associated with a store");
+    }
     const quote = await db.quote.create({
       data: {
-        ...quoteData,
+        ...restQuoteData,
+        user: { connect: { id: userId } },
+        store: { connect: { id: user.storeId } },
         subtotal: new import_library.Decimal(subtotal),
         total: new import_library.Decimal(total),
         expiresAt: quoteData.expiresAt ? new Date(quoteData.expiresAt) : null,
+        discount: quoteData.discount ? new import_library.Decimal(quoteData.discount) : null,
+        interest: quoteData.interest ? new import_library.Decimal(quoteData.interest) : null,
         items: {
           create: itemsWithSubtotal.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             subtotal: new import_library.Decimal(item.subtotal),
-            discount: item.discount,
+            discount: item.discount ? new import_library.Decimal(item.discount) : null,
             note: item.note
           }))
         },
@@ -30303,14 +26552,6 @@ var QuoteCommands = {
         throw new Error(`Products not found: ${notFoundIds.join(", ")}`);
       }
       subtotal = new import_library.Decimal(0);
-      const itemsWithSubtotal = items.map((item) => {
-        const itemSubtotal = new import_library.Decimal(item.quantity * item.unitPrice).minus(item.discount || 0);
-        subtotal = subtotal.plus(itemSubtotal);
-        return {
-          ...item,
-          subtotal: itemSubtotal.toNumber()
-        };
-      });
       const discount = updateData.discount || existingQuote.discount || 0;
       const interest = updateData.interest || existingQuote.interest || 0;
       total = subtotal.minus(discount).plus(interest);
@@ -30547,7 +26788,7 @@ Rejection reason: ${reason}`.trim() : quote.observations
     for (const item of quote.items) {
       try {
         const movement = await MovementCommands.create({
-          type: "SAIDA",
+          type: "OUTBOUND",
           quantity: item.quantity,
           storeId: item.product.storeId,
           productId: item.productId,
@@ -32310,2704 +28551,6 @@ async function QuoteRoutes(fastify2) {
   });
 }
 
-// src/features/report/commands/report.commands.ts
-var ReportCommands = {
-  // ================================
-  // EXPORT REPORTS
-  // ================================
-  async exportReport(reportType, format, filters) {
-    try {
-      const timestamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
-      const filename = `${reportType}-report-${timestamp}.${format}`;
-      const exportRecord = await db.auditLog.create({
-        data: {
-          entity: "REPORT",
-          entityId: `export-${Date.now()}`,
-          action: "CREATE",
-          before: null,
-          after: {
-            reportType,
-            format,
-            filters,
-            filename,
-            generatedAt: (/* @__PURE__ */ new Date()).toISOString()
-          }
-        }
-      });
-      const downloadUrl = `/api/reports/download/${exportRecord.id}`;
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1e3);
-      return {
-        success: true,
-        downloadUrl,
-        filename,
-        format,
-        generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-        expiresAt: expiresAt.toISOString()
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to export report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // GENERATE CSV REPORT
-  // ================================
-  async generateCsvReport(reportType, data, columns) {
-    try {
-      const header = columns.join(",");
-      const rows = data.map((item) => {
-        return columns.map((column) => {
-          const value = ReportCommands.getNestedValue(item, column);
-          if (typeof value === "string" && (value.includes(",") || value.includes('"') || value.includes("\n"))) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
-          return value || "";
-        }).join(",");
-      });
-      return [header, ...rows].join("\n");
-    } catch (error) {
-      throw new Error(
-        `Failed to generate CSV report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // GENERATE EXCEL REPORT
-  // ================================
-  async generateExcelReport(reportType, data, columns) {
-    try {
-      const workbook = {
-        SheetNames: [reportType],
-        Sheets: {
-          [reportType]: {
-            "!ref": "A1",
-            A1: { v: "Report Generated", t: "s" },
-            A2: { v: (/* @__PURE__ */ new Date()).toISOString(), t: "s" }
-          }
-        }
-      };
-      return Buffer.from(JSON.stringify(workbook));
-    } catch (error) {
-      throw new Error(
-        `Failed to generate Excel report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // GENERATE PDF REPORT
-  // ================================
-  async generatePdfReport(reportType, data, columns) {
-    try {
-      const pdfContent = {
-        title: `${reportType} Report`,
-        generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-        totalRecords: data.length,
-        columns: columns.map((col) => col.label),
-        data: data.slice(0, 10)
-        // Limit for demo
-      };
-      return Buffer.from(JSON.stringify(pdfContent));
-    } catch (error) {
-      throw new Error(
-        `Failed to generate PDF report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // SCHEDULE REPORT
-  // ================================
-  async scheduleReport(reportType, schedule, filters, emailRecipients) {
-    try {
-      const scheduledReport = await db.auditLog.create({
-        data: {
-          entity: "REPORT",
-          entityId: `schedule-${Date.now()}`,
-          action: "CREATE",
-          before: null,
-          after: {
-            reportType,
-            schedule,
-            filters,
-            emailRecipients,
-            isActive: true,
-            createdAt: (/* @__PURE__ */ new Date()).toISOString()
-          }
-        }
-      });
-      return {
-        success: true,
-        scheduleId: scheduledReport.id
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to schedule report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // CANCEL SCHEDULED REPORT
-  // ================================
-  async cancelScheduledReport(scheduleId) {
-    try {
-      await db.auditLog.update({
-        where: { id: scheduleId },
-        data: {
-          after: {
-            ...(await db.auditLog.findUnique({
-              where: { id: scheduleId },
-              select: { after: true }
-            }))?.after,
-            isActive: false,
-            cancelledAt: (/* @__PURE__ */ new Date()).toISOString()
-          }
-        }
-      });
-      return { success: true };
-    } catch (error) {
-      throw new Error(
-        `Failed to cancel scheduled report: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // SEND REPORT VIA EMAIL
-  // ================================
-  async sendReportViaEmail(reportType, format, data, emailRecipients, subject, message) {
-    try {
-      let reportContent;
-      let filename;
-      switch (format) {
-        case "csv":
-          const columns = ReportCommands.getDefaultColumns(reportType);
-          reportContent = await ReportCommands.generateCsvReport(reportType, data, columns);
-          filename = `${reportType}-report-${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.csv`;
-          break;
-        case "xlsx":
-          const excelColumns = ReportCommands.getDefaultExcelColumns(reportType);
-          reportContent = await ReportCommands.generateExcelReport(reportType, data, excelColumns);
-          filename = `${reportType}-report-${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.xlsx`;
-          break;
-        case "pdf":
-          const pdfColumns = ReportCommands.getDefaultPdfColumns(reportType);
-          reportContent = await ReportCommands.generatePdfReport(reportType, data, pdfColumns);
-          filename = `${reportType}-report-${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.pdf`;
-          break;
-        default:
-          throw new Error(`Unsupported format: ${format}`);
-      }
-      const emailLog = await db.auditLog.create({
-        data: {
-          entity: "REPORT",
-          entityId: `email-${Date.now()}`,
-          action: "CREATE",
-          before: null,
-          after: {
-            reportType,
-            format,
-            recipients: emailRecipients,
-            subject: subject || `${reportType} Report`,
-            message: message || "Please find the attached report.",
-            filename,
-            sentAt: (/* @__PURE__ */ new Date()).toISOString()
-          }
-        }
-      });
-      return {
-        success: true,
-        messageId: emailLog.id
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to send report via email: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // GENERATE REPORT SUMMARY
-  // ================================
-  async generateReportSummary(reportType, data, filters) {
-    try {
-      const summary = {};
-      switch (reportType) {
-        case "inventory":
-          summary.totalValue = data.reduce((sum, item) => sum + (item.totalValue || 0), 0);
-          summary.lowStockItems = data.filter((item) => item.alertLevel === "low").length;
-          summary.outOfStockItems = data.filter((item) => item.alertLevel === "out").length;
-          break;
-        case "movement":
-          summary.totalMovements = data.length;
-          summary.totalValue = data.reduce((sum, item) => sum + (item.totalValue || 0), 0);
-          summary.entries = data.filter((item) => item.type === "ENTRADA").length;
-          summary.exits = data.filter((item) => item.type === "SAIDA").length;
-          summary.losses = data.filter((item) => item.type === "PERDA").length;
-          break;
-        case "financial":
-          summary.totalRevenue = data.reduce((sum, item) => sum + (item.revenue || 0), 0);
-          summary.totalCosts = data.reduce((sum, item) => sum + (item.costs || 0), 0);
-          summary.grossProfit = summary.totalRevenue - summary.totalCosts;
-          summary.profitMargin = summary.totalRevenue > 0 ? summary.grossProfit / summary.totalRevenue * 100 : 0;
-          break;
-        default:
-          summary.totalRecords = data.length;
-      }
-      return {
-        totalRecords: data.length,
-        dateRange: {
-          start: filters.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1e3).toISOString().split("T")[0],
-          end: filters.endDate || (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
-        },
-        filters,
-        generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-        summary
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to generate report summary: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  },
-  // ================================
-  // HELPER METHODS
-  // ================================
-  getNestedValue(obj, path4) {
-    return path4.split(".").reduce((current, key) => current?.[key], obj);
-  },
-  getDefaultColumns(reportType) {
-    const columnMap = {
-      inventory: [
-        "id",
-        "name",
-        "description",
-        "category.name",
-        "supplier.corporateName",
-        "currentStock",
-        "stockMin",
-        "stockMax",
-        "unitPrice",
-        "totalValue",
-        "status",
-        "alertLevel"
-      ],
-      movement: [
-        "id",
-        "type",
-        "quantity",
-        "price",
-        "totalValue",
-        "batch",
-        "expiration",
-        "note",
-        "product.name",
-        "supplier.corporateName",
-        "user.name",
-        "createdAt"
-      ],
-      financial: ["period", "revenue", "costs", "profit", "movements"],
-      category: [
-        "id",
-        "name",
-        "description",
-        "code",
-        "stats.totalProducts",
-        "stats.totalValue",
-        "stats.averagePrice",
-        "stats.movements"
-      ],
-      supplier: [
-        "id",
-        "corporateName",
-        "tradeName",
-        "cnpj",
-        "status",
-        "stats.totalProducts",
-        "stats.totalValue",
-        "stats.totalMovements",
-        "stats.averageOrderValue"
-      ],
-      "user-activity": [
-        "id",
-        "entity",
-        "entityId",
-        "action",
-        "user.name",
-        "user.email",
-        "createdAt"
-      ],
-      "stock-alert": [
-        "id",
-        "productName",
-        "currentStock",
-        "stockMin",
-        "stockMax",
-        "alertType",
-        "severity",
-        "unitPrice",
-        "totalValue",
-        "category.name",
-        "supplier.corporateName"
-      ]
-    };
-    return columnMap[reportType] || ["id", "name", "createdAt"];
-  },
-  getDefaultExcelColumns(reportType) {
-    const columnMap = {
-      inventory: [
-        { key: "id", label: "ID", type: "string" },
-        { key: "name", label: "Nome", type: "string" },
-        { key: "description", label: "Descri\xE7\xE3o", type: "string" },
-        { key: "category.name", label: "Categoria", type: "string" },
-        { key: "supplier.corporateName", label: "Fornecedor", type: "string" },
-        { key: "currentStock", label: "Estoque Atual", type: "number" },
-        { key: "stockMin", label: "Estoque M\xEDnimo", type: "number" },
-        { key: "stockMax", label: "Estoque M\xE1ximo", type: "number" },
-        { key: "unitPrice", label: "Pre\xE7o Unit\xE1rio", type: "number" },
-        { key: "totalValue", label: "Valor Total", type: "number" },
-        { key: "status", label: "Status", type: "string" },
-        { key: "alertLevel", label: "N\xEDvel de Alerta", type: "string" }
-      ],
-      movement: [
-        { key: "id", label: "ID", type: "string" },
-        { key: "type", label: "Tipo", type: "string" },
-        { key: "quantity", label: "Quantidade", type: "number" },
-        { key: "price", label: "Pre\xE7o", type: "number" },
-        { key: "totalValue", label: "Valor Total", type: "number" },
-        { key: "batch", label: "Lote", type: "string" },
-        { key: "expiration", label: "Validade", type: "date" },
-        { key: "note", label: "Observa\xE7\xE3o", type: "string" },
-        { key: "product.name", label: "Produto", type: "string" },
-        { key: "supplier.corporateName", label: "Fornecedor", type: "string" },
-        { key: "user.name", label: "Usu\xE1rio", type: "string" },
-        { key: "createdAt", label: "Data", type: "date" }
-      ]
-    };
-    return columnMap[reportType] || [
-      { key: "id", label: "ID", type: "string" },
-      { key: "name", label: "Nome", type: "string" },
-      { key: "createdAt", label: "Data de Cria\xE7\xE3o", type: "date" }
-    ];
-  },
-  getDefaultPdfColumns(reportType) {
-    const columnMap = {
-      inventory: [
-        { key: "name", label: "Produto", width: 30 },
-        { key: "category.name", label: "Categoria", width: 20 },
-        { key: "currentStock", label: "Estoque", width: 15 },
-        { key: "unitPrice", label: "Pre\xE7o", width: 15 },
-        { key: "totalValue", label: "Valor Total", width: 20 }
-      ],
-      movement: [
-        { key: "product.name", label: "Produto", width: 25 },
-        { key: "type", label: "Tipo", width: 15 },
-        { key: "quantity", label: "Quantidade", width: 15 },
-        { key: "totalValue", label: "Valor", width: 15 },
-        { key: "user.name", label: "Usu\xE1rio", width: 15 },
-        { key: "createdAt", label: "Data", width: 15 }
-      ]
-    };
-    return columnMap[reportType] || [
-      { key: "name", label: "Nome", width: 50 },
-      { key: "createdAt", label: "Data", width: 50 }
-    ];
-  },
-  // ================================
-  // VALIDATION METHODS
-  // ================================
-  validateReportFilters(filters) {
-    const errors = [];
-    if (filters.startDate && filters.endDate) {
-      const startDate = new Date(filters.startDate);
-      const endDate = new Date(filters.endDate);
-      if (startDate > endDate) {
-        errors.push("Start date cannot be after end date");
-      }
-    }
-    if (filters.storeId && typeof filters.storeId !== "string") {
-      errors.push("Store ID must be a string");
-    }
-    return {
-      valid: errors.length === 0,
-      errors
-    };
-  },
-  getAvailableReportTypes() {
-    return [
-      "inventory",
-      "movement",
-      "financial",
-      "category",
-      "supplier",
-      "user-activity",
-      "stock-alert"
-    ];
-  },
-  getReportStatistics() {
-    return {
-      totalReports: 0,
-      // This would be calculated from actual data
-      availableTypes: ReportCommands.getAvailableReportTypes()
-    };
-  }
-};
-
-// src/features/report/queries/report.queries.ts
-var ReportQueries = {
-  // ================================
-  // DASHBOARD STATS
-  // ================================
-  async getDashboardStats(filters) {
-    const { storeId, startDate, endDate } = filters;
-    const dateFilter = ReportQueries.buildDateFilter(startDate, endDate);
-    const [totalProducts, totalCategories, totalSuppliers, totalStores, totalUsers] = await Promise.all([
-      db.product.count({
-        where: storeId ? { storeId } : {}
-      }),
-      db.category.count(),
-      db.supplier.count(),
-      db.store.count(),
-      db.user.count()
-    ]);
-    const inventoryStats = await ReportQueries.getInventoryStats(storeId);
-    const movementStats = await ReportQueries.getMovementStats(storeId, dateFilter);
-    const recentActivity = await ReportQueries.getRecentActivity(storeId, dateFilter);
-    const charts = await ReportQueries.getChartData(storeId, dateFilter);
-    return {
-      overview: {
-        totalProducts,
-        totalCategories,
-        totalSuppliers,
-        totalStores,
-        totalUsers
-      },
-      inventory: inventoryStats,
-      movements: movementStats,
-      recentActivity,
-      charts
-    };
-  },
-  // ================================
-  // INVENTORY REPORT
-  // ================================
-  async getInventoryReport(filters, pagination, sort) {
-    const { storeId, categoryId, supplierId, status, lowStock } = filters;
-    const { page, limit } = pagination;
-    const { field, order } = sort;
-    const where = {};
-    if (storeId) where.storeId = storeId;
-    if (categoryId) where.categoryId = categoryId;
-    if (supplierId) where.supplierId = supplierId;
-    if (status && status !== "all") where.status = status === "active";
-    if (lowStock) {
-      where.AND = [
-        { stockMin: { gt: 0 } },
-        {
-          OR: [{ stockMin: { gt: 0 } }, { currentStock: { lte: 0 } }]
-        }
-      ];
-    }
-    const orderBy = {};
-    switch (field) {
-      case "name":
-        orderBy.name = order;
-        break;
-      case "stock":
-        orderBy.currentStock = order;
-        break;
-      case "value":
-        orderBy.totalValue = order;
-        break;
-      case "category":
-        orderBy.category = { name: order };
-        break;
-      default:
-        orderBy.name = "asc";
-    }
-    const [products, total] = await Promise.all([
-      db.product.findMany({
-        where,
-        orderBy,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          categories: {
-            select: {
-              category: {
-                select: { id: true, name: true }
-              }
-            }
-          },
-          supplier: {
-            select: { id: true, corporateName: true }
-          },
-          movements: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: { createdAt: true }
-          }
-        }
-      }),
-      db.product.count({ where })
-    ]);
-    const productsWithStats = products.map((product) => {
-      const currentStock = ReportQueries.calculateCurrentStock(product.movements || []);
-      const totalValue = Number(product.referencePrice) * currentStock;
-      let alertLevel = "normal";
-      if (currentStock <= 0) alertLevel = "out";
-      else if (currentStock <= product.stockMin) alertLevel = "low";
-      else if (currentStock >= product.stockMax) alertLevel = "high";
-      return {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        category: product.categories[0]?.category,
-        supplier: product.supplier,
-        currentStock,
-        stockMin: product.stockMin,
-        stockMax: product.stockMax,
-        unitPrice: Number(product.referencePrice),
-        totalValue,
-        status: product.status,
-        alertLevel,
-        lastMovement: product.movements?.[0]?.createdAt?.toISOString()
-      };
-    });
-    const summary = await ReportQueries.calculateInventorySummary(where);
-    return {
-      products: productsWithStats,
-      summary,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  // ================================
-  // MOVEMENT REPORT
-  // ================================
-  async getMovementReport(filters, pagination) {
-    const { storeId, productId, supplierId, type, startDate, endDate } = filters;
-    const { page, limit } = pagination;
-    const where = {};
-    if (storeId) where.storeId = storeId;
-    if (productId) where.productId = productId;
-    if (supplierId) where.supplierId = supplierId;
-    if (type) where.type = type;
-    if (startDate || endDate) {
-      where.createdAt = ReportQueries.buildDateFilter(startDate, endDate);
-    }
-    const [movements, total] = await Promise.all([
-      db.movement.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          product: {
-            select: { id: true, name: true, unitOfMeasure: true }
-          },
-          supplier: {
-            select: { id: true, corporateName: true }
-          },
-          user: {
-            select: { id: true, name: true }
-          }
-        }
-      }),
-      db.movement.count({ where })
-    ]);
-    const summary = await ReportQueries.calculateMovementSummary(where);
-    return {
-      movements: movements.map((movement) => ({
-        id: movement.id,
-        type: movement.type,
-        quantity: movement.quantity,
-        price: movement.price ? Number(movement.price) : void 0,
-        totalValue: movement.price ? Number(movement.price) * movement.quantity : void 0,
-        batch: movement.batch,
-        expiration: movement.expiration?.toISOString(),
-        note: movement.note,
-        balanceAfter: movement.balanceAfter,
-        product: movement.product,
-        supplier: movement.supplier,
-        user: movement.user,
-        createdAt: movement.createdAt.toISOString()
-      })),
-      summary,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  // ================================
-  // FINANCIAL REPORT
-  // ================================
-  async getFinancialReport(filters) {
-    const { storeId, startDate, endDate, groupBy = "month" } = filters;
-    const dateFilter = ReportQueries.buildDateFilter(startDate, endDate);
-    const where = { ...dateFilter };
-    if (storeId) where.storeId = storeId;
-    const movements = await db.movement.findMany({
-      where: {
-        ...where,
-        price: { not: null }
-      },
-      include: {
-        product: {
-          select: { id: true, name: true, categories: true }
-        },
-        supplier: {
-          select: { id: true, corporateName: true }
-        }
-      }
-    });
-    const financialData = ReportQueries.calculateFinancialData(movements, groupBy);
-    const breakdown = await ReportQueries.calculateFinancialBreakdown(movements);
-    return {
-      period: {
-        startDate: startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1e3).toISOString().split("T")[0],
-        endDate: endDate || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-        groupBy
-      },
-      summary: financialData.summary,
-      data: financialData.timeSeries,
-      breakdown
-    };
-  },
-  // ================================
-  // CATEGORY REPORT
-  // ================================
-  async getCategoryReport(filters) {
-    const { storeId, includeSubcategories = true } = filters;
-    const where = {};
-    if (storeId) where.storeId = storeId;
-    const categories = await db.category.findMany({
-      include: {
-        products: {
-          where,
-          include: {
-            product: {
-              include: {
-                movements: {
-                  orderBy: { createdAt: "desc" },
-                  take: 1,
-                  select: { createdAt: true }
-                }
-              }
-            }
-          }
-        },
-        children: includeSubcategories ? {
-          include: {
-            products: {
-              where,
-              include: {
-                product: {
-                  include: {
-                    movements: {
-                      orderBy: { createdAt: "desc" },
-                      take: 1,
-                      select: { createdAt: true }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } : false,
-        parent: true
-      }
-    });
-    const categoriesWithStats = categories.map((category) => {
-      const allProducts = includeSubcategories && category.children ? [
-        ...category.products,
-        ...category.children.flatMap((child) => child.products || [])
-      ] : category.products;
-      const totalValue2 = allProducts.reduce((sum, productCategory) => {
-        const product = productCategory.product;
-        const currentStock = ReportQueries.calculateCurrentStock(product.movements || []);
-        return sum + Number(product.referencePrice) * currentStock;
-      }, 0);
-      const totalMovements = allProducts.reduce((sum, productCategory) => {
-        return sum + (productCategory.product.movements?.length || 0);
-      }, 0);
-      const lastMovement = allProducts.flatMap((productCategory) => productCategory.product.movements || []).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
-      return {
-        id: category.id,
-        name: category.name,
-        description: category.description,
-        code: category.code,
-        color: category.color,
-        icon: category.icon,
-        parentId: category.parentId,
-        parent: category.parent,
-        children: category.children?.map((child) => ({
-          id: child.id,
-          name: child.name
-        })),
-        stats: {
-          totalProducts: allProducts.length,
-          totalValue: totalValue2,
-          averagePrice: allProducts.length > 0 ? totalValue2 / allProducts.length : 0,
-          movements: totalMovements,
-          lastMovement: lastMovement?.createdAt.toISOString()
-        }
-      };
-    });
-    const totalProducts = categoriesWithStats.reduce((sum, cat) => sum + cat.stats.totalProducts, 0);
-    const totalValue = categoriesWithStats.reduce((sum, cat) => sum + cat.stats.totalValue, 0);
-    return {
-      categories: categoriesWithStats,
-      summary: {
-        totalCategories: categories.length,
-        totalProducts,
-        totalValue,
-        averageProductsPerCategory: categories.length > 0 ? totalProducts / categories.length : 0
-      }
-    };
-  },
-  // ================================
-  // SUPPLIER REPORT
-  // ================================
-  async getSupplierReport(filters) {
-    const { storeId, status } = filters;
-    const where = {};
-    if (status && status !== "all") where.status = status === "active";
-    const suppliers = await db.supplier.findMany({
-      where,
-      include: {
-        products: {
-          where: storeId ? { storeId } : {},
-          include: {
-            movements: {
-              orderBy: { createdAt: "desc" },
-              take: 1,
-              select: { createdAt: true }
-            }
-          }
-        },
-        movements: {
-          where: storeId ? { storeId } : {},
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { createdAt: true }
-        },
-        responsibles: true
-      }
-    });
-    const suppliersWithStats = suppliers.map((supplier) => {
-      const totalValue2 = supplier.products.reduce((sum, product) => {
-        const currentStock = ReportQueries.calculateCurrentStock(product.movements || []);
-        return sum + Number(product.referencePrice) * currentStock;
-      }, 0);
-      const totalMovements = supplier.movements.length;
-      const lastMovement = supplier.movements[0];
-      return {
-        id: supplier.id,
-        corporateName: supplier.corporateName,
-        tradeName: supplier.tradeName,
-        cnpj: supplier.cnpj,
-        status: supplier.status,
-        address: {
-          cep: supplier.cep,
-          city: supplier.city,
-          state: supplier.state,
-          address: supplier.address
-        },
-        stats: {
-          totalProducts: supplier.products.length,
-          totalValue: totalValue2,
-          totalMovements,
-          lastMovement: lastMovement?.createdAt.toISOString(),
-          averageOrderValue: totalMovements > 0 ? totalValue2 / totalMovements : 0
-        },
-        responsibles: supplier.responsibles.map((resp) => ({
-          id: resp.id,
-          name: resp.name,
-          phone: resp.phone,
-          email: resp.email
-        }))
-      };
-    });
-    const totalProducts = suppliersWithStats.reduce((sum, sup) => sum + sup.stats.totalProducts, 0);
-    const totalValue = suppliersWithStats.reduce((sum, sup) => sum + sup.stats.totalValue, 0);
-    const activeSuppliers = suppliersWithStats.filter((sup) => sup.status).length;
-    return {
-      suppliers: suppliersWithStats,
-      summary: {
-        totalSuppliers: suppliers.length,
-        activeSuppliers,
-        totalProducts,
-        totalValue,
-        averageProductsPerSupplier: suppliers.length > 0 ? totalProducts / suppliers.length : 0
-      }
-    };
-  },
-  // ================================
-  // USER ACTIVITY REPORT
-  // ================================
-  async getUserActivityReport(filters, pagination) {
-    const { storeId, userId, startDate, endDate, action } = filters;
-    const { page, limit } = pagination;
-    const where = {};
-    if (userId) where.userId = userId;
-    if (action) where.action = action;
-    if (startDate || endDate) {
-      where.createdAt = ReportQueries.buildDateFilter(startDate, endDate);
-    }
-    const [activities, total] = await Promise.all([
-      db.auditLog.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          user: {
-            select: { id: true, name: true, email: true }
-          }
-        }
-      }),
-      db.auditLog.count({ where })
-    ]);
-    const summary = await ReportQueries.calculateUserActivitySummary(where);
-    return {
-      activities: activities.map((activity) => ({
-        id: activity.id,
-        entity: activity.entity,
-        entityId: activity.entityId,
-        action: activity.action,
-        before: activity.before,
-        after: activity.after,
-        user: activity.user,
-        createdAt: activity.createdAt.toISOString()
-      })),
-      summary,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  },
-  // ================================
-  // STOCK ALERT REPORT
-  // ================================
-  async getStockAlertReport(filters, pagination) {
-    const { storeId, alertType = "all" } = filters;
-    const { page, limit } = pagination;
-    const where = {};
-    if (storeId) where.storeId = storeId;
-    const products = await db.product.findMany({
-      where,
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: { id: true, name: true }
-            }
-          }
-        },
-        supplier: {
-          select: { id: true, corporateName: true }
-        },
-        movements: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { createdAt: true }
-        }
-      }
-    });
-    const alerts = products.map((product) => {
-      const currentStock = ReportQueries.calculateCurrentStock(product.movements || []);
-      const unitPrice = Number(product.referencePrice);
-      const totalValue = unitPrice * currentStock;
-      let alertType2 = null;
-      let severity = "low";
-      if (currentStock <= 0) {
-        alertType2 = "out";
-        severity = "critical";
-      } else if (currentStock <= product.stockMin) {
-        alertType2 = "low";
-        severity = currentStock === 0 ? "critical" : "high";
-      } else if (currentStock >= product.stockMax) {
-        alertType2 = "high";
-        severity = "medium";
-      }
-      return {
-        id: product.id,
-        productId: product.id,
-        productName: product.name,
-        currentStock,
-        stockMin: product.stockMin,
-        stockMax: product.stockMax,
-        alertType: alertType2,
-        severity,
-        unitPrice,
-        totalValue,
-        lastMovement: product.movements?.[0]?.createdAt.toISOString(),
-        category: product.categories[0]?.category,
-        supplier: product.supplier
-      };
-    }).filter((alert) => {
-      if (alertType === "all") return alert.alertType !== null;
-      return alert.alertType === alertType;
-    }).sort((a, b) => {
-      const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-      return severityOrder[b.severity] - severityOrder[a.severity];
-    });
-    const paginatedAlerts = alerts.slice((page - 1) * limit, page * limit);
-    const summary = {
-      totalAlerts: alerts.length,
-      lowStockAlerts: alerts.filter((a) => a.alertType === "low").length,
-      highStockAlerts: alerts.filter((a) => a.alertType === "high").length,
-      expiredAlerts: alerts.filter((a) => a.alertType === "expired").length,
-      outOfStockAlerts: alerts.filter((a) => a.alertType === "out").length,
-      totalValue: alerts.reduce((sum, alert) => sum + alert.totalValue, 0)
-    };
-    return {
-      alerts: paginatedAlerts,
-      summary,
-      pagination: {
-        page,
-        limit,
-        total: alerts.length,
-        totalPages: Math.ceil(alerts.length / limit)
-      }
-    };
-  },
-  // ================================
-  // HELPER METHODS
-  // ================================
-  buildDateFilter(startDate, endDate) {
-    const filter = {};
-    if (startDate) {
-      filter.gte = new Date(startDate);
-    }
-    if (endDate) {
-      filter.lte = new Date(endDate);
-    }
-    return Object.keys(filter).length > 0 ? filter : void 0;
-  },
-  calculateCurrentStock(movements) {
-    return movements.reduce((stock, movement) => {
-      switch (movement.type) {
-        case "ENTRADA":
-          return stock + movement.quantity;
-        case "SAIDA":
-        case "PERDA":
-          return stock - movement.quantity;
-        default:
-          return stock;
-      }
-    }, 0);
-  },
-  async getInventoryStats(storeId) {
-    const where = storeId ? { storeId } : {};
-    const [totalValue, lowStockCount, outOfStockCount] = await Promise.all([
-      db.product.aggregate({
-        where,
-        _sum: { referencePrice: true }
-      }),
-      db.product.count({
-        where: {
-          ...where,
-          AND: [{ stockMin: { gt: 0 } }, { stockMin: { gt: 0 } }]
-        }
-      }),
-      db.product.count({
-        where: {
-          ...where,
-          stockMin: { gt: 0 }
-        }
-      })
-    ]);
-    return {
-      totalValue: Number(totalValue._sum.referencePrice || 0),
-      lowStockItems: lowStockCount,
-      outOfStockItems: outOfStockCount,
-      averageStockValue: 0
-      // Will be calculated based on actual stock
-    };
-  },
-  async getMovementStats(storeId, dateFilter) {
-    const where = { ...dateFilter };
-    if (storeId) where.storeId = storeId;
-    const [totalMovements, entries, exits, losses, totalValue] = await Promise.all([
-      db.movement.count({ where }),
-      db.movement.count({ where: { ...where, type: "ENTRADA" } }),
-      db.movement.count({ where: { ...where, type: "SAIDA" } }),
-      db.movement.count({ where: { ...where, type: "PERDA" } }),
-      db.movement.aggregate({
-        where: { ...where, price: { not: null } },
-        _sum: { price: true }
-      })
-    ]);
-    return {
-      totalMovements,
-      entries,
-      exits,
-      losses,
-      totalValue: Number(totalValue._sum.price || 0)
-    };
-  },
-  async getRecentActivity(storeId, dateFilter) {
-    const where = { ...dateFilter };
-    if (storeId) where.storeId = storeId;
-    const [lastMovements, recentProducts] = await Promise.all([
-      db.movement.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        include: {
-          product: {
-            select: { name: true }
-          }
-        }
-      }),
-      db.product.findMany({
-        where: storeId ? { storeId } : {},
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        select: { id: true, name: true, createdAt: true }
-      })
-    ]);
-    return {
-      lastMovements: lastMovements.map((movement) => ({
-        id: movement.id,
-        type: movement.type,
-        productName: movement.product.name,
-        quantity: movement.quantity,
-        createdAt: movement.createdAt.toISOString()
-      })),
-      recentProducts: recentProducts.map((product) => ({
-        id: product.id,
-        name: product.name,
-        createdAt: product.createdAt.toISOString()
-      }))
-    };
-  },
-  async getChartData(storeId, dateFilter) {
-    const where = { ...dateFilter };
-    if (storeId) where.storeId = storeId;
-    const movementsByType = await db.movement.groupBy({
-      by: ["type"],
-      where,
-      _count: { type: true },
-      _sum: { price: true }
-    });
-    const topProducts = await db.movement.groupBy({
-      by: ["productId"],
-      where,
-      _count: { productId: true },
-      _sum: { price: true },
-      orderBy: { _count: { productId: "desc" } },
-      take: 5
-    });
-    const productIds = topProducts.map((p) => p.productId);
-    const products = await db.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, name: true }
-    });
-    const productMap = new Map(products.map((p) => [p.id, p.name]));
-    return {
-      movementsByType: movementsByType.map((m) => ({
-        type: m.type,
-        count: m._count.type,
-        value: Number(m._sum.price || 0)
-      })),
-      topProducts: topProducts.map((p) => ({
-        productId: p.productId,
-        productName: productMap.get(p.productId) || "Unknown",
-        movements: p._count.productId,
-        value: Number(p._sum.price || 0)
-      })),
-      movementsByDay: []
-      // Will be implemented with proper date grouping
-    };
-  },
-  async calculateInventorySummary(where) {
-    const [totalProducts, totalValue, lowStockCount, outOfStockCount] = await Promise.all([
-      db.product.count({ where }),
-      db.product.aggregate({
-        where,
-        _sum: { referencePrice: true }
-      }),
-      db.product.count({
-        where: {
-          ...where,
-          AND: [{ stockMin: { gt: 0 } }, { stockMin: { gt: 0 } }]
-        }
-      }),
-      db.product.count({
-        where: {
-          ...where,
-          stockMin: { gt: 0 }
-        }
-      })
-    ]);
-    return {
-      totalProducts,
-      totalValue: Number(totalValue._sum.referencePrice || 0),
-      lowStockCount,
-      outOfStockCount,
-      averageStockValue: totalProducts > 0 ? Number(totalValue._sum.referencePrice || 0) / totalProducts : 0
-    };
-  },
-  async calculateMovementSummary(where) {
-    const [totalMovements, totalEntries, totalExits, totalLosses, totalValue] = await Promise.all([
-      db.movement.count({ where }),
-      db.movement.count({ where: { ...where, type: "ENTRADA" } }),
-      db.movement.count({ where: { ...where, type: "SAIDA" } }),
-      db.movement.count({ where: { ...where, type: "PERDA" } }),
-      db.movement.aggregate({
-        where: { ...where, price: { not: null } },
-        _sum: { price: true }
-      })
-    ]);
-    return {
-      totalMovements,
-      totalEntries,
-      totalExits,
-      totalLosses,
-      totalValue: Number(totalValue._sum.price || 0),
-      averageValue: totalMovements > 0 ? Number(totalValue._sum.price || 0) / totalMovements : 0
-    };
-  },
-  calculateFinancialData(movements, groupBy) {
-    const totalRevenue = movements.filter((m) => m.type === "ENTRADA" && m.price).reduce((sum, m) => sum + Number(m.price) * m.quantity, 0);
-    const totalCosts = movements.filter((m) => m.type === "SAIDA" && m.price).reduce((sum, m) => sum + Number(m.price) * m.quantity, 0);
-    const grossProfit = totalRevenue - totalCosts;
-    const profitMargin = totalRevenue > 0 ? grossProfit / totalRevenue * 100 : 0;
-    return {
-      summary: {
-        totalRevenue,
-        totalCosts,
-        grossProfit,
-        profitMargin,
-        totalMovements: movements.length
-      },
-      timeSeries: []
-      // Would be implemented with proper date grouping
-    };
-  },
-  async calculateFinancialBreakdown(movements) {
-    const byProduct = /* @__PURE__ */ new Map();
-    const byCategory = /* @__PURE__ */ new Map();
-    const bySupplier = /* @__PURE__ */ new Map();
-    movements.forEach((movement) => {
-      const value = Number(movement.price || 0) * movement.quantity;
-      const isRevenue = movement.type === "ENTRADA";
-      const isCost = movement.type === "SAIDA";
-      if (!byProduct.has(movement.product.id)) {
-        byProduct.set(movement.product.id, {
-          productId: movement.product.id,
-          productName: movement.product.name,
-          revenue: 0,
-          costs: 0,
-          profit: 0,
-          movements: 0
-        });
-      }
-      const productData = byProduct.get(movement.product.id);
-      productData.movements++;
-      if (isRevenue) productData.revenue += value;
-      if (isCost) productData.costs += value;
-      productData.profit = productData.revenue - productData.costs;
-    });
-    return {
-      byProduct: Array.from(byProduct.values()),
-      byCategory: Array.from(byCategory.values()),
-      bySupplier: Array.from(bySupplier.values())
-    };
-  },
-  async calculateUserActivitySummary(where) {
-    const [totalActivities, uniqueUsers, activitiesByType] = await Promise.all([
-      db.auditLog.count({ where }),
-      db.auditLog.groupBy({
-        by: ["userId"],
-        where,
-        _count: { userId: true }
-      }),
-      db.auditLog.groupBy({
-        by: ["action"],
-        where,
-        _count: { action: true }
-      })
-    ]);
-    const mostActiveUser = uniqueUsers.length > 0 ? uniqueUsers.reduce((max, user) => user._count.userId > max._count.userId ? user : max) : null;
-    return {
-      totalActivities,
-      uniqueUsers: uniqueUsers.length,
-      mostActiveUser: mostActiveUser ? {
-        id: mostActiveUser.userId,
-        name: "Unknown",
-        // Would need to join with user table
-        activities: mostActiveUser._count.userId
-      } : null,
-      activitiesByType: activitiesByType.map((activity) => ({
-        action: activity.action,
-        count: activity._count.action
-      }))
-    };
-  }
-};
-
-// src/features/report/report.controller.ts
-var ReportController = {
-  // ================================
-  // DASHBOARD STATS
-  // ================================
-  async getDashboardStats(request, reply) {
-    try {
-      const { storeId, period, startDate, endDate } = request.query;
-      const filters = {
-        storeId,
-        startDate,
-        endDate,
-        period
-      };
-      const result = await ReportQueries.getDashboardStats(filters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get dashboard stats")) {
-        return reply.status(500).send({
-          error: "Erro ao obter estat\xEDsticas do dashboard"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // INVENTORY REPORT
-  // ================================
-  async getInventoryReport(request, reply) {
-    try {
-      const {
-        storeId,
-        categoryId,
-        supplierId,
-        status,
-        lowStock,
-        sortBy,
-        sortOrder,
-        page = 1,
-        limit = 20
-      } = request.query;
-      const filters = {
-        storeId,
-        categoryId,
-        supplierId,
-        status,
-        lowStock
-      };
-      const pagination = { page, limit };
-      const sort = { field: sortBy || "name", order: sortOrder || "asc" };
-      const result = await ReportQueries.getInventoryReport(filters, pagination, sort);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get inventory report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de invent\xE1rio"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // MOVEMENT REPORT
-  // ================================
-  async getMovementReport(request, reply) {
-    try {
-      const {
-        storeId,
-        productId,
-        supplierId,
-        type,
-        startDate,
-        endDate,
-        page = 1,
-        limit = 20
-      } = request.query;
-      const filters = {
-        storeId,
-        productId,
-        supplierId,
-        type,
-        startDate,
-        endDate
-      };
-      const pagination = { page, limit };
-      const result = await ReportQueries.getMovementReport(filters, pagination);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get movement report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de movimenta\xE7\xF5es"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // FINANCIAL REPORT
-  // ================================
-  async getFinancialReport(request, reply) {
-    try {
-      const { storeId, startDate, endDate, groupBy } = request.query;
-      const filters = {
-        storeId,
-        startDate,
-        endDate,
-        groupBy
-      };
-      const result = await ReportQueries.getFinancialReport(filters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get financial report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio financeiro"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // CATEGORY REPORT
-  // ================================
-  async getCategoryReport(request, reply) {
-    try {
-      const { storeId, startDate, endDate, includeSubcategories } = request.query;
-      const filters = {
-        storeId,
-        startDate,
-        endDate,
-        includeSubcategories
-      };
-      const result = await ReportQueries.getCategoryReport(filters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get category report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de categorias"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // SUPPLIER REPORT
-  // ================================
-  async getSupplierReport(request, reply) {
-    try {
-      const { storeId, startDate, endDate, status } = request.query;
-      const filters = {
-        storeId,
-        startDate,
-        endDate,
-        status
-      };
-      const result = await ReportQueries.getSupplierReport(filters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get supplier report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de fornecedores"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // USER ACTIVITY REPORT
-  // ================================
-  async getUserActivityReport(request, reply) {
-    try {
-      const { storeId, userId, startDate, endDate, action, page = 1, limit = 20 } = request.query;
-      const filters = {
-        storeId,
-        userId,
-        startDate,
-        endDate,
-        action
-      };
-      const pagination = { page, limit };
-      const result = await ReportQueries.getUserActivityReport(filters, pagination);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get user activity report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de atividade de usu\xE1rios"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // STOCK ALERT REPORT
-  // ================================
-  async getStockAlertReport(request, reply) {
-    try {
-      const { storeId, alertType, page = 1, limit = 20 } = request.query;
-      const filters = {
-        storeId,
-        alertType
-      };
-      const pagination = { page, limit };
-      const result = await ReportQueries.getStockAlertReport(filters, pagination);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to get stock alert report")) {
-        return reply.status(500).send({
-          error: "Erro ao obter relat\xF3rio de alertas de estoque"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // EXPORT REPORTS
-  // ================================
-  async exportReport(request, reply) {
-    try {
-      const { reportType, format, storeId, startDate, endDate, filters } = request.query;
-      const reportFilters = {
-        storeId,
-        startDate,
-        endDate,
-        ...filters ? JSON.parse(filters) : {}
-      };
-      const result = await ReportCommands.exportReport(reportType, format, reportFilters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to export report")) {
-        return reply.status(500).send({
-          error: "Erro ao exportar relat\xF3rio"
-        });
-      }
-      if (error.message.includes("Unsupported report type")) {
-        return reply.status(400).send({
-          error: "Tipo de relat\xF3rio n\xE3o suportado"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // SCHEDULE REPORTS
-  // ================================
-  async scheduleReport(request, reply) {
-    try {
-      const { reportType, schedule, filters, emailRecipients } = request.body;
-      const result = await ReportCommands.scheduleReport(
-        reportType,
-        schedule,
-        filters,
-        emailRecipients
-      );
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to schedule report")) {
-        return reply.status(500).send({
-          error: "Erro ao agendar relat\xF3rio"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  async cancelScheduledReport(request, reply) {
-    try {
-      const { scheduleId } = request.params;
-      const result = await ReportCommands.cancelScheduledReport(scheduleId);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to cancel scheduled report")) {
-        return reply.status(500).send({
-          error: "Erro ao cancelar relat\xF3rio agendado"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // EMAIL REPORTS
-  // ================================
-  async sendReportViaEmail(request, reply) {
-    try {
-      const { reportType, format, data, emailRecipients, subject, message } = request.body;
-      const result = await ReportCommands.sendReportViaEmail(
-        reportType,
-        format,
-        data,
-        emailRecipients,
-        subject,
-        message
-      );
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message.includes("Failed to send report via email")) {
-        return reply.status(500).send({
-          error: "Erro ao enviar relat\xF3rio por email"
-        });
-      }
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // UTILITY ENDPOINTS
-  // ================================
-  async getAvailableReportTypes(request, reply) {
-    try {
-      const result = ReportCommands.getAvailableReportTypes();
-      return reply.send({ reportTypes: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  async getReportStatistics(request, reply) {
-    try {
-      const result = ReportCommands.getReportStatistics();
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  },
-  // ================================
-  // VALIDATION ENDPOINT
-  // ================================
-  async validateFilters(request, reply) {
-    try {
-      const { filters } = request.body;
-      const result = ReportCommands.validateReportFilters(filters);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Erro interno do servidor"
-      });
-    }
-  }
-};
-
-// src/features/report/report.schema.ts
-var getDashboardStatsSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      period: {
-        type: "string",
-        enum: ["day", "week", "month", "year"],
-        default: "month"
-      },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        overview: {
-          type: "object",
-          properties: {
-            totalProducts: { type: "number" },
-            totalCategories: { type: "number" },
-            totalSuppliers: { type: "number" },
-            totalStores: { type: "number" },
-            totalUsers: { type: "number" }
-          }
-        },
-        inventory: {
-          type: "object",
-          properties: {
-            totalValue: { type: "number" },
-            lowStockItems: { type: "number" },
-            outOfStockItems: { type: "number" },
-            averageStockValue: { type: "number" }
-          }
-        },
-        movements: {
-          type: "object",
-          properties: {
-            totalMovements: { type: "number" },
-            entries: { type: "number" },
-            exits: { type: "number" },
-            losses: { type: "number" },
-            totalValue: { type: "number" }
-          }
-        },
-        recentActivity: {
-          type: "object",
-          properties: {
-            lastMovements: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  type: { type: "string" },
-                  productName: { type: "string" },
-                  quantity: { type: "number" },
-                  createdAt: { type: "string" }
-                }
-              }
-            },
-            recentProducts: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  createdAt: { type: "string" }
-                }
-              }
-            }
-          }
-        },
-        charts: {
-          type: "object",
-          properties: {
-            movementsByType: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: { type: "string" },
-                  count: { type: "number" },
-                  value: { type: "number" }
-                }
-              }
-            },
-            topProducts: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  productId: { type: "string" },
-                  productName: { type: "string" },
-                  movements: { type: "number" },
-                  value: { type: "number" }
-                }
-              }
-            },
-            movementsByDay: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  date: { type: "string" },
-                  entries: { type: "number" },
-                  exits: { type: "number" },
-                  losses: { type: "number" }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var getInventoryReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      categoryId: { type: "string" },
-      supplierId: { type: "string" },
-      status: {
-        type: "string",
-        enum: ["all", "active", "inactive"],
-        default: "all"
-      },
-      lowStock: { type: "boolean" },
-      sortBy: {
-        type: "string",
-        enum: ["name", "stock", "value", "category"],
-        default: "name"
-      },
-      sortOrder: {
-        type: "string",
-        enum: ["asc", "desc"],
-        default: "asc"
-      },
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 20 }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        products: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              category: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" }
-                }
-              },
-              supplier: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  corporateName: { type: "string" }
-                }
-              },
-              currentStock: { type: "number" },
-              stockMin: { type: "number" },
-              stockMax: { type: "number" },
-              unitPrice: { type: "number" },
-              totalValue: { type: "number" },
-              status: { type: "boolean" },
-              alertLevel: {
-                type: "string",
-                enum: ["normal", "low", "high", "out"]
-              },
-              lastMovement: { type: "string" }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalProducts: { type: "number" },
-            totalValue: { type: "number" },
-            lowStockCount: { type: "number" },
-            outOfStockCount: { type: "number" },
-            averageStockValue: { type: "number" }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getMovementReportSchema2 = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      productId: { type: "string" },
-      supplierId: { type: "string" },
-      type: {
-        type: "string",
-        enum: ["ENTRADA", "SAIDA", "PERDA"]
-      },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 20 }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        movements: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              type: { type: "string" },
-              quantity: { type: "number" },
-              price: { type: "number" },
-              totalValue: { type: "number" },
-              batch: { type: "string" },
-              expiration: { type: "string" },
-              note: { type: "string" },
-              balanceAfter: { type: "number" },
-              product: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  unitOfMeasure: { type: "string" }
-                }
-              },
-              supplier: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  corporateName: { type: "string" }
-                }
-              },
-              user: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" }
-                }
-              },
-              createdAt: { type: "string" }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalMovements: { type: "number" },
-            totalEntries: { type: "number" },
-            totalExits: { type: "number" },
-            totalLosses: { type: "number" },
-            totalValue: { type: "number" },
-            averageValue: { type: "number" }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getFinancialReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      groupBy: {
-        type: "string",
-        enum: ["day", "week", "month", "year"],
-        default: "month"
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        period: {
-          type: "object",
-          properties: {
-            startDate: { type: "string" },
-            endDate: { type: "string" },
-            groupBy: { type: "string" }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalRevenue: { type: "number" },
-            totalCosts: { type: "number" },
-            grossProfit: { type: "number" },
-            profitMargin: { type: "number" },
-            totalMovements: { type: "number" }
-          }
-        },
-        data: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              period: { type: "string" },
-              revenue: { type: "number" },
-              costs: { type: "number" },
-              profit: { type: "number" },
-              movements: { type: "number" }
-            }
-          }
-        },
-        breakdown: {
-          type: "object",
-          properties: {
-            byProduct: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  productId: { type: "string" },
-                  productName: { type: "string" },
-                  revenue: { type: "number" },
-                  costs: { type: "number" },
-                  profit: { type: "number" },
-                  movements: { type: "number" }
-                }
-              }
-            },
-            byCategory: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  categoryId: { type: "string" },
-                  categoryName: { type: "string" },
-                  revenue: { type: "number" },
-                  costs: { type: "number" },
-                  profit: { type: "number" },
-                  movements: { type: "number" }
-                }
-              }
-            },
-            bySupplier: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  supplierId: { type: "string" },
-                  supplierName: { type: "string" },
-                  revenue: { type: "number" },
-                  costs: { type: "number" },
-                  profit: { type: "number" },
-                  movements: { type: "number" }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-var getCategoryReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      includeSubcategories: { type: "boolean", default: true }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        categories: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              description: { type: "string" },
-              code: { type: "string" },
-              color: { type: "string" },
-              icon: { type: "string" },
-              parentId: { type: "string" },
-              parent: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" }
-                }
-              },
-              children: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    name: { type: "string" }
-                  }
-                }
-              },
-              stats: {
-                type: "object",
-                properties: {
-                  totalProducts: { type: "number" },
-                  totalValue: { type: "number" },
-                  averagePrice: { type: "number" },
-                  movements: { type: "number" },
-                  lastMovement: { type: "string" }
-                }
-              }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalCategories: { type: "number" },
-            totalProducts: { type: "number" },
-            totalValue: { type: "number" },
-            averageProductsPerCategory: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getSupplierReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      status: {
-        type: "string",
-        enum: ["all", "active", "inactive"],
-        default: "all"
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        suppliers: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              corporateName: { type: "string" },
-              tradeName: { type: "string" },
-              cnpj: { type: "string" },
-              status: { type: "boolean" },
-              address: {
-                type: "object",
-                properties: {
-                  cep: { type: "string" },
-                  city: { type: "string" },
-                  state: { type: "string" },
-                  address: { type: "string" }
-                }
-              },
-              stats: {
-                type: "object",
-                properties: {
-                  totalProducts: { type: "number" },
-                  totalValue: { type: "number" },
-                  totalMovements: { type: "number" },
-                  lastMovement: { type: "string" },
-                  averageOrderValue: { type: "number" }
-                }
-              },
-              responsibles: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    name: { type: "string" },
-                    phone: { type: "string" },
-                    email: { type: "string" }
-                  }
-                }
-              }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalSuppliers: { type: "number" },
-            activeSuppliers: { type: "number" },
-            totalProducts: { type: "number" },
-            totalValue: { type: "number" },
-            averageProductsPerSupplier: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getUserActivityReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      userId: { type: "string" },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      action: {
-        type: "string",
-        enum: ["CREATE", "UPDATE", "DELETE"]
-      },
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 20 }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        activities: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              entity: { type: "string" },
-              entityId: { type: "string" },
-              action: { type: "string" },
-              before: { type: "object" },
-              after: { type: "object" },
-              user: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" }
-                }
-              },
-              createdAt: { type: "string" }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalActivities: { type: "number" },
-            uniqueUsers: { type: "number" },
-            mostActiveUser: {
-              type: "object",
-              properties: {
-                id: { type: "string" },
-                name: { type: "string" },
-                activities: { type: "number" }
-              }
-            },
-            activitiesByType: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  action: { type: "string" },
-                  count: { type: "number" }
-                }
-              }
-            }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var getStockAlertReportSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      storeId: { type: "string" },
-      alertType: {
-        type: "string",
-        enum: ["low", "high", "expired", "all"],
-        default: "all"
-      },
-      page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 20 }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        alerts: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              productId: { type: "string" },
-              productName: { type: "string" },
-              currentStock: { type: "number" },
-              stockMin: { type: "number" },
-              stockMax: { type: "number" },
-              alertType: {
-                type: "string",
-                enum: ["low", "high", "expired", "out"]
-              },
-              severity: {
-                type: "string",
-                enum: ["low", "medium", "high", "critical"]
-              },
-              unitPrice: { type: "number" },
-              totalValue: { type: "number" },
-              lastMovement: { type: "string" },
-              category: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" }
-                }
-              },
-              supplier: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  corporateName: { type: "string" }
-                }
-              }
-            }
-          }
-        },
-        summary: {
-          type: "object",
-          properties: {
-            totalAlerts: { type: "number" },
-            lowStockAlerts: { type: "number" },
-            highStockAlerts: { type: "number" },
-            expiredAlerts: { type: "number" },
-            outOfStockAlerts: { type: "number" },
-            totalValue: { type: "number" }
-          }
-        },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    }
-  }
-};
-var exportReportSchema = {
-  querystring: {
-    type: "object",
-    required: ["reportType", "format"],
-    properties: {
-      reportType: {
-        type: "string",
-        enum: [
-          "inventory",
-          "movement",
-          "financial",
-          "category",
-          "supplier",
-          "user-activity",
-          "stock-alert"
-        ]
-      },
-      format: {
-        type: "string",
-        enum: ["csv", "xlsx", "pdf"]
-      },
-      storeId: { type: "string" },
-      startDate: { type: "string", format: "date" },
-      endDate: { type: "string", format: "date" },
-      filters: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        success: { type: "boolean" },
-        downloadUrl: { type: "string" },
-        filename: { type: "string" },
-        format: { type: "string" },
-        generatedAt: { type: "string" },
-        expiresAt: { type: "string" }
-      }
-    }
-  }
-};
-
-// src/features/report/report.routes.ts
-async function ReportRoutes(fastify2) {
-  fastify2.addHook("preHandler", Middlewares.auth);
-  fastify2.addHook("preHandler", Middlewares.store);
-  fastify2.get("/dashboard/stats", {
-    schema: getDashboardStatsSchema,
-    handler: ReportController.getDashboardStats
-  });
-  fastify2.get("/inventory", {
-    schema: getInventoryReportSchema,
-    handler: ReportController.getInventoryReport
-  });
-  fastify2.get("/movements", {
-    schema: getMovementReportSchema2,
-    handler: ReportController.getMovementReport
-  });
-  fastify2.get("/financial", {
-    schema: getFinancialReportSchema,
-    handler: ReportController.getFinancialReport
-  });
-  fastify2.get("/categories", {
-    schema: getCategoryReportSchema,
-    handler: ReportController.getCategoryReport
-  });
-  fastify2.get("/suppliers", {
-    schema: getSupplierReportSchema,
-    handler: ReportController.getSupplierReport
-  });
-  fastify2.get("/user-activity", {
-    schema: getUserActivityReportSchema,
-    handler: ReportController.getUserActivityReport
-  });
-  fastify2.get("/stock-alerts", {
-    schema: getStockAlertReportSchema,
-    handler: ReportController.getStockAlertReport
-  });
-  fastify2.get("/export", {
-    schema: exportReportSchema,
-    handler: ReportController.exportReport
-  });
-  fastify2.post("/schedule", {
-    schema: {
-      description: "Agendar relat\xF3rio para gera\xE7\xE3o autom\xE1tica",
-      tags: ["Reports"],
-      body: {
-        type: "object",
-        required: ["reportType", "schedule", "filters", "emailRecipients"],
-        properties: {
-          reportType: {
-            type: "string",
-            enum: [
-              "inventory",
-              "movement",
-              "financial",
-              "category",
-              "supplier",
-              "user-activity",
-              "stock-alert"
-            ]
-          },
-          schedule: {
-            type: "object",
-            required: ["frequency", "time"],
-            properties: {
-              frequency: {
-                type: "string",
-                enum: ["daily", "weekly", "monthly"]
-              },
-              time: {
-                type: "string",
-                pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
-                description: "Time in HH:MM format"
-              },
-              dayOfWeek: {
-                type: "number",
-                minimum: 0,
-                maximum: 6,
-                description: "Day of week (0-6) for weekly frequency"
-              },
-              dayOfMonth: {
-                type: "number",
-                minimum: 1,
-                maximum: 31,
-                description: "Day of month (1-31) for monthly frequency"
-              }
-            }
-          },
-          filters: {
-            type: "object",
-            properties: {
-              storeId: { type: "string" },
-              startDate: { type: "string", format: "date" },
-              endDate: { type: "string", format: "date" },
-              categoryId: { type: "string" },
-              supplierId: { type: "string" },
-              productId: { type: "string" },
-              userId: { type: "string" },
-              status: { type: "string" },
-              type: { type: "string" }
-            }
-          },
-          emailRecipients: {
-            type: "array",
-            items: { type: "string", format: "email" },
-            minItems: 1
-          }
-        }
-      },
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            success: { type: "boolean" },
-            scheduleId: { type: "string" }
-          }
-        }
-      }
-    },
-    handler: ReportController.scheduleReport
-  });
-  fastify2.delete("/schedule/:scheduleId", {
-    schema: {
-      description: "Cancelar relat\xF3rio agendado",
-      tags: ["Reports"],
-      params: {
-        type: "object",
-        properties: {
-          scheduleId: { type: "string" }
-        },
-        required: ["scheduleId"]
-      },
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            success: { type: "boolean" }
-          }
-        }
-      }
-    },
-    handler: ReportController.cancelScheduledReport
-  });
-  fastify2.post("/send-email", {
-    schema: {
-      description: "Enviar relat\xF3rio por email",
-      tags: ["Reports"],
-      body: {
-        type: "object",
-        required: ["reportType", "format", "data", "emailRecipients"],
-        properties: {
-          reportType: {
-            type: "string",
-            enum: [
-              "inventory",
-              "movement",
-              "financial",
-              "category",
-              "supplier",
-              "user-activity",
-              "stock-alert"
-            ]
-          },
-          format: {
-            type: "string",
-            enum: ["csv", "xlsx", "pdf"]
-          },
-          data: {
-            type: "array",
-            items: { type: "object" }
-          },
-          emailRecipients: {
-            type: "array",
-            items: { type: "string", format: "email" },
-            minItems: 1
-          },
-          subject: {
-            type: "string",
-            description: "Email subject (optional)"
-          },
-          message: {
-            type: "string",
-            description: "Email message (optional)"
-          }
-        }
-      },
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            success: { type: "boolean" },
-            messageId: { type: "string" }
-          }
-        }
-      }
-    },
-    handler: ReportController.sendReportViaEmail
-  });
-  fastify2.get("/types", {
-    schema: {
-      description: "Obter tipos de relat\xF3rios dispon\xEDveis",
-      tags: ["Reports"],
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            reportTypes: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: { type: "string" },
-                  name: { type: "string" },
-                  description: { type: "string" },
-                  supportedFormats: {
-                    type: "array",
-                    items: { type: "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    handler: ReportController.getAvailableReportTypes
-  });
-  fastify2.get("/statistics", {
-    schema: {
-      description: "Obter estat\xEDsticas de relat\xF3rios",
-      tags: ["Reports"],
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            totalReports: { type: "number" },
-            reportsByType: { type: "object" },
-            reportsByFormat: { type: "object" },
-            lastGenerated: { type: "string", nullable: true }
-          }
-        }
-      }
-    },
-    handler: ReportController.getReportStatistics
-  });
-  fastify2.post("/validate-filters", {
-    schema: {
-      description: "Validar filtros de relat\xF3rio",
-      tags: ["Reports"],
-      body: {
-        type: "object",
-        required: ["filters"],
-        properties: {
-          filters: {
-            type: "object",
-            properties: {
-              storeId: { type: "string" },
-              startDate: { type: "string", format: "date" },
-              endDate: { type: "string", format: "date" },
-              categoryId: { type: "string" },
-              supplierId: { type: "string" },
-              productId: { type: "string" },
-              userId: { type: "string" },
-              status: { type: "string" },
-              type: { type: "string" },
-              page: { type: "number", minimum: 1 },
-              limit: { type: "number", minimum: 1, maximum: 1e3 }
-            }
-          }
-        }
-      },
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            isValid: { type: "boolean" },
-            errors: {
-              type: "array",
-              items: { type: "string" }
-            }
-          }
-        }
-      }
-    },
-    handler: ReportController.validateFilters
-  });
-  fastify2.get("/download/:exportId", {
-    schema: {
-      description: "Download de relat\xF3rio exportado",
-      tags: ["Reports"],
-      params: {
-        type: "object",
-        properties: {
-          exportId: { type: "string" }
-        },
-        required: ["exportId"]
-      },
-      response: {
-        200: {
-          type: "string",
-          description: "File content"
-        },
-        500: {
-          type: "object",
-          properties: {
-            error: { type: "string" }
-          }
-        }
-      }
-    },
-    handler: async (request, reply) => {
-      try {
-        const { exportId } = request.params;
-        reply.type("application/json");
-        return reply.send({
-          message: "Download endpoint - implementation needed",
-          exportId,
-          note: "This would return the actual file content"
-        });
-      } catch (error) {
-        request.log.error(error);
-        return reply.status(500).send({
-          error: "Erro ao fazer download do relat\xF3rio"
-        });
-      }
-    }
-  });
-}
-
 // src/features/roadmap/commands/milestone.commands.ts
 var MilestoneCommands = {
   async create(data) {
@@ -36620,6 +30163,43 @@ var StoreCommands = {
   }
 };
 
+// src/features/store/queries/store.queries.ts
+var StoreQueries = {
+  async getById(id) {
+    const store = await db.store.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        products: {
+          select: {
+            id: true,
+            name: true,
+            referencePrice: true,
+            status: true,
+            createdAt: true
+          }
+        },
+        _count: {
+          select: {
+            products: true,
+            users: true
+          }
+        }
+      }
+    });
+    if (!store) {
+      throw new Error("Store not found");
+    }
+    return store;
+  }
+};
+
 // src/features/store/store.controller.ts
 var StoreController = {
   async create(request, reply) {
@@ -37587,6 +31167,963 @@ async function StoreRoutes(fastify2) {
     schema: StoreSchemas.delete,
     preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.delete
+  });
+}
+
+// src/features/subscription/commands/subscription.commands.ts
+var SubscriptionCommands = {
+  async create(data) {
+    const existingSubscription = await db.subscription.findFirst({
+      where: { userId: data.userId }
+    });
+    if (existingSubscription) {
+      throw new Error("Subscription with this user already exists");
+    }
+    return await db.subscription.create({
+      data: {
+        ...data,
+        priceInterval: data.interval
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            status: true,
+            createdAt: true
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    const existingSubscription = await db.subscription.findUnique({
+      where: { id }
+    });
+    if (!existingSubscription) {
+      throw new Error("Plan not found");
+    }
+    return await db.subscription.update({
+      where: { id },
+      data: {
+        ...data,
+        ...data.interval && { priceInterval: data.interval }
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            status: true,
+            createdAt: true
+          }
+        }
+      }
+    });
+  },
+  async delete(id) {
+    const subscription2 = await db.subscription.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: { id: true }
+        }
+      }
+    });
+    if (!subscription2) {
+      throw new Error("Plan not found");
+    }
+    if (subscription2.user) {
+      throw new Error(
+        `Cannot delete subscription. It has ${subscription2.user} associated customers. Please reassign or delete the customers first.`
+      );
+    }
+    return await db.subscription.delete({
+      where: { id }
+    });
+  },
+  async forceDelete(id) {
+    const subscription2 = await db.subscription.findUnique({
+      where: { id }
+    });
+    if (!subscription2) {
+      throw new Error("Plan not found");
+    }
+    await db.subscription.updateMany({
+      where: { userId: id },
+      data: { userId: null }
+    });
+    return await db.subscription.delete({
+      where: { id }
+    });
+  },
+  async updateStatus(id, active) {
+    const subscription2 = await db.subscription.findUnique({
+      where: { id }
+    });
+    if (!subscription2) {
+      throw new Error("Subscription not found");
+    }
+    return await db.subscription.update({
+      where: { id },
+      data: {
+        status: active ? "ACTIVE" : "INACTIVE"
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            status: true,
+            createdAt: true
+          }
+        }
+      }
+    });
+  }
+};
+
+// src/features/subscription/queries/subscription.queries.ts
+var SubscriptionQueries = {
+  async getById(id) {
+    const subscription2 = await db.subscription.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    if (!subscription2) {
+      return null;
+    }
+    return {
+      ...subscription2
+    };
+  },
+  async list(params) {
+    const { page = 1, limit = 10, search, interval } = params;
+    const skip2 = (page - 1) * limit;
+    const where = {};
+    if (interval) {
+      where.interval = interval;
+    }
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } }
+      ];
+    }
+    const [subscriptions, total] = await Promise.all([
+      db.subscription.findMany({
+        where,
+        skip: skip2,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      }),
+      db.subscription.count({ where })
+    ]);
+    const itemsWithCount = subscriptions.map((subscription2) => ({
+      ...subscription2
+    }));
+    return {
+      items: itemsWithCount,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  },
+  async getActive() {
+    const subscriptions = await db.subscription.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    return subscriptions.map((subscription2) => ({
+      ...subscription2
+    }));
+  },
+  async compare(planIds) {
+    if (!planIds || planIds.length === 0) {
+      throw new Error("At least one plan ID is required for comparison");
+    }
+    const subscriptions = await db.subscription.findMany({
+      where: { id: { in: planIds } },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    if (subscriptions.length === 0) {
+      throw new Error("No plans found for comparison");
+    }
+    return subscriptions;
+  },
+  async getCustomers(planId, params) {
+    const { page = 1, limit = 10, status } = params;
+    const skip2 = (page - 1) * limit;
+    const plan = await db.subscription.findUnique({
+      where: { id: planId }
+    });
+    if (!plan) {
+      throw new Error("Plan not found");
+    }
+    const where = {
+      userId: planId
+    };
+    if (status) {
+      where.status = status;
+    }
+    const [customers, total] = await Promise.all([
+      db.subscription.findMany({
+        where,
+        skip: skip2,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          },
+          invoices: {
+            select: {
+              id: true,
+              amount: true,
+              status: true,
+              createdAt: true
+            },
+            orderBy: { createdAt: "desc" },
+            take: 5
+            // Últimas 5 faturas
+          }
+        }
+      }),
+      db.subscription.count({ where })
+    ]);
+    return {
+      customers,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  },
+  async getStats() {
+    const [total, active, inactive, cancelled, trial] = await Promise.all([
+      db.subscription.count(),
+      db.subscription.count({ where: { status: "ACTIVE" } }),
+      db.subscription.count({ where: { status: "INACTIVE" } }),
+      db.subscription.count({ where: { status: "CANCELLED" } }),
+      db.subscription.count({ where: { status: "TRIAL" } })
+    ]);
+    return {
+      total,
+      active,
+      inactive,
+      cancelled,
+      trial
+    };
+  }
+};
+
+// src/features/subscription/subscription.controller.ts
+var SubscriptionController = {
+  // === CRUD BÁSICO ===
+  async create(request, reply) {
+    try {
+      const { userId, description, price, interval, features } = request.body;
+      const result = await SubscriptionCommands.create({
+        userId,
+        description,
+        price,
+        interval,
+        features
+      });
+      return reply.status(201).send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Plan with this name already exists") {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async get(request, reply) {
+    try {
+      const { id } = request.params;
+      const result = await SubscriptionQueries.getById(id);
+      if (!result) {
+        return reply.status(404).send({
+          error: "Plan not found"
+        });
+      }
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Plan not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const updateData = { ...request.body };
+      const result = await SubscriptionCommands.update(
+        id,
+        updateData
+      );
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Plan not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      if (error.message === "Plan with this name already exists") {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async delete(request, reply) {
+    try {
+      const { id } = request.params;
+      await SubscriptionCommands.delete(id);
+      return reply.status(204).send();
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Subscription not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      if (error.message.includes("Cannot delete subscription") && error.message.includes("associated customers")) {
+        return reply.status(400).send({
+          error: error.message,
+          suggestion: "Use DELETE /subscriptions/:id/force to delete the subscription and remove all customer associations"
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async forceDelete(request, reply) {
+    try {
+      const { id } = request.params;
+      await SubscriptionCommands.forceDelete(id);
+      return reply.status(204).send();
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Subscription not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async list(request, reply) {
+    try {
+      const { page = 1, limit = 10, search, interval } = request.query;
+      const result = await SubscriptionQueries.list({
+        page,
+        limit,
+        search,
+        interval
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  // === FUNÇÕES ADICIONAIS (QUERIES) ===
+  async getActive(request, reply) {
+    try {
+      const result = await SubscriptionQueries.getActive();
+      return reply.send({ subscriptions: result });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async compare(request, reply) {
+    try {
+      const { subscriptionIds } = request.query;
+      const result = await SubscriptionQueries.compare(subscriptionIds);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "At least one subscription ID is required for comparison") {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      if (error.message === "No subscriptions found for comparison") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getCustomers(request, reply) {
+    try {
+      const { id } = request.params;
+      const { page = 1, limit = 10, status } = request.query;
+      const result = await SubscriptionQueries.getCustomers(id, {
+        page,
+        limit,
+        status
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Plan not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getStats(request, reply) {
+    try {
+      const result = await SubscriptionQueries.getStats();
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  // === FUNÇÕES ADICIONAIS (COMMANDS) ===
+  async updateStatus(request, reply) {
+    try {
+      const { id } = request.params;
+      const { active } = request.body;
+      const result = await SubscriptionCommands.updateStatus(id, active);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Subscription not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  }
+};
+
+// src/features/subscription/subscription.schema.ts
+var createSubscriptionSchema = {
+  body: {
+    type: "object",
+    required: ["userId", "price", "interval"],
+    properties: {
+      userId: { type: "string" },
+      description: { type: "string" },
+      price: { type: "number", minimum: 0.01 },
+      interval: {
+        type: "string",
+        enum: ["MONTHLY", "YEARLY"]
+      },
+      features: { type: "object" }
+    }
+  },
+  response: {
+    201: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description: { type: "string", nullable: true },
+        price: { type: "number" },
+        interval: { type: "string" },
+        features: { type: "object", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        customers: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              status: { type: "string" },
+              createdAt: { type: "string", format: "date-time" }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+var updateSubscriptionSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      name: { type: "string", minLength: 1 },
+      description: { type: "string" },
+      price: { type: "number", minimum: 0.01 },
+      interval: {
+        type: "string",
+        enum: ["MONTHLY", "YEARLY"]
+      },
+      features: { type: "object" }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description: { type: "string", nullable: true },
+        price: { type: "number" },
+        interval: { type: "string" },
+        features: { type: "object", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        customers: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              status: { type: "string" },
+              createdAt: { type: "string", format: "date-time" }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+var getSubscriptionSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description: { type: "string", nullable: true },
+        price: { type: "number" },
+        interval: { type: "string" },
+        features: { type: "object", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        customersCount: { type: "number" },
+        customers: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              status: { type: "string" },
+              createdAt: { type: "string", format: "date-time" },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  name: { type: "string" },
+                  email: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+var listSubscriptionsSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number", minimum: 1, default: 1 },
+      limit: { type: "number", minimum: 1, maximum: 100, default: 10 },
+      search: { type: "string" },
+      interval: {
+        type: "string",
+        enum: ["MONTHLY", "YEARLY"]
+      }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              description: { type: "string", nullable: true },
+              price: { type: "number" },
+              interval: { type: "string" },
+              features: { type: "object", nullable: true },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+              customersCount: { type: "number" }
+            }
+          }
+        },
+        pagination: {
+          type: "object",
+          properties: {
+            page: { type: "number" },
+            limit: { type: "number" },
+            total: { type: "number" },
+            totalPages: { type: "number" }
+          }
+        }
+      }
+    }
+  }
+};
+var deleteSubscriptionSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  response: {
+    204: { type: "null" }
+  }
+};
+var updateSubscriptionStatusSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    required: ["active"],
+    properties: {
+      active: { type: "boolean" }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        name: { type: "string" },
+        description: { type: "string", nullable: true },
+        price: { type: "number" },
+        interval: { type: "string" },
+        features: { type: "object", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" }
+      }
+    }
+  }
+};
+var compareSubscriptionsSchema = {
+  querystring: {
+    type: "object",
+    required: ["subscriptionIds"],
+    properties: {
+      subscriptionIds: {
+        type: "array",
+        items: { type: "string", minLength: 1 },
+        minItems: 1,
+        uniqueItems: true
+      }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        subscriptions: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              description: { type: "string", nullable: true },
+              price: { type: "number" },
+              interval: { type: "string" },
+              features: { type: "object", nullable: true },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+              customersCount: { type: "number" }
+            }
+          }
+        },
+        comparison: {
+          type: "object",
+          properties: {
+            priceRange: {
+              type: "object",
+              properties: {
+                min: { type: "number" },
+                max: { type: "number" }
+              }
+            },
+            intervals: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["MONTHLY", "YEARLY"]
+              }
+            },
+            features: {
+              type: "array",
+              items: { type: "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+var getSubscriptionCustomersSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number", minimum: 1, default: 1 },
+      limit: { type: "number", minimum: 1, maximum: 100, default: 10 },
+      status: {
+        type: "string",
+        enum: ["ACTIVE", "INACTIVE", "CANCELLED", "TRIAL"]
+      }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        subscription: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            price: { type: "number" },
+            interval: { type: "string" }
+          }
+        },
+        customers: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              status: { type: "string" },
+              renewalDate: { type: "string", format: "date-time", nullable: true },
+              trialEndsAt: { type: "string", format: "date-time", nullable: true },
+              createdAt: { type: "string", format: "date-time" },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  name: { type: "string" },
+                  email: { type: "string" },
+                  phone: { type: "string", nullable: true }
+                }
+              },
+              subscription: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  name: { type: "string" },
+                  price: { type: "number" },
+                  interval: { type: "string" }
+                }
+              },
+              invoices: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    amount: { type: "number" },
+                    status: { type: "string" },
+                    createdAt: { type: "string", format: "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        pagination: {
+          type: "object",
+          properties: {
+            page: { type: "number" },
+            limit: { type: "number" },
+            total: { type: "number" },
+            totalPages: { type: "number" }
+          }
+        }
+      }
+    }
+  }
+};
+var getSubscriptionStatsSchema = {
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        total: { type: "number" },
+        active: { type: "number" },
+        inactive: { type: "number" },
+        monthlySubscriptions: { type: "number" },
+        yearlySubscriptions: { type: "number" },
+        totalCustomers: { type: "number" },
+        totalRevenue: { type: "number" },
+        averagePrice: { type: "number" }
+      }
+    }
+  }
+};
+var SubscriptionSchemas = {
+  create: createSubscriptionSchema,
+  update: updateSubscriptionSchema,
+  get: getSubscriptionSchema,
+  delete: deleteSubscriptionSchema,
+  list: listSubscriptionsSchema,
+  updateStatus: updateSubscriptionStatusSchema,
+  compare: compareSubscriptionsSchema,
+  getCustomers: getSubscriptionCustomersSchema,
+  getStats: getSubscriptionStatsSchema
+};
+
+// src/features/subscription/subscription.routes.ts
+async function SubscriptionRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    schema: SubscriptionSchemas.create,
+    handler: SubscriptionController.create
+  });
+  fastify2.get("/", {
+    schema: SubscriptionSchemas.list,
+    handler: SubscriptionController.list
+  });
+  fastify2.get("/:id", {
+    schema: SubscriptionSchemas.get,
+    handler: SubscriptionController.get
+  });
+  fastify2.put("/:id", {
+    schema: SubscriptionSchemas.update,
+    handler: SubscriptionController.update
+  });
+  fastify2.delete("/:id", {
+    schema: SubscriptionSchemas.delete,
+    handler: SubscriptionController.delete
+  });
+  fastify2.delete("/:id/force", {
+    schema: SubscriptionSchemas.delete,
+    handler: SubscriptionController.forceDelete
+  });
+  fastify2.get("/active", {
+    handler: SubscriptionController.getActive
+  });
+  fastify2.get("/stats", {
+    handler: SubscriptionController.getStats
+  });
+  fastify2.get("/compare", {
+    schema: SubscriptionSchemas.compare,
+    handler: SubscriptionController.compare
+  });
+  fastify2.get("/:id/customers", {
+    schema: SubscriptionSchemas.getCustomers,
+    handler: SubscriptionController.getCustomers
+  });
+  fastify2.patch("/:id/status", {
+    schema: SubscriptionSchemas.updateStatus,
+    handler: SubscriptionController.updateStatus
   });
 }
 
@@ -38789,14 +33326,14 @@ var SupplierController = {
   },
   async search(request, reply) {
     try {
-      const { q, page = 1, limit = 10 } = request.query;
+      const { search, page = 1, limit = 10 } = request.query;
       const storeId = request.store?.id;
       if (!storeId) {
         return reply.status(400).send({
           error: "Store context required"
         });
       }
-      const result = await SupplierQueries.search(q, storeId, { page, limit });
+      const result = await SupplierQueries.search(search, storeId, { page, limit });
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -39246,7 +33783,9 @@ async function SupplierRoutes(fastify2) {
 }
 
 // src/features/upload/upload.controller.ts
-var import_path2 = __toESM(require("path"));
+var import_node_path2 = __toESM(require("path"));
+var import_promises = __toESM(require("fs/promises"));
+var import_node_os2 = __toESM(require("os"));
 
 // src/features/upload/commands/upload.commands.ts
 var UploadCommands = {
@@ -39602,7 +34141,7 @@ var UploadQueries = {
   async getPrimaryMedia(entityType, entityId) {
     let media = null;
     switch (entityType) {
-      case "product":
+      case "product": {
         const productMedia = await db.productMedia.findFirst({
           where: {
             productId: entityId,
@@ -39614,12 +34153,14 @@ var UploadQueries = {
         });
         media = productMedia;
         break;
+      }
       case "supplier":
       case "user":
-      case "store":
+      case "store": {
         const firstMedia = await this.getEntityMedia(entityType, entityId);
         media = firstMedia[0] || null;
         break;
+      }
       default:
         throw new Error("Invalid entity type");
     }
@@ -39732,10 +34273,10 @@ var UploadQueries = {
 };
 
 // src/features/upload/upload.service.ts
-var import_crypto2 = require("crypto");
-var import_fs = require("fs");
-var import_path = __toESM(require("path"));
-var UPLOAD_DIR = import_path.default.join(process.cwd(), "src", "uploads");
+var import_node_crypto3 = require("crypto");
+var import_node_fs = require("fs");
+var import_node_path = __toESM(require("path"));
+var UPLOAD_DIR = import_node_path.default.join(process.cwd(), "src", "uploads");
 var MAX_FILE_SIZE = 10 * 1024 * 1024;
 var ALLOWED_TYPES = [
   "image/jpeg",
@@ -39765,27 +34306,27 @@ var UploadService = class _UploadService {
   async ensureUploadDirectories() {
     const directories = [
       UPLOAD_DIR,
-      import_path.default.join(UPLOAD_DIR, "product"),
-      import_path.default.join(UPLOAD_DIR, "supplier"),
-      import_path.default.join(UPLOAD_DIR, "user"),
-      import_path.default.join(UPLOAD_DIR, "store"),
-      import_path.default.join(UPLOAD_DIR, "general")
+      import_node_path.default.join(UPLOAD_DIR, "product"),
+      import_node_path.default.join(UPLOAD_DIR, "supplier"),
+      import_node_path.default.join(UPLOAD_DIR, "user"),
+      import_node_path.default.join(UPLOAD_DIR, "store"),
+      import_node_path.default.join(UPLOAD_DIR, "general")
     ];
     for (const dir of directories) {
       try {
-        await import_fs.promises.access(dir);
+        await import_node_fs.promises.access(dir);
       } catch {
-        await import_fs.promises.mkdir(dir, { recursive: true });
+        await import_node_fs.promises.mkdir(dir, { recursive: true });
       }
     }
   }
   // === CRIAR DIRETÓRIO DO USUÁRIO ===
   async ensureUserDirectory(userId) {
-    const userDir = import_path.default.join(UPLOAD_DIR, "users", userId);
+    const userDir = import_node_path.default.join(UPLOAD_DIR, "users", userId);
     try {
-      await import_fs.promises.access(userDir);
+      await import_node_fs.promises.access(userDir);
     } catch {
-      await import_fs.promises.mkdir(userDir, { recursive: true });
+      await import_node_fs.promises.mkdir(userDir, { recursive: true });
     }
     return userDir;
   }
@@ -39802,9 +34343,9 @@ var UploadService = class _UploadService {
   }
   // === GERAR NOME ÚNICO ===
   generateUniqueFilename(originalName) {
-    const ext = import_path.default.extname(originalName);
-    const name = import_path.default.basename(originalName, ext);
-    const uuid = (0, import_crypto2.randomUUID)();
+    const ext = import_node_path.default.extname(originalName);
+    const name = import_node_path.default.basename(originalName, ext);
+    const uuid = (0, import_node_crypto3.randomUUID)();
     return `${name}-${uuid}${ext}`;
   }
   // === UPLOAD ÚNICO ===
@@ -39815,32 +34356,32 @@ var UploadService = class _UploadService {
         throw new Error("Caminho do arquivo inv\xE1lido ou n\xE3o fornecido");
       }
       try {
-        await import_fs.promises.access(file.path);
+        await import_node_fs.promises.access(file.path);
       } catch (error) {
-        throw new Error(`Arquivo tempor\xE1rio n\xE3o encontrado: ${file.path}`);
+        throw new Error(`Arquivo tempor\xE1rio n\xE3o encontrado: ${file.path} ${error}`);
       }
       const entityType = config.entityType || "general";
       let destinationDir;
       let publicUrl;
       if (config.userId) {
         const userDir = await this.ensureUserDirectory(config.userId);
-        destinationDir = import_path.default.join(userDir, entityType);
+        destinationDir = import_node_path.default.join(userDir, entityType);
         try {
-          await import_fs.promises.access(destinationDir);
+          await import_node_fs.promises.access(destinationDir);
         } catch {
-          await import_fs.promises.mkdir(destinationDir, { recursive: true });
+          await import_node_fs.promises.mkdir(destinationDir, { recursive: true });
         }
         publicUrl = `/uploads/users/${config.userId}/${entityType}`;
       } else {
-        destinationDir = import_path.default.join(this.uploadDir, entityType);
+        destinationDir = import_node_path.default.join(this.uploadDir, entityType);
         publicUrl = `/uploads/${entityType}`;
       }
       const uniqueFilename = this.generateUniqueFilename(file.originalname);
-      const destination = import_path.default.join(destinationDir, uniqueFilename);
-      await import_fs.promises.copyFile(file.path, destination);
+      const destination = import_node_path.default.join(destinationDir, uniqueFilename);
+      await import_node_fs.promises.copyFile(file.path, destination);
       publicUrl = `${publicUrl}/${uniqueFilename}`;
       const result = {
-        id: (0, import_crypto2.randomUUID)(),
+        id: (0, import_node_crypto3.randomUUID)(),
         url: publicUrl,
         name: file.originalname,
         type: file.mimetype,
@@ -39874,7 +34415,7 @@ var UploadService = class _UploadService {
   async cleanupFailedUploads(uploadedFiles) {
     for (const file of uploadedFiles) {
       try {
-        await import_fs.promises.unlink(file.path);
+        await import_node_fs.promises.unlink(file.path);
       } catch (error) {
         console.error(`Erro ao deletar arquivo ${file.path}:`, error);
       }
@@ -39883,7 +34424,7 @@ var UploadService = class _UploadService {
   // === DELETAR ARQUIVO ===
   async deleteFile(filePath) {
     try {
-      await import_fs.promises.unlink(filePath);
+      await import_node_fs.promises.unlink(filePath);
     } catch (error) {
       throw new Error(`Erro ao deletar arquivo: ${error.message}`);
     }
@@ -39906,28 +34447,30 @@ var UploadService = class _UploadService {
   // === OBTER INFORMAÇÕES DO ARQUIVO ===
   async getFileInfo(filePath) {
     try {
-      const stats = await import_fs.promises.stat(filePath);
+      const stats = await import_node_fs.promises.stat(filePath);
       return {
         exists: true,
         size: stats.size,
         stats
       };
     } catch (error) {
+      console.error(error);
       return { exists: false };
     }
   }
   // === LISTAR ARQUIVOS DE UMA ENTIDADE ===
   async listEntityFiles(entityType) {
     try {
-      const entityDir = import_path.default.join(this.uploadDir, entityType);
-      const files = await import_fs.promises.readdir(entityDir);
+      const entityDir = import_node_path.default.join(this.uploadDir, entityType);
+      const files = await import_node_fs.promises.readdir(entityDir);
       return files.filter((file) => {
-        const filePath = import_path.default.join(entityDir, file);
-        const stats = import_fs.promises.stat(filePath);
+        const filePath = import_node_path.default.join(entityDir, file);
+        const stats = import_node_fs.promises.stat(filePath);
         return stats.then((s) => s.isFile()).catch(() => false);
       });
     } catch (error) {
-      return [];
+      console.error(error);
+      throw new Error(`Erro ao listar arquivos da entidade: ${error.message}`);
     }
   }
   // === LIMPEZA DE ARQUIVOS ÓRFÃOS ===
@@ -39936,7 +34479,7 @@ var UploadService = class _UploadService {
     const directories = ["product", "supplier", "user", "store", "general"];
     for (const dir of directories) {
       const files = await this.listEntityFiles(dir);
-      allFiles.push(...files.map((file) => import_path.default.join(this.uploadDir, dir, file)));
+      allFiles.push(...files.map((file) => import_node_path.default.join(this.uploadDir, dir, file)));
     }
     const orphanedFiles = allFiles.filter((file) => !usedFilePaths.includes(file));
     return await this.deleteMultipleFiles(orphanedFiles);
@@ -39954,13 +34497,13 @@ var UploadService = class _UploadService {
       const files = await this.listEntityFiles(dir);
       let dirSize = 0;
       for (const file of files) {
-        const filePath = import_path.default.join(this.uploadDir, dir, file);
+        const filePath = import_node_path.default.join(this.uploadDir, dir, file);
         const fileInfo = await this.getFileInfo(filePath);
         if (fileInfo.exists && fileInfo.size) {
           dirSize += fileInfo.size;
           stats.totalSize += fileInfo.size;
           stats.totalFiles++;
-          const ext = import_path.default.extname(file).toLowerCase();
+          const ext = import_node_path.default.extname(file).toLowerCase();
           stats.byFileType[ext] = (stats.byFileType[ext] || 0) + 1;
         }
       }
@@ -39996,9 +34539,12 @@ var UploadService = class _UploadService {
   formatFileSize(bytes) {
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + " " + sizes[i];
+    return `${Math.round(bytes / 1024 ** i * 100) / 100} ${sizes[i]}`;
   }
   // Obter ícone baseado no tipo
+  getUploadDir() {
+    return this.uploadDir;
+  }
   getFileIcon(mimetype) {
     if (mimetype.startsWith("image/")) return "\u{1F5BC}\uFE0F";
     if (mimetype.startsWith("video/")) return "\u{1F3A5}";
@@ -40090,14 +34636,14 @@ var UploadController = {
       }
       await UploadCommands.delete(id);
       try {
-        const filePath = import_path2.default.join(
+        const filePath = import_node_path2.default.join(
           process.cwd(),
           "src",
           "uploads",
           media.url.replace("/uploads/", "")
         );
         await uploadService.deleteFile(filePath);
-      } catch (fileError) {
+      } catch {
         request.log.warn(`Arquivo f\xEDsico n\xE3o encontrado: ${media.url}`);
       }
       return reply.status(204).send();
@@ -40346,19 +34892,18 @@ var UploadController = {
     try {
       const { id } = request.params;
       const { entityType, entityId } = request.body;
-      let result;
       switch (entityType) {
         case "product":
-          result = await UploadCommands.detachFromProduct(id, entityId);
+          await UploadCommands.detachFromProduct(id, entityId);
           break;
         case "supplier":
-          result = await UploadCommands.detachFromSupplier(id, entityId);
+          await UploadCommands.detachFromSupplier(id, entityId);
           break;
         case "user":
-          result = await UploadCommands.detachFromUser(id, entityId);
+          await UploadCommands.detachFromUser(id, entityId);
           break;
         case "store":
-          result = await UploadCommands.detachFromStore(id, entityId);
+          await UploadCommands.detachFromStore(id, entityId);
           break;
         default:
           return reply.status(400).send({
@@ -40382,9 +34927,8 @@ var UploadController = {
     try {
       const { id } = request.params;
       const { entityType, entityId } = request.body;
-      let result;
       if (entityType === "product") {
-        result = await UploadCommands.setPrimaryForProduct(id, entityId);
+        await UploadCommands.setPrimaryForProduct(id, entityId);
       } else {
         return reply.status(400).send({
           error: "Primary media is only supported for products"
@@ -40458,25 +35002,19 @@ var UploadController = {
         console.log("Convertendo stream para buffer usando data.toBuffer...");
         const buffer = await data.toBuffer();
         fileSize = buffer.length;
-        const tempPath = require("path").join(
-          require("os").tmpdir(),
-          `temp-${Date.now()}-${data.filename}`
-        );
-        await require("fs").promises.writeFile(tempPath, buffer);
+        const tempPath = import_node_path2.default.join(import_node_os2.default.tmpdir(), `temp-${Date.now()}-${data.filename}`);
+        await import_promises.default.writeFile(tempPath, buffer);
         filePath = tempPath;
         console.log(`Arquivo tempor\xE1rio criado: ${tempPath}`);
-      } else if (data.file && data.file.toBuffer) {
+      } else if (data.file?.toBuffer) {
         console.log("Convertendo stream para buffer usando data.file.toBuffer...");
         const buffer = await data.file.toBuffer();
         fileSize = buffer.length;
-        const tempPath = require("path").join(
-          require("os").tmpdir(),
-          `temp-${Date.now()}-${data.filename}`
-        );
-        await require("fs").promises.writeFile(tempPath, buffer);
+        const tempPath = import_node_path2.default.join(import_node_os2.default.tmpdir(), `temp-${Date.now()}-${data.filename}`);
+        await import_promises.default.writeFile(tempPath, buffer);
         filePath = tempPath;
         console.log(`Arquivo tempor\xE1rio criado: ${tempPath}`);
-      } else if (data.file && data.file.bytesRead) {
+      } else if (data.file?.bytesRead) {
         filePath = data.file.path || data.file.filepath || data.file.filename;
         fileSize = data.file.bytesRead;
       } else {
@@ -40512,9 +35050,9 @@ var UploadController = {
         type: uploadResult.type,
         size: uploadResult.size
       });
-      if (filePath && filePath.includes("temp-")) {
+      if (filePath?.includes("temp-")) {
         try {
-          await require("fs").promises.unlink(filePath);
+          await import_promises.default.unlink(filePath);
           console.log(`Arquivo tempor\xE1rio removido: ${filePath}`);
         } catch (cleanupError) {
           console.warn(`Erro ao remover arquivo tempor\xE1rio ${filePath}:`, cleanupError);
@@ -40648,7 +35186,7 @@ var UploadController = {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "text/plain"
         ],
-        uploadDir: uploadService["uploadDir"],
+        uploadDir: uploadService.getUploadDir(),
         entityTypes: ["product", "supplier", "user", "store", "general"]
       };
       return reply.send(config);
@@ -40942,7 +35480,6 @@ var UserPreferencesCommands = {
           dashboardLayout: data.dashboardLayout,
           defaultPage: data.defaultPage,
           itemsPerPage: data.itemsPerPage || 20,
-          defaultStoreId: data.defaultStoreId,
           autoRefresh: data.autoRefresh !== void 0 ? data.autoRefresh : true,
           refreshInterval: data.refreshInterval || 30,
           customSettings: data.customSettings
@@ -41101,7 +35638,6 @@ var UserPreferencesCommands = {
           dashboardLayout: null,
           defaultPage: null,
           itemsPerPage: 20,
-          defaultStoreId: null,
           autoRefresh: true,
           refreshInterval: 30,
           customSettings: null,
@@ -41156,7 +35692,6 @@ var UserPreferencesCommands = {
           dashboardLayout: null,
           defaultPage: null,
           itemsPerPage: 20,
-          defaultStoreId: null,
           autoRefresh: true,
           refreshInterval: 30,
           customSettings: null,
@@ -41214,16 +35749,480 @@ var UserPreferencesCommands = {
   }
 };
 
+// src/features/user-preferences/queries/user-preferences.query.ts
+var UserPreferencesQueries = {
+  // ================================
+  // GET OPERATIONS
+  // ================================
+  async getById(id) {
+    try {
+      const preferences = await db.userPreferences.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      });
+      if (!preferences) {
+        throw new Error("User preferences not found");
+      }
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences: ${error.message}`);
+    }
+  },
+  async getByUserId(userId) {
+    try {
+      const preferences = await db.userPreferences.findUnique({
+        where: { userId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      });
+      if (!preferences) {
+        throw new Error("User preferences not found");
+      }
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences: ${error.message}`);
+    }
+  },
+  async getByUserIdOrCreate(userId) {
+    try {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { id: true, name: true, email: true }
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      let preferences = await db.userPreferences.findUnique({
+        where: { userId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      });
+      if (!preferences) {
+        preferences = await db.userPreferences.create({
+          data: {
+            userId,
+            theme: "light",
+            language: "pt-BR",
+            currency: "BRL",
+            timezone: "America/Sao_Paulo",
+            dateFormat: "DD/MM/YYYY",
+            timeFormat: "24h",
+            numberFormat: "pt-BR",
+            emailNotifications: true,
+            pushNotifications: true,
+            smsNotifications: false,
+            itemsPerPage: 20,
+            autoRefresh: true,
+            refreshInterval: 30
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        });
+      }
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get or create user preferences: ${error.message}`);
+    }
+  },
+  // ================================
+  // LIST OPERATIONS
+  // ================================
+  async list(filters = {}) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        search,
+        theme,
+        language,
+        currency,
+        timezone,
+        hasCustomSettings,
+        notificationsEnabled
+      } = filters;
+      const skip2 = (page - 1) * limit;
+      const where = {};
+      if (search) {
+        where.OR = [
+          {
+            user: {
+              name: {
+                contains: search,
+                mode: "insensitive"
+              }
+            }
+          },
+          {
+            user: {
+              email: {
+                contains: search,
+                mode: "insensitive"
+              }
+            }
+          }
+        ];
+      }
+      if (theme) {
+        where.theme = theme;
+      }
+      if (language) {
+        where.language = language;
+      }
+      if (currency) {
+        where.currency = currency;
+      }
+      if (timezone) {
+        where.timezone = timezone;
+      }
+      if (hasCustomSettings !== void 0) {
+        if (hasCustomSettings) {
+          where.customSettings = {
+            not: null
+          };
+        } else {
+          where.customSettings = null;
+        }
+      }
+      if (notificationsEnabled !== void 0) {
+        where.emailNotifications = notificationsEnabled;
+      }
+      const [preferences, total] = await Promise.all([
+        db.userPreferences.findMany({
+          where,
+          skip: skip2,
+          take: limit,
+          orderBy: {
+            updatedAt: "desc"
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }),
+        db.userPreferences.count({ where })
+      ]);
+      return {
+        preferences,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
+    } catch (error) {
+      throw new Error(`Failed to list user preferences: ${error.message}`);
+    }
+  },
+  // ================================
+  // SEARCH OPERATIONS
+  // ================================
+  async search(searchTerm, limit = 10) {
+    try {
+      const preferences = await db.userPreferences.findMany({
+        where: {
+          OR: [
+            {
+              user: {
+                name: {
+                  contains: searchTerm,
+                  mode: "insensitive"
+                }
+              }
+            },
+            {
+              user: {
+                email: {
+                  contains: searchTerm,
+                  mode: "insensitive"
+                }
+              }
+            },
+            {
+              language: {
+                contains: searchTerm,
+                mode: "insensitive"
+              }
+            },
+            {
+              currency: {
+                contains: searchTerm,
+                mode: "insensitive"
+              }
+            }
+          ]
+        },
+        take: limit,
+        orderBy: {
+          updatedAt: "desc"
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      });
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to search user preferences: ${error.message}`);
+    }
+  },
+  // ================================
+  // STATS OPERATIONS
+  // ================================
+  async getStats() {
+    try {
+      const [
+        totalPreferences,
+        themeStats,
+        languageStats,
+        currencyStats,
+        itemsPerPageStats,
+        notificationsStats
+      ] = await Promise.all([
+        db.userPreferences.count(),
+        db.userPreferences.groupBy({
+          by: ["theme"],
+          _count: {
+            theme: true
+          }
+        }),
+        db.userPreferences.groupBy({
+          by: ["language"],
+          _count: {
+            language: true
+          }
+        }),
+        db.userPreferences.groupBy({
+          by: ["currency"],
+          _count: {
+            currency: true
+          }
+        }),
+        db.userPreferences.aggregate({
+          _avg: {
+            itemsPerPage: true
+          }
+        }),
+        db.userPreferences.groupBy({
+          by: ["emailNotifications"],
+          _count: {
+            emailNotifications: true
+          }
+        })
+      ]);
+      const themeDistribution = {
+        light: 0,
+        dark: 0,
+        auto: 0
+      };
+      for (const stat of themeStats) {
+        if (stat.theme === "light") themeDistribution.light = stat._count.theme;
+        if (stat.theme === "dark") themeDistribution.dark = stat._count.theme;
+        if (stat.theme === "auto") themeDistribution.auto = stat._count.theme;
+      }
+      const languageDistribution = {};
+      for (const stat of languageStats) {
+        languageDistribution[stat.language] = stat._count.language;
+      }
+      const currencyDistribution = {};
+      for (const stat of currencyStats) {
+        currencyDistribution[stat.currency] = stat._count.currency;
+      }
+      let notificationsEnabled = 0;
+      let notificationsDisabled = 0;
+      for (const stat of notificationsStats) {
+        if (stat.emailNotifications) {
+          notificationsEnabled = stat._count.emailNotifications;
+        } else {
+          notificationsDisabled = stat._count.emailNotifications;
+        }
+      }
+      return {
+        totalPreferences,
+        themeDistribution,
+        languageDistribution,
+        currencyDistribution,
+        averageItemsPerPage: Math.round(itemsPerPageStats._avg.itemsPerPage || 20),
+        notificationsEnabled,
+        notificationsDisabled
+      };
+    } catch (error) {
+      throw new Error(`Failed to get user preferences stats: ${error.message}`);
+    }
+  },
+  // ================================
+  // FILTER OPERATIONS
+  // ================================
+  async getByTheme(theme) {
+    try {
+      const preferences = await db.userPreferences.findMany({
+        where: { theme },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: "desc"
+        }
+      });
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences by theme: ${error.message}`);
+    }
+  },
+  async getByLanguage(language) {
+    try {
+      const preferences = await db.userPreferences.findMany({
+        where: { language },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: "desc"
+        }
+      });
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences by language: ${error.message}`);
+    }
+  },
+  async getByCurrency(currency) {
+    try {
+      const preferences = await db.userPreferences.findMany({
+        where: { currency },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: "desc"
+        }
+      });
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences by currency: ${error.message}`);
+    }
+  },
+  async getWithCustomSettings() {
+    try {
+      const preferences = await db.userPreferences.findMany({
+        where: {
+          customSettings: {
+            not: null
+          }
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: "desc"
+        }
+      });
+      return preferences;
+    } catch (error) {
+      throw new Error(`Failed to get user preferences with custom settings: ${error.message}`);
+    }
+  },
+  // ================================
+  // VALIDATION OPERATIONS
+  // ================================
+  async validatePreferences(data) {
+    try {
+      const errors = [];
+      const warnings = [];
+      if (data.theme && !["light", "dark", "auto"].includes(data.theme)) {
+        errors.push("Theme must be one of: light, dark, auto");
+      }
+      if (data.dateFormat && !["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"].includes(data.dateFormat)) {
+        errors.push("Date format must be one of: DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD");
+      }
+      if (data.timeFormat && !["12h", "24h"].includes(data.timeFormat)) {
+        errors.push("Time format must be one of: 12h, 24h");
+      }
+      if (data.itemsPerPage && (data.itemsPerPage < 5 || data.itemsPerPage > 100)) {
+        warnings.push("Items per page should be between 5 and 100");
+      }
+      if (data.refreshInterval && (data.refreshInterval < 10 || data.refreshInterval > 300)) {
+        warnings.push("Refresh interval should be between 10 and 300 seconds");
+      }
+      return {
+        isValid: errors.length === 0,
+        errors,
+        warnings
+      };
+    } catch (error) {
+      throw new Error(`Failed to validate user preferences: ${error.message}`);
+    }
+  }
+};
+
 // src/features/user-preferences/user-preferences.controller.ts
 var UserPreferencesController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
     try {
       const preferencesData = request.body;
-      if ("storeId" in preferencesData) {
-        preferencesData.defaultStoreId = preferencesData.storeId;
-        delete preferencesData.storeId;
-      }
       const result = await UserPreferencesCommands.create(preferencesData);
       return reply.status(201).send(result);
     } catch (error) {
@@ -41264,10 +36263,6 @@ var UserPreferencesController = {
     try {
       const { id } = request.params;
       const updateData = { ...request.body };
-      if ("storeId" in updateData) {
-        updateData.defaultStoreId = updateData.storeId;
-        delete updateData.storeId;
-      }
       const result = await UserPreferencesCommands.update(id, updateData);
       return reply.send(result);
     } catch (error) {
@@ -41372,10 +36367,6 @@ var UserPreferencesController = {
         });
       }
       const updateData = request.body;
-      if ("storeId" in updateData) {
-        updateData.defaultStoreId = updateData.storeId;
-        delete updateData.storeId;
-      }
       const result = await UserPreferencesCommands.updateByUserId(userId, updateData);
       return reply.send(result);
     } catch (error) {
@@ -42428,14 +37419,12 @@ var UserCommands = {
       data: {
         email: data.email,
         password: hashedPassword,
-        name: data.name,
-        roles: data.roles || ["user"]
+        name: data.name
       },
       select: {
         id: true,
         email: true,
         name: true,
-        roles: true,
         status: true,
         createdAt: true
       }
@@ -42468,10 +37457,10 @@ var UserCommands = {
         id: true,
         email: true,
         name: true,
-        roles: true,
         status: true,
         emailVerified: true,
-        updatedAt: true
+        updatedAt: true,
+        isOwner: true
       }
     });
     return user;
@@ -42605,7 +37594,7 @@ var UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -42625,7 +37614,7 @@ var UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -42643,7 +37632,7 @@ var UserQueries = {
         email: true,
         password: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -42675,7 +37664,7 @@ var UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
+        isOwner: true,
         status: true,
         emailVerified: true,
         lastLoginAt: true,
@@ -42694,28 +37683,6 @@ var UserQueries = {
     });
     return PaginationUtils.transformPaginationResult(result, "users");
   },
-  async getByRole(role) {
-    const users = await db.user.findMany({
-      where: {
-        roles: {
-          has: role
-        },
-        status: true
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        status: true,
-        emailVerified: true,
-        lastLoginAt: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    return users;
-  },
   async getActive() {
     const users = await db.user.findMany({
       where: { status: true },
@@ -42723,7 +37690,6 @@ var UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
         emailVerified: true,
         lastLoginAt: true,
         createdAt: true
@@ -42768,7 +37734,6 @@ var UserQueries = {
         id: true,
         email: true,
         name: true,
-        roles: true,
         emailVerified: true
       },
       take: limit,
@@ -42887,18 +37852,6 @@ var UserController = {
         });
       }
       return reply.send(user);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getByRole(request, reply) {
-    try {
-      const { role } = request.params;
-      const users = await UserQueries.getByRole(role);
-      return reply.send({ users });
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({
@@ -43149,9 +38102,6 @@ async function UserRoutes(fastify2) {
   fastify2.get("/email", {
     handler: UserController.getByEmail
   });
-  fastify2.get("/role/:role", {
-    handler: UserController.getByRole
-  });
   fastify2.get("/active", {
     handler: UserController.getActive
   });
@@ -43270,7 +38220,7 @@ async function startServer() {
       name: "Configurando arquivos est\xE1ticos",
       action: async () => {
         await fastify.register(require("@fastify/static"), {
-          root: import_node_path.default.join(process.cwd(), "src", "uploads"),
+          root: import_node_path3.default.join(process.cwd(), "src", "uploads"),
           prefix: "/uploads/",
           decorateReply: false
         });
@@ -43285,7 +38235,6 @@ async function startServer() {
         await fastify.register(SupplierRoutes, { prefix: "/suppliers" });
         await fastify.register(CategoryRoutes, { prefix: "/categories" });
         await fastify.register(MovementRoutes, { prefix: "/movements" });
-        await fastify.register(ReportRoutes, { prefix: "/reports" });
         await fastify.register(NotificationRoutes, { prefix: "/notifications" });
         await fastify.register(ChatRoutes, { prefix: "/chat" });
         await fastify.register(RoadmapRoutes, { prefix: "/roadmaps" });
