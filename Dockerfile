@@ -37,7 +37,7 @@ RUN bun install --frozen-lockfile
 COPY . .
 
 # Gerar cliente Prisma com o engine correto para Alpine Linux
-RUN bun exec prisma generate
+RUN bunx prisma generate
 
 # Compilar TypeScript
 RUN bun run build
