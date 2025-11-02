@@ -1,0 +1,284 @@
+import { db } from '@/plugins/prisma'
+
+export const FolderQueries = {
+
+  async list(params: {
+    storeId: string
+    page?: number
+    limit?: number
+    search?: string
+    parentId?: string
+  }) {
+    const { page = 1, limit = 10, storeId, search, parentId } = params
+    const skip = (page - 1) * limit
+
+    const where: any = {
+      storeId,
+      deletedAt: null,
+    }
+
+    if (search) {
+      where.name = { contains: search, mode: 'insensitive' }
+    }
+
+    if (parentId) {
+      where.parentId = parentId
+    } else {
+      // Se não especificou parentId, retornar apenas pastas raiz
+      where.parentId = null
+    }
+
+    const [data, total] = await Promise.all([
+      db.documentFolder.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          parent: true,
+          _count: {
+            select: {
+              children: {
+                where: {
+                  deletedAt: null,
+                },
+              },
+              documents: {
+                where: {
+                  deletedAt: null,
+                },
+              },
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      }),
+      db.documentFolder.count({ where }),
+    ])
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    }
+  },
+
+  async getById(id: string, storeId: string) {
+    const folder = await db.documentFolder.findFirst({
+      where: {
+        id,
+        storeId,
+        deletedAt: null,
+      },
+      include: {
+        parent: true,
+        children: {
+          where: {
+            deletedAt: null,
+          },
+          orderBy: { name: 'asc' },
+          include: {
+            _count: {
+              select: {
+                children: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+                documents: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          },
+        },
+        documents: {
+          where: {
+            deletedAt: null,
+          },
+          orderBy: [
+            { pinned: 'desc' },
+            { createdAt: 'desc' },
+          ],
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+
+    if (!folder) {
+      throw new Error('Folder not found')
+    }
+
+    return folder
+  },
+
+  async search(storeId: string, query: string, limit?: number) {
+    const folders = await db.documentFolder.findMany({
+      where: {
+        storeId,
+        deletedAt: null,
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      take: limit || 10,
+      orderBy: { name: 'asc' },
+      include: {
+        parent: true,
+        _count: {
+          select: {
+            children: {
+              where: {
+                deletedAt: null,
+              },
+            },
+            documents: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+
+    return { folders }
+  },
+
+  async getTree(storeId: string) {
+    const rootFolders = await db.documentFolder.findMany({
+      where: {
+        storeId,
+        parentId: null,
+        deletedAt: null,
+      },
+      orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: {
+            children: {
+              where: {
+                deletedAt: null,
+              },
+            },
+            documents: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+
+    // Função recursiva para buscar subpastas
+    const buildTree = async (folders: any[]): Promise<any[]> => {
+      return Promise.all(
+        folders.map(async (folder) => {
+          const children = await db.documentFolder.findMany({
+            where: {
+              parentId: folder.id,
+              deletedAt: null,
+            },
+            orderBy: { name: 'asc' },
+            include: {
+              _count: {
+                select: {
+                  children: {
+                    where: {
+                      deletedAt: null,
+                    },
+                  },
+                  documents: {
+                    where: {
+                      deletedAt: null,
+                    },
+                  },
+                },
+              },
+              createdBy: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          })
+
+          return {
+            ...folder,
+            children: children.length > 0 ? await buildTree(children) : [],
+          }
+        })
+      )
+    }
+
+    return { tree: await buildTree(rootFolders) }
+  },
+
+  async getStats(storeId: string) {
+    const total = await db.documentFolder.count({
+      where: {
+        storeId,
+        deletedAt: null,
+      },
+    })
+
+    const rootFolders = await db.documentFolder.count({
+      where: {
+        storeId,
+        parentId: null,
+        deletedAt: null,
+      },
+    })
+
+    return {
+      total,
+      rootFolders,
+      subFolders: total - rootFolders,
+    }
+  },
+}
