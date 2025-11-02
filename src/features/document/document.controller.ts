@@ -78,13 +78,6 @@ export const DocumentController = {
       const { page = 1, limit = 10, search, type, format, folderId, status, visibility } = request.query
       const storeId = request.store?.id
 
-      if (!storeId) {
-        return reply.status(400).send({ error: 'Store context required' })
-      }
-
-     
-      
-
       const result = await DocumentQueries.list({
         storeId,
         page: Number(page),
@@ -108,13 +101,6 @@ export const DocumentController = {
     try {
       const { id } = request.params
       const storeId = request.store?.id
-
-      if (!storeId) {
-        return reply.status(400).send({ error: 'Store context required' })
-      }
-
-     
-      
 
       const result = await DocumentQueries.getById(id, storeId)
 

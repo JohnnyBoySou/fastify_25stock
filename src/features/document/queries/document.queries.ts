@@ -75,7 +75,7 @@ export const DocumentQueries = {
     ])
 
     return {
-      data,
+      items: data,
       pagination: {
         page,
         limit,
@@ -131,7 +131,8 @@ export const DocumentQueries = {
     return document
   },
 
-  async search(storeId: string, query: string, limit?: number) {
+  async search(storeId: string, query: string, limit?: number, page?: number) {
+    const skip = (page - 1) * limit
     const documents = await db.document.findMany({
       where: {
         storeId,
@@ -140,6 +141,7 @@ export const DocumentQueries = {
           { title: { contains: query, mode: 'insensitive' } },
         ],
       },
+      skip,
       take: limit || 10,
       orderBy: { createdAt: 'desc' },
       include: {
@@ -154,7 +156,7 @@ export const DocumentQueries = {
       },
     })
 
-    return { documents }
+    return { items: documents, pagination: { page, limit, total: documents.length, totalPages: Math.ceil(documents.length / limit) } }
   },
 
   async getByFolder(storeId: string, folderId: string) {
