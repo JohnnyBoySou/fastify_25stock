@@ -246,14 +246,10 @@ export const PermissionController = {
   async getUserPermissions(request: GetUserPermissionsRequest, reply: FastifyReply) {
     try {
       const params = request.params as GetUserPermissionsRequest['Params']
-      const query = request.query as GetUserPermissionsRequest['Querystring']
       const { userId } = params
-      const { page = 1, limit = 10 } = query
 
       const result = await PermissionQueries.getUserPermissions({
         userId,
-        page,
-        limit,
       })
 
       return reply.send(result)

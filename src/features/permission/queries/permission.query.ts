@@ -80,44 +80,13 @@ export const PermissionQueries = {
   },
 
   // Buscar permissões atribuídas a um usuário
-  async getUserPermissions(filters: { userId: string; page?: number; limit?: number }) {
-    const { userId, page = 1, limit = 10 } = filters
-
-    const [userPermissions, total] = await Promise.all([
-      db.userPermission.findMany({
-        where: { userId },
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: [{ createdAt: 'desc' }],
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-      }),
-      db.userPermission.count({
-        where: { userId },
-      }),
-    ])
-
-    // Enriquecer com informações da lista pré-definida
-    const enrichedPermissions = userPermissions.map((up) => {
-      const permissionDef = getPermissionDefinition(up.resource, up.action as PermissionAction)
-      return {
-        ...up,
-        permission: permissionDef || null,
-      }
+  async getUserPermissions(userId: string) {
+    const userPermissions = await db.userPermission.findMany({
+      where: { userId },
+      orderBy: [{ createdAt: 'desc' }],
     })
 
-    return {
-      items: enrichedPermissions,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    }
+    return userPermissions
   },
 
   // Verificar se usuário tem permissão específica
