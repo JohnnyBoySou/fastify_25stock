@@ -117,16 +117,19 @@ export const listUsersSchema: FastifySchema = {
       type: 'object',
       properties: {
         items: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            email: { type: 'string' },
-            name: { type: 'string' },
-            roles: { type: 'array', items: { type: 'string' } },
-            status: { type: 'boolean' },
-            emailVerified: { type: 'boolean' },
-            lastLoginAt: { type: 'string', format: 'date-time' },
-            createdAt: { type: 'string', format: 'date-time' },
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              email: { type: 'string' },
+              name: { type: 'string' },
+              isOwner: { type: 'boolean' },
+              status: { type: 'boolean' },
+              emailVerified: { type: 'boolean' },
+              lastLoginAt: { type: 'string', format: 'date-time' },
+              createdAt: { type: 'string', format: 'date-time' },
+            },
           },
         },
         pagination: {
