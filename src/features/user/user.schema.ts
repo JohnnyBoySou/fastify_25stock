@@ -3,16 +3,10 @@ import type { FastifySchema } from 'fastify'
 export const createUserSchema: FastifySchema = {
   body: {
     type: 'object',
-    required: ['email', 'password', 'name'],
+    required: ['email', 'name'],
     properties: {
       email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 6 },
       name: { type: 'string', minLength: 2 },
-      roles: {
-        type: 'array',
-        items: { type: 'string' },
-        default: ['user'],
-      },
     },
   },
   response: {
@@ -22,7 +16,6 @@ export const createUserSchema: FastifySchema = {
         id: { type: 'string' },
         email: { type: 'string' },
         name: { type: 'string' },
-        roles: { type: 'array', items: { type: 'string' } },
         status: { type: 'boolean' },
         createdAt: { type: 'string', format: 'date-time' },
       },
@@ -45,7 +38,6 @@ export const getUserSchema: FastifySchema = {
         id: { type: 'string' },
         email: { type: 'string' },
         name: { type: 'string' },
-        roles: { type: 'array', items: { type: 'string' } },
         status: { type: 'boolean' },
         emailVerified: { type: 'boolean' },
         lastLoginAt: { type: 'string', format: 'date-time' },
@@ -68,9 +60,7 @@ export const updateUserSchema: FastifySchema = {
     type: 'object',
     properties: {
       email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 6 },
       name: { type: 'string', minLength: 2 },
-      roles: { type: 'array', items: { type: 'string' } },
       status: { type: 'boolean' },
       emailVerified: { type: 'boolean' },
     },
@@ -82,7 +72,6 @@ export const updateUserSchema: FastifySchema = {
         id: { type: 'string' },
         email: { type: 'string' },
         name: { type: 'string' },
-        roles: { type: 'array', items: { type: 'string' } },
         status: { type: 'boolean' },
         emailVerified: { type: 'boolean' },
         updatedAt: { type: 'string', format: 'date-time' },
