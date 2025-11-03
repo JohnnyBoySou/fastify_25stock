@@ -35,8 +35,6 @@ export interface ListUsersRequest extends FastifyRequest {
   query: {
     page?: number
     limit?: number
-    search?: string
-    status?: boolean
   }
 }
 

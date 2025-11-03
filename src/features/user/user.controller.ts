@@ -128,14 +128,9 @@ export const UserController = {
 
   async list(request: ListUsersRequest, reply: FastifyReply) {
     try {
-      const { page = 1, limit = 10, search, status } = request.query
+      const { page = 1, limit = 10 } = request.query
 
-      const result = await UserQueries.list({
-        page,
-        limit,
-        search,
-        status,
-      })
+      const result = await UserQueries.list(page, limit)
 
       return reply.send({ items: result.items, pagination: result.pagination })
     } catch (error) {

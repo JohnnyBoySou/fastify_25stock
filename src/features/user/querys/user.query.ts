@@ -64,13 +64,7 @@ export const UserQueries = {
     return user
   },
 
-  async list(
-    filters: PaginationParams & {
-      search?: string
-      status?: boolean
-      roles?: string[]
-    }
-  ) {
+  async list( page = 1, limit = 10) {
 
     const result = await PaginationUtils.paginate(db, 'user', {
       select: {
@@ -85,8 +79,8 @@ export const UserQueries = {
       },
       orderBy: { createdAt: 'desc' },
       params: {
-        page: filters.page,
-        limit: filters.limit,
+        page,
+        limit,
       },
       paginationOptions: {
         defaultPage: 1,
