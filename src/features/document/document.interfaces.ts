@@ -80,6 +80,7 @@ export interface DocumentResponse {
 export interface SearchDocumentsRequest extends FastifyRequest {
     query: {
         search: string
+        page?: number
         limit?: number
     }
 }
