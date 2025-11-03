@@ -3,6 +3,13 @@ import bcrypt from 'bcryptjs'
 import { EmailService } from '@/services/email/email.service'
 
 export const UserCommands = {
+  async bulkDelete(ids: string[]) {
+    const result = await db.user.deleteMany({
+      where: { id: { in: ids } },
+    })
+    return result
+  },
+
   async create(data: {
     email: string
     name: string

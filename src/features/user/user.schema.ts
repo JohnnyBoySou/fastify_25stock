@@ -148,10 +148,27 @@ export const listUsersSchema: FastifySchema = {
   },
 }
 
+export const bulkDeleteSchema: FastifySchema = {
+  body: {
+    type: 'object',
+    required: ['ids'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        deleted: { type: 'number' },
+        failed: { type: 'number' },
+      },
+    },
+  },
+}
+
 export const UserSchemas = {
   create: createUserSchema,
   get: getUserSchema,
   update: updateUserSchema,
   delete: deleteUserSchema,
   list: listUsersSchema,
+  bulkDelete: bulkDeleteSchema,
 }

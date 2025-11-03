@@ -39,3 +39,9 @@ export interface ListUsersRequest extends FastifyRequest {
     status?: boolean
   }
 }
+
+export interface BulkDeleteUserRequest extends FastifyRequest {
+  body: {
+    ids: string[]
+  }
+}

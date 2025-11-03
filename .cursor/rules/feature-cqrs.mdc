@@ -1,9 +1,6 @@
 ---
-description: Guia de Estrutura de Controller com CQRS - Fastify
-globs:
-alwaysApply: true
+alwaysApply: false
 ---
-
 # 📋 Guia de Estrutura de Controller com CQRS - Fastify
 
 ## 🎯 **Visão Geral**

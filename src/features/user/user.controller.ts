@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { UserCommands } from './commands/user.commands'
 import { UserQueries } from './querys/user.query'
 import type {
+  BulkDeleteUserRequest,
   CreateUserRequest,
   DeleteUserRequest,
   GetUserRequest,
@@ -102,6 +103,23 @@ export const UserController = {
         })
       }
 
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  },
+
+  async bulkDelete(request: BulkDeleteUserRequest, reply: FastifyReply) {
+
+    try {
+      const { ids } = request.body
+
+      const result = await UserCommands.bulkDelete(ids)
+
+      return reply.send(result)
+    }
+    catch (error: any) {
+      request.log.error(error)
       return reply.status(500).send({
         error: 'Internal server error',
       })

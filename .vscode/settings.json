@@ -15,6 +15,11 @@
         "src/uploads": true,
         "docker-compose.yml": true,
         "src/utils": true,
-        "src/generated": true
+        "src/generated": true,
+        "bun.lock": true,
+        "biome.json": true,
+        ".env": true,
+        "package.json": true,
+        "tsconfig.json": true
     }
 }

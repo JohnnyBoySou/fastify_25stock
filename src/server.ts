@@ -143,7 +143,7 @@ async function startServer() {
       name: 'Configurando arquivos estáticos',
       action: async () => {
         await fastify.register(require('@fastify/static'), {
-          root: path.join(process.cwd(), 'src', 'uploads'),
+          root: path.resolve(process.env.STORAGE_PATH || 'src/uploads'),
           prefix: '/uploads/',
           decorateReply: false,
         })
