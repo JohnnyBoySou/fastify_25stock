@@ -34,7 +34,7 @@ export const PermissionController = {
         search: query.search,
       })
 
-      return reply.send({ permissions: result })
+      return reply.send(result)
     } catch (error) {
       request.log.error(error)
       return reply.status(500).send({
