@@ -15,9 +15,19 @@ export const UserController = {
     try {
       const { email, name } = request.body
 
+      // Associar automaticamente à loja do usuário que está criando
+      const storeId = request.store?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store context is required to create a user',
+        })
+      }
+
       const user = await UserCommands.create({
         email,
         name,
+        storeId,
       })
 
       return reply.status(201).send(user)

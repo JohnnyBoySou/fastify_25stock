@@ -17,6 +17,7 @@ export const createUserSchema: FastifySchema = {
         email: { type: 'string' },
         name: { type: 'string' },
         status: { type: 'boolean' },
+        storeId: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
       },
     },

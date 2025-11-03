@@ -1,8 +1,13 @@
 import type { FastifyInstance } from 'fastify'
 import { UserController } from './user.controller'
 import { UserSchemas } from './user.schema'
+import { Middlewares } from '@/middlewares'
 
 export async function UserRoutes(fastify: FastifyInstance) {
+
+  fastify.addHook('preHandler', Middlewares.auth)
+  fastify.addHook('preHandler', Middlewares.store)
+
   fastify.post('/', {
     schema: UserSchemas.create,
     handler: UserController.create,

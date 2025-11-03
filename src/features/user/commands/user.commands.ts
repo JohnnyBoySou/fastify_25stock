@@ -13,6 +13,7 @@ export const UserCommands = {
   async create(data: {
     email: string
     name: string
+    storeId?: string
   }) {
     // Verificar se o usuário já existe
     const existingUser = await db.user.findUnique({
@@ -27,18 +28,23 @@ export const UserCommands = {
     // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Criar usuário
+    // Criar usuário - associar à loja se storeId foi fornecido
     const user = await db.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
         name: data.name,
+        status: true,
+        isOwner: false,
+        emailVerified: true,
+        storeId: data.storeId || null,
       },
       select: {
         id: true,
         email: true,
         name: true,
         status: true,
+        storeId: true,
         createdAt: true,
       },
     })
