@@ -137,7 +137,7 @@ export const UserController = {
         status,
       })
 
-      return reply.send(result)
+      return reply.send({ items: result.items, pagination: result.pagination })
     } catch (error) {
       request.log.error(error)
       return reply.status(500).send({

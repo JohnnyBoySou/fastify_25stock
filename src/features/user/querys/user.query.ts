@@ -71,29 +71,8 @@ export const UserQueries = {
       roles?: string[]
     }
   ) {
-    // Construir filtros
-    const where: any = {}
 
-    if (filters.search) {
-      where.OR = [
-        { email: { contains: filters.search, mode: 'insensitive' } },
-        { name: { contains: filters.search, mode: 'insensitive' } },
-      ]
-    }
-
-    if (filters.status !== undefined) {
-      where.status = filters.status
-    }
-
-    if (filters.roles && filters.roles.length > 0) {
-      where.roles = {
-        hasSome: filters.roles,
-      }
-    }
-
-    // Usar o util de paginação
     const result = await PaginationUtils.paginate(db, 'user', {
-      where,
       select: {
         id: true,
         email: true,
@@ -117,7 +96,7 @@ export const UserQueries = {
     })
 
     // Transformar para o formato esperado
-    return PaginationUtils.transformPaginationResult(result, 'users')
+    return PaginationUtils.transformPaginationResult(result, 'items')
   },
 
   async getActive() {
