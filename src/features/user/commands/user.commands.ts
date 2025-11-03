@@ -116,7 +116,6 @@ export const UserCommands = {
   },
 
   async delete(id: string) {
-    // Verificar se o usuário existe
     const existingUser = await db.user.findUnique({
       where: { id },
     })
@@ -125,13 +124,11 @@ export const UserCommands = {
       throw new Error('User not found')
     }
 
-    // Soft delete - apenas desativar o usuário
-    await db.user.update({
+    await db.user.delete({
       where: { id },
-      data: { status: false },
     })
 
-    return { success: true }
+    return true
   },
 
   async verifyEmail(id: string) {
