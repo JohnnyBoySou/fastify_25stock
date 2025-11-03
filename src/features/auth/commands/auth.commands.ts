@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import { promisify } from 'node:util'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 
 import type { JWTPayload } from '../auth.interfaces'
 
@@ -13,17 +14,28 @@ import { PolarCommands } from '../../polar/commands/polar.commands'
 const scrypt = promisify(crypto.scrypt)
 
 async function hashPassword(password: string): Promise<string> {
-  const salt = crypto.randomBytes(16).toString('hex')
-  const derivedKey = (await scrypt(password, salt, 64)) as Buffer
-  return `${salt}:${derivedKey.toString('hex')}`
+  // Usar bcrypt para manter compatibilidade com user.commands.ts
+  return await bcrypt.hash(password, 12)
 }
 
 async function comparePassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':')
-  const derivedKey = (await scrypt(password, salt, 64)) as Buffer
-  const keyBuffer = Buffer.from(key, 'hex')
+  // Verificar se o hash é do formato bcrypt (começa com $2a$, $2b$, ou $2y$)
+  if (hash.startsWith('$2')) {
+    return await bcrypt.compare(password, hash)
+  }
 
-  return crypto.timingSafeEqual(derivedKey, keyBuffer)
+  // Compatibilidade com hashes antigos em formato scrypt (salt:key)
+  try {
+    const [salt, key] = hash.split(':')
+    if (!salt || !key) {
+      return false
+    }
+    const derivedKey = (await scrypt(password, salt, 64)) as Buffer
+    const keyBuffer = Buffer.from(key, 'hex')
+    return crypto.timingSafeEqual(derivedKey, keyBuffer)
+  } catch {
+    return false
+  }
 }
 
 export const AuthCommands = {
@@ -126,12 +138,25 @@ export const AuthCommands = {
   async login(data: { email: string; password: string }) {
     const { email, password } = data
 
-    // Find user
+    // Find user - IMPORTANTE: selecionar explicitamente o campo password
     const user = await db.user.findUnique({
       where: { email, status: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        emailVerified: true,
+        storeId: true,
+      },
     })
 
     if (!user) {
+      throw new Error('Invalid credentials')
+    }
+
+    // Verificar se o usuário tem senha
+    if (!user.password) {
       throw new Error('Invalid credentials')
     }
 

@@ -159,7 +159,6 @@ async function startServer() {
         await fastify.register(SupplierRoutes, { prefix: '/suppliers' })
         await fastify.register(CategoryRoutes, { prefix: '/categories' })
         await fastify.register(MovementRoutes, { prefix: '/movements' })
-        //await fastify.register(PermissionRoutes, { prefix: '/permissions' })
         await fastify.register(NotificationRoutes, { prefix: '/notifications' })
         await fastify.register(ChatRoutes, { prefix: '/chat' })
         await fastify.register(RoadmapRoutes, { prefix: '/roadmaps' })
