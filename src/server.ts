@@ -27,7 +27,7 @@ import { RoadmapRoutes } from '@/features/roadmap/roadmap.routes'
 import { StoreRoutes } from '@/features/store/store.routes'
 import { DocumentRoutes } from '@/features/document/document.routes'
 import { FolderRoutes } from '@/features/document/folder.routes'
-//import { PermissionRoutes } from '@/features/permission/permission.routes'
+import { PermissionRoutes } from '@/features/permission/permission.routes'
 import { SubscriptionRoutes } from '@/features/subscription/subscription.routes'
 import { SupplierRoutes } from '@/features/supplier/supplier.routes'
 import { UploadRoutes } from '@/features/upload/upload.route'
@@ -154,6 +154,7 @@ async function startServer() {
       action: async () => {
         await fastify.register(AuthRoutes, { prefix: '/auth' })
         await fastify.register(UserRoutes, { prefix: '/users' })
+        await fastify.register(PermissionRoutes, { prefix: '/permissions' })
         await fastify.register(ProductRoutes, { prefix: '/products' })
         await fastify.register(SupplierRoutes, { prefix: '/suppliers' })
         await fastify.register(CategoryRoutes, { prefix: '/categories' })

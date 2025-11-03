@@ -7,12 +7,10 @@ export async function PermissionRoutes(fastify: FastifyInstance) {
   fastify.addHook('preHandler', Middlewares.auth)
   fastify.addHook('preHandler', Middlewares.store)
 
-  // GET /permissions - Listar permissões disponíveis
   fastify.get('/', {
     handler: PermissionController.listAvailable,
   })
 
-  // GET /permissions/stats - Estatísticas
   fastify.get('/stats', {
     handler: PermissionController.getStats,
   })

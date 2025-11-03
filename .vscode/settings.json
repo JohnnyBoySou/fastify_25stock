@@ -20,6 +20,7 @@
         "biome.json": true,
         ".env": true,
         "package.json": true,
-        "tsconfig.json": true
+        "tsconfig.json": true,
+        "vitest.config.ts": true
     }
 }
