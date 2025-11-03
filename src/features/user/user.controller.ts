@@ -12,13 +12,11 @@ import type {
 export const UserController = {
   async create(request: CreateUserRequest, reply: FastifyReply) {
     try {
-      const { email, password, name, roles = ['user'] } = request.body
+      const { email, name } = request.body
 
       const user = await UserCommands.create({
         email,
-        password,
         name,
-        roles,
       })
 
       return reply.status(201).send(user)

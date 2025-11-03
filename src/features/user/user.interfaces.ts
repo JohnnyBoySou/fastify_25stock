@@ -3,9 +3,7 @@ import type { FastifyRequest } from 'fastify'
 export interface CreateUserRequest extends FastifyRequest {
   body: {
     email: string
-    password: string
     name: string
-    roles?: string[]
   }
 }
 
@@ -21,9 +19,7 @@ export interface UpdateUserRequest extends FastifyRequest {
   }
   body: {
     email?: string
-    password?: string
     name?: string
-    roles?: string[]
     status?: boolean
     emailVerified?: boolean
   }

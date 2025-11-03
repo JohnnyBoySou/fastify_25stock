@@ -46,13 +46,6 @@ export const createStoreSchema: FastifySchema = {
 }
 
 export const updateStoreSchema: FastifySchema = {
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'string' },
-    },
-  },
   body: {
     type: 'object',
     properties: {

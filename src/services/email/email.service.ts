@@ -2,6 +2,8 @@ import { Resend } from 'resend'
 import {
   generateEmailVerificationHTML,
   generateEmailVerificationText,
+  generateInitialPasswordEmailHTML,
+  generateInitialPasswordEmailText,
   generateNotificationEmailHTML,
   generateNotificationEmailText,
   generatePasswordResetEmailHTML,
@@ -61,6 +63,13 @@ export interface EmailVerificationData {
   email: string
   verificationCode: string
   expiresIn: string
+}
+
+export interface InitialPasswordEmailData {
+  name: string
+  email: string
+  password: string
+  loginUrl: string
 }
 
 export const EmailService = {
@@ -204,6 +213,30 @@ export const EmailService = {
       return true
     } catch (error) {
       console.error('Error sending email verification:', error)
+      return false
+    }
+  },
+
+  /**
+   * Envia email com senha inicial para novos usuários
+   */
+  sendInitialPasswordEmail: async (data: InitialPasswordEmailData): Promise<boolean> => {
+    try {
+      const html = generateInitialPasswordEmailHTML(data)
+      const text = generateInitialPasswordEmailText(data)
+
+      const result = await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'noreply@25stock.com',
+        to: data.email,
+        subject: 'Sua conta foi criada - 25Stock',
+        html,
+        text,
+      })
+
+      console.log('Initial password email sent:', result.data?.id)
+      return true
+    } catch (error) {
+      console.error('Error sending initial password email:', error)
       return false
     }
   },

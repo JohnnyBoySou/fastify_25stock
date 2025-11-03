@@ -1,12 +1,11 @@
 import { db } from '@/plugins/prisma'
 import bcrypt from 'bcryptjs'
+import { EmailService } from '@/services/email/email.service'
 
 export const UserCommands = {
   async create(data: {
     email: string
-    password: string
     name: string
-    roles?: string[]
   }) {
     // Verificar se o usuário já existe
     const existingUser = await db.user.findUnique({
@@ -17,8 +16,9 @@ export const UserCommands = {
       throw new Error('User with this email already exists')
     }
 
+    const password = Math.random().toString(36).substring(2, 15)
     // Hash da senha
-    const hashedPassword = await bcrypt.hash(data.password, 12)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
     // Criar usuário
     const user = await db.user.create({
@@ -35,6 +35,20 @@ export const UserCommands = {
         createdAt: true,
       },
     })
+
+    // Enviar email com senha inicial
+    try {
+      const loginUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'https://app.25stock.com/login'
+      await EmailService.sendInitialPasswordEmail({
+        name: user.name,
+        email: user.email,
+        password: password,
+        loginUrl: loginUrl,
+      })
+    } catch (error) {
+      // Log do erro mas não falha a criação do usuário
+      console.error('Error sending initial password email:', error)
+    }
 
     return user
   },
