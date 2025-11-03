@@ -206,7 +206,7 @@ export const UserController = {
 
       const users = await UserQueries.search(q, limit)
 
-      return reply.send({ users })
+      return reply.send({ items: users.items, pagination: users.pagination })
     } catch (error) {
       request.log.error(error)
       return reply.status(500).send({

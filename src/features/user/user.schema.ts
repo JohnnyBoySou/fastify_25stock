@@ -118,20 +118,17 @@ export const listUsersSchema: FastifySchema = {
     200: {
       type: 'object',
       properties: {
-        users: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              name: { type: 'string' },
-              roles: { type: 'array', items: { type: 'string' } },
-              status: { type: 'boolean' },
-              emailVerified: { type: 'boolean' },
-              lastLoginAt: { type: 'string', format: 'date-time' },
-              createdAt: { type: 'string', format: 'date-time' },
-            },
+        items: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            email: { type: 'string' },
+            name: { type: 'string' },
+            roles: { type: 'array', items: { type: 'string' } },
+            status: { type: 'boolean' },
+            emailVerified: { type: 'boolean' },
+            lastLoginAt: { type: 'string', format: 'date-time' },
+            createdAt: { type: 'string', format: 'date-time' },
           },
         },
         pagination: {
@@ -164,9 +161,30 @@ export const bulkDeleteSchema: FastifySchema = {
   },
 }
 
+export const searchUsersSchema: FastifySchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      q: { type: 'string' },
+      page: { type: 'number', minimum: 1, default: 1 },
+      limit: { type: 'number', minimum: 1, maximum: 100, default: 10 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        items: { type: 'array', items: { type: 'object' } },
+        pagination: { type: 'object', properties: { page: { type: 'number' }, limit: { type: 'number' }, total: { type: 'number' }, totalPages: { type: 'number' } } },
+      },
+    },
+  },
+}
+
 export const UserSchemas = {
   create: createUserSchema,
   get: getUserSchema,
+  search: searchUsersSchema,
   update: updateUserSchema,
   delete: deleteUserSchema,
   list: listUsersSchema,

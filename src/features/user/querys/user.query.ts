@@ -165,7 +165,7 @@ export const UserQueries = {
     return !!user
   },
 
-  async search(searchTerm: string, limit = 10) {
+  async search(searchTerm: string, page = 1, limit = 10) {
     const users = await db.user.findMany({
       where: {
         OR: [
@@ -181,10 +181,19 @@ export const UserQueries = {
 
         emailVerified: true,
       },
+      skip: (page - 1) * limit,
       take: limit,
       orderBy: { name: 'asc' },
     })
 
-    return users
+    return {
+      items: users,
+      pagination: {
+        page,
+        limit,
+        total: users.length,
+        totalPages: Math.ceil(users.length / limit),
+      },
+    }
   },
 }

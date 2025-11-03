@@ -46,6 +46,7 @@ export async function UserRoutes(fastify: FastifyInstance) {
   })
 
   fastify.get('/search', {
+    schema: UserSchemas.search,
     handler: UserController.search,
   })
 
