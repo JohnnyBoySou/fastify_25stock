@@ -110,7 +110,7 @@ export const PermissionQueries = {
     })
 
     return {
-      permissions: enrichedPermissions,
+      items: enrichedPermissions,
       pagination: {
         page,
         limit,
