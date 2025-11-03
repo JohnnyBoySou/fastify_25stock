@@ -248,10 +248,7 @@ export const PermissionController = {
       const params = request.params as GetUserPermissionsRequest['Params']
       const { userId } = params
 
-      const result = await PermissionQueries.getUserPermissions({
-        userId,
-      })
-
+      const result = await PermissionQueries.getUserPermissions(userId)
       return reply.send(result)
     } catch (error) {
       request.log.error(error)
