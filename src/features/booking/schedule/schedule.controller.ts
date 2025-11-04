@@ -192,7 +192,7 @@ export const ScheduleController = {
         }
       }
 
-      // Processar horários baseado na presença de rrule
+      // Processar horários - sempre usar date + startTime/endTime (HH:mm)
       const finalRrule = rrule !== undefined ? rrule : existingSchedule.rrule || undefined
       let start: Date | undefined
       let end: Date | undefined
@@ -200,37 +200,31 @@ export const ScheduleController = {
       // Se algum campo de tempo foi fornecido, processar
       if (date || startTime || endTime || rrule !== undefined) {
         // Determinar valores finais para processamento
-        let finalDate: string | undefined
+        let finalDate: string
         let finalStartTime: string
         let finalEndTime: string
 
-        if (finalRrule) {
-          // Com rrule: usar datetime completo
-          finalStartTime = startTime || existingSchedule.startTime.toISOString()
-          finalEndTime = endTime || existingSchedule.endTime.toISOString()
+        // Extrair data do existente se não fornecida
+        if (date) {
+          finalDate = date
         } else {
-          // Sem rrule: usar date + horários
-          if (date) {
-            finalDate = date
-          } else {
-            // Extrair data do agendamento existente
-            const existingDate = existingSchedule.startTime.toISOString().split('T')[0]
-            finalDate = existingDate
-          }
+          // Extrair data do agendamento existente
+          const existingDate = existingSchedule.startTime.toISOString().split('T')[0]
+          finalDate = existingDate
+        }
 
-          // Extrair horários do existente se não fornecidos
-          if (startTime && endTime) {
-            finalStartTime = startTime
-            finalEndTime = endTime
-          } else {
-            // Usar horários do existente no formato HH:mm (UTC)
-            const existingStartDate = new Date(existingSchedule.startTime)
-            const existingEndDate = new Date(existingSchedule.endTime)
-            const existingStartTime = `${String(existingStartDate.getUTCHours()).padStart(2, '0')}:${String(existingStartDate.getUTCMinutes()).padStart(2, '0')}`
-            const existingEndTime = `${String(existingEndDate.getUTCHours()).padStart(2, '0')}:${String(existingEndDate.getUTCMinutes()).padStart(2, '0')}`
-            finalStartTime = startTime || existingStartTime
-            finalEndTime = endTime || existingEndTime
-          }
+        // Extrair horários do existente se não fornecidos
+        if (startTime && endTime) {
+          finalStartTime = startTime
+          finalEndTime = endTime
+        } else {
+          // Usar horários do existente no formato HH:mm (UTC)
+          const existingStartDate = new Date(existingSchedule.startTime)
+          const existingEndDate = new Date(existingSchedule.endTime)
+          const existingStartTime = `${String(existingStartDate.getUTCHours()).padStart(2, '0')}:${String(existingStartDate.getUTCMinutes()).padStart(2, '0')}`
+          const existingEndTime = `${String(existingEndDate.getUTCHours()).padStart(2, '0')}:${String(existingEndDate.getUTCMinutes()).padStart(2, '0')}`
+          finalStartTime = startTime || existingStartTime
+          finalEndTime = endTime || existingEndTime
         }
 
         try {

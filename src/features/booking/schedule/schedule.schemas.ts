@@ -3,22 +3,22 @@ import type { FastifySchema } from 'fastify'
 export const create: FastifySchema = {
   body: {
     type: 'object',
-    required: ['title', 'spaceId'],
+    required: ['title', 'date', 'startTime', 'endTime', 'spaceId'],
     properties: {
       title: { type: 'string' },
       description: { type: 'string' },
       date: {
         type: 'string',
         format: 'date',
-        description: 'Data do agendamento (obrigatório quando não há rrule). Formato: YYYY-MM-DD',
+        description: 'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
       },
       startTime: {
         type: 'string',
-        description: 'Horário de início. Se não houver rrule: formato HH:mm (ex: "10:30"). Se houver rrule: formato date-time (ISO 8601)',
+        description: 'Horário de início no formato HH:mm (ex: "10:30")',
       },
       endTime: {
         type: 'string',
-        description: 'Horário de término. Se não houver rrule: formato HH:mm (ex: "11:30"). Se houver rrule: formato date-time (ISO 8601)',
+        description: 'Horário de término no formato HH:mm (ex: "11:30")',
       },
       rrule: { type: 'string' },
       timezone: { type: 'string', default: 'America/Sao_Paulo' },
@@ -68,15 +68,15 @@ export const update: FastifySchema = {
       date: {
         type: 'string',
         format: 'date',
-        description: 'Data do agendamento (obrigatório quando não há rrule). Formato: YYYY-MM-DD',
+        description: 'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
       },
       startTime: {
         type: 'string',
-        description: 'Horário de início. Se não houver rrule: formato HH:mm (ex: "10:30"). Se houver rrule: formato date-time (ISO 8601)',
+        description: 'Horário de início no formato HH:mm (ex: "10:30")',
       },
       endTime: {
         type: 'string',
-        description: 'Horário de término. Se não houver rrule: formato HH:mm (ex: "11:30"). Se houver rrule: formato date-time (ISO 8601)',
+        description: 'Horário de término no formato HH:mm (ex: "11:30")',
       },
       rrule: { type: 'string' },
       timezone: { type: 'string' },

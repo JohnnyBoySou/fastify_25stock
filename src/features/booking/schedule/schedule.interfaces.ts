@@ -4,9 +4,9 @@ export interface CreateScheduleRequest extends FastifyRequest {
   body: {
     title: string
     description?: string
-    date?: string // YYYY-MM-DD (obrigatório quando não há rrule)
-    startTime: string // HH:mm quando não há rrule, ou date-time quando há rrule
-    endTime: string // HH:mm quando não há rrule, ou date-time quando há rrule
+    date: string // YYYY-MM-DD (obrigatório) - data base do agendamento
+    startTime: string // HH:mm (ex: "10:30")
+    endTime: string // HH:mm (ex: "11:30")
     rrule?: string
     timezone?: string
     status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
@@ -18,9 +18,9 @@ export interface UpdateScheduleRequest extends FastifyRequest {
   body: {
     title?: string
     description?: string
-    date?: string // YYYY-MM-DD (obrigatório quando não há rrule)
-    startTime?: string // HH:mm quando não há rrule, ou date-time quando há rrule
-    endTime?: string // HH:mm quando não há rrule, ou date-time quando há rrule
+    date?: string // YYYY-MM-DD - data base do agendamento
+    startTime?: string // HH:mm (ex: "10:30")
+    endTime?: string // HH:mm (ex: "11:30")
     rrule?: string
     timezone?: string
     status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'

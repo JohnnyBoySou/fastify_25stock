@@ -29,42 +29,28 @@ export function combineDateAndTime(dateStr: string, timeStr: string, timezone?: 
 
 /**
  * Valida e processa os dados de entrada para criar um agendamento
+ * startTime e endTime sempre são no formato HH:mm
+ * date é obrigatório e define a data base do agendamento
  */
 export function processScheduleTimes(
-  date?: string,
+  date: string,
   startTime: string,
   endTime: string,
   rrule?: string
 ): { start: Date; end: Date } {
-  if (!rrule) {
-    // Sem rrule: usar date + startTime/endTime (horários)
-    if (!date) {
-      throw new Error('date is required when rrule is not provided')
-    }
-    
-    const start = combineDateAndTime(date, startTime)
-    const end = combineDateAndTime(date, endTime)
-    
-    if (start >= end) {
-      throw new Error('Start time must be before end time')
-    }
-    
-    return { start, end }
-  } else {
-    // Com rrule: startTime e endTime são datetime completos
-    const start = new Date(startTime)
-    const end = new Date(endTime)
-    
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      throw new Error('Invalid date-time format for startTime or endTime when rrule is provided')
-    }
-    
-    if (start >= end) {
-      throw new Error('Start time must be before end time')
-    }
-    
-    return { start, end }
+  // Sempre usar date + startTime/endTime (horários no formato HH:mm)
+  if (!date) {
+    throw new Error('date is required')
   }
+  
+  const start = combineDateAndTime(date, startTime)
+  const end = combineDateAndTime(date, endTime)
+  
+  if (start >= end) {
+    throw new Error('Start time must be before end time')
+  }
+  
+  return { start, end }
 }
 
 /**
