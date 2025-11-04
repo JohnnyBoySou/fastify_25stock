@@ -19,7 +19,7 @@
         "bun.lock": true,
         "biome.json": true,
         ".env": true,
-        "package.json": true,
+        "package.json": false,
         "tsconfig.json": true,
         "vitest.config.ts": true
     }

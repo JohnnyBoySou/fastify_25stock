@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.interfaces'
+import { checkScheduleConflicts } from './schedule.utils'
 
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
@@ -47,6 +48,23 @@ export const ScheduleController = {
         })
       }
 
+      // Verificar conflitos com agendamentos existentes
+      const conflictCheck = await checkScheduleConflicts(
+        spaceId,
+        start,
+        end,
+        rrule,
+        timezone
+      )
+
+      if (conflictCheck.hasConflict) {
+        return reply.status(409).send({
+          error: 'Schedule conflict detected',
+          message: 'This schedule conflicts with existing schedules',
+          conflicts: conflictCheck.conflictingSchedules,
+        })
+      }
+
       const schedule = await ScheduleCommands.create({
         title,
         description,
@@ -83,6 +101,8 @@ export const ScheduleController = {
         status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
         startDate?: string
         endDate?: string
+        page?: number
+        limit?: number
       }
 
       const filters = {
@@ -151,6 +171,7 @@ export const ScheduleController = {
       }
 
       // Validar spaceId se fornecido
+      const finalSpaceId = spaceId || existingSchedule.spaceId
       if (spaceId) {
         const { db } = await import('@/plugins/prisma')
         const spaceExists = await db.space.findFirst({
@@ -190,6 +211,54 @@ export const ScheduleController = {
             error: 'Start time must be before end time',
           })
         }
+      } else {
+        start = existingSchedule.startTime
+        end = existingSchedule.endTime
+      }
+
+      // Verificar conflitos (excluindo o próprio agendamento)
+      const finalRrule = rrule !== undefined ? rrule : existingSchedule.rrule || undefined
+      const finalTimezone = timezone !== undefined ? timezone : existingSchedule.timezone || undefined
+      const conflictCheck = await checkScheduleConflicts(
+        finalSpaceId,
+        start,
+        end,
+        finalRrule,
+        finalTimezone,
+        id // Excluir o próprio agendamento
+      )
+
+      if (conflictCheck.hasConflict) {
+        return reply.status(409).send({
+          error: 'Schedule conflict detected',
+          message: 'This schedule conflicts with existing schedules',
+          conflicts: conflictCheck.conflictingSchedules,
+        })
+      }
+
+      // Se rrule foi alterado, precisamos recriar as ocorrências
+      if (rrule !== undefined && rrule !== existingSchedule.rrule) {
+        const { db } = await import('@/plugins/prisma')
+        const { generateOccurrences, createScheduleOccurrences } = await import('./schedule.utils')
+        
+        // Deletar ocorrências antigas
+        await db.scheduleOccurrence.deleteMany({
+          where: { scheduleId: id },
+        })
+
+        // Gerar novas ocorrências
+        const occurrences = await generateOccurrences(
+          id,
+          start,
+          end,
+          rrule || undefined,
+          finalTimezone
+        )
+        await createScheduleOccurrences(
+          id,
+          occurrences,
+          status || existingSchedule.status
+        )
       }
 
       const schedule = await ScheduleCommands.update(id, {
@@ -197,8 +266,8 @@ export const ScheduleController = {
         description,
         startTime: start,
         endTime: end,
-        rrule,
-        timezone,
+        rrule: finalRrule,
+        timezone: finalTimezone,
         status,
         spaceId,
         userId: request.user.id,

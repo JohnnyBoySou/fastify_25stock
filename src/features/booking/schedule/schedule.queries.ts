@@ -9,7 +9,10 @@ export const ScheduleQueries = {
       status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
       startDate?: Date
       endDate?: Date
-    }
+      page?: number
+      limit?: number
+    },
+    
   ) {
     const where: any = {
       storeId,
@@ -36,7 +39,7 @@ export const ScheduleQueries = {
       }
     }
 
-    return await db.schedule.findMany({
+    const schedules = await db.schedule.findMany({
       where,
       include: {
         store: {
@@ -81,6 +84,18 @@ export const ScheduleQueries = {
         startTime: 'asc',
       },
     })
+
+    const total = await db.schedule.count({ where })
+
+    return {
+      items: schedules,
+      pagination: {
+        page: filters?.page || 1,
+        limit: filters?.limit ? Number.parseInt(filters.limit.toString()) : 10,
+        total,
+        totalPages: Math.ceil(total / (filters?.limit ? Number.parseInt(filters.limit.toString()) : 10)),
+      },
+    }
   },
 
   async getById(id: string, storeId: string) {
@@ -164,7 +179,7 @@ export const ScheduleQueries = {
       }
     }
 
-    return await db.schedule.findMany({
+    const schedules = await db.schedule.findMany({
       where,
       include: {
         store: {
@@ -205,10 +220,22 @@ export const ScheduleQueries = {
           },
         },
       },
-      take: query?.limit ? Number.parseInt(query.limit) : undefined,
+      take: query?.limit ? Number.parseInt(query.limit.toString()) : undefined,
+      skip: query?.page ? (query.page - 1) * Number.parseInt(query.limit.toString()) : undefined,
       orderBy: {
         startTime: 'asc',
       },
     })
+    const total = await db.schedule.count({ where })
+
+    return {
+      items: schedules,
+      pagination: {
+        page: query?.page || 1,
+        limit: query?.limit ? Number.parseInt(query.limit.toString()) : 10,
+        total,
+        totalPages: Math.ceil(total / (query?.limit ? Number.parseInt(query.limit.toString()) : 10)),
+      },
+    }
   },
 }

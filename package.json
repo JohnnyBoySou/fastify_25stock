@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "ora": "^9.0.0",
     "resend": "^6.1.0",
+    "rrule": "^2.8.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",

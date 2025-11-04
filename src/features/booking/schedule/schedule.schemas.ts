@@ -10,7 +10,7 @@ export const create: FastifySchema = {
       startTime: { type: 'string', format: 'date-time' },
       endTime: { type: 'string', format: 'date-time' },
       rrule: { type: 'string' },
-      timezone: { type: 'string' },
+      timezone: { type: 'string', default: 'America/Sao_Paulo' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
       spaceId: { type: 'string' },
     },
@@ -23,7 +23,6 @@ export const getAll: FastifySchema = {
     properties: {
       page: { type: 'number' },
       limit: { type: 'number' },
-      search: { type: 'string' },
       spaceId: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
       startDate: { type: 'string', format: 'date-time' },
@@ -80,6 +79,7 @@ export const getByQuery: FastifySchema = {
     type: 'object',
     properties: {
       search: { type: 'string' },
+      page: { type: 'number' },
       limit: { type: 'number' },
       spaceId: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },

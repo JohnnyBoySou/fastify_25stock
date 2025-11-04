@@ -1,4 +1,5 @@
 import { db } from '@/plugins/prisma'
+import { generateOccurrences, createScheduleOccurrences } from './schedule.utils'
 
 export const ScheduleCommands = {
   async create(data: {
@@ -14,7 +15,8 @@ export const ScheduleCommands = {
     userId: string
     createdById: string
   }) {
-    return await db.schedule.create({
+    // Criar o agendamento
+    const schedule = await db.schedule.create({
       data: {
         title: data.title,
         description: data.description,
@@ -61,6 +63,69 @@ export const ScheduleCommands = {
             startTime: true,
             endTime: true,
             status: true,
+          },
+        },
+      },
+    })
+
+    // Gerar e criar ocorrências se houver rrule
+    if (data.rrule) {
+      const occurrences = await generateOccurrences(
+        schedule.id,
+        data.startTime,
+        data.endTime,
+        data.rrule,
+        data.timezone
+      )
+      await createScheduleOccurrences(schedule.id, occurrences, data.status || 'PENDING')
+    } else {
+      // Se não há rrule, criar uma ocorrência única
+      await createScheduleOccurrences(
+        schedule.id,
+        [{ startTime: data.startTime, endTime: data.endTime }],
+        data.status || 'PENDING'
+      )
+    }
+
+    // Retornar o agendamento com as ocorrências atualizadas
+    return await db.schedule.findUnique({
+      where: { id: schedule.id },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        space: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+          },
+          orderBy: {
+            startTime: 'asc',
           },
         },
       },
