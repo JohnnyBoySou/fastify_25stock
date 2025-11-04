@@ -2,7 +2,7 @@ import { db } from '@/plugins/prisma'
 
 export const SpaceQueries = {
   async getAll({ page, limit }: { page?: number, limit?: number }, storeId: string) {
-    return await db.space.findMany({
+    const spaces = await db.space.findMany({
       where: {
         storeId,
       },
@@ -34,6 +34,18 @@ export const SpaceQueries = {
       take: limit ? Number.parseInt(limit.toString()) : undefined,
       skip: page ? (page - 1) * limit : undefined,
     })
+
+    const total = await db.space.count({ where: { storeId } })
+
+    return {
+      items: spaces,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    }
   },
 
   async getById(id: string, storeId: string) {
@@ -80,7 +92,7 @@ export const SpaceQueries = {
       ]
     }
 
-    return await db.space.findMany({
+    const spaces = await db.space.findMany({
       where,
       include: {
         store: {
@@ -103,5 +115,17 @@ export const SpaceQueries = {
         createdAt: 'desc',
       },
     })
+
+    const total = await db.space.count({ where })
+
+    return {
+      items: spaces,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    }
   },
 }
