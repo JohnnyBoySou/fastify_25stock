@@ -16,7 +16,21 @@ import { bootstrapUI } from './utils/bootstrap'
 import { registerRoutes } from './router'
 
 const fastify = Fastify({
-  logger: true, // Desabilitado - usando bootstrap UI para feedback visual
+  logger: {
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    transport:
+      process.env.NODE_ENV === 'development'
+        ? {
+            target: 'pino-pretty',
+            options: {
+              translateTime: 'HH:MM:ss Z',
+              ignore: 'pid,hostname',
+              colorize: true,
+              singleLine: true,
+            },
+          }
+        : undefined,
+  },
   requestTimeout: 60000, // 30 segundos para timeout de requisições
   keepAliveTimeout: 5000, // 5 segundos para keep-alive
   bodyLimit: 1048576, // 1MB para limite do body
