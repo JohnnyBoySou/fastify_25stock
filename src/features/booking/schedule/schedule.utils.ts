@@ -1,6 +1,73 @@
 import { RRule } from 'rrule'
 
 /**
+ * Combina uma data com um horário (HH:mm) e retorna um Date
+ */
+export function combineDateAndTime(dateStr: string, timeStr: string, timezone?: string): Date {
+  // Validar formato de data (YYYY-MM-DD)
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+  if (!dateRegex.test(dateStr)) {
+    throw new Error('Invalid date format. Expected YYYY-MM-DD')
+  }
+
+  // Validar formato de horário (HH:mm)
+  const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/
+  if (!timeRegex.test(timeStr)) {
+    throw new Error('Invalid time format. Expected HH:mm (e.g., "10:30")')
+  }
+
+  const [hours, minutes] = timeStr.split(':').map(Number)
+  const [year, month, day] = dateStr.split('-').map(Number)
+
+  // Criar data no timezone especificado ou UTC
+  const date = new Date()
+  date.setFullYear(year, month - 1, day)
+  date.setHours(hours, minutes, 0, 0)
+
+  return date
+}
+
+/**
+ * Valida e processa os dados de entrada para criar um agendamento
+ */
+export function processScheduleTimes(
+  date?: string,
+  startTime: string,
+  endTime: string,
+  rrule?: string
+): { start: Date; end: Date } {
+  if (!rrule) {
+    // Sem rrule: usar date + startTime/endTime (horários)
+    if (!date) {
+      throw new Error('date is required when rrule is not provided')
+    }
+    
+    const start = combineDateAndTime(date, startTime)
+    const end = combineDateAndTime(date, endTime)
+    
+    if (start >= end) {
+      throw new Error('Start time must be before end time')
+    }
+    
+    return { start, end }
+  } else {
+    // Com rrule: startTime e endTime são datetime completos
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+    
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      throw new Error('Invalid date-time format for startTime or endTime when rrule is provided')
+    }
+    
+    if (start >= end) {
+      throw new Error('Start time must be before end time')
+    }
+    
+    return { start, end }
+  }
+}
+
+/**
  * Gera ocorrências de agendamento a partir de um rrule
  */
 export async function generateOccurrences(

@@ -3,12 +3,23 @@ import type { FastifySchema } from 'fastify'
 export const create: FastifySchema = {
   body: {
     type: 'object',
-    required: ['title', 'startTime', 'endTime', 'spaceId'],
+    required: ['title', 'spaceId'],
     properties: {
       title: { type: 'string' },
       description: { type: 'string' },
-      startTime: { type: 'string', format: 'date-time' },
-      endTime: { type: 'string', format: 'date-time' },
+      date: {
+        type: 'string',
+        format: 'date',
+        description: 'Data do agendamento (obrigatório quando não há rrule). Formato: YYYY-MM-DD',
+      },
+      startTime: {
+        type: 'string',
+        description: 'Horário de início. Se não houver rrule: formato HH:mm (ex: "10:30"). Se houver rrule: formato date-time (ISO 8601)',
+      },
+      endTime: {
+        type: 'string',
+        description: 'Horário de término. Se não houver rrule: formato HH:mm (ex: "11:30"). Se houver rrule: formato date-time (ISO 8601)',
+      },
       rrule: { type: 'string' },
       timezone: { type: 'string', default: 'America/Sao_Paulo' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
@@ -54,12 +65,23 @@ export const update: FastifySchema = {
     properties: {
       title: { type: 'string' },
       description: { type: 'string' },
-      startTime: { type: 'string', format: 'date-time' },
-      endTime: { type: 'string', format: 'date-time' },
+      date: {
+        type: 'string',
+        format: 'date',
+        description: 'Data do agendamento (obrigatório quando não há rrule). Formato: YYYY-MM-DD',
+      },
+      startTime: {
+        type: 'string',
+        description: 'Horário de início. Se não houver rrule: formato HH:mm (ex: "10:30"). Se houver rrule: formato date-time (ISO 8601)',
+      },
+      endTime: {
+        type: 'string',
+        description: 'Horário de término. Se não houver rrule: formato HH:mm (ex: "11:30"). Se houver rrule: formato date-time (ISO 8601)',
+      },
       rrule: { type: 'string' },
       timezone: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
-      spaceId: { type: 'string' },  
+      spaceId: { type: 'string' },
     },
   },
 }

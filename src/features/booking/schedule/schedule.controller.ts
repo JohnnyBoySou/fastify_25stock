@@ -2,13 +2,13 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.interfaces'
-import { checkScheduleConflicts } from './schedule.utils'
+import { checkScheduleConflicts, processScheduleTimes } from './schedule.utils'
 
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
     try {
 
-      const { title, description, startTime, endTime, rrule, timezone, status, spaceId } =
+      const { title, description, date, startTime, endTime, rrule, timezone, status, spaceId } =
         request.body
 
       if (!request.store?.id) {
@@ -38,13 +38,17 @@ export const ScheduleController = {
         })
       }
 
-      // Validar se startTime é anterior a endTime
-      const start = new Date(startTime)
-      const end = new Date(endTime)
+      // Processar horários baseado na presença de rrule
+      let start: Date
+      let end: Date
 
-      if (start >= end) {
+      try {
+        const times = processScheduleTimes(date, startTime, endTime, rrule)
+        start = times.start
+        end = times.end
+      } catch (error: any) {
         return reply.status(400).send({
-          error: 'Start time must be before end time',
+          error: error.message || 'Invalid date/time format',
         })
       }
 
@@ -153,7 +157,7 @@ export const ScheduleController = {
   async update(request: UpdateScheduleRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { title, description, startTime, endTime, rrule, timezone, status, spaceId } =
+      const { title, description, date, startTime, endTime, rrule, timezone, status, spaceId } =
         request.body
 
       if (!request.store?.id) {
@@ -188,36 +192,63 @@ export const ScheduleController = {
         }
       }
 
-      // Validar horários se fornecidos
+      // Processar horários baseado na presença de rrule
+      const finalRrule = rrule !== undefined ? rrule : existingSchedule.rrule || undefined
       let start: Date | undefined
       let end: Date | undefined
 
-      if (startTime && endTime) {
-        start = new Date(startTime)
-        end = new Date(endTime)
+      // Se algum campo de tempo foi fornecido, processar
+      if (date || startTime || endTime || rrule !== undefined) {
+        // Determinar valores finais para processamento
+        let finalDate: string | undefined
+        let finalStartTime: string
+        let finalEndTime: string
 
-        if (start >= end) {
-          return reply.status(400).send({
-            error: 'Start time must be before end time',
-          })
+        if (finalRrule) {
+          // Com rrule: usar datetime completo
+          finalStartTime = startTime || existingSchedule.startTime.toISOString()
+          finalEndTime = endTime || existingSchedule.endTime.toISOString()
+        } else {
+          // Sem rrule: usar date + horários
+          if (date) {
+            finalDate = date
+          } else {
+            // Extrair data do agendamento existente
+            const existingDate = existingSchedule.startTime.toISOString().split('T')[0]
+            finalDate = existingDate
+          }
+
+          // Extrair horários do existente se não fornecidos
+          if (startTime && endTime) {
+            finalStartTime = startTime
+            finalEndTime = endTime
+          } else {
+            // Usar horários do existente no formato HH:mm (UTC)
+            const existingStartDate = new Date(existingSchedule.startTime)
+            const existingEndDate = new Date(existingSchedule.endTime)
+            const existingStartTime = `${String(existingStartDate.getUTCHours()).padStart(2, '0')}:${String(existingStartDate.getUTCMinutes()).padStart(2, '0')}`
+            const existingEndTime = `${String(existingEndDate.getUTCHours()).padStart(2, '0')}:${String(existingEndDate.getUTCMinutes()).padStart(2, '0')}`
+            finalStartTime = startTime || existingStartTime
+            finalEndTime = endTime || existingEndTime
+          }
         }
-      } else if (startTime || endTime) {
-        // Se apenas um dos horários foi fornecido, usar o existente
-        start = startTime ? new Date(startTime) : existingSchedule.startTime
-        end = endTime ? new Date(endTime) : existingSchedule.endTime
 
-        if (start >= end) {
+        try {
+          const times = processScheduleTimes(finalDate, finalStartTime, finalEndTime, finalRrule)
+          start = times.start
+          end = times.end
+        } catch (error: any) {
           return reply.status(400).send({
-            error: 'Start time must be before end time',
+            error: error.message || 'Invalid date/time format',
           })
         }
       } else {
+        // Se nenhum campo foi fornecido, usar valores existentes
         start = existingSchedule.startTime
         end = existingSchedule.endTime
       }
 
       // Verificar conflitos (excluindo o próprio agendamento)
-      const finalRrule = rrule !== undefined ? rrule : existingSchedule.rrule || undefined
       const finalTimezone = timezone !== undefined ? timezone : existingSchedule.timezone || undefined
       const conflictCheck = await checkScheduleConflicts(
         finalSpaceId,
