@@ -19,7 +19,6 @@ export const getAll: FastifySchema = {
     properties: {
       page: { type: 'number' },
       limit: { type: 'number' },
-      search: { type: 'string' },
     },
   },
 }
@@ -68,6 +67,7 @@ export const getByQuery: FastifySchema = {
     type: 'object',
     properties: {
       search: { type: 'string' },
+      page: { type: 'number' },
       limit: { type: 'number' },
     },
   },

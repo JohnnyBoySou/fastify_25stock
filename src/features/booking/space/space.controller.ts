@@ -39,13 +39,15 @@ export const SpaceController = {
 
   async getAll(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const { page, limit } = request.query as { page?: number, limit?: number }
+
       if (!request.store?.id) {
         return reply.status(404).send({
           error: 'Store not found for this user',
         })
       }
 
-      const spaces = await SpaceQueries.getAll(request.store.id)
+      const spaces = await SpaceQueries.getAll({ page, limit }, request.store.id)
       return reply.status(200).send(spaces)
     } catch (error: any) {
       request.log.error(error)
@@ -151,7 +153,7 @@ export const SpaceController = {
 
   async getByQuery(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { query } = request.query as { query?: any }
+      const { page, limit, search } = request.query as { page?: number, limit?: number, search?: string }
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -159,7 +161,7 @@ export const SpaceController = {
         })
       }
 
-      const spaces = await SpaceQueries.getByQuery(query, request.store.id)
+      const spaces = await SpaceQueries.getByQuery({ page, limit, search }, request.store.id)
       return reply.status(200).send(spaces)
     } catch (error: any) {
       request.log.error(error)

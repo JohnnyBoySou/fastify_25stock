@@ -1,7 +1,7 @@
 import { db } from '@/plugins/prisma'
 
 export const SpaceQueries = {
-  async getAll(storeId: string) {
+  async getAll({ page, limit }: { page?: number, limit?: number }, storeId: string) {
     return await db.space.findMany({
       where: {
         storeId,
@@ -31,6 +31,8 @@ export const SpaceQueries = {
       orderBy: {
         createdAt: 'desc',
       },
+      take: limit ? Number.parseInt(limit.toString()) : undefined,
+      skip: page ? (page - 1) * limit : undefined,
     })
   },
 
@@ -65,16 +67,16 @@ export const SpaceQueries = {
     })
   },
 
-  async getByQuery(query: any, storeId: string) {
+  async getByQuery({ page, limit, search }: { page?: number, limit?: number, search?: string }, storeId: string) {
     const where: any = {
       storeId,
     }
 
-    if (query?.search) {
+    if (search) {
       where.OR = [
-        { name: { contains: query.search, mode: 'insensitive' } },
-        { description: { contains: query.search, mode: 'insensitive' } },
-        { location: { contains: query.search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
       ]
     }
 
@@ -95,7 +97,8 @@ export const SpaceQueries = {
           },
         },
       },
-      take: query?.limit ? Number.parseInt(query.limit) : undefined,
+      take: limit ? Number.parseInt(limit.toString()) : undefined,
+      skip: page ? (page - 1) * limit : undefined,
       orderBy: {
         createdAt: 'desc',
       },
