@@ -6,7 +6,8 @@ import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.in
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
     try {
-      const { title, description, startTime, endTime, rrule, timezone, status, spaceId, userId } =
+
+      const { title, description, startTime, endTime, rrule, timezone, status, spaceId } =
         request.body
 
       if (!request.store?.id) {
@@ -56,7 +57,7 @@ export const ScheduleController = {
         status,
         storeId: request.store.id,
         spaceId,
-        userId,
+        userId: request.user.id,  
         createdById: request.user.id,
       })
       return reply.status(201).send(schedule)
@@ -132,7 +133,7 @@ export const ScheduleController = {
   async update(request: UpdateScheduleRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { title, description, startTime, endTime, rrule, timezone, status, spaceId, userId } =
+      const { title, description, startTime, endTime, rrule, timezone, status, spaceId } =
         request.body
 
       if (!request.store?.id) {
@@ -200,7 +201,7 @@ export const ScheduleController = {
         timezone,
         status,
         spaceId,
-        userId,
+        userId: request.user.id,
       })
       return reply.status(200).send(schedule)
     } catch (error: any) {

@@ -3,7 +3,7 @@ import type { FastifySchema } from 'fastify'
 export const create: FastifySchema = {
   body: {
     type: 'object',
-    required: ['title', 'startTime', 'endTime', 'spaceId', 'userId'],
+    required: ['title', 'startTime', 'endTime', 'spaceId'],
     properties: {
       title: { type: 'string' },
       description: { type: 'string' },
@@ -13,7 +13,6 @@ export const create: FastifySchema = {
       timezone: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
       spaceId: { type: 'string' },
-      userId: { type: 'string' },
     },
   },
 }
@@ -26,7 +25,6 @@ export const getAll: FastifySchema = {
       limit: { type: 'number' },
       search: { type: 'string' },
       spaceId: { type: 'string' },
-      userId: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
       startDate: { type: 'string', format: 'date-time' },
       endDate: { type: 'string', format: 'date-time' },
@@ -62,8 +60,7 @@ export const update: FastifySchema = {
       rrule: { type: 'string' },
       timezone: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
-      spaceId: { type: 'string' },
-      userId: { type: 'string' },
+      spaceId: { type: 'string' },  
     },
   },
 }
@@ -85,7 +82,6 @@ export const getByQuery: FastifySchema = {
       search: { type: 'string' },
       limit: { type: 'number' },
       spaceId: { type: 'string' },
-      userId: { type: 'string' },
       status: { type: 'string', enum: ['PENDING', 'CONFIRMED', 'CANCELLED'] },
       startDate: { type: 'string', format: 'date-time' },
       endDate: { type: 'string', format: 'date-time' },

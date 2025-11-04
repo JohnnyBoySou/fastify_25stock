@@ -10,7 +10,6 @@ export interface CreateScheduleRequest extends FastifyRequest {
     timezone?: string
     status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
     spaceId: string
-    userId: string
   }
 }
 
@@ -24,6 +23,5 @@ export interface UpdateScheduleRequest extends FastifyRequest {
     timezone?: string
     status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
     spaceId?: string
-    userId?: string
   }
 }
