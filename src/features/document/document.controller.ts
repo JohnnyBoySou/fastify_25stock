@@ -75,7 +75,16 @@ export const DocumentController = {
 
   async list(request: ListDocumentsRequest, reply: FastifyReply) {
     try {
-      const { page = 1, limit = 10, search, type, format, folderId, status, visibility } = request.query
+      const {
+        page = 1,
+        limit = 10,
+        search,
+        type,
+        format,
+        folderId,
+        status,
+        visibility,
+      } = request.query
       const storeId = request.store?.id
 
       const result = await DocumentQueries.list({
@@ -121,7 +130,6 @@ export const DocumentController = {
       const { id } = request.params
       const updateData = { ...request.body }
 
-
       const result = await DocumentCommands.update(id, {
         ...updateData,
         updatedById: request.user?.id,
@@ -142,9 +150,6 @@ export const DocumentController = {
   async delete(request: DeleteDocumentRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
-
-     
-      
 
       await DocumentCommands.delete(id)
 
@@ -169,9 +174,6 @@ export const DocumentController = {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-     
-      
-
       const result = await DocumentQueries.search(storeId, search, limit)
 
       return reply.send(result)
@@ -181,7 +183,10 @@ export const DocumentController = {
     }
   },
 
-  async getByFolder(request: FastifyRequest<{ Params: { folderId: string } }>, reply: FastifyReply) {
+  async getByFolder(
+    request: FastifyRequest<{ Params: { folderId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
       const { folderId } = request.params
       const storeId = request.store?.id
@@ -189,7 +194,6 @@ export const DocumentController = {
       if (!storeId) {
         return reply.status(400).send({ error: 'Store context required' })
       }
-
 
       const result = await DocumentQueries.getByFolder(storeId, folderId)
 
@@ -208,9 +212,6 @@ export const DocumentController = {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-     
-      
-
       const result = await DocumentQueries.getPinned(storeId)
 
       return reply.send(result)
@@ -228,9 +229,6 @@ export const DocumentController = {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-     
-      
-
       const result = await DocumentQueries.getStats(storeId)
 
       return reply.send(result)
@@ -243,9 +241,6 @@ export const DocumentController = {
   async togglePinned(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
     try {
       const { id } = request.params
-
-     
-      
 
       const result = await DocumentCommands.togglePinned(id)
 
@@ -272,9 +267,6 @@ export const FolderController = {
       if (!storeId) {
         return reply.status(400).send({ error: 'Store context required' })
       }
-
-     
-      
 
       const result = await FolderCommands.create({
         storeId,
@@ -310,9 +302,6 @@ export const FolderController = {
       if (!storeId) {
         return reply.status(400).send({ error: 'Store context required' })
       }
-
-     
-      
 
       const result = await FolderQueries.list({
         storeId,
@@ -357,9 +346,6 @@ export const FolderController = {
       const { id } = request.params
       const updateData = { ...request.body }
 
-     
-      
-
       const result = await FolderCommands.update(id, updateData)
 
       return reply.send(result)
@@ -383,9 +369,6 @@ export const FolderController = {
   async delete(request: DeleteFolderRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
-
-     
-      
 
       await FolderCommands.delete(id)
 
@@ -417,9 +400,6 @@ export const FolderController = {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-     
-      
-
       const result = await FolderQueries.search(storeId, search, limit)
 
       return reply.send(result)
@@ -437,9 +417,6 @@ export const FolderController = {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-     
-      
-
       const result = await FolderQueries.getTree(storeId)
 
       return reply.send(result)
@@ -456,9 +433,6 @@ export const FolderController = {
       if (!storeId) {
         return reply.status(400).send({ error: 'Store context required' })
       }
-
-     
-      
 
       const result = await FolderQueries.getStats(storeId)
 

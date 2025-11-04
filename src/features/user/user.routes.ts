@@ -4,7 +4,6 @@ import { UserSchemas } from './user.schema'
 import { Middlewares } from '@/middlewares'
 
 export async function UserRoutes(fastify: FastifyInstance) {
-
   fastify.addHook('preHandler', Middlewares.auth)
   fastify.addHook('preHandler', Middlewares.store)
 

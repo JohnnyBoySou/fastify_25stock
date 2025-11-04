@@ -1,7 +1,6 @@
 import { db } from '@/plugins/prisma'
 
 export const FolderQueries = {
-
   async list(params: {
     storeId: string
     page?: number
@@ -108,10 +107,7 @@ export const FolderQueries = {
           where: {
             deletedAt: null,
           },
-          orderBy: [
-            { pinned: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ pinned: 'desc' }, { createdAt: 'desc' }],
           include: {
             createdBy: {
               select: {

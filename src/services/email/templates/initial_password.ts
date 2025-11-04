@@ -82,4 +82,3 @@ Este é um email automático, não responda a esta mensagem.
 © 2024 25Stock. Todos os direitos reservados.
   `
 }
-

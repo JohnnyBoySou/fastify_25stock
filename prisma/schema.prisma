@@ -71,7 +71,12 @@ model User {
   createdDocuments Document[] @relation("DocumentCreatedBy")
   updatedDocuments Document[] @relation("DocumentUpdatedBy")
   createdDocumentVersions DocumentVersion[] @relation("DocumentVersionCreatedBy")
-
+  createdSpaces Space[] @relation("SpaceCreatedBy")
+  createdShifts Shift[] @relation("ShiftCreatedBy")
+  createdSchedules Schedule[] @relation("ScheduleCreatedBy")
+  createdShiftParticipants ShiftParticipant[] @relation("ShiftParticipantCreatedBy")
+  schedules                 Schedule[] @relation("ScheduleUser")
+  shiftParticipants         ShiftParticipant[] @relation("ShiftParticipantUser")
   subscription Subscription?
 
   auditLogs         AuditLog[]
@@ -222,6 +227,10 @@ model Store {
   chatSessions  ChatSession[]
   documentFolders DocumentFolder[]
   documents     Document[]
+  spaces        Space[]
+  shifts        Shift[]
+  schedules     Schedule[]
+  shiftParticipants ShiftParticipant[]
 
   // Configurações adicionais (JSON flexível)
   settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }
@@ -1621,4 +1630,147 @@ enum DocumentVisibility {
   PRIVATE
   PUBLIC
   INTERNAL
+}
+
+
+
+// =========================================
+// ESPAÇOS
+// =========================================
+
+model Space {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  capacity    Int?
+  location    String?
+
+  storeId     String
+  store       Store      @relation(fields: [storeId], references: [id])
+
+  createdById String
+  createdBy   User       @relation("SpaceCreatedBy", fields: [createdById], references: [id])
+
+  schedules   Schedule[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// =========================================
+// AGENDAMENTOS
+// =========================================
+
+model Schedule {
+  id            String         @id @default(cuid())
+  title         String
+  description   String?
+
+  // Horário base (primeira ocorrência)
+  startTime     DateTime
+  endTime       DateTime
+
+  // Regra de repetição (RRULE padrão iCal)
+  rrule         String?        // Ex: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR;UNTIL=2026-03-01T00:00:00Z"
+  timezone      String?        // Ex: "America/Sao_Paulo"
+
+  status        ScheduleStatus @default(PENDING)
+
+  storeId       String
+  store         Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  spaceId       String
+  space         Space          @relation(fields: [spaceId], references: [id])
+
+  userId        String
+  user          User           @relation("ScheduleUser", fields: [userId], references: [id])
+
+  createdById   String
+  createdBy     User           @relation("ScheduleCreatedBy", fields: [createdById], references: [id])
+
+  occurrences   ScheduleOccurrence[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+enum ScheduleStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// =========================================
+// OCORRÊNCIAS (cada instância da agenda)
+// =========================================
+
+model ScheduleOccurrence {
+  id            String         @id @default(cuid())
+  scheduleId    String
+  schedule      Schedule       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  startTime     DateTime
+  endTime       DateTime
+
+  status        ScheduleStatus @default(PENDING)
+
+  shifts        Shift[]
+
+  createdAt     DateTime       @default(now())
+
+  @@index([startTime, endTime])
+  @@index([scheduleId])
+}
+
+// =========================================
+// ESCALAS
+// =========================================
+
+model Shift {
+  id            String          @id @default(cuid())
+  name          String           // Nome da escala ou papel (ex: "Instrutores")
+  description   String?
+
+  storeId       String
+  store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  occurrenceId  String?
+  occurrence    ScheduleOccurrence? @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+
+  participants  ShiftParticipant[]
+  
+  createdById   String
+  createdBy     User            @relation("ShiftCreatedBy", fields: [createdById], references: [id])
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model ShiftParticipant {
+  id            String          @id @default(cuid())
+  shiftId       String
+  shift         Shift           @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+
+  storeId       String
+  store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  userId        String
+  user          User            @relation("ShiftParticipantUser", fields: [userId], references: [id])
+
+  createdById   String
+  createdBy     User            @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id])
+
+  role          String?         // Ex: "Assistente", "Líder"
+  status        ShiftStatus     @default(PENDING)
+  confirmedAt   DateTime?
+  deniedAt      DateTime?
+  note          String?
+
+  createdAt     DateTime        @default(now())
+}
+
+enum ShiftStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
 }

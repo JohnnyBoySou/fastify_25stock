@@ -120,15 +120,13 @@ export const UserController = {
   },
 
   async bulkDelete(request: BulkDeleteUserRequest, reply: FastifyReply) {
-
     try {
       const { ids } = request.body
 
       const result = await UserCommands.bulkDelete(ids)
 
       return reply.send(result)
-    }
-    catch (error: any) {
+    } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({
         error: 'Internal server error',

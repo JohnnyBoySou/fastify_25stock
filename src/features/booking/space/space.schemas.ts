@@ -1,32 +1,30 @@
 import type { FastifySchema } from 'fastify'
 
-export const createFolderSchema: FastifySchema = {
+export const create: FastifySchema = {
   body: {
     type: 'object',
     required: ['name'],
     properties: {
       name: { type: 'string' },
       description: { type: 'string' },
-      color: { type: 'string' },
-      icon: { type: 'string' },
-      parentId: { type: 'string' },
+      capacity: { type: 'number' },
+      location: { type: 'string' },
     },
   },
 }
 
-export const listFoldersSchema: FastifySchema = {
+export const getAll: FastifySchema = {
   querystring: {
     type: 'object',
     properties: {
       page: { type: 'number' },
       limit: { type: 'number' },
       search: { type: 'string' },
-      parentId: { type: 'string' },
     },
   },
 }
 
-export const getFolderSchema: FastifySchema = {
+export const getById: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -36,7 +34,7 @@ export const getFolderSchema: FastifySchema = {
   },
 }
 
-export const updateFolderSchema: FastifySchema = {
+export const update: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -49,14 +47,13 @@ export const updateFolderSchema: FastifySchema = {
     properties: {
       name: { type: 'string' },
       description: { type: 'string' },
-      color: { type: 'string' },
-      icon: { type: 'string' },
-      parentId: { type: 'string' },
+      capacity: { type: 'number' },
+      location: { type: 'string' },
     },
   },
 }
 
-export const deleteFolderSchema: FastifySchema = {
+export const remove: FastifySchema = {
   params: {
     type: 'object',
     required: ['id'],
@@ -66,7 +63,7 @@ export const deleteFolderSchema: FastifySchema = {
   },
 }
 
-export const searchFoldersSchema: FastifySchema = {
+export const getByQuery: FastifySchema = {
   querystring: {
     type: 'object',
     properties: {
@@ -76,11 +73,11 @@ export const searchFoldersSchema: FastifySchema = {
   },
 }
 
-export const FolderSchemas = {
-  create: createFolderSchema,
-  list: listFoldersSchema,
-  get: getFolderSchema,
-  update: updateFolderSchema,
-  delete: deleteFolderSchema,
-  search: searchFoldersSchema,
+export const SpaceSchemas = {
+  create,
+  getAll,
+  getById,
+  update,
+  remove,
+  getByQuery,
 }

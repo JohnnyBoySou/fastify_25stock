@@ -166,7 +166,15 @@ export const searchUsersSchema: FastifySchema = {
       type: 'object',
       properties: {
         items: { type: 'array', items: { type: 'object' } },
-        pagination: { type: 'object', properties: { page: { type: 'number' }, limit: { type: 'number' }, total: { type: 'number' }, totalPages: { type: 'number' } } },
+        pagination: {
+          type: 'object',
+          properties: {
+            page: { type: 'number' },
+            limit: { type: 'number' },
+            total: { type: 'number' },
+            totalPages: { type: 'number' },
+          },
+        },
       },
     },
   },

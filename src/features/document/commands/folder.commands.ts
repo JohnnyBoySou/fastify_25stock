@@ -3,12 +3,12 @@ import { db } from '@/plugins/prisma'
 export const FolderCommands = {
   async create(data: {
     storeId: string
-    name: string,
-    description?: string,
-    color?: string,
-    icon?: string,
-    parentId?: string,
-    createdById?: string,
+    name: string
+    description?: string
+    color?: string
+    icon?: string
+    parentId?: string
+    createdById?: string
   }) {
     // Verificar se já existe uma pasta com o mesmo nome na mesma store
     const existingFolder = await db.documentFolder.findFirst({

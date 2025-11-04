@@ -51,7 +51,8 @@ export const UserCommands = {
 
     // Enviar email com senha inicial
     try {
-      const loginUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'https://app.25stock.com/login'
+      const loginUrl =
+        process.env.FRONTEND_URL || process.env.APP_URL || 'https://app.25stock.com/login'
       await EmailService.sendInitialPasswordEmail({
         name: user.name,
         email: user.email,

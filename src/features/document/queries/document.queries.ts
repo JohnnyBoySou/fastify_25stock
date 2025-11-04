@@ -12,7 +12,17 @@ export const DocumentQueries = {
     status?: 'ACTIVE' | 'ARCHIVED' | 'DELETED'
     visibility?: 'PRIVATE' | 'PUBLIC' | 'INTERNAL'
   }) {
-    const { page = 1, limit = 10, storeId, search, type, format, folderId, status, visibility } = params
+    const {
+      page = 1,
+      limit = 10,
+      storeId,
+      search,
+      type,
+      format,
+      folderId,
+      status,
+      visibility,
+    } = params
     const skip = (page - 1) * limit
 
     const where: any = {
@@ -49,10 +59,7 @@ export const DocumentQueries = {
         where,
         skip,
         take: limit,
-        orderBy: [
-          { pinned: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ pinned: 'desc' }, { createdAt: 'desc' }],
         include: {
           folder: true,
           createdBy: {
@@ -137,9 +144,7 @@ export const DocumentQueries = {
       where: {
         storeId,
         deletedAt: null,
-        OR: [
-          { title: { contains: query, mode: 'insensitive' } },
-        ],
+        OR: [{ title: { contains: query, mode: 'insensitive' } }],
       },
       skip,
       take: limit || 10,
@@ -156,7 +161,15 @@ export const DocumentQueries = {
       },
     })
 
-    return { items: documents, pagination: { page, limit, total: documents.length, totalPages: Math.ceil(documents.length / limit) } }
+    return {
+      items: documents,
+      pagination: {
+        page,
+        limit,
+        total: documents.length,
+        totalPages: Math.ceil(documents.length / limit),
+      },
+    }
   },
 
   async getByFolder(storeId: string, folderId: string) {
@@ -166,10 +179,7 @@ export const DocumentQueries = {
         folderId,
         deletedAt: null,
       },
-      orderBy: [
-        { pinned: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ pinned: 'desc' }, { createdAt: 'desc' }],
       include: {
         createdBy: {
           select: {

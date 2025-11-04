@@ -64,8 +64,7 @@ export const UserQueries = {
     return user
   },
 
-  async list( page = 1, limit = 10) {
-
+  async list(page = 1, limit = 10) {
     const result = await PaginationUtils.paginate(db, 'user', {
       select: {
         id: true,
