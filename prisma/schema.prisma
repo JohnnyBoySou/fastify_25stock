@@ -298,6 +298,7 @@ model Product {
   categories      ProductCategory[]
   media           ProductMedia[]
   quotes          QuoteItem[]
+  resources       Resource[]
 
   // Extensões e metadados
   tags            Json?           // ex: ["bebida", "perecível"]
@@ -1652,6 +1653,7 @@ model Space {
   createdBy   User       @relation("SpaceCreatedBy", fields: [createdById], references: [id])
 
   schedules   Schedule[]
+  resources   Resource[]
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -1688,6 +1690,7 @@ model Schedule {
   createdById   String
   createdBy     User           @relation("ScheduleCreatedBy", fields: [createdById], references: [id])
 
+  resources     Resource[]
   occurrences   ScheduleOccurrence[]
 
   createdAt     DateTime       @default(now())
@@ -1773,4 +1776,28 @@ enum ShiftStatus {
   PENDING
   CONFIRMED
   DECLINED
+}
+
+
+model Resource {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  type          ResourceType
+  isAvailable   Boolean  @default(true)
+  spaceId       String?   // se for vinculado a um espaço físico
+  productId     String?   // se quiser vincular a um produto do ERP
+  schedules     Schedule[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product?  @relation(fields: [productId], references: [id])
+  space         Space?    @relation(fields: [spaceId], references: [id])
+}
+
+enum ResourceType {
+  EQUIPMENT
+  VEHICLE
+  FURNITURE
+  OTHER
 }

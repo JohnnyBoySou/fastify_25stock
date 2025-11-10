@@ -43,6 +43,18 @@ export const PermissionController = {
     }
   },
 
+  async getMePermissions(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const result = await PermissionQueries.getUserPermissions((request as any).user?.id)
+      return reply.send(result)
+    } catch (error) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  },
+
   async getByResource(
     request: FastifyRequest<{ Params: { resource: string } }>,
     reply: FastifyReply
