@@ -335,6 +335,32 @@ export const AVAILABLE_PERMISSIONS: PermissionDefinition[] = [
     name: 'Gerenciar Permissões',
     description: 'Permite atribuir e remover permissões de usuários',
   },
+
+  // DOCUMENTS
+  {
+    resource: 'DOCUMENTS',
+    action: 'READ',
+    name: 'Visualizar Documentos',
+    description: 'Permite visualizar documentos',
+  },
+  {
+    resource: 'DOCUMENTS',
+    action: 'UPDATE',
+    name: 'Atualizar Documentos',
+    description: 'Permite atualizar documentos',
+  },
+  {
+    resource: 'DOCUMENTS',
+    action: 'CREATE',
+    name: 'Criar Documentos',
+    description: 'Permite criar documentos',
+  },
+  {
+    resource: 'DOCUMENTS',
+    action: 'DELETE',
+    name: 'Deletar Documentos',
+    description: 'Permite deletar documentos',
+  },
 ]
 
 // Função auxiliar para buscar permissão por resource e action
