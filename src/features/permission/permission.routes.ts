@@ -69,7 +69,7 @@ export async function PermissionRoutes(fastify: FastifyInstance) {
 
   // GET /permissions/user/:userId - Buscar permissões de usuário
   fastify.get('/user/:userId', {
-    preHandler: [Middlewares.permission('PERMISSIONS', 'READ')],
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'READ')],
     schema: PermissionSchemas.getUserPermissions,
     handler: PermissionController.getUserPermissions,
   })
