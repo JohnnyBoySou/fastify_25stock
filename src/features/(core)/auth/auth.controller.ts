@@ -20,6 +20,26 @@ import type {
   VerifyResetCodeResponse,
 } from './auth.interfaces'
 import { AuthCommands } from './commands/auth.commands'
+import { PermissionCommands } from '@/features/(core)/permission/commands/permission.commands'
+import { AVAILABLE_PERMISSIONS } from '@/features/(core)/permission/permission.constants'
+
+async function assignDefaultPermissions(userId: string, log: FastifyRequest['log']) {
+  try {
+    await PermissionCommands.assignToUser({
+      userId,
+      assignedBy: userId,
+      permissions: AVAILABLE_PERMISSIONS.map((permission) => ({
+        resource: permission.resource,
+        action: permission.action,
+      })),
+    })
+  } catch (error) {
+    log.error(
+      { err: error, userId },
+      'Failed to assign default permissions to user after store creation'
+    )
+  }
+}
 
 export const AuthController = {
   async register(request: RegisterRequest, reply: FastifyReply): Promise<RegisterResponse> {
@@ -61,6 +81,10 @@ export const AuthController = {
         email,
         password,
       })
+
+      if (result.user.newStore) {
+        await assignDefaultPermissions(result.user.id, request.log)
+      }
 
       return reply.send({
         user: result.user,
@@ -323,6 +347,10 @@ export const AuthController = {
       const { id_token } = request.body
 
       const result = await AuthCommands.googleLogin(id_token)
+
+      if (result.user.newStore) {
+        await assignDefaultPermissions(result.user.id, request.log)
+      }
 
       return reply.send({
         user: result.user,
