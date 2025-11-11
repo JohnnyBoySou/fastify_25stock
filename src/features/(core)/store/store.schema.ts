@@ -120,7 +120,36 @@ export const getStoreSchema: FastifySchema = {
             email: { type: 'string' },
           },
         },
-        products: { type: 'array' },
+        subscription: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            status: { type: 'string' },
+            currentPeriodEnd: { type: 'string', format: 'date-time' },
+            trialEndsAt: { type: 'string', format: 'date-time' },
+            polarCustomerId: { type: 'string' },
+            polarSubscriptionId: { type: 'string' },
+            polarProductId: { type: 'string' },
+            polarPlanName: { type: 'string' },
+            priceAmount: { type: 'number' },
+            priceInterval: { type: 'string' },
+            currency: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+            invoices: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  amount: { type: 'number' },
+                  status: { type: 'string' },
+                  createdAt: { type: 'string', format: 'date-time' },
+                },
+              },
+            },
+          },
+        },
         _count: {
           type: 'object',
           properties: {
