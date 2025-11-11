@@ -17,9 +17,21 @@ export const SupplierController = {
   // === CRUD BÁSICO ===
   async create(request: CreateSupplierRequest, reply: FastifyReply) {
     try {
-      const { corporateName, cnpj, tradeName, cep, city, state, address, storeId, responsibles } =
-        request.body
-      const contextStoreId = request.store?.id
+      const { corporateName, cnpj, tradeName, cep, city, state, address, responsibles } =  request.body
+      const storeId = request.store?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store context required',
+        })
+      }
+
+      const isLimitation = await SupplierQueries.checkLimitation(storeId)
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: 'You have reached the maximum number of suppliers',
+        })
+      }
 
       const result = await SupplierCommands.create({
         corporateName,
@@ -29,7 +41,7 @@ export const SupplierController = {
         city,
         state,
         address,
-        storeId: storeId || contextStoreId,
+        storeId,
         responsibles,
       })
 

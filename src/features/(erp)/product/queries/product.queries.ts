@@ -1,4 +1,5 @@
 import { db } from '@/plugins/prisma'
+import { getLimitationByResource } from '@/features/(core)/limitations/limitation.service'
 
 // Função auxiliar para calcular o estoque atual de um produto
 async function calculateCurrentStock(productId: string): Promise<number> {
@@ -337,5 +338,25 @@ export const ProductQueries = {
       active,
       inactive,
     }
+  },
+
+  async checkLimitation(storeId: string) {
+    const { limit } = await getLimitationByResource('products', storeId)
+
+    if (!limit) {
+      return false
+    }
+
+    const count = await db.product.count({
+      where: {
+        storeId,
+      },
+    })
+
+    if (count >= limit) {
+      return false
+    }
+
+    return true
   },
 }

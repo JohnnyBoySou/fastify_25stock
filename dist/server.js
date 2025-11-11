@@ -8506,6 +8506,20 @@ var PolarQueries = {
       throw new Error(`Failed to fetch products: ${error}`);
     }
   },
+  async getPlanById(id) {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID,
+        page: 1,
+        limit: 10
+      });
+      const plan = result.items.find((product) => product.id === id);
+      return plan || null;
+    } catch (error) {
+      console.error("Polar get plan by id error:", error);
+      throw new Error(`Failed to fetch plan: ${error}`);
+    }
+  },
   async getFreePlan() {
     try {
       const { result } = await polar.products.list({
@@ -9190,7 +9204,786 @@ var AuthCommands = {
   }
 };
 
+// src/features/(core)/permission/commands/permission.commands.ts
+init_prisma();
+
+// src/features/(core)/permission/crm.ts
+var CRM_PERMISSIONS = [
+  //CONTACTS
+  {
+    resource: "CONTACTS",
+    action: "READ",
+    name: "Visualizar Contatos",
+    description: "Permite visualizar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "UPDATE",
+    name: "Atualizar Contatos",
+    description: "Permite atualizar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "CREATE",
+    name: "Criar Contatos",
+    description: "Permite criar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "DELETE",
+    name: "Deletar Contatos",
+    description: "Permite deletar contatos"
+  },
+  //QUOTES
+  {
+    resource: "QUOTES",
+    action: "READ",
+    name: "Visualizar Or\xE7amentos",
+    description: "Permite visualizar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "UPDATE",
+    name: "Atualizar Or\xE7amentos",
+    description: "Permite atualizar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "CREATE",
+    name: "Criar Or\xE7amentos",
+    description: "Permite criar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "DELETE",
+    name: "Deletar Or\xE7amentos",
+    description: "Permite deletar or\xE7amentos"
+  },
+  //PIPELINES
+  {
+    resource: "PIPELINES",
+    action: "READ",
+    name: "Visualizar Pipelines",
+    description: "Permite visualizar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "UPDATE",
+    name: "Atualizar Pipelines",
+    description: "Permite atualizar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "CREATE",
+    name: "Criar Pipelines",
+    description: "Permite criar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "DELETE",
+    name: "Deletar Pipelines",
+    description: "Permite deletar pipelines"
+  },
+  //STAGES
+  {
+    resource: "STAGES",
+    action: "READ",
+    name: "Visualizar Etapas",
+    description: "Permite visualizar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "UPDATE",
+    name: "Atualizar Etapas",
+    description: "Permite atualizar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "CREATE",
+    name: "Criar Etapas",
+    description: "Permite criar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "DELETE",
+    name: "Deletar Etapas",
+    description: "Permite deletar etapas"
+  }
+];
+
+// src/features/(core)/permission/erp.ts
+var ERP_PERMISSIONS = [
+  //CATEGORIES
+  {
+    resource: "CATEGORIES",
+    action: "READ",
+    name: "Visualizar Categorias",
+    description: "Permite visualizar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "UPDATE",
+    name: "Atualizar Categorias",
+    description: "Permite atualizar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "CREATE",
+    name: "Criar Categorias",
+    description: "Permite criar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "DELETE",
+    name: "Deletar Categorias",
+    description: "Permite deletar categorias"
+  },
+  //SUPPLIERS
+  {
+    resource: "SUPPLIERS",
+    action: "READ",
+    name: "Visualizar Fornecedores",
+    description: "Permite visualizar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "UPDATE",
+    name: "Atualizar Fornecedores",
+    description: "Permite atualizar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "CREATE",
+    name: "Criar Fornecedores",
+    description: "Permite criar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "DELETE",
+    name: "Deletar Fornecedores",
+    description: "Permite deletar fornecedores"
+  },
+  //MOVEMENTS
+  {
+    resource: "MOVEMENTS",
+    action: "READ",
+    name: "Visualizar Movimentos",
+    description: "Permite visualizar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "UPDATE",
+    name: "Atualizar Movimentos",
+    description: "Permite atualizar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "CREATE",
+    name: "Criar Movimentos",
+    description: "Permite criar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "DELETE",
+    name: "Deletar Movimentos",
+    description: "Permite deletar movimentos"
+  },
+  // PRODUCTS
+  {
+    resource: "PRODUCTS",
+    action: "CREATE",
+    name: "Criar Produto",
+    description: "Permite criar novos produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "READ",
+    name: "Visualizar Produtos",
+    description: "Permite visualizar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "UPDATE",
+    name: "Atualizar Produto",
+    description: "Permite atualizar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "DELETE",
+    name: "Deletar Produto",
+    description: "Permite deletar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "MANAGE",
+    name: "Gerenciar Produtos",
+    description: "Permite gerenciar completamente produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "IMPORT",
+    name: "Importar Produtos",
+    description: "Permite importar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "EXPORT",
+    name: "Exportar Produtos",
+    description: "Permite exportar produtos"
+  },
+  // REPORTS
+  {
+    resource: "REPORTS",
+    action: "READ",
+    name: "Visualizar Relat\xF3rios",
+    description: "Permite visualizar relat\xF3rios"
+  },
+  {
+    resource: "REPORTS",
+    action: "EXPORT",
+    name: "Exportar Relat\xF3rios",
+    description: "Permite exportar relat\xF3rios"
+  }
+];
+
+// src/features/(core)/permission/pms.ts
+var PMS_PERMISSIONS = [
+  // DOCUMENTS
+  {
+    resource: "DOCUMENTS",
+    action: "READ",
+    name: "Visualizar Documentos",
+    description: "Permite visualizar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "UPDATE",
+    name: "Atualizar Documentos",
+    description: "Permite atualizar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "CREATE",
+    name: "Criar Documentos",
+    description: "Permite criar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "DELETE",
+    name: "Deletar Documentos",
+    description: "Permite deletar documentos"
+  },
+  //ROADMAP
+  {
+    resource: "ROADMAP",
+    action: "READ",
+    name: "Visualizar Roadmap",
+    description: "Permite visualizar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "UPDATE",
+    name: "Atualizar Roadmap",
+    description: "Permite atualizar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "CREATE",
+    name: "Criar Roadmap",
+    description: "Permite criar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "DELETE",
+    name: "Deletar Roadmap",
+    description: "Permite deletar roadmap"
+  },
+  //MILESTONES
+  {
+    resource: "MILESTONES",
+    action: "READ",
+    name: "Visualizar Milestones",
+    description: "Permite visualizar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "UPDATE",
+    name: "Atualizar Milestones",
+    description: "Permite atualizar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "CREATE",
+    name: "Criar Milestones",
+    description: "Permite criar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "DELETE",
+    name: "Deletar Milestones",
+    description: "Permite deletar milestones"
+  },
+  //GALLERY
+  {
+    resource: "GALLERY",
+    action: "READ",
+    name: "Visualizar galeria",
+    description: "Permite visualizar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "UPDATE",
+    name: "Atualizar galeria",
+    description: "Permite atualizar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "CREATE",
+    name: "Criar galeria",
+    description: "Permite criar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "DELETE",
+    name: "Deletar galeria",
+    description: "Permite deletar galeria de imagens"
+  }
+];
+
+// src/features/(core)/permission/wfm.ts
+var WFM_PERMISSIONS = [
+  // SHIFTS
+  {
+    resource: "SHIFTS",
+    action: "READ",
+    name: "Visualizar Escalas",
+    description: "Permite visualizar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "UPDATE",
+    name: "Atualizar Escala",
+    description: "Permite atualizar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "CREATE",
+    name: "Criar Escala",
+    description: "Permite criar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "DELETE",
+    name: "Deletar Escala",
+    description: "Permite deletar escalas"
+  },
+  // SPACES
+  {
+    resource: "SPACES",
+    action: "READ",
+    name: "Visualizar Espa\xE7os",
+    description: "Permite visualizar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "UPDATE",
+    name: "Atualizar Espa\xE7o",
+    description: "Permite atualizar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "CREATE",
+    name: "Criar Espa\xE7o",
+    description: "Permite criar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "DELETE",
+    name: "Deletar Espa\xE7o",
+    description: "Permite deletar espa\xE7os"
+  },
+  // SCHEDULES
+  {
+    resource: "SCHEDULES",
+    action: "READ",
+    name: "Visualizar Agendamentos",
+    description: "Permite visualizar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "UPDATE",
+    name: "Atualizar Agendamento",
+    description: "Permite atualizar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "CREATE",
+    name: "Criar Agendamento",
+    description: "Permite criar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "DELETE",
+    name: "Deletar Agendamento",
+    description: "Permite deletar agendamentos"
+  },
+  // SCHEDULE OCCURRENCES
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "READ",
+    name: "Visualizar Ocorr\xEAncias de Agendamento",
+    description: "Permite visualizar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "UPDATE",
+    name: "Atualizar Ocorr\xEAncia de Agendamento",
+    description: "Permite atualizar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "CREATE",
+    name: "Criar Ocorr\xEAncia de Agendamento",
+    description: "Permite criar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "DELETE",
+    name: "Deletar Ocorr\xEAncia de Agendamento",
+    description: "Permite deletar ocorr\xEAncias de agendamentos"
+  }
+];
+
+// src/features/(core)/permission/core.ts
+var CORE_PERMISSIONS = [
+  // USERS
+  {
+    resource: "USERS",
+    action: "CREATE",
+    name: "Criar Usu\xE1rio",
+    description: "Permite criar novos usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "READ",
+    name: "Visualizar Usu\xE1rios",
+    description: "Permite visualizar usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "UPDATE",
+    name: "Atualizar Usu\xE1rio",
+    description: "Permite atualizar informa\xE7\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "DELETE",
+    name: "Deletar Usu\xE1rio",
+    description: "Permite deletar usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "MANAGE",
+    name: "Gerenciar Usu\xE1rios",
+    description: "Permite gerenciar completamente usu\xE1rios"
+  },
+  // STORES
+  {
+    resource: "STORES",
+    action: "CREATE",
+    name: "Criar Loja",
+    description: "Permite criar novas lojas"
+  },
+  {
+    resource: "STORES",
+    action: "READ",
+    name: "Visualizar Lojas",
+    description: "Permite visualizar lojas"
+  },
+  {
+    resource: "STORES",
+    action: "UPDATE",
+    name: "Atualizar Loja",
+    description: "Permite atualizar informa\xE7\xF5es da loja"
+  },
+  {
+    resource: "STORES",
+    action: "DELETE",
+    name: "Deletar Loja",
+    description: "Permite deletar lojas"
+  },
+  {
+    resource: "STORES",
+    action: "MANAGE",
+    name: "Gerenciar Lojas",
+    description: "Permite gerenciar completamente lojas"
+  },
+  // PERMISSIONS
+  {
+    resource: "PERMISSIONS",
+    action: "READ",
+    name: "Visualizar Permiss\xF5es",
+    description: "Permite visualizar permiss\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "UPDATE",
+    name: "Gerenciar Permiss\xF5es",
+    description: "Permite atribuir e remover permiss\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "ASSIGN",
+    name: "Atribuir Permiss\xF5es",
+    description: "Permite atribuir permiss\xF5es a usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "REMOVE",
+    name: "Remover Permiss\xF5es",
+    description: "Permite remover permiss\xF5es de usu\xE1rios"
+  },
+  // SETTINGS
+  {
+    resource: "SETTINGS",
+    action: "READ",
+    name: "Visualizar Configura\xE7\xF5es",
+    description: "Permite visualizar configura\xE7\xF5es"
+  },
+  {
+    resource: "SETTINGS",
+    action: "UPDATE",
+    name: "Atualizar Configura\xE7\xF5es",
+    description: "Permite atualizar configura\xE7\xF5es"
+  },
+  {
+    resource: "SETTINGS",
+    action: "MANAGE",
+    name: "Gerenciar Configura\xE7\xF5es",
+    description: "Permite gerenciar completamente configura\xE7\xF5es"
+  }
+];
+
+// src/features/(core)/permission/permission.constants.ts
+var AVAILABLE_PERMISSIONS = [
+  ...CRM_PERMISSIONS,
+  ...ERP_PERMISSIONS,
+  ...PMS_PERMISSIONS,
+  ...WFM_PERMISSIONS,
+  ...CORE_PERMISSIONS
+];
+function getPermissionDefinition(resource, action) {
+  return AVAILABLE_PERMISSIONS.find((p) => p.resource === resource && p.action === action);
+}
+function getAvailableResources() {
+  const resources = /* @__PURE__ */ new Set();
+  for (const p of AVAILABLE_PERMISSIONS) {
+    resources.add(p.resource);
+  }
+  return Array.from(resources).sort();
+}
+function getAvailableActions() {
+  const actions = /* @__PURE__ */ new Set();
+  for (const p of AVAILABLE_PERMISSIONS) {
+    actions.add(p.action);
+  }
+  return Array.from(actions).sort();
+}
+function getPermissionsByResource(resource) {
+  return AVAILABLE_PERMISSIONS.filter((p) => p.resource === resource);
+}
+function getPermissionsByAction(action) {
+  return AVAILABLE_PERMISSIONS.filter((p) => p.action === action);
+}
+
+// src/features/(core)/permission/commands/permission.commands.ts
+var PermissionCommands = {
+  // Atribuir permissões a usuário
+  async assignToUser(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    );
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
+      );
+    }
+    const existingPermissions = await db.userPermission.findMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action
+        }))
+      }
+    });
+    const existingMap = new Map(
+      existingPermissions.map((ep) => [`${ep.resource}:${ep.action}`, ep])
+    );
+    const newPermissions = data.permissions.filter(
+      (p) => !existingMap.has(`${p.resource}:${p.action}`)
+    );
+    if (newPermissions.length === 0) {
+      return {
+        message: "All permissions already assigned",
+        assigned: 0
+      };
+    }
+    await db.userPermission.createMany({
+      data: newPermissions.map((p) => ({
+        userId: data.userId,
+        resource: p.resource,
+        action: p.action,
+        scope: data.scope || null,
+        grant: true,
+        expiresAt: data.expiresAt || null,
+        conditions: data.conditions ? JSON.stringify(data.conditions) : null
+      })),
+      skipDuplicates: true
+    });
+    return {
+      message: "Permissions assigned successfully",
+      assigned: newPermissions.length,
+      permissions: newPermissions.map((p) => ({
+        resource: p.resource,
+        action: p.action
+      }))
+    };
+  },
+  // Remover permissões de usuário
+  async removeFromUser(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const result = await db.userPermission.deleteMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action
+        }))
+      }
+    });
+    return {
+      message: "Permissions removed successfully",
+      removed: result.count
+    };
+  },
+  // Remover todas as permissões de um usuário
+  async removeAllFromUser(userId) {
+    const user = await db.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const result = await db.userPermission.deleteMany({
+      where: { userId }
+    });
+    return {
+      message: "All permissions removed successfully",
+      removed: result.count
+    };
+  },
+  // Sincronizar permissões de usuário (substitui todas)
+  async syncUserPermissions(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    );
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
+      );
+    }
+    return await db.$transaction(async (tx) => {
+      await tx.userPermission.deleteMany({
+        where: { userId: data.userId }
+      });
+      if (data.permissions.length > 0) {
+        await tx.userPermission.createMany({
+          data: data.permissions.map((p) => ({
+            userId: data.userId,
+            resource: p.resource,
+            action: p.action,
+            scope: data.scope || null,
+            grant: true,
+            expiresAt: data.expiresAt || null,
+            conditions: data.conditions ? JSON.stringify(data.conditions) : null
+          }))
+        });
+      }
+      return {
+        message: "Permissions synchronized successfully",
+        total: data.permissions.length,
+        permissions: data.permissions
+      };
+    });
+  },
+  // Atualizar uma permissão específica de usuário
+  async updateUserPermission(userId, resource, action, data) {
+    const user = await db.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const permission = await db.userPermission.findFirst({
+      where: {
+        userId,
+        resource,
+        action
+      }
+    });
+    if (!permission) {
+      throw new Error("Permission not found for this user");
+    }
+    return await db.userPermission.update({
+      where: {
+        id: permission.id
+      },
+      data: {
+        grant: data.grant !== void 0 ? data.grant : permission.grant,
+        scope: data.scope !== void 0 ? data.scope : permission.scope,
+        expiresAt: data.expiresAt !== void 0 ? data.expiresAt : permission.expiresAt,
+        conditions: data.conditions !== void 0 ? JSON.stringify(data.conditions) : permission.conditions
+      }
+    });
+  }
+};
+
 // src/features/(core)/auth/auth.controller.ts
+async function assignDefaultPermissions(userId, log) {
+  try {
+    await PermissionCommands.assignToUser({
+      userId,
+      assignedBy: userId,
+      permissions: AVAILABLE_PERMISSIONS.map((permission) => ({
+        resource: permission.resource,
+        action: permission.action
+      }))
+    });
+  } catch (error) {
+    log.error(
+      { err: error, userId },
+      "Failed to assign default permissions to user after store creation"
+    );
+  }
+}
 var AuthController = {
   async register(request, reply) {
     try {
@@ -9224,6 +10017,9 @@ var AuthController = {
         email,
         password
       });
+      if (result.user.newStore) {
+        await assignDefaultPermissions(result.user.id, request.log);
+      }
       return reply.send({
         user: result.user,
         store: result.store,
@@ -9415,6 +10211,9 @@ var AuthController = {
     try {
       const { id_token } = request.body;
       const result = await AuthCommands.googleLogin(id_token);
+      if (result.user.newStore) {
+        await assignDefaultPermissions(result.user.id, request.log);
+      }
       return reply.send({
         user: result.user,
         store: result.store,
@@ -10279,6 +11078,177 @@ var CategoryCommands = {
 
 // src/features/(erp)/category/queries/category.queries.ts
 init_prisma();
+
+// src/features/(core)/limitations/limitation.service.ts
+init_prisma();
+
+// src/features/(core)/limitations/avancado.ts
+var AVANCADED_LIMITATIONS = {
+  //ERP
+  products: 20,
+  categories: 20,
+  suppliers: 20,
+  movements: 20,
+  //CORE
+  users: 20,
+  //PMS
+  roadmaps: 5,
+  documents: 50,
+  uploads: 100,
+  //WFM
+  spaces: 10,
+  shifts: 10,
+  schedules: 10,
+  //CRM
+  contacts: 100,
+  quotes: 50,
+  pipelines: 10,
+  //AI
+  flows: 10,
+  flowExecutions: 10,
+  chatSessions: 10,
+  chatMessages: 100
+};
+
+// src/features/(core)/limitations/essencial.ts
+var ESSENTIAL_LIMITATIONS = {
+  //ERP
+  products: 2,
+  categories: 2,
+  suppliers: 2,
+  movements: 2,
+  //CORE
+  users: 10,
+  //PMS
+  roadmaps: 2,
+  documents: 20,
+  uploads: 50,
+  //WFM
+  spaces: 5,
+  shifts: 5,
+  schedules: 5,
+  //CRM
+  contacts: 50,
+  quotes: 50,
+  pipelines: 5,
+  //AI
+  flows: 5,
+  flowExecutions: 5,
+  chatSessions: 5,
+  chatMessages: 50
+};
+
+// src/features/(core)/limitations/profissional.ts
+var PROFISSIONAL_LIMITATIONS = {
+  //ERP
+  products: 50,
+  categories: 50,
+  suppliers: 50,
+  movements: 50,
+  //CORE
+  users: 50,
+  //PMS
+  roadmaps: 10,
+  documents: 100,
+  uploads: 200,
+  //WFM
+  spaces: 20,
+  shifts: 20,
+  schedules: 20,
+  //CRM
+  contacts: 200,
+  quotes: 100,
+  pipelines: 20,
+  //AI
+  flows: 20,
+  flowExecutions: 20,
+  chatSessions: 20,
+  chatMessages: 200
+};
+
+// src/features/(core)/limitations/limitation.service.ts
+var PLAN_LIMITATIONS = {
+  ESSENCIAL: ESSENTIAL_LIMITATIONS,
+  AVANCADO: AVANCADED_LIMITATIONS,
+  PROFISSIONAL: PROFISSIONAL_LIMITATIONS
+};
+var PLAN_NAME_MAP = {
+  ESSENCIAL: "ESSENCIAL",
+  ESSENTIAL: "ESSENCIAL",
+  BASIC: "ESSENCIAL",
+  FREE: "ESSENCIAL",
+  GRATUITO: "ESSENCIAL",
+  AVANCADO: "AVANCADO",
+  ADVANCED: "AVANCADO",
+  INTERMEDIARIO: "AVANCADO",
+  PROFESSIONAL: "PROFISSIONAL",
+  PROFISSIONAL: "PROFISSIONAL",
+  PRO: "PROFISSIONAL",
+  PREMIUM: "PROFISSIONAL"
+};
+var AVAILABLE_LIMITATIONS = [
+  ...Object.entries(ESSENTIAL_LIMITATIONS).map(([resource, limit]) => ({ resource, limit })),
+  ...Object.entries(AVANCADED_LIMITATIONS).map(([resource, limit]) => ({ resource, limit })),
+  ...Object.entries(PROFISSIONAL_LIMITATIONS).map(([resource, limit]) => ({ resource, limit }))
+];
+async function getLimitationByResource(resource, storeId) {
+  if (!isLimitationResource(resource)) {
+    return void 0;
+  }
+  const store = await db.store.findUnique({
+    where: { id: storeId },
+    include: {
+      subscription: {
+        select: {
+          id: true,
+          status: true,
+          currentPeriodEnd: true,
+          trialEndsAt: true,
+          polarCustomerId: true,
+          polarSubscriptionId: true,
+          polarProductId: true,
+          polarPlanName: true
+        }
+      }
+    }
+  });
+  if (!store) {
+    return void 0;
+  }
+  const planName = store.subscription?.polarPlanName ?? store.plan ?? "ESSENCIAL";
+  const normalizedPlan = normalizePlanName(planName);
+  const planLimitations = PLAN_LIMITATIONS[normalizedPlan];
+  const limit = planLimitations[resource];
+  if (typeof limit !== "number") {
+    return void 0;
+  }
+  return { resource, limit };
+}
+function isLimitationResource(value) {
+  return Object.prototype.hasOwnProperty.call(PLAN_LIMITATIONS.ESSENCIAL, value);
+}
+var DIACRITICS_REGEX = /\p{Diacritic}/gu;
+function normalizePlanName(plan) {
+  if (!plan) {
+    return "ESSENCIAL";
+  }
+  const normalized = removeDiacritics(plan).trim().toUpperCase().replace(/\s+/g, "");
+  if (PLAN_NAME_MAP[normalized]) {
+    return PLAN_NAME_MAP[normalized];
+  }
+  if (normalized.includes("PROF")) {
+    return "PROFISSIONAL";
+  }
+  if (normalized.includes("AVAN") || normalized.includes("ADVAN")) {
+    return "AVANCADO";
+  }
+  return "ESSENCIAL";
+}
+function removeDiacritics(value) {
+  return value.normalize("NFD").replace(DIACRITICS_REGEX, "");
+}
+
+// src/features/(erp)/category/queries/category.queries.ts
 var CategoryQueries = {
   async getById(id) {
     return await db.category.findUnique({
@@ -11162,6 +12132,21 @@ var CategoryQueries = {
         chartType: "line"
       }
     };
+  },
+  async checkLimitation(storeId) {
+    const { limit } = await getLimitationByResource("categories", storeId);
+    if (!limit) {
+      return false;
+    }
+    const count = await db.category.count({
+      where: {
+        storeId
+      }
+    });
+    if (count >= limit) {
+      return false;
+    }
+    return true;
   }
 };
 
@@ -11172,6 +12157,12 @@ var CategoryController = {
     try {
       const storeId = request.store?.id;
       const body = request.body;
+      const isLimitation = await CategoryQueries.checkLimitation(storeId);
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: "You have reached the maximum number of categories"
+        });
+      }
       const result = await CategoryCommands.create({
         ...body,
         storeId
@@ -13839,6 +14830,21 @@ var ProductQueries = {
       active,
       inactive
     };
+  },
+  async checkLimitation(storeId) {
+    const { limit } = await getLimitationByResource("products", storeId);
+    if (!limit) {
+      return false;
+    }
+    const count = await db.product.count({
+      where: {
+        storeId
+      }
+    });
+    if (count >= limit) {
+      return false;
+    }
+    return true;
   }
 };
 
@@ -14057,6 +15063,21 @@ var SupplierQueries = {
         }
       }
     });
+  },
+  async checkLimitation(storeId) {
+    const { limit } = await getLimitationByResource("suppliers", storeId);
+    if (!limit) {
+      return false;
+    }
+    const count = await db.supplier.count({
+      where: {
+        storeId
+      }
+    });
+    if (count >= limit) {
+      return false;
+    }
+    return true;
   }
 };
 
@@ -24730,20 +25751,22 @@ var ProductController = {
         referencePrice,
         categoryIds,
         supplierId,
-        storeId,
         stockMin,
         stockMax,
         alertPercentage,
         status
       } = request.body;
-      let finalStoreId = storeId;
-      if (!finalStoreId) {
-        if (!request.user?.id) {
-          return reply.status(401).send({
-            error: "Authentication required to determine store"
-          });
-        }
-        finalStoreId = request.store?.id;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store context required"
+        });
+      }
+      const isLimitation = await ProductQueries.checkLimitation(storeId);
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: "You have reached the maximum number of products"
+        });
       }
       const result = await ProductCommands.create({
         name,
@@ -24752,7 +25775,7 @@ var ProductController = {
         referencePrice,
         categoryIds,
         supplierId,
-        storeId: finalStoreId,
+        storeId,
         stockMin,
         stockMax,
         alertPercentage,
@@ -29894,6 +30917,31 @@ var StoreQueries = {
     const store = await db.store.findUnique({
       where: { id },
       include: {
+        subscription: {
+          select: {
+            id: true,
+            status: true,
+            currentPeriodEnd: true,
+            trialEndsAt: true,
+            polarCustomerId: true,
+            polarSubscriptionId: true,
+            polarProductId: true,
+            polarPlanName: true,
+            priceAmount: true,
+            priceInterval: true,
+            currency: true,
+            createdAt: true,
+            updatedAt: true,
+            invoices: {
+              select: {
+                id: true,
+                amount: true,
+                status: true,
+                createdAt: true
+              }
+            }
+          }
+        },
         owner: {
           select: {
             id: true,
@@ -29901,25 +30949,22 @@ var StoreQueries = {
             email: true
           }
         },
-        products: {
-          select: {
-            id: true,
-            name: true,
-            referencePrice: true,
-            status: true,
-            createdAt: true
-          }
-        },
         _count: {
           select: {
-            products: true,
             users: true
           }
         }
       }
     });
-    if (!store) {
-      throw new Error("Store not found");
+    if (store?.subscription?.polarProductId) {
+      const plan = await PolarQueries.getPlanById(store.subscription.polarProductId);
+      return {
+        ...store,
+        subscription: {
+          ...store.subscription,
+          plan
+        }
+      };
     }
     return store;
   }
@@ -30144,7 +31189,40 @@ var getStoreSchema = {
             email: { type: "string" }
           }
         },
-        products: { type: "array" },
+        subscription: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            status: { type: "string" },
+            currentPeriodEnd: { type: "string", format: "date-time" },
+            trialEndsAt: { type: "string", format: "date-time" },
+            polarCustomerId: { type: "string" },
+            polarSubscriptionId: { type: "string" },
+            polarProductId: { type: "string" },
+            polarPlanName: { type: "string" },
+            priceAmount: { type: "number" },
+            priceInterval: { type: "string" },
+            currency: { type: "string" },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+            invoices: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  amount: { type: "number" },
+                  status: { type: "string" },
+                  createdAt: { type: "string", format: "date-time" }
+                }
+              }
+            }
+          }
+        },
+        plan: {
+          type: "object",
+          nullable: true
+        },
         _count: {
           type: "object",
           properties: {
@@ -32291,768 +33369,6 @@ async function FolderRoutes(fastify2) {
     handler: FolderController.getStats
   });
 }
-
-// src/features/(core)/permission/commands/permission.commands.ts
-init_prisma();
-
-// src/features/(core)/permission/crm.ts
-var CRM_PERMISSIONS = [
-  //CONTACTS
-  {
-    resource: "CONTACTS",
-    action: "READ",
-    name: "Visualizar Contatos",
-    description: "Permite visualizar contatos"
-  },
-  {
-    resource: "CONTACTS",
-    action: "UPDATE",
-    name: "Atualizar Contatos",
-    description: "Permite atualizar contatos"
-  },
-  {
-    resource: "CONTACTS",
-    action: "CREATE",
-    name: "Criar Contatos",
-    description: "Permite criar contatos"
-  },
-  {
-    resource: "CONTACTS",
-    action: "DELETE",
-    name: "Deletar Contatos",
-    description: "Permite deletar contatos"
-  },
-  //QUOTES
-  {
-    resource: "QUOTES",
-    action: "READ",
-    name: "Visualizar Or\xE7amentos",
-    description: "Permite visualizar or\xE7amentos"
-  },
-  {
-    resource: "QUOTES",
-    action: "UPDATE",
-    name: "Atualizar Or\xE7amentos",
-    description: "Permite atualizar or\xE7amentos"
-  },
-  {
-    resource: "QUOTES",
-    action: "CREATE",
-    name: "Criar Or\xE7amentos",
-    description: "Permite criar or\xE7amentos"
-  },
-  {
-    resource: "QUOTES",
-    action: "DELETE",
-    name: "Deletar Or\xE7amentos",
-    description: "Permite deletar or\xE7amentos"
-  },
-  //PIPELINES
-  {
-    resource: "PIPELINES",
-    action: "READ",
-    name: "Visualizar Pipelines",
-    description: "Permite visualizar pipelines"
-  },
-  {
-    resource: "PIPELINES",
-    action: "UPDATE",
-    name: "Atualizar Pipelines",
-    description: "Permite atualizar pipelines"
-  },
-  {
-    resource: "PIPELINES",
-    action: "CREATE",
-    name: "Criar Pipelines",
-    description: "Permite criar pipelines"
-  },
-  {
-    resource: "PIPELINES",
-    action: "DELETE",
-    name: "Deletar Pipelines",
-    description: "Permite deletar pipelines"
-  },
-  //STAGES
-  {
-    resource: "STAGES",
-    action: "READ",
-    name: "Visualizar Etapas",
-    description: "Permite visualizar etapas"
-  },
-  {
-    resource: "STAGES",
-    action: "UPDATE",
-    name: "Atualizar Etapas",
-    description: "Permite atualizar etapas"
-  },
-  {
-    resource: "STAGES",
-    action: "CREATE",
-    name: "Criar Etapas",
-    description: "Permite criar etapas"
-  },
-  {
-    resource: "STAGES",
-    action: "DELETE",
-    name: "Deletar Etapas",
-    description: "Permite deletar etapas"
-  }
-];
-
-// src/features/(core)/permission/erp.ts
-var ERP_PERMISSIONS = [
-  //CATEGORIES
-  {
-    resource: "CATEGORIES",
-    action: "READ",
-    name: "Visualizar Categorias",
-    description: "Permite visualizar categorias"
-  },
-  {
-    resource: "CATEGORIES",
-    action: "UPDATE",
-    name: "Atualizar Categorias",
-    description: "Permite atualizar categorias"
-  },
-  {
-    resource: "CATEGORIES",
-    action: "CREATE",
-    name: "Criar Categorias",
-    description: "Permite criar categorias"
-  },
-  {
-    resource: "CATEGORIES",
-    action: "DELETE",
-    name: "Deletar Categorias",
-    description: "Permite deletar categorias"
-  },
-  //SUPPLIERS
-  {
-    resource: "SUPPLIERS",
-    action: "READ",
-    name: "Visualizar Fornecedores",
-    description: "Permite visualizar fornecedores"
-  },
-  {
-    resource: "SUPPLIERS",
-    action: "UPDATE",
-    name: "Atualizar Fornecedores",
-    description: "Permite atualizar fornecedores"
-  },
-  {
-    resource: "SUPPLIERS",
-    action: "CREATE",
-    name: "Criar Fornecedores",
-    description: "Permite criar fornecedores"
-  },
-  {
-    resource: "SUPPLIERS",
-    action: "DELETE",
-    name: "Deletar Fornecedores",
-    description: "Permite deletar fornecedores"
-  },
-  //MOVEMENTS
-  {
-    resource: "MOVEMENTS",
-    action: "READ",
-    name: "Visualizar Movimentos",
-    description: "Permite visualizar movimentos"
-  },
-  {
-    resource: "MOVEMENTS",
-    action: "UPDATE",
-    name: "Atualizar Movimentos",
-    description: "Permite atualizar movimentos"
-  },
-  {
-    resource: "MOVEMENTS",
-    action: "CREATE",
-    name: "Criar Movimentos",
-    description: "Permite criar movimentos"
-  },
-  {
-    resource: "MOVEMENTS",
-    action: "DELETE",
-    name: "Deletar Movimentos",
-    description: "Permite deletar movimentos"
-  },
-  // PRODUCTS
-  {
-    resource: "PRODUCTS",
-    action: "CREATE",
-    name: "Criar Produto",
-    description: "Permite criar novos produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "READ",
-    name: "Visualizar Produtos",
-    description: "Permite visualizar produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "UPDATE",
-    name: "Atualizar Produto",
-    description: "Permite atualizar produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "DELETE",
-    name: "Deletar Produto",
-    description: "Permite deletar produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "MANAGE",
-    name: "Gerenciar Produtos",
-    description: "Permite gerenciar completamente produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "IMPORT",
-    name: "Importar Produtos",
-    description: "Permite importar produtos"
-  },
-  {
-    resource: "PRODUCTS",
-    action: "EXPORT",
-    name: "Exportar Produtos",
-    description: "Permite exportar produtos"
-  },
-  // REPORTS
-  {
-    resource: "REPORTS",
-    action: "READ",
-    name: "Visualizar Relat\xF3rios",
-    description: "Permite visualizar relat\xF3rios"
-  },
-  {
-    resource: "REPORTS",
-    action: "EXPORT",
-    name: "Exportar Relat\xF3rios",
-    description: "Permite exportar relat\xF3rios"
-  }
-];
-
-// src/features/(core)/permission/pms.ts
-var PMS_PERMISSIONS = [
-  // DOCUMENTS
-  {
-    resource: "DOCUMENTS",
-    action: "READ",
-    name: "Visualizar Documentos",
-    description: "Permite visualizar documentos"
-  },
-  {
-    resource: "DOCUMENTS",
-    action: "UPDATE",
-    name: "Atualizar Documentos",
-    description: "Permite atualizar documentos"
-  },
-  {
-    resource: "DOCUMENTS",
-    action: "CREATE",
-    name: "Criar Documentos",
-    description: "Permite criar documentos"
-  },
-  {
-    resource: "DOCUMENTS",
-    action: "DELETE",
-    name: "Deletar Documentos",
-    description: "Permite deletar documentos"
-  },
-  //ROADMAP
-  {
-    resource: "ROADMAP",
-    action: "READ",
-    name: "Visualizar Roadmap",
-    description: "Permite visualizar roadmap"
-  },
-  {
-    resource: "ROADMAP",
-    action: "UPDATE",
-    name: "Atualizar Roadmap",
-    description: "Permite atualizar roadmap"
-  },
-  {
-    resource: "ROADMAP",
-    action: "CREATE",
-    name: "Criar Roadmap",
-    description: "Permite criar roadmap"
-  },
-  {
-    resource: "ROADMAP",
-    action: "DELETE",
-    name: "Deletar Roadmap",
-    description: "Permite deletar roadmap"
-  },
-  //MILESTONES
-  {
-    resource: "MILESTONES",
-    action: "READ",
-    name: "Visualizar Milestones",
-    description: "Permite visualizar milestones"
-  },
-  {
-    resource: "MILESTONES",
-    action: "UPDATE",
-    name: "Atualizar Milestones",
-    description: "Permite atualizar milestones"
-  },
-  {
-    resource: "MILESTONES",
-    action: "CREATE",
-    name: "Criar Milestones",
-    description: "Permite criar milestones"
-  },
-  {
-    resource: "MILESTONES",
-    action: "DELETE",
-    name: "Deletar Milestones",
-    description: "Permite deletar milestones"
-  },
-  //GALLERY
-  {
-    resource: "GALLERY",
-    action: "READ",
-    name: "Visualizar galeria",
-    description: "Permite visualizar galeria de imagens"
-  },
-  {
-    resource: "GALLERY",
-    action: "UPDATE",
-    name: "Atualizar galeria",
-    description: "Permite atualizar galeria de imagens"
-  },
-  {
-    resource: "GALLERY",
-    action: "CREATE",
-    name: "Criar galeria",
-    description: "Permite criar galeria de imagens"
-  },
-  {
-    resource: "GALLERY",
-    action: "DELETE",
-    name: "Deletar galeria",
-    description: "Permite deletar galeria de imagens"
-  }
-];
-
-// src/features/(core)/permission/wfm.ts
-var WFM_PERMISSIONS = [
-  // SHIFTS
-  {
-    resource: "SHIFTS",
-    action: "READ",
-    name: "Visualizar Escalas",
-    description: "Permite visualizar escalas"
-  },
-  {
-    resource: "SHIFTS",
-    action: "UPDATE",
-    name: "Atualizar Escala",
-    description: "Permite atualizar escalas"
-  },
-  {
-    resource: "SHIFTS",
-    action: "CREATE",
-    name: "Criar Escala",
-    description: "Permite criar escalas"
-  },
-  {
-    resource: "SHIFTS",
-    action: "DELETE",
-    name: "Deletar Escala",
-    description: "Permite deletar escalas"
-  },
-  // SPACES
-  {
-    resource: "SPACES",
-    action: "READ",
-    name: "Visualizar Espa\xE7os",
-    description: "Permite visualizar espa\xE7os"
-  },
-  {
-    resource: "SPACES",
-    action: "UPDATE",
-    name: "Atualizar Espa\xE7o",
-    description: "Permite atualizar espa\xE7os"
-  },
-  {
-    resource: "SPACES",
-    action: "CREATE",
-    name: "Criar Espa\xE7o",
-    description: "Permite criar espa\xE7os"
-  },
-  {
-    resource: "SPACES",
-    action: "DELETE",
-    name: "Deletar Espa\xE7o",
-    description: "Permite deletar espa\xE7os"
-  },
-  // SCHEDULES
-  {
-    resource: "SCHEDULES",
-    action: "READ",
-    name: "Visualizar Agendamentos",
-    description: "Permite visualizar agendamentos"
-  },
-  {
-    resource: "SCHEDULES",
-    action: "UPDATE",
-    name: "Atualizar Agendamento",
-    description: "Permite atualizar agendamentos"
-  },
-  {
-    resource: "SCHEDULES",
-    action: "CREATE",
-    name: "Criar Agendamento",
-    description: "Permite criar agendamentos"
-  },
-  {
-    resource: "SCHEDULES",
-    action: "DELETE",
-    name: "Deletar Agendamento",
-    description: "Permite deletar agendamentos"
-  },
-  // SCHEDULE OCCURRENCES
-  {
-    resource: "SCHEDULE_OCCURRENCES",
-    action: "READ",
-    name: "Visualizar Ocorr\xEAncias de Agendamento",
-    description: "Permite visualizar ocorr\xEAncias de agendamentos"
-  },
-  {
-    resource: "SCHEDULE_OCCURRENCES",
-    action: "UPDATE",
-    name: "Atualizar Ocorr\xEAncia de Agendamento",
-    description: "Permite atualizar ocorr\xEAncias de agendamentos"
-  },
-  {
-    resource: "SCHEDULE_OCCURRENCES",
-    action: "CREATE",
-    name: "Criar Ocorr\xEAncia de Agendamento",
-    description: "Permite criar ocorr\xEAncias de agendamentos"
-  },
-  {
-    resource: "SCHEDULE_OCCURRENCES",
-    action: "DELETE",
-    name: "Deletar Ocorr\xEAncia de Agendamento",
-    description: "Permite deletar ocorr\xEAncias de agendamentos"
-  }
-];
-
-// src/features/(core)/permission/core.ts
-var CORE_PERMISSIONS = [
-  // USERS
-  {
-    resource: "USERS",
-    action: "CREATE",
-    name: "Criar Usu\xE1rio",
-    description: "Permite criar novos usu\xE1rios"
-  },
-  {
-    resource: "USERS",
-    action: "READ",
-    name: "Visualizar Usu\xE1rios",
-    description: "Permite visualizar usu\xE1rios"
-  },
-  {
-    resource: "USERS",
-    action: "UPDATE",
-    name: "Atualizar Usu\xE1rio",
-    description: "Permite atualizar informa\xE7\xF5es de usu\xE1rios"
-  },
-  {
-    resource: "USERS",
-    action: "DELETE",
-    name: "Deletar Usu\xE1rio",
-    description: "Permite deletar usu\xE1rios"
-  },
-  {
-    resource: "USERS",
-    action: "MANAGE",
-    name: "Gerenciar Usu\xE1rios",
-    description: "Permite gerenciar completamente usu\xE1rios"
-  },
-  // STORES
-  {
-    resource: "STORES",
-    action: "CREATE",
-    name: "Criar Loja",
-    description: "Permite criar novas lojas"
-  },
-  {
-    resource: "STORES",
-    action: "READ",
-    name: "Visualizar Lojas",
-    description: "Permite visualizar lojas"
-  },
-  {
-    resource: "STORES",
-    action: "UPDATE",
-    name: "Atualizar Loja",
-    description: "Permite atualizar informa\xE7\xF5es da loja"
-  },
-  {
-    resource: "STORES",
-    action: "DELETE",
-    name: "Deletar Loja",
-    description: "Permite deletar lojas"
-  },
-  {
-    resource: "STORES",
-    action: "MANAGE",
-    name: "Gerenciar Lojas",
-    description: "Permite gerenciar completamente lojas"
-  },
-  // PERMISSIONS
-  {
-    resource: "PERMISSIONS",
-    action: "READ",
-    name: "Visualizar Permiss\xF5es",
-    description: "Permite visualizar permiss\xF5es de usu\xE1rios"
-  },
-  {
-    resource: "PERMISSIONS",
-    action: "UPDATE",
-    name: "Gerenciar Permiss\xF5es",
-    description: "Permite atribuir e remover permiss\xF5es de usu\xE1rios"
-  },
-  {
-    resource: "PERMISSIONS",
-    action: "ASSIGN",
-    name: "Atribuir Permiss\xF5es",
-    description: "Permite atribuir permiss\xF5es a usu\xE1rios"
-  },
-  {
-    resource: "PERMISSIONS",
-    action: "REMOVE",
-    name: "Remover Permiss\xF5es",
-    description: "Permite remover permiss\xF5es de usu\xE1rios"
-  },
-  // SETTINGS
-  {
-    resource: "SETTINGS",
-    action: "READ",
-    name: "Visualizar Configura\xE7\xF5es",
-    description: "Permite visualizar configura\xE7\xF5es"
-  },
-  {
-    resource: "SETTINGS",
-    action: "UPDATE",
-    name: "Atualizar Configura\xE7\xF5es",
-    description: "Permite atualizar configura\xE7\xF5es"
-  },
-  {
-    resource: "SETTINGS",
-    action: "MANAGE",
-    name: "Gerenciar Configura\xE7\xF5es",
-    description: "Permite gerenciar completamente configura\xE7\xF5es"
-  }
-];
-
-// src/features/(core)/permission/permission.constants.ts
-var AVAILABLE_PERMISSIONS = [
-  ...CRM_PERMISSIONS,
-  ...ERP_PERMISSIONS,
-  ...PMS_PERMISSIONS,
-  ...WFM_PERMISSIONS,
-  ...CORE_PERMISSIONS
-];
-function getPermissionDefinition(resource, action) {
-  return AVAILABLE_PERMISSIONS.find((p) => p.resource === resource && p.action === action);
-}
-function getAvailableResources() {
-  const resources = /* @__PURE__ */ new Set();
-  for (const p of AVAILABLE_PERMISSIONS) {
-    resources.add(p.resource);
-  }
-  return Array.from(resources).sort();
-}
-function getAvailableActions() {
-  const actions = /* @__PURE__ */ new Set();
-  for (const p of AVAILABLE_PERMISSIONS) {
-    actions.add(p.action);
-  }
-  return Array.from(actions).sort();
-}
-function getPermissionsByResource(resource) {
-  return AVAILABLE_PERMISSIONS.filter((p) => p.resource === resource);
-}
-function getPermissionsByAction(action) {
-  return AVAILABLE_PERMISSIONS.filter((p) => p.action === action);
-}
-
-// src/features/(core)/permission/commands/permission.commands.ts
-var PermissionCommands = {
-  // Atribuir permissões a usuário
-  async assignToUser(data) {
-    const user = await db.user.findUnique({
-      where: { id: data.userId }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const invalidPermissions = data.permissions.filter(
-      (p) => !getPermissionDefinition(p.resource, p.action)
-    );
-    if (invalidPermissions.length > 0) {
-      throw new Error(
-        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
-      );
-    }
-    const existingPermissions = await db.userPermission.findMany({
-      where: {
-        userId: data.userId,
-        OR: data.permissions.map((p) => ({
-          resource: p.resource,
-          action: p.action
-        }))
-      }
-    });
-    const existingMap = new Map(
-      existingPermissions.map((ep) => [`${ep.resource}:${ep.action}`, ep])
-    );
-    const newPermissions = data.permissions.filter(
-      (p) => !existingMap.has(`${p.resource}:${p.action}`)
-    );
-    if (newPermissions.length === 0) {
-      return {
-        message: "All permissions already assigned",
-        assigned: 0
-      };
-    }
-    await db.userPermission.createMany({
-      data: newPermissions.map((p) => ({
-        userId: data.userId,
-        resource: p.resource,
-        action: p.action,
-        scope: data.scope || null,
-        grant: true,
-        expiresAt: data.expiresAt || null,
-        conditions: data.conditions ? JSON.stringify(data.conditions) : null
-      })),
-      skipDuplicates: true
-    });
-    return {
-      message: "Permissions assigned successfully",
-      assigned: newPermissions.length,
-      permissions: newPermissions.map((p) => ({
-        resource: p.resource,
-        action: p.action
-      }))
-    };
-  },
-  // Remover permissões de usuário
-  async removeFromUser(data) {
-    const user = await db.user.findUnique({
-      where: { id: data.userId }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const result = await db.userPermission.deleteMany({
-      where: {
-        userId: data.userId,
-        OR: data.permissions.map((p) => ({
-          resource: p.resource,
-          action: p.action
-        }))
-      }
-    });
-    return {
-      message: "Permissions removed successfully",
-      removed: result.count
-    };
-  },
-  // Remover todas as permissões de um usuário
-  async removeAllFromUser(userId) {
-    const user = await db.user.findUnique({
-      where: { id: userId }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const result = await db.userPermission.deleteMany({
-      where: { userId }
-    });
-    return {
-      message: "All permissions removed successfully",
-      removed: result.count
-    };
-  },
-  // Sincronizar permissões de usuário (substitui todas)
-  async syncUserPermissions(data) {
-    const user = await db.user.findUnique({
-      where: { id: data.userId }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const invalidPermissions = data.permissions.filter(
-      (p) => !getPermissionDefinition(p.resource, p.action)
-    );
-    if (invalidPermissions.length > 0) {
-      throw new Error(
-        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
-      );
-    }
-    return await db.$transaction(async (tx) => {
-      await tx.userPermission.deleteMany({
-        where: { userId: data.userId }
-      });
-      if (data.permissions.length > 0) {
-        await tx.userPermission.createMany({
-          data: data.permissions.map((p) => ({
-            userId: data.userId,
-            resource: p.resource,
-            action: p.action,
-            scope: data.scope || null,
-            grant: true,
-            expiresAt: data.expiresAt || null,
-            conditions: data.conditions ? JSON.stringify(data.conditions) : null
-          }))
-        });
-      }
-      return {
-        message: "Permissions synchronized successfully",
-        total: data.permissions.length,
-        permissions: data.permissions
-      };
-    });
-  },
-  // Atualizar uma permissão específica de usuário
-  async updateUserPermission(userId, resource, action, data) {
-    const user = await db.user.findUnique({
-      where: { id: userId }
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const permission = await db.userPermission.findFirst({
-      where: {
-        userId,
-        resource,
-        action
-      }
-    });
-    if (!permission) {
-      throw new Error("Permission not found for this user");
-    }
-    return await db.userPermission.update({
-      where: {
-        id: permission.id
-      },
-      data: {
-        grant: data.grant !== void 0 ? data.grant : permission.grant,
-        scope: data.scope !== void 0 ? data.scope : permission.scope,
-        expiresAt: data.expiresAt !== void 0 ? data.expiresAt : permission.expiresAt,
-        conditions: data.conditions !== void 0 ? JSON.stringify(data.conditions) : permission.conditions
-      }
-    });
-  }
-};
 
 // src/features/(core)/permission/queries/permission.query.ts
 init_prisma();
@@ -35797,8 +36113,19 @@ var SupplierController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
     try {
-      const { corporateName, cnpj, tradeName, cep, city, state, address, storeId, responsibles } = request.body;
-      const contextStoreId = request.store?.id;
+      const { corporateName, cnpj, tradeName, cep, city, state, address, responsibles } = request.body;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store context required"
+        });
+      }
+      const isLimitation = await SupplierQueries.checkLimitation(storeId);
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: "You have reached the maximum number of suppliers"
+        });
+      }
       const result = await SupplierCommands.create({
         corporateName,
         cnpj,
@@ -35807,7 +36134,7 @@ var SupplierController = {
         city,
         state,
         address,
-        storeId: storeId || contextStoreId,
+        storeId,
         responsibles
       });
       return reply.status(201).send(result);

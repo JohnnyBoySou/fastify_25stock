@@ -13,23 +13,25 @@ export const ProductController = {
         referencePrice,
         categoryIds,
         supplierId,
-        storeId,
         stockMin,
         stockMax,
         alertPercentage,
         status,
       } = request.body as any
 
-      // Se storeId não foi enviado, buscar a loja do usuário autenticado
-      let finalStoreId = storeId
-      if (!finalStoreId) {
-        if (!request.user?.id) {
-          return reply.status(401).send({
-            error: 'Authentication required to determine store',
-          })
-        }
+      const storeId = request.store?.id;
 
-        finalStoreId = request.store?.id
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store context required',
+        })
+      }
+      const isLimitation = await ProductQueries.checkLimitation(storeId)
+
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: 'You have reached the maximum number of products',
+        })
       }
 
       const result = await ProductCommands.create({
@@ -39,7 +41,7 @@ export const ProductController = {
         referencePrice,
         categoryIds,
         supplierId,
-        storeId: finalStoreId,
+        storeId,
         stockMin,
         stockMax,
         alertPercentage,

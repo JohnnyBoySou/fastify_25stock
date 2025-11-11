@@ -9,6 +9,14 @@ export const CategoryController = {
       const storeId = request.store?.id
       const body = request.body as any
 
+      const isLimitation = await CategoryQueries.checkLimitation(storeId)
+
+      if (!isLimitation) {
+        return reply.status(400).send({
+          error: 'You have reached the maximum number of categories',
+        })
+      }
+
       const result = await CategoryCommands.create({
         ...body,
         storeId,

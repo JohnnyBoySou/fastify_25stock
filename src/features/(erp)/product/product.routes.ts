@@ -58,13 +58,11 @@ export async function ProductRoutes(fastify: FastifyInstance) {
         required: ['q'],
       },
     },
-
     handler: ProductController.search,
   })
 
   fastify.post('/bulk-delete', {
     schema: ProductSchemas.bulkDelete,
-
     handler: ProductController.bulkDelete,
   })
 

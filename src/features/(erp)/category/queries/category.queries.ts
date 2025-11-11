@@ -1,4 +1,5 @@
 import { db } from '@/plugins/prisma'
+import { getLimitationByResource } from '../../../(core)/limitations/limitation.service'
 
 export const CategoryQueries = {
   async getById(id: string) {
@@ -1065,4 +1066,26 @@ export const CategoryQueries = {
       },
     }
   },
+
+  async checkLimitation(storeId: string) {
+    const { limit } = await getLimitationByResource('categories', storeId)
+
+    if (!limit) {
+      return false
+    }
+
+    const count = await db.category.count({
+      where: {
+        storeId,
+      },
+    })
+
+    if (count >= limit) {
+      return false
+    }
+
+    return true
+  },
+
+ 
 }
