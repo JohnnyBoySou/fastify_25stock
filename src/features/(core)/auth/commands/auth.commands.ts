@@ -8,8 +8,71 @@ import type { JWTPayload } from '../auth.interfaces'
 import { db } from '@/plugins/prisma'
 import { EmailService } from '@/services/email/email.service'
 import { OAuth2Client } from 'google-auth-library'
+import { StoreCommands } from '@/features/(core)/store/commands/store.commands'
 
 const scrypt = promisify(crypto.scrypt)
+
+const storeSelect = {
+  id: true,
+  name: true,
+  cnpj: true,
+  email: true,
+  phone: true,
+  status: true,
+  cep: true,
+  city: true,
+  state: true,
+  address: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+type BasicUserForStore = {
+  id: string
+  name?: string | null
+  email: string
+  storeId?: string | null
+}
+
+async function ensureUserStore(user: BasicUserForStore) {
+  if (user.storeId) {
+    const existingStore = await db.store.findUnique({
+      where: { id: user.storeId },
+      select: storeSelect,
+    })
+
+    return {
+      store: existingStore,
+      created: false,
+      storeId: user.storeId,
+    }
+  }
+
+  const defaultStore = await StoreCommands.defaultStore({
+    ownerId: user.id,
+    ownerName: user.name,
+    ownerEmail: user.email,
+  })
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      storeId: defaultStore.id,
+      isOwner: true,
+    },
+  })
+
+  const store = await db.store.findUnique({
+    where: { id: defaultStore.id },
+    select: storeSelect,
+  })
+
+  return {
+    store,
+    created: true,
+    storeId: defaultStore.id,
+  }
+}
 
 async function hashPassword(password: string): Promise<string> {
   // Usar bcrypt para manter compatibilidade com user.commands.ts
@@ -92,7 +155,10 @@ export const AuthCommands = {
       console.error('Failed to send verification email:', error)
     }
 
-    return user
+    return {
+      ...user,
+      storeId: user.storeId || null,
+    }
   },
 
   async login(data: { email: string; password: string }) {
@@ -132,32 +198,38 @@ export const AuthCommands = {
       throw new Error('Email verification required')
     }
 
+    let storeResult: {
+      store: any
+      storeId: string | null
+      created: boolean
+    }
+
+    try {
+      storeResult = await ensureUserStore({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        storeId: user.storeId,
+      })
+    } catch (error) {
+      console.error('Failed to ensure store for login user:', error)
+      storeResult = {
+        store: user.storeId
+          ? await db.store.findUnique({ where: { id: user.storeId }, select: storeSelect })
+          : null,
+        storeId: user.storeId || null,
+        created: false,
+      }
+    }
+
     // Update last login
+    const lastLoginAt = new Date()
     await db.user.update({
       where: { id: user.id },
-      data: { lastLoginAt: new Date() },
+      data: { lastLoginAt },
     })
 
-    // Get user's store through storeId
-    const store = user.storeId
-      ? await db.store.findUnique({
-          where: { id: user.storeId },
-          select: {
-            id: true,
-            name: true,
-            cnpj: true,
-            email: true,
-            phone: true,
-            status: true,
-            cep: true,
-            city: true,
-            state: true,
-            address: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        })
-      : null
+    const store = storeResult.store
 
     // Generate JWT token (no roles in new schema - permissions are granular)
     const token = AuthCommands.generateJWT({
@@ -171,8 +243,9 @@ export const AuthCommands = {
         name: user.name,
         email: user.email,
         emailVerified: user.emailVerified,
-        lastLoginAt: new Date(),
-        storeId: user.storeId || null,
+        lastLoginAt,
+        storeId: storeResult.storeId,
+        newStore: storeResult.created,
       },
       store: store || undefined,
       token,
@@ -480,6 +553,7 @@ export const AuthCommands = {
 
       // Se usuário não existe, criar novo usuário
       if (!user) {
+        const lastLoginAt = new Date()
         // Create user without store
         user = await db.user.create({
           data: {
@@ -489,15 +563,16 @@ export const AuthCommands = {
             emailVerified: true, // Google já verifica o email
             status: true,
             isOwner: false,
-            lastLoginAt: new Date(),
+            lastLoginAt,
           },
         })
 
       } else {
         // Se usuário existe, atualizar último login
-        await db.user.update({
+        const lastLoginAt = new Date()
+        user = await db.user.update({
           where: { id: user.id },
-          data: { lastLoginAt: new Date() },
+          data: { lastLoginAt },
         })
       }
 
@@ -506,25 +581,29 @@ export const AuthCommands = {
         throw new Error('User account is disabled')
       }
 
-      const store = user.storeId
-        ? await db.store.findUnique({
-            where: { id: user.storeId },
-            select: {
-              id: true,
-              name: true,
-              cnpj: true,
-              email: true,
-              phone: true,
-              status: true,
-              cep: true,
-              city: true,
-              state: true,
-              address: true,
-              createdAt: true,
-              updatedAt: true,
-            },
-          })
-        : null
+      let storeResult: {
+        store: any
+        storeId: string | null
+        created: boolean
+      }
+
+      try {
+        storeResult = await ensureUserStore({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          storeId: user.storeId,
+        })
+      } catch (error) {
+        console.error('Failed to ensure store for Google login user:', error)
+        storeResult = {
+          store: user.storeId
+            ? await db.store.findUnique({ where: { id: user.storeId }, select: storeSelect })
+            : null,
+          storeId: user.storeId || null,
+          created: false,
+        }
+      }
 
       const jwtToken = AuthCommands.generateJWT({
         userId: user.id,
@@ -538,9 +617,10 @@ export const AuthCommands = {
           email: user.email,
           emailVerified: user.emailVerified,
           lastLoginAt: user.lastLoginAt,
-          storeId: user.storeId || null,
+          storeId: storeResult.storeId,
+          newStore: storeResult.created,
         },
-        store: store || undefined,
+        store: storeResult.store || undefined,
         token: jwtToken,
       }
     } catch (error: any) {

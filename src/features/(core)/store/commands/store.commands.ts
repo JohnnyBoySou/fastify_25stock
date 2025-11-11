@@ -1,6 +1,21 @@
 import { PolarCommands } from '@/features/polar/commands/polar.commands'
 import { PolarQueries } from '@/features/polar/queries/polar.queries'
 import { db } from '@/plugins/prisma'
+
+function generatePlaceholderCnpj(seed: string) {
+  const numericPart = seed.replace(/\D/g, '')
+  if (numericPart.length >= 14) {
+    return numericPart.slice(0, 14)
+  }
+
+  const asciiDigits = seed
+    .split('')
+    .map((char) => (char.charCodeAt(0) % 10).toString())
+    .join('')
+
+  const combined = (numericPart + asciiDigits).padEnd(14, '0')
+  return combined.slice(0, 14)
+}
 export const StoreCommands = {
   async create(data: {
     ownerId: string
@@ -196,5 +211,36 @@ export const StoreCommands = {
     return await db.store.delete({
       where: { id },
     })
+  },
+
+  async defaultStore(data: { ownerId: string; ownerName?: string | null; ownerEmail?: string | null }) {
+    const placeholderName = data.ownerName ? `Loja de ${data.ownerName}` : 'Minha Loja'
+    const attempts = 3
+    let lastError: any = null
+
+    for (let attempt = 0; attempt < attempts; attempt++) {
+      const seed = attempt === 0 ? data.ownerId : `${data.ownerId}-${Date.now()}-${attempt}`
+      const placeholderCnpj = generatePlaceholderCnpj(seed)
+
+      try {
+        const store = await StoreCommands.create({
+          ownerId: data.ownerId,
+          name: placeholderName,
+          cnpj: placeholderCnpj,
+          email: data.ownerEmail || undefined,
+          status: true,
+        })
+
+        return store
+      } catch (error: any) {
+        if (error?.message === 'CNPJ already exists') {
+          lastError = error
+          continue
+        }
+        throw error
+      }
+    }
+
+    throw lastError || new Error('Failed to create default store')
   },
 }

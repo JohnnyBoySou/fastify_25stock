@@ -18,6 +18,8 @@ export interface RegisterResponse {
     phone: string
     emailVerified: boolean
     createdAt: Date
+    storeId?: string | null
+    newStore?: boolean
   }
   message: string
 }
@@ -37,6 +39,8 @@ export interface LoginResponse {
     email: string
     emailVerified: boolean
     lastLoginAt: Date
+    storeId?: string | null
+    newStore?: boolean
   }
   store?: {
     id: string
@@ -213,6 +217,8 @@ export interface GoogleLoginResponse {
     email: string
     emailVerified: boolean
     lastLoginAt: Date | null
+    storeId?: string | null
+    newStore?: boolean
   }
   store?: {
     id: string

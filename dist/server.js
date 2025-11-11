@@ -8190,7 +8190,568 @@ var EmailService = {
 
 // src/features/(core)/auth/commands/auth.commands.ts
 var import_google_auth_library = require("google-auth-library");
+
+// src/plugins/polar.ts
+var import_sdk = require("@polar-sh/sdk");
+var polar = new import_sdk.Polar({
+  accessToken: process.env.POLAR_ACCESS_KEY,
+  server: "sandbox"
+  //"sandbox") as "production" | "sandbox"
+});
+
+// src/features/polar/commands/polar.commands.ts
+init_prisma();
+var PolarCommands = {
+  async checkout(data) {
+    try {
+      const checkout = await polar.checkouts.create({
+        customerBillingAddress: {
+          country: "BR"
+        },
+        customerEmail: data.customer.email,
+        customerName: data.customer.name,
+        products: [data.productId]
+      });
+      if (!checkout) {
+        throw new Error("Failed to create checkout");
+      }
+      return checkout;
+    } catch (error) {
+      console.error("Polar checkout error:", error);
+      throw new Error("Failed to create checkout");
+    }
+  },
+  async webhook(event) {
+    try {
+      const type = event?.type || "";
+      const data = event?.data || {};
+      const findOrCreateSubscriptionByUserId = async (userId) => {
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: {
+            storeId: true,
+            ownedStore: {
+              select: {
+                id: true
+              }
+            }
+          }
+        });
+        if (!user) return null;
+        const storeId = user.storeId || user.ownedStore?.id;
+        if (!storeId) return null;
+        let subscription3 = await db.subscription.findUnique({ where: { storeId } });
+        if (!subscription3) {
+          subscription3 = await db.subscription.create({
+            data: {
+              storeId,
+              status: "ACTIVE"
+            }
+          });
+        }
+        return subscription3;
+      };
+      const findSubscriptionByPolarOrEmail = async (opts) => {
+        const { polarCustomerId, email } = opts;
+        if (polarCustomerId) {
+          const byPolar = await db.subscription.findUnique({
+            where: { polarCustomerId }
+          });
+          if (byPolar) return byPolar;
+        }
+        if (email) {
+          const user = await db.user.findFirst({
+            where: { email },
+            select: {
+              id: true,
+              storeId: true,
+              ownedStore: {
+                select: { id: true }
+              }
+            }
+          });
+          if (user) {
+            const storeId = user.storeId || user.ownedStore?.id;
+            if (storeId) {
+              const subscription3 = await db.subscription.findUnique({ where: { storeId } });
+              if (subscription3) return subscription3;
+              return await findOrCreateSubscriptionByUserId(user.id);
+            }
+          }
+        }
+        return null;
+      };
+      const setSubscriptionPlanAndStatus = async (subscriptionId, polarProductId, status, renewalDate, trialEndsAt) => {
+        return await db.subscription.update({
+          where: { id: subscriptionId },
+          data: {
+            polarProductId: polarProductId || null,
+            status,
+            currentPeriodEnd: renewalDate || null,
+            trialEndsAt: trialEndsAt || null
+          }
+        });
+      };
+      const upsertInvoice = async (subscriptionId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
+        if (!amountCents && !polarInvoiceId) return null;
+        const amount = amountCents ? Number(amountCents) / 100 : 0;
+        const existing = polarInvoiceId ? await db.invoice.findUnique({ where: { polarInvoiceId } }) : null;
+        if (existing) {
+          return await db.invoice.update({
+            where: { id: existing.id },
+            data: {
+              status,
+              paymentDate: paymentDate || existing.paymentDate || null
+            }
+          });
+        }
+        return await db.invoice.create({
+          data: {
+            subscriptionId,
+            amount,
+            status,
+            polarInvoiceId: polarInvoiceId || null,
+            paymentDate: paymentDate || null
+          }
+        });
+      };
+      const checkout = data?.checkout_session;
+      const subscription2 = data?.subscription;
+      switch (type) {
+        case "checkout.succeeded": {
+          const userIdFromMetadata = checkout?.metadata?.user_id;
+          const polarCustomerId = checkout?.customer_id;
+          const polarSubscriptionId = checkout?.subscription_id;
+          if (userIdFromMetadata) {
+            const subscription3 = await findOrCreateSubscriptionByUserId(userIdFromMetadata);
+            if (!subscription3) break;
+            await db.subscription.update({
+              where: { id: subscription3.id },
+              data: {
+                polarCustomerId: polarCustomerId || subscription3.polarCustomerId || null,
+                polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
+              }
+            });
+          } else if (polarCustomerId) {
+            const subscription3 = await findSubscriptionByPolarOrEmail({
+              polarCustomerId,
+              email: null
+            });
+            if (subscription3) {
+              await db.subscription.update({
+                where: { id: subscription3.id },
+                data: {
+                  polarCustomerId,
+                  polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
+                }
+              });
+            }
+          }
+          break;
+        }
+        case "subscription.created":
+        case "subscription.updated":
+        case "subscription.canceled": {
+          const polarCustomerId = subscription2?.customer_id;
+          const polarSubscriptionId = subscription2?.id;
+          if (polarCustomerId || polarSubscriptionId) {
+            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null });
+            if (sub) {
+              await db.subscription.update({
+                where: { id: sub.id },
+                data: {
+                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null
+                }
+              });
+            }
+          }
+          break;
+        }
+        // === NOVOS EVENTOS DE ORDER ===
+        case "order.created":
+        case "order.updated": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const productId = order?.product_id || order?.productId;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (sub) {
+            await db.subscription.update({
+              where: { id: sub.id },
+              data: {
+                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                polarProductId: productId || sub.polarProductId || null
+              }
+            });
+          }
+          break;
+        }
+        case "order.paid": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const productId = order?.product_id || order?.productId;
+          const amountCents = order?.amount || order?.amount_cents || order?.total_amount_cents;
+          const invoiceId = order?.invoice_id || order?.invoiceId;
+          const currentPeriodEndIso = order?.current_period_end;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null;
+          await setSubscriptionPlanAndStatus(sub.id, productId || null, "ACTIVE", renewalDate, null);
+          await upsertInvoice(sub.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
+          break;
+        }
+        case "order.refunded": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const invoiceId = order?.invoice_id || order?.invoiceId;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, "INACTIVE", null, null);
+          await upsertInvoice(sub.id, null, invoiceId || null, "REFUNDED", null);
+          break;
+        }
+        case "customer.state_changed": {
+          const email = data?.email;
+          const polarCustomerId = data?.id;
+          const activeSub = Array.isArray(data?.active_subscriptions) && data.active_subscriptions.length > 0 ? data.active_subscriptions[0] : null;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          const productId = activeSub?.product_id;
+          const statusMap = {
+            active: "ACTIVE",
+            trialing: "TRIAL",
+            canceled: "CANCELLED",
+            paused: "INACTIVE",
+            past_due: "PAST_DUE",
+            expired: "EXPIRED"
+          };
+          const subStatus = activeSub?.status;
+          const mappedStatus = subStatus && statusMap[subStatus] ? statusMap[subStatus] : "ACTIVE";
+          const renewalDate = activeSub?.current_period_end ? new Date(activeSub.current_period_end) : null;
+          const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null;
+          await db.subscription.update({
+            where: { id: sub.id },
+            data: {
+              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null
+            }
+          });
+          await setSubscriptionPlanAndStatus(
+            sub.id,
+            productId || null,
+            mappedStatus,
+            renewalDate,
+            trialEndsAt
+          );
+          break;
+        }
+        default:
+          break;
+      }
+      return { success: true };
+    } catch (error) {
+      console.error("Polar webhook error:", error);
+      return { success: false, error: error?.message || "Internal error" };
+    }
+  },
+  async createSubscription(data) {
+    try {
+      const subscription2 = await polar.subscriptions.create({
+        customerId: data.customerId,
+        productId: data.productId
+      });
+      return subscription2;
+    } catch (error) {
+      console.error("Polar create subscription error:", error);
+      return null;
+    }
+  },
+  async createCustomer(data) {
+    try {
+      const customer = await polar.customers.create({
+        email: data.email,
+        name: data.name,
+        externalId: data.externalId
+        //organizationId: process.env.POLAR_ORGANIZATION_ID as string,
+      });
+      return customer;
+    } catch (error) {
+      console.error("Polar create customer error:", error);
+      return null;
+    }
+  }
+};
+
+// src/features/polar/queries/polar.queries.ts
+var PolarQueries = {
+  async list({ page, limit }) {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID,
+        page,
+        limit
+      });
+      return {
+        items: result.items,
+        pagination: {
+          page,
+          limit
+        }
+      };
+    } catch (error) {
+      console.error("Polar products list error:", error);
+      throw new Error(`Failed to fetch products: ${error}`);
+    }
+  },
+  async getFreePlan() {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID,
+        page: 1,
+        limit: 10
+      });
+      console.log(result);
+      const freeProduct = result.items.find(
+        (product) => product.prices.some((price) => price.amountType === "free")
+      );
+      return freeProduct || null;
+    } catch (error) {
+      console.error("Polar get free plan error:", error);
+      return null;
+    }
+  }
+};
+
+// src/features/(core)/store/commands/store.commands.ts
+init_prisma();
+function generatePlaceholderCnpj(seed) {
+  const numericPart = seed.replace(/\D/g, "");
+  if (numericPart.length >= 14) {
+    return numericPart.slice(0, 14);
+  }
+  const asciiDigits = seed.split("").map((char) => (char.charCodeAt(0) % 10).toString()).join("");
+  const combined = (numericPart + asciiDigits).padEnd(14, "0");
+  return combined.slice(0, 14);
+}
+var StoreCommands = {
+  async create(data) {
+    const existingStore = await db.store.findUnique({
+      where: { cnpj: data.cnpj }
+    });
+    if (existingStore) {
+      throw new Error("CNPJ already exists");
+    }
+    const owner = await db.user.findUnique({
+      where: { id: data.ownerId }
+    });
+    if (!owner) {
+      throw new Error("Owner not found");
+    }
+    const storeInclude = {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      }
+    };
+    const store = await db.store.create({
+      data: {
+        ownerId: data.ownerId,
+        name: data.name,
+        cnpj: data.cnpj,
+        email: data.email || null,
+        phone: data.phone || null,
+        cep: data.cep || null,
+        city: data.city || null,
+        state: data.state || null,
+        address: data.address || null,
+        status: data.status !== void 0 ? data.status : true
+      },
+      include: storeInclude
+    });
+    let storeWithPlan = store;
+    try {
+      const freePlan = await PolarQueries.getFreePlan();
+      if (freePlan) {
+        const priceInterval = freePlan.recurringInterval === "month" ? "MONTHLY" : freePlan.recurringInterval === "year" ? "YEARLY" : null;
+        let polarCustomer = null;
+        if (owner.email) {
+          polarCustomer = await PolarCommands.createCustomer({
+            email: owner.email,
+            name: owner.name || "",
+            externalId: owner.id
+          });
+        }
+        let polarSubscription = null;
+        if (polarCustomer?.id) {
+          polarSubscription = await PolarCommands.createSubscription({
+            customerId: polarCustomer.id,
+            productId: freePlan.id
+          });
+        }
+        await db.subscription.create({
+          data: {
+            storeId: store.id,
+            status: "ACTIVE",
+            polarCustomerId: polarCustomer?.id || null,
+            polarSubscriptionId: polarSubscription?.id || null,
+            polarProductId: freePlan.id,
+            polarPlanName: freePlan.name,
+            priceAmount: 0,
+            ...priceInterval ? { priceInterval } : {},
+            currency: "BRL"
+          }
+        });
+        storeWithPlan = await db.store.update({
+          where: { id: store.id },
+          data: { plan: freePlan.name },
+          include: storeInclude
+        });
+      } else {
+        console.warn("Nenhum plano default encontrado no Polar");
+      }
+    } catch (error) {
+      console.error("Falha ao atribuir plano default \xE0 loja:", error);
+    }
+    return storeWithPlan;
+  },
+  async update(id, data) {
+    const existingStore = await db.store.findUnique({
+      where: { id }
+    });
+    if (!existingStore) {
+      throw new Error("Store not found");
+    }
+    if (data.cnpj && data.cnpj !== existingStore.cnpj) {
+      const cnpjExists = await db.store.findUnique({
+        where: { cnpj: data.cnpj }
+      });
+      if (cnpjExists) {
+        throw new Error("CNPJ already exists");
+      }
+    }
+    return await db.store.update({
+      where: { id },
+      data: {
+        ...data,
+        email: data.email === "" ? null : data.email,
+        phone: data.phone === "" ? null : data.phone,
+        cep: data.cep === "" ? null : data.cep,
+        city: data.city === "" ? null : data.city,
+        state: data.state === "" ? null : data.state,
+        address: data.address === "" ? null : data.address
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async delete(id) {
+    const existingStore = await db.store.findUnique({
+      where: { id }
+    });
+    if (!existingStore) {
+      throw new Error("Store not found");
+    }
+    const productCount = await db.product.count({
+      where: { storeId: id }
+    });
+    if (productCount > 0) {
+      throw new Error("Cannot delete store with existing products");
+    }
+    return await db.store.delete({
+      where: { id }
+    });
+  },
+  async defaultStore(data) {
+    const placeholderName = data.ownerName ? `Loja de ${data.ownerName}` : "Minha Loja";
+    const attempts = 3;
+    let lastError = null;
+    for (let attempt = 0; attempt < attempts; attempt++) {
+      const seed = attempt === 0 ? data.ownerId : `${data.ownerId}-${Date.now()}-${attempt}`;
+      const placeholderCnpj = generatePlaceholderCnpj(seed);
+      try {
+        const store = await StoreCommands.create({
+          ownerId: data.ownerId,
+          name: placeholderName,
+          cnpj: placeholderCnpj,
+          email: data.ownerEmail || void 0,
+          status: true
+        });
+        return store;
+      } catch (error) {
+        if (error?.message === "CNPJ already exists") {
+          lastError = error;
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw lastError || new Error("Failed to create default store");
+  }
+};
+
+// src/features/(core)/auth/commands/auth.commands.ts
 var scrypt = (0, import_node_util.promisify)(import_node_crypto.default.scrypt);
+var storeSelect = {
+  id: true,
+  name: true,
+  cnpj: true,
+  email: true,
+  phone: true,
+  status: true,
+  cep: true,
+  city: true,
+  state: true,
+  address: true,
+  createdAt: true,
+  updatedAt: true
+};
+async function ensureUserStore(user) {
+  if (user.storeId) {
+    const existingStore = await db.store.findUnique({
+      where: { id: user.storeId },
+      select: storeSelect
+    });
+    return {
+      store: existingStore,
+      created: false,
+      storeId: user.storeId
+    };
+  }
+  const defaultStore = await StoreCommands.defaultStore({
+    ownerId: user.id,
+    ownerName: user.name,
+    ownerEmail: user.email
+  });
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      storeId: defaultStore.id,
+      isOwner: true
+    }
+  });
+  const store = await db.store.findUnique({
+    where: { id: defaultStore.id },
+    select: storeSelect
+  });
+  return {
+    store,
+    created: true,
+    storeId: defaultStore.id
+  };
+}
 async function hashPassword(password) {
   return await import_bcryptjs.default.hash(password, 12);
 }
@@ -8258,7 +8819,10 @@ var AuthCommands = {
     } catch (error) {
       console.error("Failed to send verification email:", error);
     }
-    return user;
+    return {
+      ...user,
+      storeId: user.storeId || null
+    };
   },
   async login(data) {
     const { email, password } = data;
@@ -8286,27 +8850,28 @@ var AuthCommands = {
     if (!user.emailVerified) {
       throw new Error("Email verification required");
     }
+    let storeResult;
+    try {
+      storeResult = await ensureUserStore({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        storeId: user.storeId
+      });
+    } catch (error) {
+      console.error("Failed to ensure store for login user:", error);
+      storeResult = {
+        store: user.storeId ? await db.store.findUnique({ where: { id: user.storeId }, select: storeSelect }) : null,
+        storeId: user.storeId || null,
+        created: false
+      };
+    }
+    const lastLoginAt = /* @__PURE__ */ new Date();
     await db.user.update({
       where: { id: user.id },
-      data: { lastLoginAt: /* @__PURE__ */ new Date() }
+      data: { lastLoginAt }
     });
-    const store = user.storeId ? await db.store.findUnique({
-      where: { id: user.storeId },
-      select: {
-        id: true,
-        name: true,
-        cnpj: true,
-        email: true,
-        phone: true,
-        status: true,
-        cep: true,
-        city: true,
-        state: true,
-        address: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    }) : null;
+    const store = storeResult.store;
     const token = AuthCommands.generateJWT({
       userId: user.id,
       email: user.email
@@ -8317,8 +8882,9 @@ var AuthCommands = {
         name: user.name,
         email: user.email,
         emailVerified: user.emailVerified,
-        lastLoginAt: /* @__PURE__ */ new Date(),
-        storeId: user.storeId || null
+        lastLoginAt,
+        storeId: storeResult.storeId,
+        newStore: storeResult.created
       },
       store: store || void 0,
       token
@@ -8551,6 +9117,7 @@ var AuthCommands = {
         where: { email: payload.email }
       });
       if (!user) {
+        const lastLoginAt = /* @__PURE__ */ new Date();
         user = await db.user.create({
           data: {
             name: payload.name,
@@ -8561,35 +9128,35 @@ var AuthCommands = {
             // Google já verifica o email
             status: true,
             isOwner: false,
-            lastLoginAt: /* @__PURE__ */ new Date()
+            lastLoginAt
           }
         });
       } else {
-        await db.user.update({
+        const lastLoginAt = /* @__PURE__ */ new Date();
+        user = await db.user.update({
           where: { id: user.id },
-          data: { lastLoginAt: /* @__PURE__ */ new Date() }
+          data: { lastLoginAt }
         });
       }
       if (!user.status) {
         throw new Error("User account is disabled");
       }
-      const store = user.storeId ? await db.store.findUnique({
-        where: { id: user.storeId },
-        select: {
-          id: true,
-          name: true,
-          cnpj: true,
-          email: true,
-          phone: true,
-          status: true,
-          cep: true,
-          city: true,
-          state: true,
-          address: true,
-          createdAt: true,
-          updatedAt: true
-        }
-      }) : null;
+      let storeResult;
+      try {
+        storeResult = await ensureUserStore({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          storeId: user.storeId
+        });
+      } catch (error) {
+        console.error("Failed to ensure store for Google login user:", error);
+        storeResult = {
+          store: user.storeId ? await db.store.findUnique({ where: { id: user.storeId }, select: storeSelect }) : null,
+          storeId: user.storeId || null,
+          created: false
+        };
+      }
       const jwtToken = AuthCommands.generateJWT({
         userId: user.id,
         email: user.email
@@ -8601,9 +9168,10 @@ var AuthCommands = {
           email: user.email,
           emailVerified: user.emailVerified,
           lastLoginAt: user.lastLoginAt,
-          storeId: user.storeId || null
+          storeId: storeResult.storeId,
+          newStore: storeResult.created
         },
-        store: store || void 0,
+        store: storeResult.store || void 0,
         token: jwtToken
       };
     } catch (error) {
@@ -9268,7 +9836,8 @@ var googleLoginSchema = {
             name: { type: "string" },
             email: { type: "string" },
             emailVerified: { type: "boolean" },
-            lastLoginAt: { type: ["string", "null"], format: "date-time" }
+            lastLoginAt: { type: ["string", "null"], format: "date-time" },
+            storeId: { type: ["string", "null"] }
           }
         },
         store: {
@@ -23370,342 +23939,6 @@ async function NotificationRoutes(fastify2) {
 
 // src/features/polar/polar.controller.ts
 var import_node_crypto2 = require("crypto");
-
-// src/plugins/polar.ts
-var import_sdk = require("@polar-sh/sdk");
-var polar = new import_sdk.Polar({
-  accessToken: process.env.POLAR_ACCESS_KEY,
-  server: "sandbox"
-  //"sandbox") as "production" | "sandbox"
-});
-
-// src/features/polar/commands/polar.commands.ts
-init_prisma();
-var PolarCommands = {
-  async checkout(data) {
-    try {
-      const checkout = await polar.checkouts.create({
-        customerBillingAddress: {
-          country: "BR"
-        },
-        customerEmail: data.customer.email,
-        customerName: data.customer.name,
-        products: [data.productId]
-      });
-      if (!checkout) {
-        throw new Error("Failed to create checkout");
-      }
-      return checkout;
-    } catch (error) {
-      console.error("Polar checkout error:", error);
-      throw new Error("Failed to create checkout");
-    }
-  },
-  async webhook(event) {
-    try {
-      const type = event?.type || "";
-      const data = event?.data || {};
-      const findOrCreateSubscriptionByUserId = async (userId) => {
-        const user = await db.user.findUnique({
-          where: { id: userId },
-          select: {
-            storeId: true,
-            ownedStore: {
-              select: {
-                id: true
-              }
-            }
-          }
-        });
-        if (!user) return null;
-        const storeId = user.storeId || user.ownedStore?.id;
-        if (!storeId) return null;
-        let subscription3 = await db.subscription.findUnique({ where: { storeId } });
-        if (!subscription3) {
-          subscription3 = await db.subscription.create({
-            data: {
-              storeId,
-              status: "ACTIVE"
-            }
-          });
-        }
-        return subscription3;
-      };
-      const findSubscriptionByPolarOrEmail = async (opts) => {
-        const { polarCustomerId, email } = opts;
-        if (polarCustomerId) {
-          const byPolar = await db.subscription.findUnique({
-            where: { polarCustomerId }
-          });
-          if (byPolar) return byPolar;
-        }
-        if (email) {
-          const user = await db.user.findFirst({
-            where: { email },
-            select: {
-              id: true,
-              storeId: true,
-              ownedStore: {
-                select: { id: true }
-              }
-            }
-          });
-          if (user) {
-            const storeId = user.storeId || user.ownedStore?.id;
-            if (storeId) {
-              const subscription3 = await db.subscription.findUnique({ where: { storeId } });
-              if (subscription3) return subscription3;
-              return await findOrCreateSubscriptionByUserId(user.id);
-            }
-          }
-        }
-        return null;
-      };
-      const setSubscriptionPlanAndStatus = async (subscriptionId, polarProductId, status, renewalDate, trialEndsAt) => {
-        return await db.subscription.update({
-          where: { id: subscriptionId },
-          data: {
-            polarProductId: polarProductId || null,
-            status,
-            currentPeriodEnd: renewalDate || null,
-            trialEndsAt: trialEndsAt || null
-          }
-        });
-      };
-      const upsertInvoice = async (subscriptionId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
-        if (!amountCents && !polarInvoiceId) return null;
-        const amount = amountCents ? Number(amountCents) / 100 : 0;
-        const existing = polarInvoiceId ? await db.invoice.findUnique({ where: { polarInvoiceId } }) : null;
-        if (existing) {
-          return await db.invoice.update({
-            where: { id: existing.id },
-            data: {
-              status,
-              paymentDate: paymentDate || existing.paymentDate || null
-            }
-          });
-        }
-        return await db.invoice.create({
-          data: {
-            subscriptionId,
-            amount,
-            status,
-            polarInvoiceId: polarInvoiceId || null,
-            paymentDate: paymentDate || null
-          }
-        });
-      };
-      const checkout = data?.checkout_session;
-      const subscription2 = data?.subscription;
-      switch (type) {
-        case "checkout.succeeded": {
-          const userIdFromMetadata = checkout?.metadata?.user_id;
-          const polarCustomerId = checkout?.customer_id;
-          const polarSubscriptionId = checkout?.subscription_id;
-          if (userIdFromMetadata) {
-            const subscription3 = await findOrCreateSubscriptionByUserId(userIdFromMetadata);
-            if (!subscription3) break;
-            await db.subscription.update({
-              where: { id: subscription3.id },
-              data: {
-                polarCustomerId: polarCustomerId || subscription3.polarCustomerId || null,
-                polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
-              }
-            });
-          } else if (polarCustomerId) {
-            const subscription3 = await findSubscriptionByPolarOrEmail({
-              polarCustomerId,
-              email: null
-            });
-            if (subscription3) {
-              await db.subscription.update({
-                where: { id: subscription3.id },
-                data: {
-                  polarCustomerId,
-                  polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
-                }
-              });
-            }
-          }
-          break;
-        }
-        case "subscription.created":
-        case "subscription.updated":
-        case "subscription.canceled": {
-          const polarCustomerId = subscription2?.customer_id;
-          const polarSubscriptionId = subscription2?.id;
-          if (polarCustomerId || polarSubscriptionId) {
-            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null });
-            if (sub) {
-              await db.subscription.update({
-                where: { id: sub.id },
-                data: {
-                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null
-                }
-              });
-            }
-          }
-          break;
-        }
-        // === NOVOS EVENTOS DE ORDER ===
-        case "order.created":
-        case "order.updated": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const productId = order?.product_id || order?.productId;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (sub) {
-            await db.subscription.update({
-              where: { id: sub.id },
-              data: {
-                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-                polarProductId: productId || sub.polarProductId || null
-              }
-            });
-          }
-          break;
-        }
-        case "order.paid": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const productId = order?.product_id || order?.productId;
-          const amountCents = order?.amount || order?.amount_cents || order?.total_amount_cents;
-          const invoiceId = order?.invoice_id || order?.invoiceId;
-          const currentPeriodEndIso = order?.current_period_end;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null;
-          await setSubscriptionPlanAndStatus(sub.id, productId || null, "ACTIVE", renewalDate, null);
-          await upsertInvoice(sub.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
-          break;
-        }
-        case "order.refunded": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const invoiceId = order?.invoice_id || order?.invoiceId;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, "INACTIVE", null, null);
-          await upsertInvoice(sub.id, null, invoiceId || null, "REFUNDED", null);
-          break;
-        }
-        case "customer.state_changed": {
-          const email = data?.email;
-          const polarCustomerId = data?.id;
-          const activeSub = Array.isArray(data?.active_subscriptions) && data.active_subscriptions.length > 0 ? data.active_subscriptions[0] : null;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          const productId = activeSub?.product_id;
-          const statusMap = {
-            active: "ACTIVE",
-            trialing: "TRIAL",
-            canceled: "CANCELLED",
-            paused: "INACTIVE",
-            past_due: "PAST_DUE",
-            expired: "EXPIRED"
-          };
-          const subStatus = activeSub?.status;
-          const mappedStatus = subStatus && statusMap[subStatus] ? statusMap[subStatus] : "ACTIVE";
-          const renewalDate = activeSub?.current_period_end ? new Date(activeSub.current_period_end) : null;
-          const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null;
-          await db.subscription.update({
-            where: { id: sub.id },
-            data: {
-              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null
-            }
-          });
-          await setSubscriptionPlanAndStatus(
-            sub.id,
-            productId || null,
-            mappedStatus,
-            renewalDate,
-            trialEndsAt
-          );
-          break;
-        }
-        default:
-          break;
-      }
-      return { success: true };
-    } catch (error) {
-      console.error("Polar webhook error:", error);
-      return { success: false, error: error?.message || "Internal error" };
-    }
-  },
-  async createSubscription(data) {
-    try {
-      const subscription2 = await polar.subscriptions.create({
-        customerId: data.customerId,
-        productId: data.productId
-      });
-      return subscription2;
-    } catch (error) {
-      console.error("Polar create subscription error:", error);
-      return null;
-    }
-  },
-  async createCustomer(data) {
-    try {
-      const customer = await polar.customers.create({
-        email: data.email,
-        name: data.name,
-        externalId: data.externalId
-        //organizationId: process.env.POLAR_ORGANIZATION_ID as string,
-      });
-      return customer;
-    } catch (error) {
-      console.error("Polar create customer error:", error);
-      return null;
-    }
-  }
-};
-
-// src/features/polar/queries/polar.queries.ts
-var PolarQueries = {
-  async list({ page, limit }) {
-    try {
-      const { result } = await polar.products.list({
-        organizationId: process.env.POLAR_ORGANIZATION_ID,
-        page,
-        limit
-      });
-      return {
-        items: result.items,
-        pagination: {
-          page,
-          limit
-        }
-      };
-    } catch (error) {
-      console.error("Polar products list error:", error);
-      throw new Error(`Failed to fetch products: ${error}`);
-    }
-  },
-  async getFreePlan() {
-    try {
-      const { result } = await polar.products.list({
-        organizationId: process.env.POLAR_ORGANIZATION_ID,
-        page: 1,
-        limit: 10
-      });
-      console.log(result);
-      const freeProduct = result.items.find(
-        (product) => product.prices.some((price) => price.amountType === "free")
-      );
-      return freeProduct || null;
-    } catch (error) {
-      console.error("Polar get free plan error:", error);
-      return null;
-    }
-  }
-};
-
-// src/features/polar/polar.controller.ts
 var PolarController = {
   async list(request, reply) {
     try {
@@ -29653,148 +29886,6 @@ async function RoadmapRoutes(fastify2) {
     handler: MilestoneController.reorder
   });
 }
-
-// src/features/(core)/store/commands/store.commands.ts
-init_prisma();
-var StoreCommands = {
-  async create(data) {
-    const existingStore = await db.store.findUnique({
-      where: { cnpj: data.cnpj }
-    });
-    if (existingStore) {
-      throw new Error("CNPJ already exists");
-    }
-    const owner = await db.user.findUnique({
-      where: { id: data.ownerId }
-    });
-    if (!owner) {
-      throw new Error("Owner not found");
-    }
-    const storeInclude = {
-      owner: {
-        select: {
-          id: true,
-          name: true,
-          email: true
-        }
-      }
-    };
-    const store = await db.store.create({
-      data: {
-        ownerId: data.ownerId,
-        name: data.name,
-        cnpj: data.cnpj,
-        email: data.email || null,
-        phone: data.phone || null,
-        cep: data.cep || null,
-        city: data.city || null,
-        state: data.state || null,
-        address: data.address || null,
-        status: data.status !== void 0 ? data.status : true
-      },
-      include: storeInclude
-    });
-    let storeWithPlan = store;
-    try {
-      const freePlan = await PolarQueries.getFreePlan();
-      if (freePlan) {
-        const priceInterval = freePlan.recurringInterval === "month" ? "MONTHLY" : freePlan.recurringInterval === "year" ? "YEARLY" : null;
-        let polarCustomer = null;
-        if (owner.email) {
-          polarCustomer = await PolarCommands.createCustomer({
-            email: owner.email,
-            name: owner.name || "",
-            externalId: owner.id
-          });
-        }
-        let polarSubscription = null;
-        if (polarCustomer?.id) {
-          polarSubscription = await PolarCommands.createSubscription({
-            customerId: polarCustomer.id,
-            productId: freePlan.id
-          });
-        }
-        await db.subscription.create({
-          data: {
-            storeId: store.id,
-            status: "ACTIVE",
-            polarCustomerId: polarCustomer?.id || null,
-            polarSubscriptionId: polarSubscription?.id || null,
-            polarProductId: freePlan.id,
-            polarPlanName: freePlan.name,
-            priceAmount: 0,
-            ...priceInterval ? { priceInterval } : {},
-            currency: "BRL"
-          }
-        });
-        storeWithPlan = await db.store.update({
-          where: { id: store.id },
-          data: { plan: freePlan.name },
-          include: storeInclude
-        });
-      } else {
-        console.warn("Nenhum plano default encontrado no Polar");
-      }
-    } catch (error) {
-      console.error("Falha ao atribuir plano default \xE0 loja:", error);
-    }
-    return storeWithPlan;
-  },
-  async update(id, data) {
-    const existingStore = await db.store.findUnique({
-      where: { id }
-    });
-    if (!existingStore) {
-      throw new Error("Store not found");
-    }
-    if (data.cnpj && data.cnpj !== existingStore.cnpj) {
-      const cnpjExists = await db.store.findUnique({
-        where: { cnpj: data.cnpj }
-      });
-      if (cnpjExists) {
-        throw new Error("CNPJ already exists");
-      }
-    }
-    return await db.store.update({
-      where: { id },
-      data: {
-        ...data,
-        email: data.email === "" ? null : data.email,
-        phone: data.phone === "" ? null : data.phone,
-        cep: data.cep === "" ? null : data.cep,
-        city: data.city === "" ? null : data.city,
-        state: data.state === "" ? null : data.state,
-        address: data.address === "" ? null : data.address
-      },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-  },
-  async delete(id) {
-    const existingStore = await db.store.findUnique({
-      where: { id }
-    });
-    if (!existingStore) {
-      throw new Error("Store not found");
-    }
-    const productCount = await db.product.count({
-      where: { storeId: id }
-    });
-    if (productCount > 0) {
-      throw new Error("Cannot delete store with existing products");
-    }
-    return await db.store.delete({
-      where: { id }
-    });
-  }
-};
 
 // src/features/(core)/store/queries/store.queries.ts
 init_prisma();
