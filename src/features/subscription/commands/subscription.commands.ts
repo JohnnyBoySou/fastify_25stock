@@ -3,7 +3,7 @@ import type { SubscriptionInterval } from '../subscription.interfaces'
 
 export const SubscriptionCommands = {
   async create(data: {
-    userId: string
+    storeId: string
     description?: string
     price: number
     interval: SubscriptionInterval
@@ -11,11 +11,11 @@ export const SubscriptionCommands = {
   }) {
     // Verificar se já existe um plano com o mesmo nome
     const existingSubscription = await db.subscription.findFirst({
-      where: { userId: data.userId },
+      where: { storeId: data.storeId },
     })
 
     if (existingSubscription) {
-      throw new Error('Subscription with this user already exists')
+      throw new Error('Subscription with this store already exists')
     }
 
     return await db.subscription.create({
@@ -24,11 +24,11 @@ export const SubscriptionCommands = {
         priceInterval: data.interval,
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true,
+            name: true,
+            plan: true,
           },
         },
       },
@@ -38,7 +38,7 @@ export const SubscriptionCommands = {
   async update(
     id: string,
     data: {
-      userId?: string
+      storeId?: string
       description?: string
       price?: number
       interval?: SubscriptionInterval
@@ -61,11 +61,11 @@ export const SubscriptionCommands = {
         ...(data.interval && { priceInterval: data.interval as SubscriptionInterval }),
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true,
+            name: true,
+            plan: true,
           },
         },
       },
@@ -77,7 +77,7 @@ export const SubscriptionCommands = {
     const subscription = await db.subscription.findUnique({
       where: { id },
       include: {
-        user: {
+        store: {
           select: { id: true },
         },
       },
@@ -85,13 +85,6 @@ export const SubscriptionCommands = {
 
     if (!subscription) {
       throw new Error('Plan not found')
-    }
-
-    // Verificar se existem customers associados
-    if (subscription.user) {
-      throw new Error(
-        `Cannot delete subscription. It has ${subscription.user} associated customers. Please reassign or delete the customers first.`
-      )
     }
 
     return await db.subscription.delete({
@@ -109,10 +102,8 @@ export const SubscriptionCommands = {
       throw new Error('Plan not found')
     }
 
-    // Primeiro, remover a associação de todos os customers
-    await db.subscription.updateMany({
-      where: { userId: id },
-      data: { userId: null },
+    await db.invoice.deleteMany({
+      where: { subscriptionId: id },
     })
 
     return await db.subscription.delete({
@@ -136,11 +127,11 @@ export const SubscriptionCommands = {
         status: active ? 'ACTIVE' : 'INACTIVE',
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true,
+            name: true,
+            plan: true,
           },
         },
       },

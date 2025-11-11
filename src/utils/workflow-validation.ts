@@ -1,4 +1,4 @@
-import type { FlowEdge, FlowNode } from '@/features/flow/flow.interfaces'
+import type { FlowEdge, FlowNode } from '@/features/(ai)/flow/flow.interfaces'
 
 export const WorkflowValidation = {
   validateFlow(flow: {

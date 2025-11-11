@@ -3,7 +3,7 @@ import type {
   ConditionConfig,
   ExecutionContext,
   LogicalOperator,
-} from '@/features/flow/flow.interfaces'
+} from '@/features/(ai)/flow/flow.interfaces'
 
 export const ConditionEvaluator = {
   evaluate(condition: ConditionConfig, context: ExecutionContext): boolean {

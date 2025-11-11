@@ -1,4 +1,4 @@
-import type { AuthUser } from '@/features/auth/auth.interfaces'
+import type { AuthUser } from '@/features/(core)/auth/auth.interfaces'
 import { polar } from '@/plugins/polar'
 import { db } from '@/plugins/prisma'
 
@@ -38,11 +38,27 @@ export const PolarCommands = {
 
       // Helpers
       const findOrCreateSubscriptionByUserId = async (userId: string) => {
-        let subscription = await db.subscription.findUnique({ where: { userId } })
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: {
+            storeId: true,
+            ownedStore: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        })
+        if (!user) return null
+
+        const storeId = user.storeId || user.ownedStore?.id
+        if (!storeId) return null
+
+        let subscription = await db.subscription.findUnique({ where: { storeId } })
         if (!subscription) {
           subscription = await db.subscription.create({
             data: {
-              userId,
+              storeId,
               status: 'ACTIVE',
             },
           })
@@ -62,8 +78,24 @@ export const PolarCommands = {
           if (byPolar) return byPolar
         }
         if (email) {
-          const user = await db.user.findFirst({ where: { email } })
-          if (user) return await findOrCreateSubscriptionByUserId(user.id)
+          const user = await db.user.findFirst({
+            where: { email },
+            select: {
+              id: true,
+              storeId: true,
+              ownedStore: {
+                select: { id: true },
+              },
+            },
+          })
+          if (user) {
+            const storeId = user.storeId || user.ownedStore?.id
+            if (storeId) {
+              const subscription = await db.subscription.findUnique({ where: { storeId } })
+              if (subscription) return subscription
+              return await findOrCreateSubscriptionByUserId(user.id)
+            }
+          }
         }
         return null
       }
@@ -130,6 +162,7 @@ export const PolarCommands = {
 
           if (userIdFromMetadata) {
             const subscription = await findOrCreateSubscriptionByUserId(userIdFromMetadata)
+            if (!subscription) break
             await db.subscription.update({
               where: { id: subscription.id },
               data: {

@@ -17,9 +17,9 @@ export const SubscriptionController = {
   // === CRUD BÁSICO ===
   async create(request: CreateSubscriptionRequest, reply: FastifyReply) {
     try {
-      const { userId, description, price, interval, features } = request.body
+      const { storeId, description, price, interval, features } = request.body
       const result = await SubscriptionCommands.create({
-        userId,
+        storeId,
         description,
         price,
         interval: interval as unknown as SubscriptionInterval,
@@ -78,7 +78,7 @@ export const SubscriptionController = {
       const result = await SubscriptionCommands.update(
         id,
         updateData as unknown as {
-          userId?: string
+          storeId?: string
           description?: string
           price?: number
           interval?: SubscriptionInterval

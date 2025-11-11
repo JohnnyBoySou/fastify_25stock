@@ -1,4 +1,4 @@
-import { ChatRoutes } from '@/features/chat/chat.routes'
+import { ChatRoutes } from '@/features/(ai)/chat/chat.routes'
 import type { FastifyInstance } from 'fastify'
 
 export async function ChatService(fastify: FastifyInstance) {

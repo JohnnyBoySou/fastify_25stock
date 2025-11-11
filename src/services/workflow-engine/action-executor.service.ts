@@ -1,4 +1,4 @@
-import type { ActionConfig, ExecutionContext } from '@/features/flow/flow.interfaces'
+import type { ActionConfig, ExecutionContext } from '@/features/(ai)/flow/flow.interfaces'
 import { db } from '@/plugins/prisma'
 import { sendPushNotification } from '@/plugins/push'
 

@@ -77,7 +77,6 @@ model User {
   createdShiftParticipants ShiftParticipant[] @relation("ShiftParticipantCreatedBy")
   schedules                 Schedule[] @relation("ScheduleUser")
   shiftParticipants         ShiftParticipant[] @relation("ShiftParticipantUser")
-  subscription Subscription?
 
   auditLogs         AuditLog[]
   movements         Movement[]
@@ -225,6 +224,7 @@ model Store {
   notifications Notification[]
   quotes        Quote[]
   chatSessions  ChatSession[]
+  subscription  Subscription?
   documentFolders DocumentFolder[]
   documents     Document[]
   spaces        Space[]
@@ -580,9 +580,9 @@ enum MovementOrigin {
 
 model Subscription {
   id                   String          @id @default(cuid())
-  userId               String          @unique
-  user                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  storeId              String          @unique
+  store                Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   // Polar references
   polarCustomerId      String?         @unique
   polarSubscriptionId  String?         @unique
@@ -608,7 +608,7 @@ model Subscription {
 
   @@index([status])
   @@index([polarSubscriptionId])
-  @@index([userId])
+  @@index([storeId])
 }
 
 model Invoice {

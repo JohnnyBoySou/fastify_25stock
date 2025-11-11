@@ -8,8 +8,15 @@ var __typeError = (msg) => {
   throw TypeError(msg);
 };
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -6009,7 +6016,7 @@ var require_prisma = __commonJS({
     };
     exports2.Prisma.SubscriptionScalarFieldEnum = {
       id: "id",
-      userId: "userId",
+      storeId: "storeId",
       polarCustomerId: "polarCustomerId",
       polarSubscriptionId: "polarSubscriptionId",
       polarProductId: "polarProductId",
@@ -6366,6 +6373,75 @@ var require_prisma = __commonJS({
       createdById: "createdById",
       createdAt: "createdAt"
     };
+    exports2.Prisma.SpaceScalarFieldEnum = {
+      id: "id",
+      name: "name",
+      description: "description",
+      capacity: "capacity",
+      location: "location",
+      storeId: "storeId",
+      createdById: "createdById",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt"
+    };
+    exports2.Prisma.ScheduleScalarFieldEnum = {
+      id: "id",
+      title: "title",
+      description: "description",
+      startTime: "startTime",
+      endTime: "endTime",
+      rrule: "rrule",
+      timezone: "timezone",
+      status: "status",
+      storeId: "storeId",
+      spaceId: "spaceId",
+      userId: "userId",
+      createdById: "createdById",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt"
+    };
+    exports2.Prisma.ScheduleOccurrenceScalarFieldEnum = {
+      id: "id",
+      scheduleId: "scheduleId",
+      startTime: "startTime",
+      endTime: "endTime",
+      status: "status",
+      createdAt: "createdAt"
+    };
+    exports2.Prisma.ShiftScalarFieldEnum = {
+      id: "id",
+      name: "name",
+      description: "description",
+      storeId: "storeId",
+      occurrenceId: "occurrenceId",
+      createdById: "createdById",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt"
+    };
+    exports2.Prisma.ShiftParticipantScalarFieldEnum = {
+      id: "id",
+      shiftId: "shiftId",
+      storeId: "storeId",
+      userId: "userId",
+      createdById: "createdById",
+      role: "role",
+      status: "status",
+      confirmedAt: "confirmedAt",
+      deniedAt: "deniedAt",
+      note: "note",
+      createdAt: "createdAt"
+    };
+    exports2.Prisma.ResourceScalarFieldEnum = {
+      id: "id",
+      name: "name",
+      description: "description",
+      type: "type",
+      isAvailable: "isAvailable",
+      spaceId: "spaceId",
+      productId: "productId",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt"
+    };
     exports2.Prisma.SortOrder = {
       asc: "asc",
       desc: "desc"
@@ -6600,6 +6676,22 @@ var require_prisma = __commonJS({
       PUBLIC: "PUBLIC",
       INTERNAL: "INTERNAL"
     };
+    exports2.ScheduleStatus = exports2.$Enums.ScheduleStatus = {
+      PENDING: "PENDING",
+      CONFIRMED: "CONFIRMED",
+      CANCELLED: "CANCELLED"
+    };
+    exports2.ShiftStatus = exports2.$Enums.ShiftStatus = {
+      PENDING: "PENDING",
+      CONFIRMED: "CONFIRMED",
+      DECLINED: "DECLINED"
+    };
+    exports2.ResourceType = exports2.$Enums.ResourceType = {
+      EQUIPMENT: "EQUIPMENT",
+      VEHICLE: "VEHICLE",
+      FURNITURE: "FURNITURE",
+      OTHER: "OTHER"
+    };
     exports2.Prisma.ModelName = {
       User: "User",
       UserPermission: "UserPermission",
@@ -6634,7 +6726,13 @@ var require_prisma = __commonJS({
       ChatMessage: "ChatMessage",
       DocumentFolder: "DocumentFolder",
       Document: "Document",
-      DocumentVersion: "DocumentVersion"
+      DocumentVersion: "DocumentVersion",
+      Space: "Space",
+      Schedule: "Schedule",
+      ScheduleOccurrence: "ScheduleOccurrence",
+      Shift: "Shift",
+      ShiftParticipant: "ShiftParticipant",
+      Resource: "Resource"
     };
     var config = {
       "generator": {
@@ -6644,7 +6742,7 @@ var require_prisma = __commonJS({
           "value": "prisma-client-js"
         },
         "output": {
-          "value": "C:\\Node\\fastify_20stock\\src\\generated\\prisma",
+          "value": "/media/johnnyboy/NVME/Projetos/25Stock/fastify_25stock/src/generated/prisma",
           "fromEnvVar": null
         },
         "config": {
@@ -6653,7 +6751,7 @@ var require_prisma = __commonJS({
         "binaryTargets": [
           {
             "fromEnvVar": null,
-            "value": "windows",
+            "value": "debian-openssl-3.0.x",
             "native": true
           },
           {
@@ -6662,7 +6760,7 @@ var require_prisma = __commonJS({
           }
         ],
         "previewFeatures": [],
-        "sourceFilePath": "C:\\Node\\fastify_20stock\\prisma\\schema.prisma",
+        "sourceFilePath": "/media/johnnyboy/NVME/Projetos/25Stock/fastify_25stock/prisma/schema.prisma",
         "isCustomOutput": true
       },
       "relativeEnvPaths": {
@@ -6684,8 +6782,8 @@ var require_prisma = __commonJS({
           }
         }
       },
-      "inlineSchema": 'generator client {\n  provider      = "prisma-client-js"\n  output        = "../src/generated/prisma"\n  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\n// ========== user.prisma ==========\n/// ===============================\n///  USER & STORE STRUCTURE\n///  - Cada usu\xE1rio pertence a uma \xFAnica loja.\n///  - Dono (isOwner = true) \xE9 o criador da loja.\n///  - Permiss\xF5es s\xE3o granulares (ACL).\n///  - Soft delete com deletedAt.\n/// ===============================\n\nmodel User {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  email    String  @unique\n  password String\n  name     String?\n  phone    String?\n\n  // Associa\xE7\xE3o direta com a loja\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Controle de status e hierarquia\n  isOwner     Boolean   @default(false)\n  status      Boolean   @default(true)\n  deletedAt   DateTime?\n  deletedById String?\n  deletedBy   User?     @relation("UserDeleted", fields: [deletedById], references: [id])\n  suspendedAt DateTime? // bloqueio tempor\xE1rio\n\n  invitedById       String?\n  invitedBy         User?     @relation("UserInviter", fields: [invitedById], references: [id])\n  acceptedAt        DateTime?\n  inviteCode        String?   @unique\n  pendingInvitation Boolean   @default(false)\n\n  ownedStore Store? @relation("StoreOwner")\n\n  // Auditoria e seguran\xE7a\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  lastLoginAt  DateTime?\n  lastActiveAt DateTime?\n\n  emailVerified                Boolean   @default(false)\n  emailVerificationToken       String?\n  emailVerificationCode        String?\n  emailVerificationCodeExpires DateTime?\n  resetPasswordToken           String?\n  resetPasswordExpires         DateTime?\n\n  // Rela\xE7\xF5es\n  permissions             UserPermission[]\n  preferences             UserPreferences?\n  notifications           Notification[]\n  media                   UserMedia[]\n  uploadedMedia           Media[]\n  quotes                  Quote[]\n  createdDocumentFolders  DocumentFolder[]  @relation("FolderCreatedBy")\n  createdDocuments        Document[]        @relation("DocumentCreatedBy")\n  updatedDocuments        Document[]        @relation("DocumentUpdatedBy")\n  createdDocumentVersions DocumentVersion[] @relation("DocumentVersionCreatedBy")\n\n  subscription Subscription?\n\n  auditLogs      AuditLog[]\n  movements      Movement[]\n  roadmaps       Roadmap[]\n  createdFlows   Flow[]\n  flowExecutions FlowExecution[]\n  crmClients     CrmClient[]\n  chatSessions   ChatSession[]\n\n  // Rela\xE7\xF5es auto-referenciais\n  invitedUsers User[] @relation("UserInviter")\n  deletedUsers User[] @relation("UserDeleted")\n\n  // \xCDndices estrat\xE9gicos\n  @@index([storeId])\n  @@index([storeId, isOwner])\n  @@index([status])\n  @@index([deletedAt])\n  @@map("users")\n}\n\nmodel UserPermission {\n  id     String @id @default(cuid())\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  action     String // Ex: "create", "update", "delete"\n  resource   String // Ex: "product", "supplier"\n  scope      String? // m\xF3dulo l\xF3gico ex: "inventory", "crm"\n  grant      Boolean   @default(true)\n  expiresAt  DateTime? // expira\xE7\xE3o da permiss\xE3o (tempor\xE1ria)\n  conditions Json? // Ex: { "category": "Bebidas" }\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, action, resource])\n  @@index([userId])\n  @@index([resource])\n  @@index([scope])\n  @@map("user_permissions")\n}\n\nmodel UserPreferences {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // ===== THEME & UI =====\n  theme            String  @default("light")\n  primaryColor     String?\n  sidebarCollapsed Boolean @default(false)\n  compactMode      Boolean @default(false)\n  uiScale          Float   @default(1.0) // escala visual (zoom/acessibilidade)\n\n  // ===== LANGUAGE & LOCALIZATION =====\n  language     String @default("pt-BR")\n  currency     String @default("BRL")\n  timezone     String @default("America/Sao_Paulo")\n  dateFormat   String @default("DD/MM/YYYY")\n  timeFormat   String @default("24h")\n  numberFormat String @default("pt-BR")\n\n  // ===== NOTIFICATION PREFERENCES =====\n  emailNotifications Boolean @default(true)\n  pushNotifications  Boolean @default(true)\n  smsNotifications   Boolean @default(false)\n  notificationTypes  Json?\n\n  // ===== DASHBOARD & LAYOUT =====\n  dashboardLayout Json?\n  defaultPage     String?\n  itemsPerPage    Int     @default(20)\n\n  // ===== BEHAVIOR =====\n  autoRefresh     Boolean @default(true)\n  refreshInterval Int     @default(30)\n\n  // ===== ADVANCED =====\n  customSettings      Json?\n  aiAssistantSettings Json? // IA / LLM settings por usu\xE1rio\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId])\n  @@map("user_preferences")\n}\n\n// ========== store.prisma ==========\n/// ===============================\n///  STORE STRUCTURE\n///  - Cada loja tem um \xFAnico dono (ownerId).\n///  - Usu\xE1rios pertencem diretamente \xE0 loja.\n///  - Suporte a soft delete e auditoria.\n///  - Base pronta para IA, billing e opera\xE7\xF5es.\n/// ===============================\n\nmodel Store {\n  id      String  @id @default(cuid())\n  ownerId String? @unique\n  owner   User?   @relation("StoreOwner", fields: [ownerId], references: [id])\n\n  // Identifica\xE7\xE3o e dados b\xE1sicos\n  name        String\n  cnpj        String  @unique\n  email       String?\n  phone       String?\n  description String? // opcional: pode ser mostrado no dashboard\n  logoUrl     String? // opcional: imagem da loja\n  website     String? // opcional\n\n  // Endere\xE7o\n  cep     String?\n  city    String?\n  state   String?\n  address String?\n\n  // Controle e status\n  status      Boolean   @default(true)\n  deletedAt   DateTime? // soft delete (loja desativada)\n  suspendedAt DateTime? // bloqueio tempor\xE1rio (ex: problema no pagamento)\n  plan        String? // nome do plano atual (sincronizado com tabela de billing)\n  timezone    String?   @default("America/Sao_Paulo")\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Rela\xE7\xF5es com m\xF3dulos do sistema\n  users           User[] // todos os usu\xE1rios dessa loja\n  products        Product[]\n  categories      Category[]\n  suppliers       Supplier[]\n  movements       Movement[]\n  media           StoreMedia[]\n  uploadedMedia   Media[]\n  roadmaps        Roadmap[]\n  crmStages       CrmStage[]\n  crmClients      CrmClient[]\n  flows           Flow[]\n  flowExecutions  FlowExecution[]\n  auditLogs       AuditLog[]\n  notifications   Notification[]\n  quotes          Quote[]\n  chatSessions    ChatSession[]\n  documentFolders DocumentFolder[]\n  documents       Document[]\n\n  // Configura\xE7\xF5es adicionais (JSON flex\xEDvel)\n  settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }\n\n  // \xCDndices estrat\xE9gicos\n  @@index([status])\n  @@index([deletedAt])\n  @@index([ownerId])\n  @@index([city])\n  @@index([state])\n}\n\n// ========== product.prisma ==========\n/// ===============================\n///  PRODUCT STRUCTURE\n///  - Cada produto pertence a uma loja.\n///  - Pode ter um fornecedor vinculado.\n///  - Suporte a categorias, m\xEDdia, controle de estoque e rastreabilidade.\n///  - Soft delete e campos para IA e relat\xF3rios.\n/// ===============================\n\nmodel Product {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name          String\n  sku           String? @unique // SKU interno (opcional)\n  barcode       String? @unique // EAN/UPC opcional\n  referenceCode String? // c\xF3digo interno curto (ex: "PRD-001")\n  description   String?\n\n  // Unidade e precifica\xE7\xE3o\n  unitOfMeasure  UnitOfMeasure\n  referencePrice Decimal       @db.Decimal(10, 2) // pre\xE7o de refer\xEAncia\n  costPrice      Decimal?      @db.Decimal(10, 2) // custo m\xE9dio\n  markupPercent  Decimal?      @db.Decimal(5, 2) // margem sobre o custo (%)\n  currency       String        @default("BRL")\n\n  // Estoque\n  stockCurrent    Int     @default(0)\n  stockMin        Int     @default(0)\n  stockMax        Int     @default(0)\n  alertPercentage Int     @default(20) @db.SmallInt\n  allowNegative   Boolean @default(false)\n\n  // Controle de lote / validade (para alimentos, medicamentos etc.)\n  batchTracked   Boolean   @default(false)\n  expirationDate DateTime? // validade do produto principal (se aplic\xE1vel)\n\n  // Associa\xE7\xE3o\n  storeId    String\n  supplierId String?\n  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Rela\xE7\xF5es\n  movements  Movement[]\n  categories ProductCategory[]\n  media      ProductMedia[]\n  quotes     QuoteItem[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["bebida", "perec\xEDvel"]\n  metadata Json? // ex: { "ncm": "2202.10.00", "origem": "nacional" }\n\n  // \xCDndices e constraints\n  @@index([storeId])\n  @@index([supplierId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n  @@index([sku])\n}\n\nenum UnitOfMeasure {\n  UNIDADE\n  KG\n  L\n  ML\n  M\n  CM\n  MM\n  UN\n  DZ\n  CX\n  PCT\n  KIT\n  PAR\n  H\n  D\n}\n\n// ========== category.prisma ==========\n/// ===============================\n///  CATEGORY STRUCTURE\n///  - Cada loja possui suas pr\xF3prias categorias.\n///  - Suporte a subcategorias (hierarquia).\n///  - Soft delete, cor, \xEDcone e metadados.\n///  - Associada a produtos via tabela ProductCategory.\n/// ===============================\n\nmodel Category {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e exibi\xE7\xE3o\n  name        String\n  description String?\n  code        String? // c\xF3digo interno (opcional, ex: CAT-001)\n  color       String? // cor no painel ex: "#3B82F6"\n  icon        String? // \xEDcone do front ex: "box", "truck", "chart"\n\n  // Hierarquia\n  parentId String?\n  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])\n  children Category[] @relation("CategoryHierarchy")\n\n  // Loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e controle\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products ProductCategory[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["perec\xEDvel", "embalagem"]\n  metadata Json? // ex: { "priority": 1, "visibleInMenu": true }\n\n  // Restri\xE7\xF5es e \xEDndices\n  @@unique([code, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n}\n\nmodel ProductCategory {\n  id         String   @id @default(cuid())\n  productId  String\n  categoryId String\n  createdAt  DateTime @default(now())\n\n  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, categoryId])\n  @@index([categoryId])\n  @@index([productId])\n}\n\n// ========== supplier.prisma ==========\n/// ===============================\n///  SUPPLIER STRUCTURE\n///  - Fornecedor pertence a uma loja.\n///  - Pode ter v\xE1rios respons\xE1veis (SupplierResponsible).\n///  - Suporte a m\xEDdia, auditoria e soft delete.\n/// ===============================\n\nmodel Supplier {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  corporateName String // Raz\xE3o social\n  tradeName     String? // Nome fantasia\n  cnpj          String\n  ie            String? // Inscri\xE7\xE3o estadual opcional\n  email         String?\n  phone         String?\n  website       String?\n  description   String? // Observa\xE7\xE3o interna\n\n  // Localiza\xE7\xE3o\n  cep        String?\n  city       String?\n  state      String?\n  address    String?\n  complement String?\n\n  // Relacionamento com a loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products     Product[]\n  movements    Movement[]\n  responsibles SupplierResponsible[]\n  media        SupplierMedia[]\n\n  // Configura\xE7\xF5es / metadados (extens\xEDvel)\n  tags     Json? // Ex: ["distribuidor", "nacional"]\n  metadata Json? // Ex: { "frete": "pr\xF3prio", "tempoEntrega": "48h" }\n\n  @@unique([cnpj, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n}\n\nmodel SupplierResponsible {\n  id         String   @id @default(cuid())\n  supplierId String\n  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  name        String\n  role        String? // cargo ex: "Vendas", "Financeiro", "Log\xEDstica"\n  phone       String?\n  email       String?\n  cpf         String?\n  whatsapp    Boolean   @default(false) // se esse contato \xE9 via WhatsApp\n  mainContact Boolean   @default(false) // define se \xE9 o contato principal\n  notes       String? // observa\xE7\xF5es internas\n  status      Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  deletedAt   DateTime? // soft delete\n\n  @@index([supplierId])\n  @@index([status])\n  @@index([mainContact])\n}\n\n// ========== movement.prisma ==========\n/// ===============================\n///  MOVEMENT STRUCTURE\n///  - Registra qualquer entrada, sa\xEDda ou perda de produto.\n///  - Controla saldo, custo e origem.\n///  - \xC9 base para relat\xF3rios, IA e auditoria de estoque.\n/// ===============================\n\nmodel Movement {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e contexto\n  type          MovementType // ENTRADA, SAIDA, PERDA\n  origin        MovementOrigin? // motivo ou contexto da movimenta\xE7\xE3o\n  referenceCode String? // c\xF3digo externo opcional (nota, pedido, etc.)\n  note          String? // observa\xE7\xF5es gerais\n\n  // Estoque e valores\n  quantity      Int\n  price         Decimal?  @db.Decimal(10, 2) // valor unit\xE1rio da movimenta\xE7\xE3o\n  totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price\n  balanceBefore Int? // estoque antes da movimenta\xE7\xE3o\n  balanceAfter  Int? // estoque ap\xF3s a movimenta\xE7\xE3o\n  batch         String? // lote\n  expiration    DateTime? // validade (se aplic\xE1vel)\n\n  // Relacionamentos\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  supplierId String?\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  userId String? // quem registrou\n  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  // Verifica\xE7\xE3o e controle\n  verified         Boolean   @default(false)\n  verifiedAt       DateTime?\n  verifiedBy       String?\n  verificationNote String?\n\n  // Cancelamento\n  cancelled          Boolean   @default(false)\n  cancelledAt        DateTime?\n  cancelledBy        String?\n  cancellationReason String?\n\n  // Auditoria e status\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete, se precisar reverter algo manualmente\n\n  // Metadados e IA\n  metadata Json? // dados extras: { "source": "import", "autoGenerated": true }\n\n  // \xCDndices e otimiza\xE7\xF5es\n  @@index([storeId])\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n  @@index([cancelled])\n  @@index([verified])\n}\n\n/// ===============================\n///  MOVEMENT ENUMS\n///  - Type = dire\xE7\xE3o da movimenta\xE7\xE3o (entrada/sa\xEDda/perda)\n///  - Origin = motivo ou contexto da movimenta\xE7\xE3o\n/// ===============================\n\nenum MovementType {\n  INBOUND // Entrada de produtos no estoque\n  OUTBOUND // Sa\xEDda de produtos\n  LOSS // Perda ou descarte\n}\n\nenum MovementOrigin {\n  PURCHASE // Compra de fornecedor\n  SALE // Venda a cliente\n  RETURN // Devolu\xE7\xE3o de cliente\n  SUPPLIER_RETURN // Devolu\xE7\xE3o ao fornecedor\n  ADJUSTMENT // Ajuste manual de estoque\n  TRANSFER // Transfer\xEAncia entre locais\n  INVENTORY // Ajuste por contagem/invent\xE1rio\n  DAMAGE // Quebra ou dano\n  EXPIRATION // Produto vencido\n  OTHER // Outro motivo n\xE3o especificado  \n}\n\n// ========== billing.prisma ==========\n/// ===============================\n///  BILLING (Polar.sh Integration)\n///  - Polar \xE9 o sistema de cobran\xE7a principal.\n///  - O backend apenas espelha status e refer\xEAncias.\n/// ===============================\n\nmodel Subscription {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Polar references\n  polarCustomerId     String? @unique\n  polarSubscriptionId String? @unique\n  polarProductId      String? // plano ativo no Polar\n  polarPlanName       String? // redund\xE2ncia para exibi\xE7\xE3o r\xE1pida no painel\n\n  // Status tracking\n  status           SubscriptionStatus @default(ACTIVE)\n  currentPeriodEnd DateTime? // data de renova\xE7\xE3o ou expira\xE7\xE3o\n  trialEndsAt      DateTime?\n  cancelledAt      DateTime?\n  renewalCount     Int                @default(0)\n\n  // Dados financeiros b\xE1sicos\n  priceAmount   Decimal?      @db.Decimal(10, 2)\n  priceInterval PlanInterval? // MONTHLY, YEARLY (espelhado do Polar)\n  currency      String?       @default("BRL")\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  invoices  Invoice[]\n\n  @@index([status])\n  @@index([polarSubscriptionId])\n  @@index([userId])\n}\n\nmodel Invoice {\n  id             String       @id @default(cuid())\n  subscriptionId String\n  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)\n\n  // Dados do Polar\n  polarInvoiceId String?       @unique\n  amount         Decimal       @db.Decimal(10, 2)\n  currency       String?       @default("BRL")\n  status         InvoiceStatus @default(PENDING)\n  paymentDate    DateTime?\n  dueDate        DateTime?\n  createdAt      DateTime      @default(now())\n\n  @@index([status])\n  @@index([subscriptionId])\n}\n\nenum SubscriptionStatus {\n  ACTIVE\n  INACTIVE\n  CANCELLED\n  TRIAL\n  EXPIRED\n  PAST_DUE\n}\n\nenum PlanInterval {\n  MONTHLY\n  YEARLY\n}\n\nenum InvoiceStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n}\n\n// ========== quote.prisma ==========\n/// ===============================\n///  QUOTATION (QUOTE) STRUCTURE\n///  - Or\xE7amentos criados pelos usu\xE1rios.\n///  - Possuem link p\xFAblico seguro (publicId + authCode).\n///  - Base para aprova\xE7\xF5es, convers\xF5es e vendas.\n/// ===============================\n\nmodel Quote {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  storeId      String\n  store        Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId       String\n  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  customerId   String? // futuro: cliente vinculado (CRM)\n  customerName String? // nome do cliente externo (sem login)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n  publicId    String  @unique @default(uuid()) // usado no link p\xFAblico\n  authCode    String  @default(uuid()) // valida acesso sem login\n\n  // Status e controle\n  status       QuoteStatus @default(DRAFT)\n  expiresAt    DateTime?\n  viewedAt     DateTime?\n  approvedAt   DateTime?\n  rejectedAt   DateTime?\n  convertedAt  DateTime?\n  canceledAt   DateTime?\n  approvalNote String? // observa\xE7\xE3o do cliente (motivo ou coment\xE1rio)\n  ipAddress    String? // IP de quem visualizou/aprovou\n  viewedBy     String? // email ou nome informado ao visualizar\n\n  // Valores\n  subtotal Decimal  @db.Decimal(10, 2)\n  discount Decimal? @db.Decimal(10, 2)\n  interest Decimal? @db.Decimal(10, 2)\n  total    Decimal  @db.Decimal(10, 2)\n  currency String   @default("BRL")\n\n  // Pagamento\n  paymentType    PaymentType @default(UNDEFINED)\n  paymentTerms   String? // ex: "6x sem juros"\n  paymentDueDays Int? // ex: 15 dias no boleto\n\n  // Observa\xE7\xF5es e anota\xE7\xF5es\n  observations  String?\n  notesInternal String? // observa\xE7\xE3o vis\xEDvel apenas internamente (n\xE3o p\xFAblica)\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete\n\n  // Rela\xE7\xF5es\n  items        QuoteItem[]\n  installments QuoteInstallment[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([publicId])\n  @@index([createdAt])\n}\n\n/// ===============================\n///  QUOTE ITEM\n///  - Produtos inclu\xEDdos no or\xE7amento.\n/// ===============================\n\nmodel QuoteItem {\n  id        String   @id @default(cuid())\n  quoteId   String\n  productId String\n  quantity  Int\n  unitPrice Decimal  @db.Decimal(10, 2)\n  subtotal  Decimal  @db.Decimal(10, 2)\n  discount  Decimal? @db.Decimal(10, 2)\n  note      String?\n\n  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  @@unique([quoteId, productId])\n  @@index([quoteId])\n}\n\n/// ===============================\n///  QUOTE INSTALLMENTS\n///  - Parcelas de pagamento do or\xE7amento.\n/// ===============================\n\nmodel QuoteInstallment {\n  id       String    @id @default(cuid())\n  quoteId  String\n  number   Int // n\xFAmero da parcela\n  dueDate  DateTime\n  amount   Decimal   @db.Decimal(10, 2)\n  interest Decimal?  @db.Decimal(10, 2)\n  paidAt   DateTime?\n\n  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n\n  @@index([quoteId])\n  @@map("quote_installments")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum PaymentType {\n  UNDEFINED\n  PIX\n  BOLETO\n  CREDIT_CARD\n  CASH\n  TRANSFER\n}\n\nenum QuoteStatus {\n  DRAFT // Em edi\xE7\xE3o\n  PUBLISHED // Link p\xFAblico ativo\n  SENT // Enviado ao cliente\n  VIEWED // Cliente visualizou\n  APPROVED // Cliente aprovou\n  REJECTED // Cliente recusou\n  EXPIRED // Passou da validade\n  CONVERTED // Virou venda\n  CANCELED // Cancelado\n}\n\n// ========== notification.prisma ==========\n/// ===============================\n///  NOTIFICATION STRUCTURE\n///  - Sistema unificado de notifica\xE7\xF5es.\n///  - Cada notifica\xE7\xE3o pertence a um usu\xE1rio e loja.\n///  - Pode ser enviada via v\xE1rios canais (push, email, sms).\n///  - Base para alertas autom\xE1ticos, workflows e IA.\n/// ===============================\n\nmodel Notification {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  userId  String\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  // Conte\xFAdo\n  title    String\n  message  String\n  type     NotificationType     @default(INFO)\n  priority NotificationPriority @default(MEDIUM)\n\n  // Estado de leitura\n  isRead Boolean   @default(false)\n  readAt DateTime?\n\n  // Entrega e canais\n  channel       NotificationChannel @default(IN_APP)\n  sentAt        DateTime?\n  deliveredAt   DateTime?\n  deliveryError String?\n\n  // Expira\xE7\xE3o e a\xE7\xE3o\n  actionUrl String?\n  expiresAt DateTime?\n  data      Json? // dados adicionais (ex: { productId, movementId, severity })\n\n  // Auditoria e controle\n  deletedAt DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // \xCDndices\n  @@index([userId])\n  @@index([storeId])\n  @@index([type])\n  @@index([isRead])\n  @@index([priority])\n  @@index([createdAt])\n  @@map("notifications")\n}\n\nenum NotificationType {\n  INFO // Informa\xE7\xE3o geral\n  SUCCESS // Sucesso/confirma\xE7\xE3o\n  WARNING // Aviso ou aten\xE7\xE3o\n  ERROR // Erro ou falha\n  STOCK_ALERT // Alerta de estoque baixo\n  MOVEMENT // Movimenta\xE7\xE3o de estoque\n  PERMISSION // Permiss\xE3o / acesso\n  SYSTEM // Sistema / manuten\xE7\xE3o\n  BILLING // Assinatura, cobran\xE7a, pagamento\n  WORKFLOW // Fluxo automatizado\n}\n\nenum NotificationPriority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}\n\nenum NotificationChannel {\n  IN_APP // Notifica\xE7\xE3o interna do app\n  PUSH // Push Notification\n  EMAIL // E-mail\n  SMS // SMS\n  SYSTEM // Notifica\xE7\xE3o do sistema\n}\n\n// ========== audit.prisma ==========\n/// ===============================\n///  AUDIT LOG STRUCTURE\n///  - Rastreia todas as a\xE7\xF5es importantes do sistema.\n///  - Cada log registra o que mudou, quem fez e onde.\n///  - Base para auditorias, relat\xF3rios e seguran\xE7a.\n/// ===============================\n\nmodel AuditLog {\n  id String @id @default(cuid())\n\n  // Entidade e a\xE7\xE3o auditada\n  entity   AuditEntity\n  entityId String?\n  action   AuditAction\n\n  // Contexto e origem\n  userId    String?\n  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n  storeId   String? // para rastrear logs por loja\n  store     Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  ipAddress String? // IP de origem da a\xE7\xE3o\n  userAgent String? // navegador / dispositivo\n  source    String? // origem da a\xE7\xE3o: "web", "mobile", "api", "system"\n\n  // Dados de mudan\xE7a\n  before   Json? // estado anterior do registro\n  after    Json? // estado ap\xF3s a mudan\xE7a\n  metadata Json? // informa\xE7\xF5es adicionais (ex: rota, payload, headers)\n\n  // Auditoria temporal\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // \xCDndices e otimiza\xE7\xE3o\n  @@index([entity])\n  @@index([storeId])\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n  @@map("audit_logs")\n}\n\nenum AuditAction {\n  CREATE\n  UPDATE\n  DELETE\n  LOGIN\n  LOGOUT\n  VERIFY\n  RESTORE\n}\n\nenum AuditEntity {\n  USER\n  STORE\n  PRODUCT\n  SUPPLIER\n  MOVEMENT\n  CATEGORY\n  QUOTE\n  FLOW\n  SYSTEM\n}\n\n// ========== media.prisma ==========\n/// ===============================\n///  MEDIA STRUCTURE\n///  - Representa qualquer arquivo enviado (imagem, v\xEDdeo, documento).\n///  - Associ\xE1vel a produto, fornecedor, loja ou usu\xE1rio.\n///  - Cont\xE9m informa\xE7\xF5es t\xE9cnicas e de origem.\n/// ===============================\n\nmodel Media {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  url       String // link p\xFAblico (Cloudinary, S3, Supabase, etc.)\n  name      String? // nome do arquivo original\n  type      String? // MIME type (ex: image/png, application/pdf)\n  extension String? // extens\xE3o (ex: jpg, pdf)\n  size      Int? // tamanho em bytes\n  hash      String? // hash opcional (para evitar duplica\xE7\xF5es)\n\n  // Origem e propriedade\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  uploadedById String?\n  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)\n\n  // Armazenamento e provider\n  provider    StorageProvider @default(SYSTEM)\n  storagePath String? // caminho interno no provider (ex: /products/uuid.png)\n  bucket      String? // bucket do S3 / Supabase\n  visibility  MediaVisibility @default(PRIVATE) // controle de acesso\n  status      MediaStatus     @default(ACTIVE)\n\n  // Metadados\n  metadata Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Rela\xE7\xF5es\n  productMedia  ProductMedia[]\n  supplierMedia SupplierMedia[]\n  userMedia     UserMedia[]\n  storeMedia    StoreMedia[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([uploadedById])\n  @@index([status])\n  @@index([visibility])\n  @@index([deletedAt])\n  @@map("media")\n}\n\n/// ===============================\n///  RELATION TABLES (many-to-many)\n///  - Permitem anexar m\xFAltiplos arquivos a produtos, usu\xE1rios, etc.\n/// ===============================\n\nmodel ProductMedia {\n  id        String  @id @default(cuid())\n  productId String\n  mediaId   String\n  isPrimary Boolean @default(false)\n  altText   String? // descri\xE7\xE3o alternativa para SEO / acessibilidade\n  sortOrder Int     @default(0)\n\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, mediaId])\n  @@index([productId])\n  @@map("product_media")\n}\n\nmodel SupplierMedia {\n  id         String @id @default(cuid())\n  supplierId String\n  mediaId    String\n\n  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([supplierId, mediaId])\n  @@map("supplier_media")\n}\n\nmodel UserMedia {\n  id      String @id @default(cuid())\n  userId  String\n  mediaId String\n\n  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, mediaId])\n  @@map("user_media")\n}\n\nmodel StoreMedia {\n  id      String @id @default(cuid())\n  storeId String\n  mediaId String\n\n  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([storeId, mediaId])\n  @@map("store_media")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum StorageProvider {\n  SYSTEM // Armazenamento local padr\xE3o\n  S3 // Amazon S3 / R2 / Wasabi\n  SUPABASE // Supabase Storage\n  CLOUDINARY // Cloudinary\n  GOOGLE_DRIVE // Google Drive API\n}\n\nenum MediaVisibility {\n  PRIVATE // vis\xEDvel apenas internamente\n  PUBLIC // acess\xEDvel publicamente\n  RESTRICTED // acess\xEDvel sob regra (ex: usu\xE1rios logados)\n}\n\nenum MediaStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n  PROCESSING\n}\n\n// ========== roadmap.prisma ==========\n/// ===============================\n///  ROADMAP STRUCTURE\n///  - Representa planos, metas ou projetos.\n///  - Pode estar associado a uma loja ou usu\xE1rio.\n///  - Cont\xE9m milestones (etapas com progresso e status).\n/// ===============================\n\nmodel Roadmap {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId  String?\n  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o e descri\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle e status\n  status     RoadmapStatus     @default(ACTIVE)\n  visibility RoadmapVisibility @default(PRIVATE)\n  priority   RoadmapPriority   @default(MEDIUM)\n  progress   Int               @default(0) // progresso geral (m\xE9dia das milestones)\n  archived   Boolean           @default(false)\n  deletedAt  DateTime? // soft delete\n\n  // Datas\n  startDate DateTime?\n  endDate   DateTime?\n\n  // Auditoria\n  createdById String?\n  updatedById String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  // Rela\xE7\xF5es\n  milestones Milestone[]\n\n  // Metadados\n  tags     Json? // ex: ["estoque", "IA", "meta de venda"]\n  metadata Json? // configura\xE7\xF5es extras ou IA\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([archived])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("roadmaps")\n}\n\n/// ===============================\n///  MILESTONE STRUCTURE\n///  - Etapas dentro de um roadmap.\n///  - Controla progresso, status e prazos.\n/// ===============================\n\nmodel Milestone {\n  id        String  @id @default(cuid())\n  roadmapId String\n  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle\n  status      MilestoneStatus @default(PENDING)\n  progress    Int             @default(0) // % conclu\xEDda (0\u2013100)\n  order       Int             @default(0) // posi\xE7\xE3o na timeline\n  priority    RoadmapPriority @default(MEDIUM)\n  blockedById String? // milestone dependente (opcional)\n  blockedBy   Milestone?      @relation("MilestoneDependency", fields: [blockedById], references: [id])\n  blocking    Milestone[]     @relation("MilestoneDependency") // milestones bloqueados por este\n\n  // Datas\n  startDate   DateTime?\n  endDate     DateTime?\n  completedAt DateTime?\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Metadados\n  metadata Json? // informa\xE7\xF5es adicionais ou IA\n\n  // \xCDndices\n  @@index([roadmapId])\n  @@index([status])\n  @@index([priority])\n  @@index([order])\n  @@map("milestones")\n}\n\nenum RoadmapStatus {\n  ACTIVE\n  COMPLETED\n  ARCHIVED\n}\n\nenum RoadmapVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n\nenum RoadmapPriority {\n  LOW\n  MEDIUM\n  HIGH\n  CRITICAL\n}\n\nenum MilestoneStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  BLOCKED\n}\n\n// ========== crm.prisma ==========\n/// ===============================\n///  CRM STAGE STRUCTURE\n///  - Etapa (coluna) do pipeline de CRM.\n///  - Cada loja possui seu pr\xF3prio conjunto de etapas.\n/// ===============================\n\nmodel CrmStage {\n  id          String   @id @default(cuid())\n  storeId     String\n  name        String\n  color       String? // cor no front-end\n  order       Int      @default(0) // posi\xE7\xE3o na ordem do pipeline\n  description String? // ex: "Clientes interessados"\n  isDefault   Boolean  @default(false) // primeira etapa padr\xE3o\n  isFinal     Boolean  @default(false) // etapa de fechamento (ganho/perda)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  store   Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  clients CrmClient[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([order])\n  @@map("crm_stages")\n}\n\n/// ===============================\n///  CRM CLIENT STRUCTURE\n///  - Representa um cliente / lead dentro do pipeline.\n///  - Pode se mover entre etapas (Kanban).\n/// ===============================\n\nmodel CrmClient {\n  id              String          @id @default(cuid())\n  storeId         String\n  stageId         String?\n  name            String\n  email           String?\n  phone           String?\n  cpfCnpj         String?\n  company         String?\n  position        String? // cargo (ex: comprador, gerente)\n  source          String? // origem do lead (ex: site, whatsapp, indica\xE7\xE3o)\n  status          CrmClientStatus @default(ACTIVE)\n  tags            Json? // ex: ["venda recorrente", "novo cliente"]\n  notes           String?\n  lastContactAt   DateTime?\n  nextContactAt   DateTime?\n  lastInteraction Json? // ex: { type: "call", date: "2025-10-31", userId: "..." }\n  ownerId         String? // respons\xE1vel pelo cliente\n  owner           User?           @relation(fields: [ownerId], references: [id], onDelete: SetNull)\n  archivedAt      DateTime? // lead arquivado\n  deletedAt       DateTime? // soft delete\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n\n  store Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  stage CrmStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)\n\n  @@index([storeId])\n  @@index([stageId])\n  @@index([ownerId])\n  @@index([status])\n  @@index([archivedAt])\n  @@map("crm_clients")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum CrmClientStatus {\n  ACTIVE // Lead ativo no pipeline\n  WON // Neg\xF3cio fechado com sucesso\n  LOST // Neg\xF3cio perdido\n  INACTIVE // Cliente desativado\n  ARCHIVED // Lead arquivado manualmente\n}\n\n// ========== flow.prisma ==========\n/// ===============================\n///  FLOW AUTOMATION STRUCTURE\n///  - Sistema de automa\xE7\xE3o baseado em nodes.\n///  - Cada flow pertence a uma loja e a um usu\xE1rio.\n///  - Pode conter triggers, conditions, actions e notifications.\n///  - Base para IA, notifica\xE7\xF5es autom\xE1ticas e rotinas.\n/// ===============================\n\nmodel Flow {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name        String\n  description String?\n  version     Int     @default(1) // para controle de vers\xF5es\n  category    String? // ex: "notifica\xE7\xE3o", "estoque", "CRM"\n\n  // Estrutura do workflow (ReactFlow)\n  nodes    Json // array de nodes\n  edges    Json // conex\xF5es entre nodes\n  metadata Json? // metadados do flow (layout, vari\xE1veis globais, etc.)\n\n  // Controle de status\n  status    FlowStatus @default(DRAFT)\n  isPublic  Boolean    @default(false)\n  deletedAt DateTime? // soft delete\n\n  // Associa\xE7\xE3o\n  storeId   String\n  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  createdBy String\n  creator   User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)\n\n  // Auditoria\n  createdAt  DateTime             @default(now())\n  updatedAt  DateTime             @updatedAt\n  lastRunAt  DateTime?\n  lastStatus FlowExecutionStatus?\n\n  // Rela\xE7\xF5es\n  flowNodes  FlowNode[]\n  executions FlowExecution[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("flows")\n}\n\nmodel FlowNode {\n  id           String       @id @default(cuid())\n  flowId       String\n  nodeId       String // ID do node (ReactFlow ID)\n  type         FlowNodeType\n  name         String? // nome vis\xEDvel no editor\n  config       Json // configura\xE7\xE3o do node (ex: { "trigger": "stock_low" })\n  order        Int          @default(0)\n  parentNodeId String? // para nodes agrupados\n  position     Json? // posi\xE7\xE3o no editor (x, y)\n  metadata     Json? // metadados adicionais\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  @@unique([flowId, nodeId])\n  @@index([type])\n  @@index([order])\n  @@map("flow_nodes")\n}\n\nmodel FlowExecution {\n  id     String @id @default(cuid())\n  flowId String\n  flow   Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  // Execu\xE7\xE3o\n  status       FlowExecutionStatus @default(RUNNING)\n  triggerType  String // ex: "stock_alert", "manual", "schedule"\n  triggerData  Json // payload do evento disparador\n  context      Json? // contexto adicional (ex: { "productId": "...", "userId": "..." })\n  executionLog Json? // logs detalhados (por node)\n  error        String?\n  durationMs   Int? // dura\xE7\xE3o total\n  startedAt    DateTime            @default(now())\n  completedAt  DateTime?\n\n  // Auditoria\n  executedById String?\n  executedBy   User?   @relation(fields: [executedById], references: [id], onDelete: SetNull)\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  @@index([flowId])\n  @@index([status])\n  @@index([startedAt])\n  @@index([storeId])\n  @@map("flow_executions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum FlowStatus {\n  ACTIVE\n  INACTIVE\n  DRAFT\n}\n\nenum FlowNodeType {\n  TRIGGER\n  CONDITION\n  ACTION\n  NOTIFICATION\n}\n\nenum FlowExecutionStatus {\n  SUCCESS\n  FAILED\n  RUNNING\n  CANCELLED\n}\n\n// ========== chat.prisma ==========\n/// ===============================\n///  CHAT FEATURE (AI ASSISTANT)\n///  - Sistema de chat com IA integrado ao 25Stock.\n///  - Cada sess\xE3o pertence a um usu\xE1rio (e opcionalmente a uma loja).\n///  - Permite m\xFAltiplas sess\xF5es simult\xE2neas.\n/// ===============================\n\nmodel ChatSession {\n  id          String    @id @default(cuid())\n  userId      String\n  storeId     String?\n  title       String? // t\xEDtulo exibido no hist\xF3rico (ex: "Reajuste de pre\xE7os")\n  model       String? // modelo usado (ex: gpt-4-turbo)\n  temperature Float? // temperatura padr\xE3o da sess\xE3o\n  context     Json? // contexto global da sess\xE3o (loja, user, hist\xF3rico)\n  metadata    Json? // dados adicionais (ex: tags, origem)\n  active      Boolean   @default(true)\n  isPinned    Boolean   @default(false) // fixado no topo\n  deletedAt   DateTime? // soft delete\n\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastActivityAt DateTime? // \xFAltima mensagem trocada\n\n  // Rela\xE7\xF5es\n  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  store    Store?        @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  messages ChatMessage[]\n\n  @@index([userId])\n  @@index([storeId])\n  @@index([createdAt])\n  @@index([deletedAt])\n  @@map("chat_sessions")\n}\n\n/// ===============================\n///  CHAT MESSAGE\n///  - Cada mensagem trocada (usu\xE1rio \u2194 IA)\n/// ===============================\n\nmodel ChatMessage {\n  id        String          @id @default(cuid())\n  sessionId String\n  role      ChatMessageRole @default(USER)\n  content   String\n  tokens    Int? // n\xFAmero de tokens consumidos\n  model     String? // modelo usado nessa resposta (pode mudar)\n  context   Json? // contexto adicional (dados da loja, produto, etc.)\n  options   Json? // par\xE2metros de gera\xE7\xE3o (temperature, top_p, etc.)\n  error     String? // erro da gera\xE7\xE3o (se houver)\n  cost      Decimal?        @db.Decimal(10, 4) // custo da requisi\xE7\xE3o\n  latencyMs Int? // dura\xE7\xE3o da requisi\xE7\xE3o\n  isFinal   Boolean         @default(false) // resposta finalizada\n  createdAt DateTime        @default(now())\n  updatedAt DateTime        @updatedAt\n\n  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n\n  @@index([sessionId])\n  @@index([role])\n  @@index([createdAt])\n  @@map("chat_messages")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum ChatMessageRole {\n  USER // Usu\xE1rio humano\n  ASSISTANT // Resposta da IA\n  SYSTEM // Mensagem de sistema ou contexto\n  TOOL // Execu\xE7\xE3o de ferramenta (ex: busca, a\xE7\xE3o)\n}\n\n/// ===============================\n///  DOCUMENT MANAGEMENT STRUCTURE\n///  - Sistema de cria\xE7\xE3o, edi\xE7\xE3o e organiza\xE7\xE3o de documentos internos.\n///  - Cada documento pertence a uma Store e pode ser criado/editado por um User.\n///  - Suporte a pastas, versionamento, templates e automa\xE7\xF5es.\n/// ===============================\n\nmodel DocumentFolder {\n  id      String @id @default(cuid())\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  name        String\n  description String?\n  color       String? // opcional: cor para exibi\xE7\xE3o no front\n  icon        String? // ex: "folder", "file-text"\n  parentId    String? // subpastas\n  parent      DocumentFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id])\n  children    DocumentFolder[] @relation("FolderHierarchy")\n\n  // Controle e auditoria\n  createdById String?\n  createdBy   User?     @relation("FolderCreatedBy", fields: [createdById], references: [id])\n  deletedAt   DateTime?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  documents Document[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([parentId])\n  @@index([deletedAt])\n  @@map("document_folders")\n}\n\nmodel Document {\n  id String @id @default(cuid())\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  folderId String?\n  folder   DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)\n\n  title      String\n  type       DocumentType       @default(TEXT) // texto, PDF, DOCX\n  format     DocumentFormat? // "markdown", "html", "json", "docx", etc.\n  content    Json? // conte\xFAdo serializado (Tiptap JSON, por exemplo)\n  path       String? // caminho no storage local/S3\n  version    Int                @default(1)\n  size       Int?\n  mimeType   String?\n  visibility DocumentVisibility @default(PRIVATE)\n\n  // Controle de autoria\n  createdById String?\n  createdBy   User?   @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)\n  updatedById String?\n  updatedBy   User?   @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)\n\n  // Status e controle\n  status    DocumentStatus @default(ACTIVE)\n  pinned    Boolean        @default(false)\n  deletedAt DateTime?\n\n  // Auditoria\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastAccessedAt DateTime?\n\n  // Relacionamentos\n  versions DocumentVersion[]\n\n  @@index([storeId])\n  @@index([folderId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdById])\n  @@index([updatedById])\n  @@index([title])\n  @@map("documents")\n}\n\nmodel DocumentVersion {\n  id         String   @id @default(cuid())\n  documentId String\n  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)\n\n  version     Int\n  content     Json?\n  createdById String?\n  createdBy   User?    @relation("DocumentVersionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)\n  createdAt   DateTime @default(now())\n\n  @@unique([documentId, version])\n  @@index([documentId])\n  @@index([createdById])\n  @@map("document_versions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum DocumentType {\n  TEXT // conte\xFAdo JSON (Tiptap, Markdown, etc.)\n  DOCX // arquivo do Word\n  PDF // documento PDF\n  TEMPLATE // modelo reutiliz\xE1vel\n  OTHER\n}\n\nenum DocumentFormat {\n  MARKDOWN\n  HTML\n  JSON\n  DOCX\n  PDF\n}\n\nenum DocumentStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n}\n\nenum DocumentVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n',
-      "inlineSchemaHash": "1a4abe1eceddcbadf481b0eeb823db20daca9939acf7b662a1f1f1e57aa94623",
+      "inlineSchema": 'generator client {\n  provider      = "prisma-client-js"\n  output        = "../src/generated/prisma"\n  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\n// ========== user.prisma ==========\n/// ===============================\n///  USER & STORE STRUCTURE\n///  - Cada usu\xE1rio pertence a uma \xFAnica loja.\n///  - Dono (isOwner = true) \xE9 o criador da loja.\n///  - Permiss\xF5es s\xE3o granulares (ACL).\n///  - Soft delete com deletedAt.\n/// ===============================\n\nmodel User {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  email    String  @unique\n  password String\n  name     String?\n  phone    String?\n\n  // Associa\xE7\xE3o direta com a loja\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Controle de status e hierarquia\n  isOwner     Boolean   @default(false)\n  status      Boolean   @default(true)\n  deletedAt   DateTime?\n  deletedById String?\n  deletedBy   User?     @relation("UserDeleted", fields: [deletedById], references: [id])\n  suspendedAt DateTime? // bloqueio tempor\xE1rio\n\n  invitedById       String?\n  invitedBy         User?     @relation("UserInviter", fields: [invitedById], references: [id])\n  acceptedAt        DateTime?\n  inviteCode        String?   @unique\n  pendingInvitation Boolean   @default(false)\n\n  ownedStore Store? @relation("StoreOwner")\n\n  // Auditoria e seguran\xE7a\n  createdAt    DateTime  @default(now())\n  updatedAt    DateTime  @updatedAt\n  lastLoginAt  DateTime?\n  lastActiveAt DateTime?\n\n  emailVerified                Boolean   @default(false)\n  emailVerificationToken       String?\n  emailVerificationCode        String?\n  emailVerificationCodeExpires DateTime?\n  resetPasswordToken           String?\n  resetPasswordExpires         DateTime?\n\n  // Rela\xE7\xF5es\n  permissions              UserPermission[]\n  preferences              UserPreferences?\n  notifications            Notification[]\n  media                    UserMedia[]\n  uploadedMedia            Media[]\n  quotes                   Quote[]\n  createdDocumentFolders   DocumentFolder[]   @relation("FolderCreatedBy")\n  createdDocuments         Document[]         @relation("DocumentCreatedBy")\n  updatedDocuments         Document[]         @relation("DocumentUpdatedBy")\n  createdDocumentVersions  DocumentVersion[]  @relation("DocumentVersionCreatedBy")\n  createdSpaces            Space[]            @relation("SpaceCreatedBy")\n  createdShifts            Shift[]            @relation("ShiftCreatedBy")\n  createdSchedules         Schedule[]         @relation("ScheduleCreatedBy")\n  createdShiftParticipants ShiftParticipant[] @relation("ShiftParticipantCreatedBy")\n  schedules                Schedule[]         @relation("ScheduleUser")\n  shiftParticipants        ShiftParticipant[] @relation("ShiftParticipantUser")\n\n  auditLogs      AuditLog[]\n  movements      Movement[]\n  roadmaps       Roadmap[]\n  createdFlows   Flow[]\n  flowExecutions FlowExecution[]\n  crmClients     CrmClient[]\n  chatSessions   ChatSession[]\n\n  // Rela\xE7\xF5es auto-referenciais\n  invitedUsers User[] @relation("UserInviter")\n  deletedUsers User[] @relation("UserDeleted")\n\n  // \xCDndices estrat\xE9gicos\n  @@index([storeId])\n  @@index([storeId, isOwner])\n  @@index([status])\n  @@index([deletedAt])\n  @@map("users")\n}\n\nmodel UserPermission {\n  id     String @id @default(cuid())\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  action     String // Ex: "create", "update", "delete"\n  resource   String // Ex: "product", "supplier"\n  scope      String? // m\xF3dulo l\xF3gico ex: "inventory", "crm"\n  grant      Boolean   @default(true)\n  expiresAt  DateTime? // expira\xE7\xE3o da permiss\xE3o (tempor\xE1ria)\n  conditions Json? // Ex: { "category": "Bebidas" }\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([userId, action, resource])\n  @@index([userId])\n  @@index([resource])\n  @@index([scope])\n  @@map("user_permissions")\n}\n\nmodel UserPreferences {\n  id     String @id @default(cuid())\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // ===== THEME & UI =====\n  theme            String  @default("light")\n  primaryColor     String?\n  sidebarCollapsed Boolean @default(false)\n  compactMode      Boolean @default(false)\n  uiScale          Float   @default(1.0) // escala visual (zoom/acessibilidade)\n\n  // ===== LANGUAGE & LOCALIZATION =====\n  language     String @default("pt-BR")\n  currency     String @default("BRL")\n  timezone     String @default("America/Sao_Paulo")\n  dateFormat   String @default("DD/MM/YYYY")\n  timeFormat   String @default("24h")\n  numberFormat String @default("pt-BR")\n\n  // ===== NOTIFICATION PREFERENCES =====\n  emailNotifications Boolean @default(true)\n  pushNotifications  Boolean @default(true)\n  smsNotifications   Boolean @default(false)\n  notificationTypes  Json?\n\n  // ===== DASHBOARD & LAYOUT =====\n  dashboardLayout Json?\n  defaultPage     String?\n  itemsPerPage    Int     @default(20)\n\n  // ===== BEHAVIOR =====\n  autoRefresh     Boolean @default(true)\n  refreshInterval Int     @default(30)\n\n  // ===== ADVANCED =====\n  customSettings      Json?\n  aiAssistantSettings Json? // IA / LLM settings por usu\xE1rio\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId])\n  @@map("user_preferences")\n}\n\n// ========== store.prisma ==========\n/// ===============================\n///  STORE STRUCTURE\n///  - Cada loja tem um \xFAnico dono (ownerId).\n///  - Usu\xE1rios pertencem diretamente \xE0 loja.\n///  - Suporte a soft delete e auditoria.\n///  - Base pronta para IA, billing e opera\xE7\xF5es.\n/// ===============================\n\nmodel Store {\n  id      String  @id @default(cuid())\n  ownerId String? @unique\n  owner   User?   @relation("StoreOwner", fields: [ownerId], references: [id])\n\n  // Identifica\xE7\xE3o e dados b\xE1sicos\n  name        String\n  cnpj        String  @unique\n  email       String?\n  phone       String?\n  description String? // opcional: pode ser mostrado no dashboard\n  logoUrl     String? // opcional: imagem da loja\n  website     String? // opcional\n\n  // Endere\xE7o\n  cep     String?\n  city    String?\n  state   String?\n  address String?\n\n  // Controle e status\n  status      Boolean   @default(true)\n  deletedAt   DateTime? // soft delete (loja desativada)\n  suspendedAt DateTime? // bloqueio tempor\xE1rio (ex: problema no pagamento)\n  plan        String? // nome do plano atual (sincronizado com tabela de billing)\n  timezone    String?   @default("America/Sao_Paulo")\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // Rela\xE7\xF5es com m\xF3dulos do sistema\n  users             User[] // todos os usu\xE1rios dessa loja\n  products          Product[]\n  categories        Category[]\n  suppliers         Supplier[]\n  movements         Movement[]\n  media             StoreMedia[]\n  uploadedMedia     Media[]\n  roadmaps          Roadmap[]\n  crmStages         CrmStage[]\n  crmClients        CrmClient[]\n  flows             Flow[]\n  flowExecutions    FlowExecution[]\n  auditLogs         AuditLog[]\n  notifications     Notification[]\n  quotes            Quote[]\n  chatSessions      ChatSession[]\n  subscription      Subscription?\n  documentFolders   DocumentFolder[]\n  documents         Document[]\n  spaces            Space[]\n  shifts            Shift[]\n  schedules         Schedule[]\n  shiftParticipants ShiftParticipant[]\n\n  // Configura\xE7\xF5es adicionais (JSON flex\xEDvel)\n  settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }\n\n  // \xCDndices estrat\xE9gicos\n  @@index([status])\n  @@index([deletedAt])\n  @@index([ownerId])\n  @@index([city])\n  @@index([state])\n}\n\n// ========== product.prisma ==========\n/// ===============================\n///  PRODUCT STRUCTURE\n///  - Cada produto pertence a uma loja.\n///  - Pode ter um fornecedor vinculado.\n///  - Suporte a categorias, m\xEDdia, controle de estoque e rastreabilidade.\n///  - Soft delete e campos para IA e relat\xF3rios.\n/// ===============================\n\nmodel Product {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name          String\n  sku           String? @unique // SKU interno (opcional)\n  barcode       String? @unique // EAN/UPC opcional\n  referenceCode String? // c\xF3digo interno curto (ex: "PRD-001")\n  description   String?\n\n  // Unidade e precifica\xE7\xE3o\n  unitOfMeasure  UnitOfMeasure\n  referencePrice Decimal       @db.Decimal(10, 2) // pre\xE7o de refer\xEAncia\n  costPrice      Decimal?      @db.Decimal(10, 2) // custo m\xE9dio\n  markupPercent  Decimal?      @db.Decimal(5, 2) // margem sobre o custo (%)\n  currency       String        @default("BRL")\n\n  // Estoque\n  stockCurrent    Int     @default(0)\n  stockMin        Int     @default(0)\n  stockMax        Int     @default(0)\n  alertPercentage Int     @default(20) @db.SmallInt\n  allowNegative   Boolean @default(false)\n\n  // Controle de lote / validade (para alimentos, medicamentos etc.)\n  batchTracked   Boolean   @default(false)\n  expirationDate DateTime? // validade do produto principal (se aplic\xE1vel)\n\n  // Associa\xE7\xE3o\n  storeId    String\n  supplierId String?\n  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Rela\xE7\xF5es\n  movements  Movement[]\n  categories ProductCategory[]\n  media      ProductMedia[]\n  quotes     QuoteItem[]\n  resources  Resource[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["bebida", "perec\xEDvel"]\n  metadata Json? // ex: { "ncm": "2202.10.00", "origem": "nacional" }\n\n  // \xCDndices e constraints\n  @@index([storeId])\n  @@index([supplierId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n  @@index([sku])\n}\n\nenum UnitOfMeasure {\n  UNIDADE\n  KG\n  L\n  ML\n  M\n  CM\n  MM\n  UN\n  DZ\n  CX\n  PCT\n  KIT\n  PAR\n  H\n  D\n}\n\n// ========== category.prisma ==========\n/// ===============================\n///  CATEGORY STRUCTURE\n///  - Cada loja possui suas pr\xF3prias categorias.\n///  - Suporte a subcategorias (hierarquia).\n///  - Soft delete, cor, \xEDcone e metadados.\n///  - Associada a produtos via tabela ProductCategory.\n/// ===============================\n\nmodel Category {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e exibi\xE7\xE3o\n  name        String\n  description String?\n  code        String? // c\xF3digo interno (opcional, ex: CAT-001)\n  color       String? // cor no painel ex: "#3B82F6"\n  icon        String? // \xEDcone do front ex: "box", "truck", "chart"\n\n  // Hierarquia\n  parentId String?\n  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])\n  children Category[] @relation("CategoryHierarchy")\n\n  // Loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e controle\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products ProductCategory[]\n\n  // Extens\xF5es e metadados\n  tags     Json? // ex: ["perec\xEDvel", "embalagem"]\n  metadata Json? // ex: { "priority": 1, "visibleInMenu": true }\n\n  // Restri\xE7\xF5es e \xEDndices\n  @@unique([code, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([name])\n}\n\nmodel ProductCategory {\n  id         String   @id @default(cuid())\n  productId  String\n  categoryId String\n  createdAt  DateTime @default(now())\n\n  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, categoryId])\n  @@index([categoryId])\n  @@index([productId])\n}\n\n// ========== supplier.prisma ==========\n/// ===============================\n///  SUPPLIER STRUCTURE\n///  - Fornecedor pertence a uma loja.\n///  - Pode ter v\xE1rios respons\xE1veis (SupplierResponsible).\n///  - Suporte a m\xEDdia, auditoria e soft delete.\n/// ===============================\n\nmodel Supplier {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  corporateName String // Raz\xE3o social\n  tradeName     String? // Nome fantasia\n  cnpj          String\n  ie            String? // Inscri\xE7\xE3o estadual opcional\n  email         String?\n  phone         String?\n  website       String?\n  description   String? // Observa\xE7\xE3o interna\n\n  // Localiza\xE7\xE3o\n  cep        String?\n  city       String?\n  state      String?\n  address    String?\n  complement String?\n\n  // Relacionamento com a loja\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Status e auditoria\n  status    Boolean   @default(true)\n  deletedAt DateTime? // soft delete\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // Relacionamentos\n  products     Product[]\n  movements    Movement[]\n  responsibles SupplierResponsible[]\n  media        SupplierMedia[]\n\n  // Configura\xE7\xF5es / metadados (extens\xEDvel)\n  tags     Json? // Ex: ["distribuidor", "nacional"]\n  metadata Json? // Ex: { "frete": "pr\xF3prio", "tempoEntrega": "48h" }\n\n  @@unique([cnpj, storeId])\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n}\n\nmodel SupplierResponsible {\n  id         String   @id @default(cuid())\n  supplierId String\n  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n\n  name        String\n  role        String? // cargo ex: "Vendas", "Financeiro", "Log\xEDstica"\n  phone       String?\n  email       String?\n  cpf         String?\n  whatsapp    Boolean   @default(false) // se esse contato \xE9 via WhatsApp\n  mainContact Boolean   @default(false) // define se \xE9 o contato principal\n  notes       String? // observa\xE7\xF5es internas\n  status      Boolean   @default(true)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  deletedAt   DateTime? // soft delete\n\n  @@index([supplierId])\n  @@index([status])\n  @@index([mainContact])\n}\n\n// ========== movement.prisma ==========\n/// ===============================\n///  MOVEMENT STRUCTURE\n///  - Registra qualquer entrada, sa\xEDda ou perda de produto.\n///  - Controla saldo, custo e origem.\n///  - \xC9 base para relat\xF3rios, IA e auditoria de estoque.\n/// ===============================\n\nmodel Movement {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o e contexto\n  type          MovementType // ENTRADA, SAIDA, PERDA\n  origin        MovementOrigin? // motivo ou contexto da movimenta\xE7\xE3o\n  referenceCode String? // c\xF3digo externo opcional (nota, pedido, etc.)\n  note          String? // observa\xE7\xF5es gerais\n\n  // Estoque e valores\n  quantity      Int\n  price         Decimal?  @db.Decimal(10, 2) // valor unit\xE1rio da movimenta\xE7\xE3o\n  totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price\n  balanceBefore Int? // estoque antes da movimenta\xE7\xE3o\n  balanceAfter  Int? // estoque ap\xF3s a movimenta\xE7\xE3o\n  batch         String? // lote\n  expiration    DateTime? // validade (se aplic\xE1vel)\n\n  // Relacionamentos\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  supplierId String?\n  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)\n\n  userId String? // quem registrou\n  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n\n  // Verifica\xE7\xE3o e controle\n  verified         Boolean   @default(false)\n  verifiedAt       DateTime?\n  verifiedBy       String?\n  verificationNote String?\n\n  // Cancelamento\n  cancelled          Boolean   @default(false)\n  cancelledAt        DateTime?\n  cancelledBy        String?\n  cancellationReason String?\n\n  // Auditoria e status\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete, se precisar reverter algo manualmente\n\n  // Metadados e IA\n  metadata Json? // dados extras: { "source": "import", "autoGenerated": true }\n\n  // \xCDndices e otimiza\xE7\xF5es\n  @@index([storeId])\n  @@index([productId])\n  @@index([type])\n  @@index([createdAt])\n  @@index([cancelled])\n  @@index([verified])\n}\n\n/// ===============================\n///  MOVEMENT ENUMS\n///  - Type = dire\xE7\xE3o da movimenta\xE7\xE3o (entrada/sa\xEDda/perda)\n///  - Origin = motivo ou contexto da movimenta\xE7\xE3o\n/// ===============================\n\nenum MovementType {\n  INBOUND // Entrada de produtos no estoque\n  OUTBOUND // Sa\xEDda de produtos\n  LOSS // Perda ou descarte\n}\n\nenum MovementOrigin {\n  PURCHASE // Compra de fornecedor\n  SALE // Venda a cliente\n  RETURN // Devolu\xE7\xE3o de cliente\n  SUPPLIER_RETURN // Devolu\xE7\xE3o ao fornecedor\n  ADJUSTMENT // Ajuste manual de estoque\n  TRANSFER // Transfer\xEAncia entre locais\n  INVENTORY // Ajuste por contagem/invent\xE1rio\n  DAMAGE // Quebra ou dano\n  EXPIRATION // Produto vencido\n  OTHER // Outro motivo n\xE3o especificado  \n}\n\n// ========== billing.prisma ==========\n/// ===============================\n///  BILLING (Polar.sh Integration)\n///  - Polar \xE9 o sistema de cobran\xE7a principal.\n///  - O backend apenas espelha status e refer\xEAncias.\n/// ===============================\n\nmodel Subscription {\n  id      String @id @default(cuid())\n  storeId String @unique\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  // Polar references\n  polarCustomerId     String? @unique\n  polarSubscriptionId String? @unique\n  polarProductId      String? // plano ativo no Polar\n  polarPlanName       String? // redund\xE2ncia para exibi\xE7\xE3o r\xE1pida no painel\n\n  // Status tracking\n  status           SubscriptionStatus @default(ACTIVE)\n  currentPeriodEnd DateTime? // data de renova\xE7\xE3o ou expira\xE7\xE3o\n  trialEndsAt      DateTime?\n  cancelledAt      DateTime?\n  renewalCount     Int                @default(0)\n\n  // Dados financeiros b\xE1sicos\n  priceAmount   Decimal?      @db.Decimal(10, 2)\n  priceInterval PlanInterval? // MONTHLY, YEARLY (espelhado do Polar)\n  currency      String?       @default("BRL")\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  invoices  Invoice[]\n\n  @@index([status])\n  @@index([polarSubscriptionId])\n  @@index([storeId])\n}\n\nmodel Invoice {\n  id             String       @id @default(cuid())\n  subscriptionId String\n  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)\n\n  // Dados do Polar\n  polarInvoiceId String?       @unique\n  amount         Decimal       @db.Decimal(10, 2)\n  currency       String?       @default("BRL")\n  status         InvoiceStatus @default(PENDING)\n  paymentDate    DateTime?\n  dueDate        DateTime?\n  createdAt      DateTime      @default(now())\n\n  @@index([status])\n  @@index([subscriptionId])\n}\n\nenum SubscriptionStatus {\n  ACTIVE\n  INACTIVE\n  CANCELLED\n  TRIAL\n  EXPIRED\n  PAST_DUE\n}\n\nenum PlanInterval {\n  MONTHLY\n  YEARLY\n}\n\nenum InvoiceStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n}\n\n// ========== quote.prisma ==========\n/// ===============================\n///  QUOTATION (QUOTE) STRUCTURE\n///  - Or\xE7amentos criados pelos usu\xE1rios.\n///  - Possuem link p\xFAblico seguro (publicId + authCode).\n///  - Base para aprova\xE7\xF5es, convers\xF5es e vendas.\n/// ===============================\n\nmodel Quote {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  storeId      String\n  store        Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId       String\n  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  customerId   String? // futuro: cliente vinculado (CRM)\n  customerName String? // nome do cliente externo (sem login)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n  publicId    String  @unique @default(uuid()) // usado no link p\xFAblico\n  authCode    String  @default(uuid()) // valida acesso sem login\n\n  // Status e controle\n  status       QuoteStatus @default(DRAFT)\n  expiresAt    DateTime?\n  viewedAt     DateTime?\n  approvedAt   DateTime?\n  rejectedAt   DateTime?\n  convertedAt  DateTime?\n  canceledAt   DateTime?\n  approvalNote String? // observa\xE7\xE3o do cliente (motivo ou coment\xE1rio)\n  ipAddress    String? // IP de quem visualizou/aprovou\n  viewedBy     String? // email ou nome informado ao visualizar\n\n  // Valores\n  subtotal Decimal  @db.Decimal(10, 2)\n  discount Decimal? @db.Decimal(10, 2)\n  interest Decimal? @db.Decimal(10, 2)\n  total    Decimal  @db.Decimal(10, 2)\n  currency String   @default("BRL")\n\n  // Pagamento\n  paymentType    PaymentType @default(UNDEFINED)\n  paymentTerms   String? // ex: "6x sem juros"\n  paymentDueDays Int? // ex: 15 dias no boleto\n\n  // Observa\xE7\xF5es e anota\xE7\xF5es\n  observations  String?\n  notesInternal String? // observa\xE7\xE3o vis\xEDvel apenas internamente (n\xE3o p\xFAblica)\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime? // soft delete\n\n  // Rela\xE7\xF5es\n  items        QuoteItem[]\n  installments QuoteInstallment[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([publicId])\n  @@index([createdAt])\n}\n\n/// ===============================\n///  QUOTE ITEM\n///  - Produtos inclu\xEDdos no or\xE7amento.\n/// ===============================\n\nmodel QuoteItem {\n  id        String   @id @default(cuid())\n  quoteId   String\n  productId String\n  quantity  Int\n  unitPrice Decimal  @db.Decimal(10, 2)\n  subtotal  Decimal  @db.Decimal(10, 2)\n  discount  Decimal? @db.Decimal(10, 2)\n  note      String?\n\n  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  @@unique([quoteId, productId])\n  @@index([quoteId])\n}\n\n/// ===============================\n///  QUOTE INSTALLMENTS\n///  - Parcelas de pagamento do or\xE7amento.\n/// ===============================\n\nmodel QuoteInstallment {\n  id       String    @id @default(cuid())\n  quoteId  String\n  number   Int // n\xFAmero da parcela\n  dueDate  DateTime\n  amount   Decimal   @db.Decimal(10, 2)\n  interest Decimal?  @db.Decimal(10, 2)\n  paidAt   DateTime?\n\n  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)\n\n  @@index([quoteId])\n  @@map("quote_installments")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum PaymentType {\n  UNDEFINED\n  PIX\n  BOLETO\n  CREDIT_CARD\n  CASH\n  TRANSFER\n}\n\nenum QuoteStatus {\n  DRAFT // Em edi\xE7\xE3o\n  PUBLISHED // Link p\xFAblico ativo\n  SENT // Enviado ao cliente\n  VIEWED // Cliente visualizou\n  APPROVED // Cliente aprovou\n  REJECTED // Cliente recusou\n  EXPIRED // Passou da validade\n  CONVERTED // Virou venda\n  CANCELED // Cancelado\n}\n\n// ========== notification.prisma ==========\n/// ===============================\n///  NOTIFICATION STRUCTURE\n///  - Sistema unificado de notifica\xE7\xF5es.\n///  - Cada notifica\xE7\xE3o pertence a um usu\xE1rio e loja.\n///  - Pode ser enviada via v\xE1rios canais (push, email, sms).\n///  - Base para alertas autom\xE1ticos, workflows e IA.\n/// ===============================\n\nmodel Notification {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o principal\n  userId  String\n  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  // Conte\xFAdo\n  title    String\n  message  String\n  type     NotificationType     @default(INFO)\n  priority NotificationPriority @default(MEDIUM)\n\n  // Estado de leitura\n  isRead Boolean   @default(false)\n  readAt DateTime?\n\n  // Entrega e canais\n  channel       NotificationChannel @default(IN_APP)\n  sentAt        DateTime?\n  deliveredAt   DateTime?\n  deliveryError String?\n\n  // Expira\xE7\xE3o e a\xE7\xE3o\n  actionUrl String?\n  expiresAt DateTime?\n  data      Json? // dados adicionais (ex: { productId, movementId, severity })\n\n  // Auditoria e controle\n  deletedAt DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  // \xCDndices\n  @@index([userId])\n  @@index([storeId])\n  @@index([type])\n  @@index([isRead])\n  @@index([priority])\n  @@index([createdAt])\n  @@map("notifications")\n}\n\nenum NotificationType {\n  INFO // Informa\xE7\xE3o geral\n  SUCCESS // Sucesso/confirma\xE7\xE3o\n  WARNING // Aviso ou aten\xE7\xE3o\n  ERROR // Erro ou falha\n  STOCK_ALERT // Alerta de estoque baixo\n  MOVEMENT // Movimenta\xE7\xE3o de estoque\n  PERMISSION // Permiss\xE3o / acesso\n  SYSTEM // Sistema / manuten\xE7\xE3o\n  BILLING // Assinatura, cobran\xE7a, pagamento\n  WORKFLOW // Fluxo automatizado\n}\n\nenum NotificationPriority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}\n\nenum NotificationChannel {\n  IN_APP // Notifica\xE7\xE3o interna do app\n  PUSH // Push Notification\n  EMAIL // E-mail\n  SMS // SMS\n  SYSTEM // Notifica\xE7\xE3o do sistema\n}\n\n// ========== audit.prisma ==========\n/// ===============================\n///  AUDIT LOG STRUCTURE\n///  - Rastreia todas as a\xE7\xF5es importantes do sistema.\n///  - Cada log registra o que mudou, quem fez e onde.\n///  - Base para auditorias, relat\xF3rios e seguran\xE7a.\n/// ===============================\n\nmodel AuditLog {\n  id String @id @default(cuid())\n\n  // Entidade e a\xE7\xE3o auditada\n  entity   AuditEntity\n  entityId String?\n  action   AuditAction\n\n  // Contexto e origem\n  userId    String?\n  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)\n  storeId   String? // para rastrear logs por loja\n  store     Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  ipAddress String? // IP de origem da a\xE7\xE3o\n  userAgent String? // navegador / dispositivo\n  source    String? // origem da a\xE7\xE3o: "web", "mobile", "api", "system"\n\n  // Dados de mudan\xE7a\n  before   Json? // estado anterior do registro\n  after    Json? // estado ap\xF3s a mudan\xE7a\n  metadata Json? // informa\xE7\xF5es adicionais (ex: rota, payload, headers)\n\n  // Auditoria temporal\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  // \xCDndices e otimiza\xE7\xE3o\n  @@index([entity])\n  @@index([storeId])\n  @@index([userId])\n  @@index([action])\n  @@index([createdAt])\n  @@map("audit_logs")\n}\n\nenum AuditAction {\n  CREATE\n  UPDATE\n  DELETE\n  LOGIN\n  LOGOUT\n  VERIFY\n  RESTORE\n}\n\nenum AuditEntity {\n  USER\n  STORE\n  PRODUCT\n  SUPPLIER\n  MOVEMENT\n  CATEGORY\n  QUOTE\n  FLOW\n  SYSTEM\n}\n\n// ========== media.prisma ==========\n/// ===============================\n///  MEDIA STRUCTURE\n///  - Representa qualquer arquivo enviado (imagem, v\xEDdeo, documento).\n///  - Associ\xE1vel a produto, fornecedor, loja ou usu\xE1rio.\n///  - Cont\xE9m informa\xE7\xF5es t\xE9cnicas e de origem.\n/// ===============================\n\nmodel Media {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o b\xE1sica\n  url       String // link p\xFAblico (Cloudinary, S3, Supabase, etc.)\n  name      String? // nome do arquivo original\n  type      String? // MIME type (ex: image/png, application/pdf)\n  extension String? // extens\xE3o (ex: jpg, pdf)\n  size      Int? // tamanho em bytes\n  hash      String? // hash opcional (para evitar duplica\xE7\xF5es)\n\n  // Origem e propriedade\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  uploadedById String?\n  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)\n\n  // Armazenamento e provider\n  provider    StorageProvider @default(SYSTEM)\n  storagePath String? // caminho interno no provider (ex: /products/uuid.png)\n  bucket      String? // bucket do S3 / Supabase\n  visibility  MediaVisibility @default(PRIVATE) // controle de acesso\n  status      MediaStatus     @default(ACTIVE)\n\n  // Metadados\n  metadata Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Rela\xE7\xF5es\n  productMedia  ProductMedia[]\n  supplierMedia SupplierMedia[]\n  userMedia     UserMedia[]\n  storeMedia    StoreMedia[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([uploadedById])\n  @@index([status])\n  @@index([visibility])\n  @@index([deletedAt])\n  @@map("media")\n}\n\n/// ===============================\n///  RELATION TABLES (many-to-many)\n///  - Permitem anexar m\xFAltiplos arquivos a produtos, usu\xE1rios, etc.\n/// ===============================\n\nmodel ProductMedia {\n  id        String  @id @default(cuid())\n  productId String\n  mediaId   String\n  isPrimary Boolean @default(false)\n  altText   String? // descri\xE7\xE3o alternativa para SEO / acessibilidade\n  sortOrder Int     @default(0)\n\n  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([productId, mediaId])\n  @@index([productId])\n  @@map("product_media")\n}\n\nmodel SupplierMedia {\n  id         String @id @default(cuid())\n  supplierId String\n  mediaId    String\n\n  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)\n  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([supplierId, mediaId])\n  @@map("supplier_media")\n}\n\nmodel UserMedia {\n  id      String @id @default(cuid())\n  userId  String\n  mediaId String\n\n  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, mediaId])\n  @@map("user_media")\n}\n\nmodel StoreMedia {\n  id      String @id @default(cuid())\n  storeId String\n  mediaId String\n\n  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)\n\n  @@unique([storeId, mediaId])\n  @@map("store_media")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum StorageProvider {\n  SYSTEM // Armazenamento local padr\xE3o\n  S3 // Amazon S3 / R2 / Wasabi\n  SUPABASE // Supabase Storage\n  CLOUDINARY // Cloudinary\n  GOOGLE_DRIVE // Google Drive API\n}\n\nenum MediaVisibility {\n  PRIVATE // vis\xEDvel apenas internamente\n  PUBLIC // acess\xEDvel publicamente\n  RESTRICTED // acess\xEDvel sob regra (ex: usu\xE1rios logados)\n}\n\nenum MediaStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n  PROCESSING\n}\n\n// ========== roadmap.prisma ==========\n/// ===============================\n///  ROADMAP STRUCTURE\n///  - Representa planos, metas ou projetos.\n///  - Pode estar associado a uma loja ou usu\xE1rio.\n///  - Cont\xE9m milestones (etapas com progresso e status).\n/// ===============================\n\nmodel Roadmap {\n  id String @id @default(cuid())\n\n  // Associa\xE7\xE3o\n  storeId String?\n  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  userId  String?\n  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o e descri\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle e status\n  status     RoadmapStatus     @default(ACTIVE)\n  visibility RoadmapVisibility @default(PRIVATE)\n  priority   RoadmapPriority   @default(MEDIUM)\n  progress   Int               @default(0) // progresso geral (m\xE9dia das milestones)\n  archived   Boolean           @default(false)\n  deletedAt  DateTime? // soft delete\n\n  // Datas\n  startDate DateTime?\n  endDate   DateTime?\n\n  // Auditoria\n  createdById String?\n  updatedById String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  // Rela\xE7\xF5es\n  milestones Milestone[]\n\n  // Metadados\n  tags     Json? // ex: ["estoque", "IA", "meta de venda"]\n  metadata Json? // configura\xE7\xF5es extras ou IA\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([userId])\n  @@index([status])\n  @@index([archived])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("roadmaps")\n}\n\n/// ===============================\n///  MILESTONE STRUCTURE\n///  - Etapas dentro de um roadmap.\n///  - Controla progresso, status e prazos.\n/// ===============================\n\nmodel Milestone {\n  id        String  @id @default(cuid())\n  roadmapId String\n  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)\n\n  // Identifica\xE7\xE3o\n  title       String\n  description String?\n\n  // Controle\n  status      MilestoneStatus @default(PENDING)\n  progress    Int             @default(0) // % conclu\xEDda (0\u2013100)\n  order       Int             @default(0) // posi\xE7\xE3o na timeline\n  priority    RoadmapPriority @default(MEDIUM)\n  blockedById String? // milestone dependente (opcional)\n  blockedBy   Milestone?      @relation("MilestoneDependency", fields: [blockedById], references: [id])\n  blocking    Milestone[]     @relation("MilestoneDependency") // milestones bloqueados por este\n\n  // Datas\n  startDate   DateTime?\n  endDate     DateTime?\n  completedAt DateTime?\n\n  // Auditoria\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  // Metadados\n  metadata Json? // informa\xE7\xF5es adicionais ou IA\n\n  // \xCDndices\n  @@index([roadmapId])\n  @@index([status])\n  @@index([priority])\n  @@index([order])\n  @@map("milestones")\n}\n\nenum RoadmapStatus {\n  ACTIVE\n  COMPLETED\n  ARCHIVED\n}\n\nenum RoadmapVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n\nenum RoadmapPriority {\n  LOW\n  MEDIUM\n  HIGH\n  CRITICAL\n}\n\nenum MilestoneStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  BLOCKED\n}\n\n// ========== crm.prisma ==========\n/// ===============================\n///  CRM STAGE STRUCTURE\n///  - Etapa (coluna) do pipeline de CRM.\n///  - Cada loja possui seu pr\xF3prio conjunto de etapas.\n/// ===============================\n\nmodel CrmStage {\n  id          String   @id @default(cuid())\n  storeId     String\n  name        String\n  color       String? // cor no front-end\n  order       Int      @default(0) // posi\xE7\xE3o na ordem do pipeline\n  description String? // ex: "Clientes interessados"\n  isDefault   Boolean  @default(false) // primeira etapa padr\xE3o\n  isFinal     Boolean  @default(false) // etapa de fechamento (ganho/perda)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  store   Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  clients CrmClient[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([order])\n  @@map("crm_stages")\n}\n\n/// ===============================\n///  CRM CLIENT STRUCTURE\n///  - Representa um cliente / lead dentro do pipeline.\n///  - Pode se mover entre etapas (Kanban).\n/// ===============================\n\nmodel CrmClient {\n  id              String          @id @default(cuid())\n  storeId         String\n  stageId         String?\n  name            String\n  email           String?\n  phone           String?\n  cpfCnpj         String?\n  company         String?\n  position        String? // cargo (ex: comprador, gerente)\n  source          String? // origem do lead (ex: site, whatsapp, indica\xE7\xE3o)\n  status          CrmClientStatus @default(ACTIVE)\n  tags            Json? // ex: ["venda recorrente", "novo cliente"]\n  notes           String?\n  lastContactAt   DateTime?\n  nextContactAt   DateTime?\n  lastInteraction Json? // ex: { type: "call", date: "2025-10-31", userId: "..." }\n  ownerId         String? // respons\xE1vel pelo cliente\n  owner           User?           @relation(fields: [ownerId], references: [id], onDelete: SetNull)\n  archivedAt      DateTime? // lead arquivado\n  deletedAt       DateTime? // soft delete\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n\n  store Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  stage CrmStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)\n\n  @@index([storeId])\n  @@index([stageId])\n  @@index([ownerId])\n  @@index([status])\n  @@index([archivedAt])\n  @@map("crm_clients")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum CrmClientStatus {\n  ACTIVE // Lead ativo no pipeline\n  WON // Neg\xF3cio fechado com sucesso\n  LOST // Neg\xF3cio perdido\n  INACTIVE // Cliente desativado\n  ARCHIVED // Lead arquivado manualmente\n}\n\n// ========== flow.prisma ==========\n/// ===============================\n///  FLOW AUTOMATION STRUCTURE\n///  - Sistema de automa\xE7\xE3o baseado em nodes.\n///  - Cada flow pertence a uma loja e a um usu\xE1rio.\n///  - Pode conter triggers, conditions, actions e notifications.\n///  - Base para IA, notifica\xE7\xF5es autom\xE1ticas e rotinas.\n/// ===============================\n\nmodel Flow {\n  id String @id @default(cuid())\n\n  // Identifica\xE7\xE3o\n  name        String\n  description String?\n  version     Int     @default(1) // para controle de vers\xF5es\n  category    String? // ex: "notifica\xE7\xE3o", "estoque", "CRM"\n\n  // Estrutura do workflow (ReactFlow)\n  nodes    Json // array de nodes\n  edges    Json // conex\xF5es entre nodes\n  metadata Json? // metadados do flow (layout, vari\xE1veis globais, etc.)\n\n  // Controle de status\n  status    FlowStatus @default(DRAFT)\n  isPublic  Boolean    @default(false)\n  deletedAt DateTime? // soft delete\n\n  // Associa\xE7\xE3o\n  storeId   String\n  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n  createdBy String\n  creator   User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)\n\n  // Auditoria\n  createdAt  DateTime             @default(now())\n  updatedAt  DateTime             @updatedAt\n  lastRunAt  DateTime?\n  lastStatus FlowExecutionStatus?\n\n  // Rela\xE7\xF5es\n  flowNodes  FlowNode[]\n  executions FlowExecution[]\n\n  // \xCDndices\n  @@index([storeId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdAt])\n  @@map("flows")\n}\n\nmodel FlowNode {\n  id           String       @id @default(cuid())\n  flowId       String\n  nodeId       String // ID do node (ReactFlow ID)\n  type         FlowNodeType\n  name         String? // nome vis\xEDvel no editor\n  config       Json // configura\xE7\xE3o do node (ex: { "trigger": "stock_low" })\n  order        Int          @default(0)\n  parentNodeId String? // para nodes agrupados\n  position     Json? // posi\xE7\xE3o no editor (x, y)\n  metadata     Json? // metadados adicionais\n\n  // Auditoria\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  @@unique([flowId, nodeId])\n  @@index([type])\n  @@index([order])\n  @@map("flow_nodes")\n}\n\nmodel FlowExecution {\n  id     String @id @default(cuid())\n  flowId String\n  flow   Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)\n\n  // Execu\xE7\xE3o\n  status       FlowExecutionStatus @default(RUNNING)\n  triggerType  String // ex: "stock_alert", "manual", "schedule"\n  triggerData  Json // payload do evento disparador\n  context      Json? // contexto adicional (ex: { "productId": "...", "userId": "..." })\n  executionLog Json? // logs detalhados (por node)\n  error        String?\n  durationMs   Int? // dura\xE7\xE3o total\n  startedAt    DateTime            @default(now())\n  completedAt  DateTime?\n\n  // Auditoria\n  executedById String?\n  executedBy   User?   @relation(fields: [executedById], references: [id], onDelete: SetNull)\n  storeId      String?\n  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)\n\n  @@index([flowId])\n  @@index([status])\n  @@index([startedAt])\n  @@index([storeId])\n  @@map("flow_executions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum FlowStatus {\n  ACTIVE\n  INACTIVE\n  DRAFT\n}\n\nenum FlowNodeType {\n  TRIGGER\n  CONDITION\n  ACTION\n  NOTIFICATION\n}\n\nenum FlowExecutionStatus {\n  SUCCESS\n  FAILED\n  RUNNING\n  CANCELLED\n}\n\n// ========== chat.prisma ==========\n/// ===============================\n///  CHAT FEATURE (AI ASSISTANT)\n///  - Sistema de chat com IA integrado ao 25Stock.\n///  - Cada sess\xE3o pertence a um usu\xE1rio (e opcionalmente a uma loja).\n///  - Permite m\xFAltiplas sess\xF5es simult\xE2neas.\n/// ===============================\n\nmodel ChatSession {\n  id          String    @id @default(cuid())\n  userId      String\n  storeId     String?\n  title       String? // t\xEDtulo exibido no hist\xF3rico (ex: "Reajuste de pre\xE7os")\n  model       String? // modelo usado (ex: gpt-4-turbo)\n  temperature Float? // temperatura padr\xE3o da sess\xE3o\n  context     Json? // contexto global da sess\xE3o (loja, user, hist\xF3rico)\n  metadata    Json? // dados adicionais (ex: tags, origem)\n  active      Boolean   @default(true)\n  isPinned    Boolean   @default(false) // fixado no topo\n  deletedAt   DateTime? // soft delete\n\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastActivityAt DateTime? // \xFAltima mensagem trocada\n\n  // Rela\xE7\xF5es\n  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  store    Store?        @relation(fields: [storeId], references: [id], onDelete: SetNull)\n  messages ChatMessage[]\n\n  @@index([userId])\n  @@index([storeId])\n  @@index([createdAt])\n  @@index([deletedAt])\n  @@map("chat_sessions")\n}\n\n/// ===============================\n///  CHAT MESSAGE\n///  - Cada mensagem trocada (usu\xE1rio \u2194 IA)\n/// ===============================\n\nmodel ChatMessage {\n  id        String          @id @default(cuid())\n  sessionId String\n  role      ChatMessageRole @default(USER)\n  content   String\n  tokens    Int? // n\xFAmero de tokens consumidos\n  model     String? // modelo usado nessa resposta (pode mudar)\n  context   Json? // contexto adicional (dados da loja, produto, etc.)\n  options   Json? // par\xE2metros de gera\xE7\xE3o (temperature, top_p, etc.)\n  error     String? // erro da gera\xE7\xE3o (se houver)\n  cost      Decimal?        @db.Decimal(10, 4) // custo da requisi\xE7\xE3o\n  latencyMs Int? // dura\xE7\xE3o da requisi\xE7\xE3o\n  isFinal   Boolean         @default(false) // resposta finalizada\n  createdAt DateTime        @default(now())\n  updatedAt DateTime        @updatedAt\n\n  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n\n  @@index([sessionId])\n  @@index([role])\n  @@index([createdAt])\n  @@map("chat_messages")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum ChatMessageRole {\n  USER // Usu\xE1rio humano\n  ASSISTANT // Resposta da IA\n  SYSTEM // Mensagem de sistema ou contexto\n  TOOL // Execu\xE7\xE3o de ferramenta (ex: busca, a\xE7\xE3o)\n}\n\n/// ===============================\n///  DOCUMENT MANAGEMENT STRUCTURE\n///  - Sistema de cria\xE7\xE3o, edi\xE7\xE3o e organiza\xE7\xE3o de documentos internos.\n///  - Cada documento pertence a uma Store e pode ser criado/editado por um User.\n///  - Suporte a pastas, versionamento, templates e automa\xE7\xF5es.\n/// ===============================\n\nmodel DocumentFolder {\n  id      String @id @default(cuid())\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  name        String\n  description String?\n  color       String? // opcional: cor para exibi\xE7\xE3o no front\n  icon        String? // ex: "folder", "file-text"\n  parentId    String? // subpastas\n  parent      DocumentFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id])\n  children    DocumentFolder[] @relation("FolderHierarchy")\n\n  // Controle e auditoria\n  createdById String?\n  createdBy   User?     @relation("FolderCreatedBy", fields: [createdById], references: [id])\n  deletedAt   DateTime?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  documents Document[]\n\n  @@unique([storeId, name])\n  @@index([storeId])\n  @@index([parentId])\n  @@index([deletedAt])\n  @@map("document_folders")\n}\n\nmodel Document {\n  id String @id @default(cuid())\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  folderId String?\n  folder   DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)\n\n  title      String\n  type       DocumentType       @default(TEXT) // texto, PDF, DOCX\n  format     DocumentFormat? // "markdown", "html", "json", "docx", etc.\n  content    Json? // conte\xFAdo serializado (Tiptap JSON, por exemplo)\n  path       String? // caminho no storage local/S3\n  version    Int                @default(1)\n  size       Int?\n  mimeType   String?\n  visibility DocumentVisibility @default(PRIVATE)\n\n  // Controle de autoria\n  createdById String?\n  createdBy   User?   @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)\n  updatedById String?\n  updatedBy   User?   @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)\n\n  // Status e controle\n  status    DocumentStatus @default(ACTIVE)\n  pinned    Boolean        @default(false)\n  deletedAt DateTime?\n\n  // Auditoria\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  lastAccessedAt DateTime?\n\n  // Relacionamentos\n  versions DocumentVersion[]\n\n  @@index([storeId])\n  @@index([folderId])\n  @@index([status])\n  @@index([deletedAt])\n  @@index([createdById])\n  @@index([updatedById])\n  @@index([title])\n  @@map("documents")\n}\n\nmodel DocumentVersion {\n  id         String   @id @default(cuid())\n  documentId String\n  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)\n\n  version     Int\n  content     Json?\n  createdById String?\n  createdBy   User?    @relation("DocumentVersionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)\n  createdAt   DateTime @default(now())\n\n  @@unique([documentId, version])\n  @@index([documentId])\n  @@index([createdById])\n  @@map("document_versions")\n}\n\n/// ===============================\n///  ENUMS\n/// ===============================\n\nenum DocumentType {\n  TEXT // conte\xFAdo JSON (Tiptap, Markdown, etc.)\n  DOCX // arquivo do Word\n  PDF // documento PDF\n  TEMPLATE // modelo reutiliz\xE1vel\n  OTHER\n}\n\nenum DocumentFormat {\n  MARKDOWN\n  HTML\n  JSON\n  DOCX\n  PDF\n}\n\nenum DocumentStatus {\n  ACTIVE\n  ARCHIVED\n  DELETED\n}\n\nenum DocumentVisibility {\n  PRIVATE\n  PUBLIC\n  INTERNAL\n}\n\n// =========================================\n// ESPA\xC7OS\n// =========================================\n\nmodel Space {\n  id          String  @id @default(cuid())\n  name        String\n  description String?\n  capacity    Int?\n  location    String?\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id])\n\n  createdById String\n  createdBy   User   @relation("SpaceCreatedBy", fields: [createdById], references: [id])\n\n  schedules Schedule[]\n  resources Resource[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\n// =========================================\n// AGENDAMENTOS\n// =========================================\n\nmodel Schedule {\n  id          String  @id @default(cuid())\n  title       String\n  description String?\n\n  // Hor\xE1rio base (primeira ocorr\xEAncia)\n  startTime DateTime\n  endTime   DateTime\n\n  // Regra de repeti\xE7\xE3o (RRULE padr\xE3o iCal)\n  rrule    String? // Ex: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR;UNTIL=2026-03-01T00:00:00Z"\n  timezone String? // Ex: "America/Sao_Paulo"\n\n  status ScheduleStatus @default(PENDING)\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  spaceId String\n  space   Space  @relation(fields: [spaceId], references: [id])\n\n  userId String\n  user   User   @relation("ScheduleUser", fields: [userId], references: [id])\n\n  createdById String\n  createdBy   User   @relation("ScheduleCreatedBy", fields: [createdById], references: [id])\n\n  resources   Resource[]\n  occurrences ScheduleOccurrence[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nenum ScheduleStatus {\n  PENDING\n  CONFIRMED\n  CANCELLED\n}\n\n// =========================================\n// OCORR\xCANCIAS (cada inst\xE2ncia da agenda)\n// =========================================\n\nmodel ScheduleOccurrence {\n  id         String   @id @default(cuid())\n  scheduleId String\n  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)\n\n  startTime DateTime\n  endTime   DateTime\n\n  status ScheduleStatus @default(PENDING)\n\n  shifts Shift[]\n\n  createdAt DateTime @default(now())\n\n  @@index([startTime, endTime])\n  @@index([scheduleId])\n}\n\n// =========================================\n// ESCALAS\n// =========================================\n\nmodel Shift {\n  id          String  @id @default(cuid())\n  name        String // Nome da escala ou papel (ex: "Instrutores")\n  description String?\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  occurrenceId String?\n  occurrence   ScheduleOccurrence? @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)\n\n  participants ShiftParticipant[]\n\n  createdById String\n  createdBy   User   @relation("ShiftCreatedBy", fields: [createdById], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel ShiftParticipant {\n  id      String @id @default(cuid())\n  shiftId String\n  shift   Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)\n\n  storeId String\n  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)\n\n  userId String\n  user   User   @relation("ShiftParticipantUser", fields: [userId], references: [id])\n\n  createdById String\n  createdBy   User   @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id])\n\n  role        String? // Ex: "Assistente", "L\xEDder"\n  status      ShiftStatus @default(PENDING)\n  confirmedAt DateTime?\n  deniedAt    DateTime?\n  note        String?\n\n  createdAt DateTime @default(now())\n}\n\nenum ShiftStatus {\n  PENDING\n  CONFIRMED\n  DECLINED\n}\n\nmodel Resource {\n  id          String       @id @default(cuid())\n  name        String\n  description String?\n  type        ResourceType\n  isAvailable Boolean      @default(true)\n  spaceId     String? // se for vinculado a um espa\xE7o f\xEDsico\n  productId   String? // se quiser vincular a um produto do ERP\n  schedules   Schedule[]\n  createdAt   DateTime     @default(now())\n  updatedAt   DateTime     @updatedAt\n\n  product Product? @relation(fields: [productId], references: [id])\n  space   Space?   @relation(fields: [spaceId], references: [id])\n}\n\nenum ResourceType {\n  EQUIPMENT\n  VEHICLE\n  FURNITURE\n  OTHER\n}\n',
+      "inlineSchemaHash": "ab57c03f8cd93c7cb1363475ea060ff019910e8263a0e27ca1eeeb82eda64d8f",
       "copyEngine": true
     };
     var fs3 = require("fs");
@@ -6701,7 +6799,7 @@ var require_prisma = __commonJS({
       config.dirname = path4.join(process.cwd(), alternativePath);
       config.isBundled = true;
     }
-    config.runtimeDataModel = JSON.parse('{"models":{"User":{"dbName":"users","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"password","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToUser","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"isOwner","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserDeleted","relationFromFields":["deletedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"suspendedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"invitedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"invitedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserInviter","relationFromFields":["invitedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"acceptedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"inviteCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"pendingInvitation","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"ownedStore","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreOwner","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastLoginAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastActiveAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerified","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationToken","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationCodeExpires","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resetPasswordToken","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resetPasswordExpires","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"permissions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserPermission","nativeType":null,"relationName":"UserToUserPermission","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"preferences","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserPreferences","nativeType":null,"relationName":"UserToUserPreferences","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"notifications","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Notification","nativeType":null,"relationName":"NotificationToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserMedia","nativeType":null,"relationName":"UserToUserMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocumentFolders","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocuments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"updatedDocuments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentUpdatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocumentVersions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentVersion","nativeType":null,"relationName":"DocumentVersionCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"subscription","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Subscription","nativeType":null,"relationName":"SubscriptionToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"auditLogs","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditLog","nativeType":null,"relationName":"AuditLogToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"roadmaps","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"RoadmapToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdFlows","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flowExecutions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowExecutionToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmClients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"chatSessions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatSessionToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"invitedUsers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserInviter","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"deletedUsers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserDeleted","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"UserPermission":{"dbName":"user_permissions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserPermission","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"action","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resource","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"scope","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"grant","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"conditions","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[["userId","action","resource"]],"uniqueIndexes":[{"name":null,"fields":["userId","action","resource"]}],"isGenerated":false},"UserPreferences":{"dbName":"user_preferences","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserPreferences","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"theme","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"light","isGenerated":false,"isUpdatedAt":false},{"name":"primaryColor","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sidebarCollapsed","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"compactMode","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"uiScale","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Float","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"language","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"pt-BR","isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"timezone","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"America/Sao_Paulo","isGenerated":false,"isUpdatedAt":false},{"name":"dateFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"DD/MM/YYYY","isGenerated":false,"isUpdatedAt":false},{"name":"timeFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"24h","isGenerated":false,"isUpdatedAt":false},{"name":"numberFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"pt-BR","isGenerated":false,"isUpdatedAt":false},{"name":"emailNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"pushNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"smsNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"notificationTypes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dashboardLayout","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"defaultPage","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"itemsPerPage","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":20,"isGenerated":false,"isUpdatedAt":false},{"name":"autoRefresh","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"refreshInterval","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":30,"isGenerated":false,"isUpdatedAt":false},{"name":"customSettings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"aiAssistantSettings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Store":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"ownerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"owner","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"StoreOwner","relationFromFields":["ownerId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cnpj","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"logoUrl","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"website","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cep","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"city","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"state","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"address","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"suspendedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"plan","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"timezone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"America/Sao_Paulo","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"users","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"StoreToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"categories","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"suppliers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"StoreToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"StoreMedia","nativeType":null,"relationName":"StoreToStoreMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"roadmaps","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"RoadmapToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmStages","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmStage","nativeType":null,"relationName":"CrmStageToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmClients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flows","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flowExecutions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowExecutionToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"auditLogs","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditLog","nativeType":null,"relationName":"AuditLogToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"notifications","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Notification","nativeType":null,"relationName":"NotificationToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"chatSessions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatSessionToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"documentFolders","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"DocumentFolderToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"documents","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"settings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Product":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sku","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"barcode","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referenceCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"unitOfMeasure","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UnitOfMeasure","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referencePrice","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"costPrice","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"markupPercent","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["5","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"stockCurrent","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"stockMin","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"stockMax","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"alertPercentage","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":["SmallInt",[]],"default":20,"isGenerated":false,"isUpdatedAt":false},{"name":"allowNegative","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"batchTracked","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"expirationDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ProductToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"ProductToSupplier","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToProduct","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"categories","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductCategory","nativeType":null,"relationName":"ProductToProductCategory","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductMedia","nativeType":null,"relationName":"ProductToProductMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteItem","nativeType":null,"relationName":"ProductToQuoteItem","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Category":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"code","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"icon","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parentId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parent","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryHierarchy","relationFromFields":["parentId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"children","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryHierarchy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CategoryToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductCategory","nativeType":null,"relationName":"CategoryToProductCategory","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["code","storeId"]],"uniqueIndexes":[{"name":null,"fields":["code","storeId"]}],"isGenerated":false},"ProductCategory":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"categoryId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToProductCategory","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"category","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryToProductCategory","relationFromFields":["categoryId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["productId","categoryId"]],"uniqueIndexes":[{"name":null,"fields":["productId","categoryId"]}],"isGenerated":false},"Supplier":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"corporateName","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"tradeName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cnpj","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ie","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"website","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cep","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"city","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"state","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"address","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"complement","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToSupplier","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"responsibles","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierResponsible","nativeType":null,"relationName":"SupplierToSupplierResponsible","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierMedia","nativeType":null,"relationName":"SupplierToSupplierMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["cnpj","storeId"]],"uniqueIndexes":[{"name":null,"fields":["cnpj","storeId"]}],"isGenerated":false},"SupplierResponsible":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"SupplierToSupplierResponsible","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"role","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cpf","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"whatsapp","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"mainContact","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"notes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Movement":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"MovementType","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"origin","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"MovementOrigin","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referenceCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"note","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quantity","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"price","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"totalValue","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"balanceBefore","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"balanceAfter","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"batch","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"expiration","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"MovementToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"MovementToProduct","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"MovementToSupplier","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"MovementToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"verified","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"verifiedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"verifiedBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"verificationNote","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelled","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancellationReason","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Subscription":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"SubscriptionToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"polarCustomerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarSubscriptionId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarProductId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarPlanName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"SubscriptionStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"currentPeriodEnd","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"trialEndsAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"renewalCount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"priceAmount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"priceInterval","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"PlanInterval","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"invoices","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Invoice","nativeType":null,"relationName":"InvoiceToSubscription","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Invoice":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"subscriptionId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"subscription","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Subscription","nativeType":null,"relationName":"InvoiceToSubscription","relationFromFields":["subscriptionId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"polarInvoiceId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"amount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"InvoiceStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"paymentDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dueDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Quote":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"QuoteToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"QuoteToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"customerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"customerName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"publicId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"uuid","args":[4]},"isGenerated":false,"isUpdatedAt":false},{"name":"authCode","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"uuid","args":[4]},"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"QuoteStatus","nativeType":null,"default":"DRAFT","isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"viewedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"approvedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"rejectedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"convertedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"canceledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"approvalNote","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ipAddress","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"viewedBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"subtotal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"discount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"interest","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"total","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"paymentType","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"PaymentType","nativeType":null,"default":"UNDEFINED","isGenerated":false,"isUpdatedAt":false},{"name":"paymentTerms","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"paymentDueDays","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"observations","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"notesInternal","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"items","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteItem","nativeType":null,"relationName":"QuoteToQuoteItem","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"installments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteInstallment","nativeType":null,"relationName":"QuoteToQuoteInstallment","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"QuoteItem":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"quoteId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quantity","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"unitPrice","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"subtotal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"discount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"note","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quote","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToQuoteItem","relationFromFields":["quoteId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToQuoteItem","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["quoteId","productId"]],"uniqueIndexes":[{"name":null,"fields":["quoteId","productId"]}],"isGenerated":false},"QuoteInstallment":{"dbName":"quote_installments","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"quoteId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"number","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dueDate","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"amount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"interest","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"paidAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quote","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToQuoteInstallment","relationFromFields":["quoteId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Notification":{"dbName":"notifications","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"NotificationToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"NotificationToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"message","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationType","nativeType":null,"default":"INFO","isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"isRead","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"readAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"channel","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationChannel","nativeType":null,"default":"IN_APP","isGenerated":false,"isUpdatedAt":false},{"name":"sentAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deliveredAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deliveryError","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"actionUrl","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"data","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"AuditLog":{"dbName":"audit_logs","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"entity","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditEntity","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"entityId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"action","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditAction","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"AuditLogToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"AuditLogToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"ipAddress","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"userAgent","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"source","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"before","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"after","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Media":{"dbName":"media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"url","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"extension","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"size","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"hash","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"MediaToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"uploadedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"MediaToUser","relationFromFields":["uploadedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"provider","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"StorageProvider","nativeType":null,"default":"SYSTEM","isGenerated":false,"isUpdatedAt":false},{"name":"storagePath","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"bucket","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MediaVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MediaStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"productMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductMedia","nativeType":null,"relationName":"MediaToProductMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"supplierMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierMedia","nativeType":null,"relationName":"MediaToSupplierMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"userMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserMedia","nativeType":null,"relationName":"MediaToUserMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"storeMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"StoreMedia","nativeType":null,"relationName":"MediaToStoreMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ProductMedia":{"dbName":"product_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isPrimary","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"altText","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sortOrder","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToProductMedia","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToProductMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["productId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["productId","mediaId"]}],"isGenerated":false},"SupplierMedia":{"dbName":"supplier_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"SupplierToSupplierMedia","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToSupplierMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["supplierId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["supplierId","mediaId"]}],"isGenerated":false},"UserMedia":{"dbName":"user_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserMedia","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToUserMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["userId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["userId","mediaId"]}],"isGenerated":false},"StoreMedia":{"dbName":"store_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToStoreMedia","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToStoreMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["storeId","mediaId"]}],"isGenerated":false},"Roadmap":{"dbName":"roadmaps","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"RoadmapToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"RoadmapToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"progress","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"archived","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"startDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"updatedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"milestones","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneToRoadmap","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Milestone":{"dbName":"milestones","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"roadmapId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"roadmap","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"MilestoneToRoadmap","relationFromFields":["roadmapId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MilestoneStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"progress","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"blockedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"blockedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneDependency","relationFromFields":["blockedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"blocking","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneDependency","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"startDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"completedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"CrmStage":{"dbName":"crm_stages","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isDefault","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"isFinal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CrmStageToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"clients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToCrmStage","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","name"]],"uniqueIndexes":[{"name":null,"fields":["storeId","name"]}],"isGenerated":false},"CrmClient":{"dbName":"crm_clients","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"stageId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cpfCnpj","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"company","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"position","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"source","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"CrmClientStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"notes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastContactAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nextContactAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastInteraction","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ownerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"owner","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"CrmClientToUser","relationFromFields":["ownerId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"archivedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CrmClientToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"stage","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmStage","nativeType":null,"relationName":"CrmClientToCrmStage","relationFromFields":["stageId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Flow":{"dbName":"flows","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"category","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nodes","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"edges","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"FlowStatus","nativeType":null,"default":"DRAFT","isGenerated":false,"isUpdatedAt":false},{"name":"isPublic","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"FlowToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"creator","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FlowToUser","relationFromFields":["createdBy"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastRunAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastStatus","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecutionStatus","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"flowNodes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowNode","nativeType":null,"relationName":"FlowToFlowNode","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"executions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowToFlowExecution","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"FlowNode":{"dbName":"flow_nodes","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"flowId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nodeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowNodeType","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"config","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"parentNodeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"position","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"flow","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToFlowNode","relationFromFields":["flowId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["flowId","nodeId"]],"uniqueIndexes":[{"name":null,"fields":["flowId","nodeId"]}],"isGenerated":false},"FlowExecution":{"dbName":"flow_executions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"flowId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"flow","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToFlowExecution","relationFromFields":["flowId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"FlowExecutionStatus","nativeType":null,"default":"RUNNING","isGenerated":false,"isUpdatedAt":false},{"name":"triggerType","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"triggerData","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executionLog","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"error","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"durationMs","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"startedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"completedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FlowExecutionToUser","relationFromFields":["executedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"FlowExecutionToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ChatSession":{"dbName":"chat_sessions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"model","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"temperature","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Float","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"active","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"isPinned","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastActivityAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ChatSessionToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ChatSessionToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"messages","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatMessage","nativeType":null,"relationName":"ChatMessageToChatSession","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ChatMessage":{"dbName":"chat_messages","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"sessionId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"role","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"ChatMessageRole","nativeType":null,"default":"USER","isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"tokens","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"model","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"options","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"error","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cost","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","4"]],"isGenerated":false,"isUpdatedAt":false},{"name":"latencyMs","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isFinal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"session","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatMessageToChatSession","relationFromFields":["sessionId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"DocumentFolder":{"dbName":"document_folders","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"DocumentFolderToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"icon","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parentId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parent","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderHierarchy","relationFromFields":["parentId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"children","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderHierarchy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FolderCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"documents","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToDocumentFolder","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","name"]],"uniqueIndexes":[{"name":null,"fields":["storeId","name"]}],"isGenerated":false},"Document":{"dbName":"documents","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"DocumentToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"folderId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"folder","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"DocumentToDocumentFolder","relationFromFields":["folderId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentType","nativeType":null,"default":"TEXT","isGenerated":false,"isUpdatedAt":false},{"name":"format","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFormat","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"path","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"size","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mimeType","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"updatedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"updatedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentUpdatedBy","relationFromFields":["updatedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"pinned","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastAccessedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"versions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentVersion","nativeType":null,"relationName":"DocumentToDocumentVersion","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"DocumentVersion":{"dbName":"document_versions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"documentId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"document","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToDocumentVersion","relationFromFields":["documentId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentVersionCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["documentId","version"]],"uniqueIndexes":[{"name":null,"fields":["documentId","version"]}],"isGenerated":false}},"enums":{"UnitOfMeasure":{"values":[{"name":"UNIDADE","dbName":null},{"name":"KG","dbName":null},{"name":"L","dbName":null},{"name":"ML","dbName":null},{"name":"M","dbName":null},{"name":"CM","dbName":null},{"name":"MM","dbName":null},{"name":"UN","dbName":null},{"name":"DZ","dbName":null},{"name":"CX","dbName":null},{"name":"PCT","dbName":null},{"name":"KIT","dbName":null},{"name":"PAR","dbName":null},{"name":"H","dbName":null},{"name":"D","dbName":null}],"dbName":null},"MovementType":{"values":[{"name":"INBOUND","dbName":null},{"name":"OUTBOUND","dbName":null},{"name":"LOSS","dbName":null}],"dbName":null},"MovementOrigin":{"values":[{"name":"PURCHASE","dbName":null},{"name":"SALE","dbName":null},{"name":"RETURN","dbName":null},{"name":"SUPPLIER_RETURN","dbName":null},{"name":"ADJUSTMENT","dbName":null},{"name":"TRANSFER","dbName":null},{"name":"INVENTORY","dbName":null},{"name":"DAMAGE","dbName":null},{"name":"EXPIRATION","dbName":null},{"name":"OTHER","dbName":null}],"dbName":null},"SubscriptionStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"CANCELLED","dbName":null},{"name":"TRIAL","dbName":null},{"name":"EXPIRED","dbName":null},{"name":"PAST_DUE","dbName":null}],"dbName":null},"PlanInterval":{"values":[{"name":"MONTHLY","dbName":null},{"name":"YEARLY","dbName":null}],"dbName":null},"InvoiceStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"PAID","dbName":null},{"name":"FAILED","dbName":null},{"name":"REFUNDED","dbName":null}],"dbName":null},"PaymentType":{"values":[{"name":"UNDEFINED","dbName":null},{"name":"PIX","dbName":null},{"name":"BOLETO","dbName":null},{"name":"CREDIT_CARD","dbName":null},{"name":"CASH","dbName":null},{"name":"TRANSFER","dbName":null}],"dbName":null},"QuoteStatus":{"values":[{"name":"DRAFT","dbName":null},{"name":"PUBLISHED","dbName":null},{"name":"SENT","dbName":null},{"name":"VIEWED","dbName":null},{"name":"APPROVED","dbName":null},{"name":"REJECTED","dbName":null},{"name":"EXPIRED","dbName":null},{"name":"CONVERTED","dbName":null},{"name":"CANCELED","dbName":null}],"dbName":null},"NotificationType":{"values":[{"name":"INFO","dbName":null},{"name":"SUCCESS","dbName":null},{"name":"WARNING","dbName":null},{"name":"ERROR","dbName":null},{"name":"STOCK_ALERT","dbName":null},{"name":"MOVEMENT","dbName":null},{"name":"PERMISSION","dbName":null},{"name":"SYSTEM","dbName":null},{"name":"BILLING","dbName":null},{"name":"WORKFLOW","dbName":null}],"dbName":null},"NotificationPriority":{"values":[{"name":"LOW","dbName":null},{"name":"MEDIUM","dbName":null},{"name":"HIGH","dbName":null},{"name":"URGENT","dbName":null}],"dbName":null},"NotificationChannel":{"values":[{"name":"IN_APP","dbName":null},{"name":"PUSH","dbName":null},{"name":"EMAIL","dbName":null},{"name":"SMS","dbName":null},{"name":"SYSTEM","dbName":null}],"dbName":null},"AuditAction":{"values":[{"name":"CREATE","dbName":null},{"name":"UPDATE","dbName":null},{"name":"DELETE","dbName":null},{"name":"LOGIN","dbName":null},{"name":"LOGOUT","dbName":null},{"name":"VERIFY","dbName":null},{"name":"RESTORE","dbName":null}],"dbName":null},"AuditEntity":{"values":[{"name":"USER","dbName":null},{"name":"STORE","dbName":null},{"name":"PRODUCT","dbName":null},{"name":"SUPPLIER","dbName":null},{"name":"MOVEMENT","dbName":null},{"name":"CATEGORY","dbName":null},{"name":"QUOTE","dbName":null},{"name":"FLOW","dbName":null},{"name":"SYSTEM","dbName":null}],"dbName":null},"StorageProvider":{"values":[{"name":"SYSTEM","dbName":null},{"name":"S3","dbName":null},{"name":"SUPABASE","dbName":null},{"name":"CLOUDINARY","dbName":null},{"name":"GOOGLE_DRIVE","dbName":null}],"dbName":null},"MediaVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"RESTRICTED","dbName":null}],"dbName":null},"MediaStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null},{"name":"DELETED","dbName":null},{"name":"PROCESSING","dbName":null}],"dbName":null},"RoadmapStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"COMPLETED","dbName":null},{"name":"ARCHIVED","dbName":null}],"dbName":null},"RoadmapVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"INTERNAL","dbName":null}],"dbName":null},"RoadmapPriority":{"values":[{"name":"LOW","dbName":null},{"name":"MEDIUM","dbName":null},{"name":"HIGH","dbName":null},{"name":"CRITICAL","dbName":null}],"dbName":null},"MilestoneStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"IN_PROGRESS","dbName":null},{"name":"COMPLETED","dbName":null},{"name":"BLOCKED","dbName":null}],"dbName":null},"CrmClientStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"WON","dbName":null},{"name":"LOST","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null}],"dbName":null},"FlowStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"DRAFT","dbName":null}],"dbName":null},"FlowNodeType":{"values":[{"name":"TRIGGER","dbName":null},{"name":"CONDITION","dbName":null},{"name":"ACTION","dbName":null},{"name":"NOTIFICATION","dbName":null}],"dbName":null},"FlowExecutionStatus":{"values":[{"name":"SUCCESS","dbName":null},{"name":"FAILED","dbName":null},{"name":"RUNNING","dbName":null},{"name":"CANCELLED","dbName":null}],"dbName":null},"ChatMessageRole":{"values":[{"name":"USER","dbName":null},{"name":"ASSISTANT","dbName":null},{"name":"SYSTEM","dbName":null},{"name":"TOOL","dbName":null}],"dbName":null},"DocumentType":{"values":[{"name":"TEXT","dbName":null},{"name":"DOCX","dbName":null},{"name":"PDF","dbName":null},{"name":"TEMPLATE","dbName":null},{"name":"OTHER","dbName":null}],"dbName":null},"DocumentFormat":{"values":[{"name":"MARKDOWN","dbName":null},{"name":"HTML","dbName":null},{"name":"JSON","dbName":null},{"name":"DOCX","dbName":null},{"name":"PDF","dbName":null}],"dbName":null},"DocumentStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null},{"name":"DELETED","dbName":null}],"dbName":null},"DocumentVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"INTERNAL","dbName":null}],"dbName":null}},"types":{}}');
+    config.runtimeDataModel = JSON.parse('{"models":{"User":{"dbName":"users","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"password","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToUser","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"isOwner","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserDeleted","relationFromFields":["deletedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"suspendedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"invitedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"invitedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserInviter","relationFromFields":["invitedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"acceptedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"inviteCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"pendingInvitation","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"ownedStore","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreOwner","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastLoginAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastActiveAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerified","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationToken","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"emailVerificationCodeExpires","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resetPasswordToken","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resetPasswordExpires","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"permissions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserPermission","nativeType":null,"relationName":"UserToUserPermission","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"preferences","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserPreferences","nativeType":null,"relationName":"UserToUserPreferences","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"notifications","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Notification","nativeType":null,"relationName":"NotificationToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserMedia","nativeType":null,"relationName":"UserToUserMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocumentFolders","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocuments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"updatedDocuments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentUpdatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdDocumentVersions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentVersion","nativeType":null,"relationName":"DocumentVersionCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdSpaces","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Space","nativeType":null,"relationName":"SpaceCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdShifts","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Shift","nativeType":null,"relationName":"ShiftCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdSchedules","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ScheduleCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdShiftParticipants","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ShiftParticipant","nativeType":null,"relationName":"ShiftParticipantCreatedBy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"schedules","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ScheduleUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"shiftParticipants","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ShiftParticipant","nativeType":null,"relationName":"ShiftParticipantUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"auditLogs","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditLog","nativeType":null,"relationName":"AuditLogToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"roadmaps","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"RoadmapToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdFlows","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flowExecutions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowExecutionToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmClients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"chatSessions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatSessionToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"invitedUsers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserInviter","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"deletedUsers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserDeleted","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"UserPermission":{"dbName":"user_permissions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserPermission","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"action","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"resource","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"scope","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"grant","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"conditions","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[["userId","action","resource"]],"uniqueIndexes":[{"name":null,"fields":["userId","action","resource"]}],"isGenerated":false},"UserPreferences":{"dbName":"user_preferences","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserPreferences","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"theme","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"light","isGenerated":false,"isUpdatedAt":false},{"name":"primaryColor","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sidebarCollapsed","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"compactMode","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"uiScale","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Float","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"language","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"pt-BR","isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"timezone","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"America/Sao_Paulo","isGenerated":false,"isUpdatedAt":false},{"name":"dateFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"DD/MM/YYYY","isGenerated":false,"isUpdatedAt":false},{"name":"timeFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"24h","isGenerated":false,"isUpdatedAt":false},{"name":"numberFormat","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"pt-BR","isGenerated":false,"isUpdatedAt":false},{"name":"emailNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"pushNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"smsNotifications","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"notificationTypes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dashboardLayout","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"defaultPage","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"itemsPerPage","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":20,"isGenerated":false,"isUpdatedAt":false},{"name":"autoRefresh","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"refreshInterval","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":30,"isGenerated":false,"isUpdatedAt":false},{"name":"customSettings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"aiAssistantSettings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Store":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"ownerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"owner","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"StoreOwner","relationFromFields":["ownerId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cnpj","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"logoUrl","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"website","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cep","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"city","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"state","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"address","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"suspendedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"plan","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"timezone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"America/Sao_Paulo","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"users","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"StoreToUser","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"categories","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"suppliers","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"StoreToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"StoreMedia","nativeType":null,"relationName":"StoreToStoreMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"roadmaps","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"RoadmapToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmStages","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmStage","nativeType":null,"relationName":"CrmStageToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"crmClients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flows","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"flowExecutions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowExecutionToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"auditLogs","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditLog","nativeType":null,"relationName":"AuditLogToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"notifications","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Notification","nativeType":null,"relationName":"NotificationToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"chatSessions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatSessionToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"subscription","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Subscription","nativeType":null,"relationName":"StoreToSubscription","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"documentFolders","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"DocumentFolderToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"documents","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"spaces","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Space","nativeType":null,"relationName":"SpaceToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"shifts","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Shift","nativeType":null,"relationName":"ShiftToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"schedules","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ScheduleToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"shiftParticipants","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ShiftParticipant","nativeType":null,"relationName":"ShiftParticipantToStore","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"settings","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Product":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sku","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"barcode","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referenceCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"unitOfMeasure","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UnitOfMeasure","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referencePrice","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"costPrice","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"markupPercent","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["5","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"stockCurrent","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"stockMin","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"stockMax","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"alertPercentage","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":["SmallInt",[]],"default":20,"isGenerated":false,"isUpdatedAt":false},{"name":"allowNegative","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"batchTracked","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"expirationDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ProductToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"ProductToSupplier","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToProduct","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"categories","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductCategory","nativeType":null,"relationName":"ProductToProductCategory","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductMedia","nativeType":null,"relationName":"ProductToProductMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"quotes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteItem","nativeType":null,"relationName":"ProductToQuoteItem","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"resources","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Resource","nativeType":null,"relationName":"ProductToResource","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Category":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"code","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"icon","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parentId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parent","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryHierarchy","relationFromFields":["parentId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"children","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryHierarchy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CategoryToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductCategory","nativeType":null,"relationName":"CategoryToProductCategory","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["code","storeId"]],"uniqueIndexes":[{"name":null,"fields":["code","storeId"]}],"isGenerated":false},"ProductCategory":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"categoryId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToProductCategory","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"category","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Category","nativeType":null,"relationName":"CategoryToProductCategory","relationFromFields":["categoryId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["productId","categoryId"]],"uniqueIndexes":[{"name":null,"fields":["productId","categoryId"]}],"isGenerated":false},"Supplier":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"corporateName","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"tradeName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cnpj","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ie","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"website","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cep","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"city","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"state","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"address","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"complement","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToSupplier","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"products","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"movements","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Movement","nativeType":null,"relationName":"MovementToSupplier","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"responsibles","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierResponsible","nativeType":null,"relationName":"SupplierToSupplierResponsible","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierMedia","nativeType":null,"relationName":"SupplierToSupplierMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["cnpj","storeId"]],"uniqueIndexes":[{"name":null,"fields":["cnpj","storeId"]}],"isGenerated":false},"SupplierResponsible":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"SupplierToSupplierResponsible","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"role","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cpf","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"whatsapp","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"mainContact","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"notes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Movement":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"MovementType","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"origin","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"MovementOrigin","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"referenceCode","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"note","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quantity","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"price","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"totalValue","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"balanceBefore","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"balanceAfter","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"batch","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"expiration","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"MovementToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"MovementToProduct","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"MovementToSupplier","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"MovementToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"verified","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"verifiedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"verifiedBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"verificationNote","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelled","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancellationReason","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Subscription":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToSubscription","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"polarCustomerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarSubscriptionId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarProductId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"polarPlanName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"SubscriptionStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"currentPeriodEnd","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"trialEndsAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cancelledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"renewalCount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"priceAmount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"priceInterval","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"PlanInterval","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"invoices","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Invoice","nativeType":null,"relationName":"InvoiceToSubscription","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Invoice":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"subscriptionId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"subscription","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Subscription","nativeType":null,"relationName":"InvoiceToSubscription","relationFromFields":["subscriptionId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"polarInvoiceId","kind":"scalar","isList":false,"isRequired":false,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"amount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"InvoiceStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"paymentDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dueDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Quote":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"QuoteToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"QuoteToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"customerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"customerName","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"publicId","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"uuid","args":[4]},"isGenerated":false,"isUpdatedAt":false},{"name":"authCode","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"uuid","args":[4]},"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"QuoteStatus","nativeType":null,"default":"DRAFT","isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"viewedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"approvedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"rejectedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"convertedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"canceledAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"approvalNote","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ipAddress","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"viewedBy","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"subtotal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"discount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"interest","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"total","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"currency","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":"BRL","isGenerated":false,"isUpdatedAt":false},{"name":"paymentType","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"PaymentType","nativeType":null,"default":"UNDEFINED","isGenerated":false,"isUpdatedAt":false},{"name":"paymentTerms","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"paymentDueDays","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"observations","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"notesInternal","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"items","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteItem","nativeType":null,"relationName":"QuoteToQuoteItem","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"installments","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"QuoteInstallment","nativeType":null,"relationName":"QuoteToQuoteInstallment","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"QuoteItem":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"quoteId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quantity","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"unitPrice","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"subtotal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"discount","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"note","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quote","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToQuoteItem","relationFromFields":["quoteId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToQuoteItem","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["quoteId","productId"]],"uniqueIndexes":[{"name":null,"fields":["quoteId","productId"]}],"isGenerated":false},"QuoteInstallment":{"dbName":"quote_installments","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"quoteId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"number","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"dueDate","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"amount","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"interest","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","2"]],"isGenerated":false,"isUpdatedAt":false},{"name":"paidAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"quote","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Quote","nativeType":null,"relationName":"QuoteToQuoteInstallment","relationFromFields":["quoteId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Notification":{"dbName":"notifications","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"NotificationToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"NotificationToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"message","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationType","nativeType":null,"default":"INFO","isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"isRead","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"readAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"channel","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"NotificationChannel","nativeType":null,"default":"IN_APP","isGenerated":false,"isUpdatedAt":false},{"name":"sentAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deliveredAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deliveryError","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"actionUrl","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"expiresAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"data","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"AuditLog":{"dbName":"audit_logs","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"entity","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditEntity","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"entityId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"action","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"AuditAction","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"AuditLogToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"AuditLogToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"ipAddress","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"userAgent","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"source","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"before","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"after","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Media":{"dbName":"media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"url","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"extension","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"size","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"hash","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"MediaToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"uploadedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"uploadedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"MediaToUser","relationFromFields":["uploadedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"provider","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"StorageProvider","nativeType":null,"default":"SYSTEM","isGenerated":false,"isUpdatedAt":false},{"name":"storagePath","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"bucket","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MediaVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MediaStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"productMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ProductMedia","nativeType":null,"relationName":"MediaToProductMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"supplierMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"SupplierMedia","nativeType":null,"relationName":"MediaToSupplierMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"userMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"UserMedia","nativeType":null,"relationName":"MediaToUserMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"storeMedia","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"StoreMedia","nativeType":null,"relationName":"MediaToStoreMedia","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ProductMedia":{"dbName":"product_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isPrimary","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"altText","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"sortOrder","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"product","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToProductMedia","relationFromFields":["productId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToProductMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["productId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["productId","mediaId"]}],"isGenerated":false},"SupplierMedia":{"dbName":"supplier_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"supplierId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"supplier","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Supplier","nativeType":null,"relationName":"SupplierToSupplierMedia","relationFromFields":["supplierId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToSupplierMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["supplierId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["supplierId","mediaId"]}],"isGenerated":false},"UserMedia":{"dbName":"user_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"UserToUserMedia","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToUserMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["userId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["userId","mediaId"]}],"isGenerated":false},"StoreMedia":{"dbName":"store_media","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mediaId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"StoreToStoreMedia","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"media","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Media","nativeType":null,"relationName":"MediaToStoreMedia","relationFromFields":["mediaId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","mediaId"]],"uniqueIndexes":[{"name":null,"fields":["storeId","mediaId"]}],"isGenerated":false},"Roadmap":{"dbName":"roadmaps","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"RoadmapToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"RoadmapToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"progress","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"archived","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"startDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"updatedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"milestones","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneToRoadmap","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Milestone":{"dbName":"milestones","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"roadmapId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"roadmap","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Roadmap","nativeType":null,"relationName":"MilestoneToRoadmap","relationFromFields":["roadmapId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"MilestoneStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"progress","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"priority","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"RoadmapPriority","nativeType":null,"default":"MEDIUM","isGenerated":false,"isUpdatedAt":false},{"name":"blockedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"blockedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneDependency","relationFromFields":["blockedById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"blocking","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Milestone","nativeType":null,"relationName":"MilestoneDependency","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"startDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endDate","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"completedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"CrmStage":{"dbName":"crm_stages","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isDefault","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"isFinal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CrmStageToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"clients","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmClient","nativeType":null,"relationName":"CrmClientToCrmStage","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","name"]],"uniqueIndexes":[{"name":null,"fields":["storeId","name"]}],"isGenerated":false},"CrmClient":{"dbName":"crm_clients","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"stageId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"phone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cpfCnpj","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"company","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"position","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"source","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"CrmClientStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"tags","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"notes","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastContactAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nextContactAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastInteraction","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"ownerId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"owner","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"CrmClientToUser","relationFromFields":["ownerId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"archivedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"CrmClientToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"stage","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"CrmStage","nativeType":null,"relationName":"CrmClientToCrmStage","relationFromFields":["stageId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Flow":{"dbName":"flows","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"category","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nodes","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"edges","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"FlowStatus","nativeType":null,"default":"DRAFT","isGenerated":false,"isUpdatedAt":false},{"name":"isPublic","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"FlowToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"creator","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FlowToUser","relationFromFields":["createdBy"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastRunAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastStatus","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecutionStatus","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"flowNodes","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowNode","nativeType":null,"relationName":"FlowToFlowNode","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"executions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowExecution","nativeType":null,"relationName":"FlowToFlowExecution","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"FlowNode":{"dbName":"flow_nodes","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"flowId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"nodeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"FlowNodeType","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"config","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"order","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":0,"isGenerated":false,"isUpdatedAt":false},{"name":"parentNodeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"position","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"flow","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToFlowNode","relationFromFields":["flowId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["flowId","nodeId"]],"uniqueIndexes":[{"name":null,"fields":["flowId","nodeId"]}],"isGenerated":false},"FlowExecution":{"dbName":"flow_executions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"flowId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"flow","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Flow","nativeType":null,"relationName":"FlowToFlowExecution","relationFromFields":["flowId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"FlowExecutionStatus","nativeType":null,"default":"RUNNING","isGenerated":false,"isUpdatedAt":false},{"name":"triggerType","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"triggerData","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executionLog","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"error","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"durationMs","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"startedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"completedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"executedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FlowExecutionToUser","relationFromFields":["executedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"FlowExecutionToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ChatSession":{"dbName":"chat_sessions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"model","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"temperature","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Float","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"metadata","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"active","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"isPinned","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastActivityAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ChatSessionToUser","relationFromFields":["userId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ChatSessionToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"messages","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatMessage","nativeType":null,"relationName":"ChatMessageToChatSession","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ChatMessage":{"dbName":"chat_messages","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"sessionId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"role","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"ChatMessageRole","nativeType":null,"default":"USER","isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"tokens","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"model","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"context","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"options","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"error","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"cost","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Decimal","nativeType":["Decimal",["10","4"]],"isGenerated":false,"isUpdatedAt":false},{"name":"latencyMs","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isFinal","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"session","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ChatSession","nativeType":null,"relationName":"ChatMessageToChatSession","relationFromFields":["sessionId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"DocumentFolder":{"dbName":"document_folders","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"DocumentFolderToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"color","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"icon","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parentId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"parent","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderHierarchy","relationFromFields":["parentId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"children","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"FolderHierarchy","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"FolderCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"documents","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToDocumentFolder","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["storeId","name"]],"uniqueIndexes":[{"name":null,"fields":["storeId","name"]}],"isGenerated":false},"Document":{"dbName":"documents","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"DocumentToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"folderId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"folder","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFolder","nativeType":null,"relationName":"DocumentToDocumentFolder","relationFromFields":["folderId"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentType","nativeType":null,"default":"TEXT","isGenerated":false,"isUpdatedAt":false},{"name":"format","kind":"enum","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentFormat","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"path","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Int","nativeType":null,"default":1,"isGenerated":false,"isUpdatedAt":false},{"name":"size","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"mimeType","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"visibility","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentVisibility","nativeType":null,"default":"PRIVATE","isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"updatedById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"updatedBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentUpdatedBy","relationFromFields":["updatedById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DocumentStatus","nativeType":null,"default":"ACTIVE","isGenerated":false,"isUpdatedAt":false},{"name":"pinned","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":false,"isGenerated":false,"isUpdatedAt":false},{"name":"deletedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"lastAccessedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"versions","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DocumentVersion","nativeType":null,"relationName":"DocumentToDocumentVersion","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"DocumentVersion":{"dbName":"document_versions","schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"documentId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"document","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Document","nativeType":null,"relationName":"DocumentToDocumentVersion","relationFromFields":["documentId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"version","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"content","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"DocumentVersionCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"relationOnDelete":"SetNull","isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[["documentId","version"]],"uniqueIndexes":[{"name":null,"fields":["documentId","version"]}],"isGenerated":false},"Space":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"capacity","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Int","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"location","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"SpaceToStore","relationFromFields":["storeId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"SpaceCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"schedules","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ScheduleToSpace","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"resources","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Resource","nativeType":null,"relationName":"ResourceToSpace","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Schedule":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"title","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"startTime","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endTime","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"rrule","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"timezone","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"ScheduleStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ScheduleToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"spaceId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"space","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Space","nativeType":null,"relationName":"ScheduleToSpace","relationFromFields":["spaceId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ScheduleUser","relationFromFields":["userId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ScheduleCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"resources","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Resource","nativeType":null,"relationName":"ResourceToSchedule","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"occurrences","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ScheduleOccurrence","nativeType":null,"relationName":"ScheduleToScheduleOccurrence","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ScheduleOccurrence":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"scheduleId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"schedule","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ScheduleToScheduleOccurrence","relationFromFields":["scheduleId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"startTime","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"endTime","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"ScheduleStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"shifts","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Shift","nativeType":null,"relationName":"ScheduleOccurrenceToShift","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Shift":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ShiftToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"occurrenceId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"occurrence","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ScheduleOccurrence","nativeType":null,"relationName":"ScheduleOccurrenceToShift","relationFromFields":["occurrenceId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"participants","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ShiftParticipant","nativeType":null,"relationName":"ShiftToShiftParticipant","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ShiftCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"ShiftParticipant":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"shiftId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"shift","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Shift","nativeType":null,"relationName":"ShiftToShiftParticipant","relationFromFields":["shiftId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"storeId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"store","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Store","nativeType":null,"relationName":"ShiftParticipantToStore","relationFromFields":["storeId"],"relationToFields":["id"],"relationOnDelete":"Cascade","isGenerated":false,"isUpdatedAt":false},{"name":"userId","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"user","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ShiftParticipantUser","relationFromFields":["userId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"createdById","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdBy","kind":"object","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"User","nativeType":null,"relationName":"ShiftParticipantCreatedBy","relationFromFields":["createdById"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"role","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"status","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"ShiftStatus","nativeType":null,"default":"PENDING","isGenerated":false,"isUpdatedAt":false},{"name":"confirmedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"deniedAt","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"note","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false},"Resource":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"cuid","args":[1]},"isGenerated":false,"isUpdatedAt":false},{"name":"name","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"description","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"type","kind":"enum","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"ResourceType","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"isAvailable","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"Boolean","nativeType":null,"default":true,"isGenerated":false,"isUpdatedAt":false},{"name":"spaceId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"productId","kind":"scalar","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":true,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"schedules","kind":"object","isList":true,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Schedule","nativeType":null,"relationName":"ResourceToSchedule","relationFromFields":[],"relationToFields":[],"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true},{"name":"product","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Product","nativeType":null,"relationName":"ProductToResource","relationFromFields":["productId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false},{"name":"space","kind":"object","isList":false,"isRequired":false,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Space","nativeType":null,"relationName":"ResourceToSpace","relationFromFields":["spaceId"],"relationToFields":["id"],"isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false}},"enums":{"UnitOfMeasure":{"values":[{"name":"UNIDADE","dbName":null},{"name":"KG","dbName":null},{"name":"L","dbName":null},{"name":"ML","dbName":null},{"name":"M","dbName":null},{"name":"CM","dbName":null},{"name":"MM","dbName":null},{"name":"UN","dbName":null},{"name":"DZ","dbName":null},{"name":"CX","dbName":null},{"name":"PCT","dbName":null},{"name":"KIT","dbName":null},{"name":"PAR","dbName":null},{"name":"H","dbName":null},{"name":"D","dbName":null}],"dbName":null},"MovementType":{"values":[{"name":"INBOUND","dbName":null},{"name":"OUTBOUND","dbName":null},{"name":"LOSS","dbName":null}],"dbName":null},"MovementOrigin":{"values":[{"name":"PURCHASE","dbName":null},{"name":"SALE","dbName":null},{"name":"RETURN","dbName":null},{"name":"SUPPLIER_RETURN","dbName":null},{"name":"ADJUSTMENT","dbName":null},{"name":"TRANSFER","dbName":null},{"name":"INVENTORY","dbName":null},{"name":"DAMAGE","dbName":null},{"name":"EXPIRATION","dbName":null},{"name":"OTHER","dbName":null}],"dbName":null},"SubscriptionStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"CANCELLED","dbName":null},{"name":"TRIAL","dbName":null},{"name":"EXPIRED","dbName":null},{"name":"PAST_DUE","dbName":null}],"dbName":null},"PlanInterval":{"values":[{"name":"MONTHLY","dbName":null},{"name":"YEARLY","dbName":null}],"dbName":null},"InvoiceStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"PAID","dbName":null},{"name":"FAILED","dbName":null},{"name":"REFUNDED","dbName":null}],"dbName":null},"PaymentType":{"values":[{"name":"UNDEFINED","dbName":null},{"name":"PIX","dbName":null},{"name":"BOLETO","dbName":null},{"name":"CREDIT_CARD","dbName":null},{"name":"CASH","dbName":null},{"name":"TRANSFER","dbName":null}],"dbName":null},"QuoteStatus":{"values":[{"name":"DRAFT","dbName":null},{"name":"PUBLISHED","dbName":null},{"name":"SENT","dbName":null},{"name":"VIEWED","dbName":null},{"name":"APPROVED","dbName":null},{"name":"REJECTED","dbName":null},{"name":"EXPIRED","dbName":null},{"name":"CONVERTED","dbName":null},{"name":"CANCELED","dbName":null}],"dbName":null},"NotificationType":{"values":[{"name":"INFO","dbName":null},{"name":"SUCCESS","dbName":null},{"name":"WARNING","dbName":null},{"name":"ERROR","dbName":null},{"name":"STOCK_ALERT","dbName":null},{"name":"MOVEMENT","dbName":null},{"name":"PERMISSION","dbName":null},{"name":"SYSTEM","dbName":null},{"name":"BILLING","dbName":null},{"name":"WORKFLOW","dbName":null}],"dbName":null},"NotificationPriority":{"values":[{"name":"LOW","dbName":null},{"name":"MEDIUM","dbName":null},{"name":"HIGH","dbName":null},{"name":"URGENT","dbName":null}],"dbName":null},"NotificationChannel":{"values":[{"name":"IN_APP","dbName":null},{"name":"PUSH","dbName":null},{"name":"EMAIL","dbName":null},{"name":"SMS","dbName":null},{"name":"SYSTEM","dbName":null}],"dbName":null},"AuditAction":{"values":[{"name":"CREATE","dbName":null},{"name":"UPDATE","dbName":null},{"name":"DELETE","dbName":null},{"name":"LOGIN","dbName":null},{"name":"LOGOUT","dbName":null},{"name":"VERIFY","dbName":null},{"name":"RESTORE","dbName":null}],"dbName":null},"AuditEntity":{"values":[{"name":"USER","dbName":null},{"name":"STORE","dbName":null},{"name":"PRODUCT","dbName":null},{"name":"SUPPLIER","dbName":null},{"name":"MOVEMENT","dbName":null},{"name":"CATEGORY","dbName":null},{"name":"QUOTE","dbName":null},{"name":"FLOW","dbName":null},{"name":"SYSTEM","dbName":null}],"dbName":null},"StorageProvider":{"values":[{"name":"SYSTEM","dbName":null},{"name":"S3","dbName":null},{"name":"SUPABASE","dbName":null},{"name":"CLOUDINARY","dbName":null},{"name":"GOOGLE_DRIVE","dbName":null}],"dbName":null},"MediaVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"RESTRICTED","dbName":null}],"dbName":null},"MediaStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null},{"name":"DELETED","dbName":null},{"name":"PROCESSING","dbName":null}],"dbName":null},"RoadmapStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"COMPLETED","dbName":null},{"name":"ARCHIVED","dbName":null}],"dbName":null},"RoadmapVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"INTERNAL","dbName":null}],"dbName":null},"RoadmapPriority":{"values":[{"name":"LOW","dbName":null},{"name":"MEDIUM","dbName":null},{"name":"HIGH","dbName":null},{"name":"CRITICAL","dbName":null}],"dbName":null},"MilestoneStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"IN_PROGRESS","dbName":null},{"name":"COMPLETED","dbName":null},{"name":"BLOCKED","dbName":null}],"dbName":null},"CrmClientStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"WON","dbName":null},{"name":"LOST","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null}],"dbName":null},"FlowStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"INACTIVE","dbName":null},{"name":"DRAFT","dbName":null}],"dbName":null},"FlowNodeType":{"values":[{"name":"TRIGGER","dbName":null},{"name":"CONDITION","dbName":null},{"name":"ACTION","dbName":null},{"name":"NOTIFICATION","dbName":null}],"dbName":null},"FlowExecutionStatus":{"values":[{"name":"SUCCESS","dbName":null},{"name":"FAILED","dbName":null},{"name":"RUNNING","dbName":null},{"name":"CANCELLED","dbName":null}],"dbName":null},"ChatMessageRole":{"values":[{"name":"USER","dbName":null},{"name":"ASSISTANT","dbName":null},{"name":"SYSTEM","dbName":null},{"name":"TOOL","dbName":null}],"dbName":null},"DocumentType":{"values":[{"name":"TEXT","dbName":null},{"name":"DOCX","dbName":null},{"name":"PDF","dbName":null},{"name":"TEMPLATE","dbName":null},{"name":"OTHER","dbName":null}],"dbName":null},"DocumentFormat":{"values":[{"name":"MARKDOWN","dbName":null},{"name":"HTML","dbName":null},{"name":"JSON","dbName":null},{"name":"DOCX","dbName":null},{"name":"PDF","dbName":null}],"dbName":null},"DocumentStatus":{"values":[{"name":"ACTIVE","dbName":null},{"name":"ARCHIVED","dbName":null},{"name":"DELETED","dbName":null}],"dbName":null},"DocumentVisibility":{"values":[{"name":"PRIVATE","dbName":null},{"name":"PUBLIC","dbName":null},{"name":"INTERNAL","dbName":null}],"dbName":null},"ScheduleStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"CONFIRMED","dbName":null},{"name":"CANCELLED","dbName":null}],"dbName":null},"ShiftStatus":{"values":[{"name":"PENDING","dbName":null},{"name":"CONFIRMED","dbName":null},{"name":"DECLINED","dbName":null}],"dbName":null},"ResourceType":{"values":[{"name":"EQUIPMENT","dbName":null},{"name":"VEHICLE","dbName":null},{"name":"FURNITURE","dbName":null},{"name":"OTHER","dbName":null}],"dbName":null}},"types":{}}');
     defineDmmfProperty2(exports2.Prisma, config.runtimeDataModel);
     config.engineWasm = void 0;
     config.compilerWasm = void 0;
@@ -6713,8 +6811,8 @@ var require_prisma = __commonJS({
     var PrismaClient2 = getPrismaClient2(config);
     exports2.PrismaClient = PrismaClient2;
     Object.assign(exports2, Prisma);
-    path4.join(__dirname, "query_engine-windows.dll.node");
-    path4.join(process.cwd(), "src/generated/prisma/query_engine-windows.dll.node");
+    path4.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+    path4.join(process.cwd(), "src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node");
     path4.join(__dirname, "libquery_engine-linux-musl-openssl-3.0.x.so.node");
     path4.join(process.cwd(), "src/generated/prisma/libquery_engine-linux-musl-openssl-3.0.x.so.node");
     path4.join(__dirname, "schema.prisma");
@@ -6722,15 +6820,14 @@ var require_prisma = __commonJS({
   }
 });
 
-// src/server.ts
-var import_node_path3 = __toESM(require("path"));
-var import_cors = __toESM(require("@fastify/cors"));
-var import_fastify = __toESM(require("fastify"));
-
 // src/plugins/prisma.ts
-var import_prisma = __toESM(require_prisma());
-var prisma = new import_prisma.PrismaClient();
-var db = prisma;
+var prisma_exports = {};
+__export(prisma_exports, {
+  connectDb: () => connectDb,
+  db: () => db,
+  dbPlugin: () => dbPlugin,
+  prisma: () => prisma
+});
 async function dbPlugin(app) {
   app.decorate("db", db);
   app.addHook("onClose", async () => {
@@ -6745,6 +6842,195 @@ async function connectDb() {
     throw error;
   }
 }
+var import_prisma, prisma, db;
+var init_prisma = __esm({
+  "src/plugins/prisma.ts"() {
+    import_prisma = __toESM(require_prisma());
+    prisma = new import_prisma.PrismaClient();
+    db = prisma;
+  }
+});
+
+// src/features/(wfm)/schedule/schedule.utils.ts
+var schedule_utils_exports = {};
+__export(schedule_utils_exports, {
+  checkScheduleConflicts: () => checkScheduleConflicts,
+  combineDateAndTime: () => combineDateAndTime,
+  createScheduleOccurrences: () => createScheduleOccurrences,
+  generateOccurrences: () => generateOccurrences,
+  processScheduleTimes: () => processScheduleTimes
+});
+function combineDateAndTime(dateStr, timeStr, timezone) {
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(dateStr)) {
+    throw new Error("Invalid date format. Expected YYYY-MM-DD");
+  }
+  const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+  if (!timeRegex.test(timeStr)) {
+    throw new Error('Invalid time format. Expected HH:mm (e.g., "10:30")');
+  }
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = /* @__PURE__ */ new Date();
+  date.setFullYear(year, month - 1, day);
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+function processScheduleTimes(date, startTime, endTime, rrule) {
+  if (!date) {
+    throw new Error("date is required");
+  }
+  const start = combineDateAndTime(date, startTime);
+  const end = combineDateAndTime(date, endTime);
+  if (start >= end) {
+    throw new Error("Start time must be before end time");
+  }
+  return { start, end };
+}
+async function generateOccurrences(scheduleId, startTime, endTime, rrule, timezone, maxOccurrences = 365) {
+  if (!rrule) {
+    return [{ startTime, endTime }];
+  }
+  try {
+    const rule = import_rrule.RRule.fromString(rrule);
+    const duration = endTime.getTime() - startTime.getTime();
+    const limitDate = /* @__PURE__ */ new Date();
+    limitDate.setFullYear(limitDate.getFullYear() + 1);
+    const allOccurrences = rule.between(startTime, limitDate, true);
+    const occurrenceDates = allOccurrences.slice(0, maxOccurrences);
+    return occurrenceDates.map((date) => {
+      const occurrenceStart = new Date(date);
+      const occurrenceEnd = new Date(date.getTime() + duration);
+      return {
+        startTime: occurrenceStart,
+        endTime: occurrenceEnd
+      };
+    });
+  } catch (error) {
+    throw new Error(`Invalid rrule format: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
+}
+function hasTimeConflict(start1, end1, start2, end2) {
+  return start1 < end2 && start2 < end1;
+}
+async function checkScheduleConflicts(spaceId, startTime, endTime, rrule, timezone, excludeScheduleId, maxOccurrences = 365) {
+  const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+  const newOccurrences = await generateOccurrences(
+    "",
+    // Não precisa do scheduleId para apenas gerar ocorrências
+    startTime,
+    endTime,
+    rrule,
+    timezone,
+    maxOccurrences
+  );
+  const existingSchedules = await db2.schedule.findMany({
+    where: {
+      spaceId,
+      status: {
+        in: ["PENDING", "CONFIRMED"]
+        // Apenas agendamentos ativos
+      },
+      ...excludeScheduleId ? { id: { not: excludeScheduleId } } : {}
+    },
+    include: {
+      occurrences: {
+        where: {
+          status: {
+            in: ["PENDING", "CONFIRMED"]
+          }
+        }
+      }
+    }
+  });
+  const conflicts = [];
+  const existingOccurrencesMap = /* @__PURE__ */ new Map();
+  for (const existingSchedule of existingSchedules) {
+    if (existingSchedule.rrule) {
+      const existingOccurrences = await generateOccurrences(
+        existingSchedule.id,
+        existingSchedule.startTime,
+        existingSchedule.endTime,
+        existingSchedule.rrule,
+        existingSchedule.timezone || void 0,
+        maxOccurrences
+      );
+      existingOccurrencesMap.set(existingSchedule.id, existingOccurrences);
+    }
+  }
+  for (const newOccurrence of newOccurrences) {
+    for (const existingSchedule of existingSchedules) {
+      if (!existingSchedule.rrule) {
+        if (hasTimeConflict(
+          newOccurrence.startTime,
+          newOccurrence.endTime,
+          existingSchedule.startTime,
+          existingSchedule.endTime
+        )) {
+          conflicts.push({
+            scheduleId: existingSchedule.id,
+            scheduleTitle: existingSchedule.title,
+            conflictingStartTime: existingSchedule.startTime,
+            conflictingEndTime: existingSchedule.endTime,
+            newOccurrenceStartTime: newOccurrence.startTime,
+            newOccurrenceEndTime: newOccurrence.endTime
+          });
+        }
+      } else {
+        const existingOccurrences = existingOccurrencesMap.get(existingSchedule.id) || [];
+        for (const existingOccurrence of existingOccurrences) {
+          if (hasTimeConflict(
+            newOccurrence.startTime,
+            newOccurrence.endTime,
+            existingOccurrence.startTime,
+            existingOccurrence.endTime
+          )) {
+            conflicts.push({
+              scheduleId: existingSchedule.id,
+              scheduleTitle: existingSchedule.title,
+              conflictingStartTime: existingOccurrence.startTime,
+              conflictingEndTime: existingOccurrence.endTime,
+              newOccurrenceStartTime: newOccurrence.startTime,
+              newOccurrenceEndTime: newOccurrence.endTime
+            });
+          }
+        }
+      }
+    }
+  }
+  return {
+    hasConflict: conflicts.length > 0,
+    conflictingSchedules: conflicts
+  };
+}
+async function createScheduleOccurrences(scheduleId, occurrences, status = "PENDING") {
+  const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+  await db2.scheduleOccurrence.createMany({
+    data: occurrences.map((occ) => ({
+      scheduleId,
+      startTime: occ.startTime,
+      endTime: occ.endTime,
+      status
+    }))
+  });
+}
+var import_rrule;
+var init_schedule_utils = __esm({
+  "src/features/(wfm)/schedule/schedule.utils.ts"() {
+    import_rrule = require("rrule");
+  }
+});
+
+// src/server.ts
+var import_node_path3 = __toESM(require("path"));
+var import_fastify = __toESM(require("fastify"));
+var import_cors = __toESM(require("@fastify/cors"));
+var import_fastify_raw_body = __toESM(require("fastify-raw-body"));
+var import_static = __toESM(require("@fastify/static"));
+init_prisma();
+
+// src/plugins/index.ts
+init_prisma();
 
 // src/plugins/push.ts
 var import_web_push = __toESM(require("web-push"));
@@ -6835,6 +7121,12 @@ var pushPlugin = async (fastify2) => {
     return vapidKeys.publicKey;
   });
 };
+
+// src/plugins/index.ts
+async function registerPlugins(fastify2) {
+  await fastify2.register(dbPlugin);
+  await fastify2.register(pushPlugin);
+}
 
 // src/utils/bootstrap.ts
 var import_node_os = __toESM(require("os"));
@@ -7206,58 +7498,12 @@ var BootstrapUI = class {
 };
 var bootstrapUI = new BootstrapUI();
 
-// src/features/auth/commands/auth.commands.ts
+// src/features/(core)/auth/commands/auth.commands.ts
 var import_node_crypto = __toESM(require("crypto"));
 var import_node_util = require("util");
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
-
-// src/plugins/polar.ts
-var import_sdk = require("@polar-sh/sdk");
-var polar = new import_sdk.Polar({
-  accessToken: process.env.POLAR_ACCESS_KEY,
-  server: "sandbox"
-  //"sandbox") as "production" | "sandbox"
-});
-
-// src/features/polar/queries/polar.queries.ts
-var PolarQueries = {
-  async list({ page, limit }) {
-    try {
-      const { result } = await polar.products.list({
-        organizationId: process.env.POLAR_ORGANIZATION_ID,
-        page,
-        limit
-      });
-      return {
-        items: result.items,
-        pagination: {
-          page,
-          limit
-        }
-      };
-    } catch (error) {
-      console.error("Polar products list error:", error);
-      throw new Error(`Failed to fetch products: ${error}`);
-    }
-  },
-  async getFreePlan() {
-    try {
-      const { result } = await polar.products.list({
-        organizationId: process.env.POLAR_ORGANIZATION_ID,
-        page: 1,
-        limit: 10
-      });
-      console.log(result);
-      const freeProduct = result.items.find(
-        (product) => product.prices.some((price) => price.amountType === "free")
-      );
-      return freeProduct || null;
-    } catch (error) {
-      console.error("Polar get free plan error:", error);
-      return null;
-    }
-  }
-};
+var import_bcryptjs = __toESM(require("bcryptjs"));
+init_prisma();
 
 // src/services/email/email.service.ts
 var import_resend = require("resend");
@@ -7688,6 +7934,89 @@ Este \xE9 um email autom\xE1tico, n\xE3o responda a esta mensagem.
   `;
 };
 
+// src/services/email/templates/initial_password.ts
+var generateInitialPasswordEmailHTML = (data) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Senha Inicial - 25Stock</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .password-box { background: #fff; border: 2px solid #667eea; padding: 20px; text-align: center; border-radius: 10px; margin: 20px 0; }
+        .password { font-size: 24px; font-weight: bold; color: #667eea; letter-spacing: 2px; margin: 10px 0; font-family: 'Courier New', monospace; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>\u{1F511} Sua Conta Foi Criada!</h1>
+          <p>25Stock - Sistema de Gest\xE3o de Estoque</p>
+        </div>
+        <div class="content">
+          <h2>Ol\xE1, ${data.name}!</h2>
+          <p>Sua conta no 25Stock foi criada com sucesso! \u{1F389}</p>
+          <p>Para acessar sua conta, utilize a senha inicial abaixo:</p>
+          <div class="password-box">
+            <p style="margin: 0 0 10px 0; color: #666;">Sua senha inicial:</p>
+            <div class="password">${data.password}</div>
+          </div>
+          <div class="warning">
+            <strong>\u26A0\uFE0F Importante:</strong>
+            <ul>
+              <li>Guarde esta senha em local seguro</li>
+              <li>Recomendamos alterar esta senha ap\xF3s o primeiro acesso</li>
+              <li>N\xE3o compartilhe esta senha com ningu\xE9m</li>
+              <li>Esta \xE9 uma senha tempor\xE1ria gerada automaticamente</li>
+            </ul>
+          </div>
+          <p>Clique no bot\xE3o abaixo para acessar sua conta:</p>
+          <a href="${data.loginUrl}" class="button">Acessar Minha Conta</a>
+          <p style="margin-top: 20px;">Ou acesse diretamente em: <a href="${data.loginUrl}">${data.loginUrl}</a></p>
+        </div>
+        <div class="footer">
+          <p>Este \xE9 um email autom\xE1tico, n\xE3o responda a esta mensagem.</p>
+          <p>&copy; 2024 25Stock. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+var generateInitialPasswordEmailText = (data) => {
+  return `
+Sua Conta Foi Criada! - 25Stock
+
+Ol\xE1, ${data.name}!
+
+Sua conta no 25Stock foi criada com sucesso! \u{1F389}
+
+Para acessar sua conta, utilize a senha inicial abaixo:
+
+SUA SENHA INICIAL: ${data.password}
+
+IMPORTANTE:
+- Guarde esta senha em local seguro
+- Recomendamos alterar esta senha ap\xF3s o primeiro acesso
+- N\xE3o compartilhe esta senha com ningu\xE9m
+- Esta \xE9 uma senha tempor\xE1ria gerada automaticamente
+
+Acesse sua conta em: ${data.loginUrl}
+
+---
+Este \xE9 um email autom\xE1tico, n\xE3o responda a esta mensagem.
+\xA9 2024 25Stock. Todos os direitos reservados.
+  `;
+};
+
 // src/services/email/email.service.ts
 var resend = new import_resend.Resend(process.env.RESEND_API_KEY);
 var EmailService = {
@@ -7818,6 +8147,27 @@ var EmailService = {
     }
   },
   /**
+   * Envia email com senha inicial para novos usuários
+   */
+  sendInitialPasswordEmail: async (data) => {
+    try {
+      const html = generateInitialPasswordEmailHTML(data);
+      const text = generateInitialPasswordEmailText(data);
+      const result = await resend.emails.send({
+        from: process.env.FROM_EMAIL || "noreply@25stock.com",
+        to: data.email,
+        subject: "Sua conta foi criada - 25Stock",
+        html,
+        text
+      });
+      console.log("Initial password email sent:", result.data?.id);
+      return true;
+    } catch (error) {
+      console.error("Error sending initial password email:", error);
+      return false;
+    }
+  },
+  /**
    * Envia email genérico
    */
   sendEmail: async (template) => {
@@ -7838,275 +8188,27 @@ var EmailService = {
   }
 };
 
-// src/features/auth/commands/auth.commands.ts
+// src/features/(core)/auth/commands/auth.commands.ts
 var import_google_auth_library = require("google-auth-library");
-
-// src/features/polar/commands/polar.commands.ts
-var PolarCommands = {
-  async checkout(data) {
-    try {
-      const checkout = await polar.checkouts.create({
-        customerBillingAddress: {
-          country: "BR"
-        },
-        customerEmail: data.customer.email,
-        customerName: data.customer.name,
-        products: [data.productId]
-      });
-      if (!checkout) {
-        throw new Error("Failed to create checkout");
-      }
-      return checkout;
-    } catch (error) {
-      console.error("Polar checkout error:", error);
-      throw new Error("Failed to create checkout");
-    }
-  },
-  async webhook(event) {
-    try {
-      const type = event?.type || "";
-      const data = event?.data || {};
-      const findOrCreateSubscriptionByUserId = async (userId) => {
-        let subscription3 = await db.subscription.findUnique({ where: { userId } });
-        if (!subscription3) {
-          subscription3 = await db.subscription.create({
-            data: {
-              userId,
-              status: "ACTIVE"
-            }
-          });
-        }
-        return subscription3;
-      };
-      const findSubscriptionByPolarOrEmail = async (opts) => {
-        const { polarCustomerId, email } = opts;
-        if (polarCustomerId) {
-          const byPolar = await db.subscription.findUnique({
-            where: { polarCustomerId }
-          });
-          if (byPolar) return byPolar;
-        }
-        if (email) {
-          const user = await db.user.findFirst({ where: { email } });
-          if (user) return await findOrCreateSubscriptionByUserId(user.id);
-        }
-        return null;
-      };
-      const setSubscriptionPlanAndStatus = async (subscriptionId, polarProductId, status, renewalDate, trialEndsAt) => {
-        return await db.subscription.update({
-          where: { id: subscriptionId },
-          data: {
-            polarProductId: polarProductId || null,
-            status,
-            currentPeriodEnd: renewalDate || null,
-            trialEndsAt: trialEndsAt || null
-          }
-        });
-      };
-      const upsertInvoice = async (subscriptionId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
-        if (!amountCents && !polarInvoiceId) return null;
-        const amount = amountCents ? Number(amountCents) / 100 : 0;
-        const existing = polarInvoiceId ? await db.invoice.findUnique({ where: { polarInvoiceId } }) : null;
-        if (existing) {
-          return await db.invoice.update({
-            where: { id: existing.id },
-            data: {
-              status,
-              paymentDate: paymentDate || existing.paymentDate || null
-            }
-          });
-        }
-        return await db.invoice.create({
-          data: {
-            subscriptionId,
-            amount,
-            status,
-            polarInvoiceId: polarInvoiceId || null,
-            paymentDate: paymentDate || null
-          }
-        });
-      };
-      const checkout = data?.checkout_session;
-      const subscription2 = data?.subscription;
-      switch (type) {
-        case "checkout.succeeded": {
-          const userIdFromMetadata = checkout?.metadata?.user_id;
-          const polarCustomerId = checkout?.customer_id;
-          const polarSubscriptionId = checkout?.subscription_id;
-          if (userIdFromMetadata) {
-            const subscription3 = await findOrCreateSubscriptionByUserId(userIdFromMetadata);
-            await db.subscription.update({
-              where: { id: subscription3.id },
-              data: {
-                polarCustomerId: polarCustomerId || subscription3.polarCustomerId || null,
-                polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
-              }
-            });
-          } else if (polarCustomerId) {
-            const subscription3 = await findSubscriptionByPolarOrEmail({
-              polarCustomerId,
-              email: null
-            });
-            if (subscription3) {
-              await db.subscription.update({
-                where: { id: subscription3.id },
-                data: {
-                  polarCustomerId,
-                  polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
-                }
-              });
-            }
-          }
-          break;
-        }
-        case "subscription.created":
-        case "subscription.updated":
-        case "subscription.canceled": {
-          const polarCustomerId = subscription2?.customer_id;
-          const polarSubscriptionId = subscription2?.id;
-          if (polarCustomerId || polarSubscriptionId) {
-            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null });
-            if (sub) {
-              await db.subscription.update({
-                where: { id: sub.id },
-                data: {
-                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null
-                }
-              });
-            }
-          }
-          break;
-        }
-        // === NOVOS EVENTOS DE ORDER ===
-        case "order.created":
-        case "order.updated": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const productId = order?.product_id || order?.productId;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (sub) {
-            await db.subscription.update({
-              where: { id: sub.id },
-              data: {
-                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-                polarProductId: productId || sub.polarProductId || null
-              }
-            });
-          }
-          break;
-        }
-        case "order.paid": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const productId = order?.product_id || order?.productId;
-          const amountCents = order?.amount || order?.amount_cents || order?.total_amount_cents;
-          const invoiceId = order?.invoice_id || order?.invoiceId;
-          const currentPeriodEndIso = order?.current_period_end;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null;
-          await setSubscriptionPlanAndStatus(sub.id, productId || null, "ACTIVE", renewalDate, null);
-          await upsertInvoice(sub.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
-          break;
-        }
-        case "order.refunded": {
-          const order = data;
-          const polarCustomerId = order?.customer_id || order?.customerId;
-          const email = order?.customer?.email || order?.email;
-          const invoiceId = order?.invoice_id || order?.invoiceId;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, "INACTIVE", null, null);
-          await upsertInvoice(sub.id, null, invoiceId || null, "REFUNDED", null);
-          break;
-        }
-        case "customer.state_changed": {
-          const email = data?.email;
-          const polarCustomerId = data?.id;
-          const activeSub = Array.isArray(data?.active_subscriptions) && data.active_subscriptions.length > 0 ? data.active_subscriptions[0] : null;
-          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
-          if (!sub) break;
-          const productId = activeSub?.product_id;
-          const statusMap = {
-            active: "ACTIVE",
-            trialing: "TRIAL",
-            canceled: "CANCELLED",
-            paused: "INACTIVE",
-            past_due: "PAST_DUE",
-            expired: "EXPIRED"
-          };
-          const subStatus = activeSub?.status;
-          const mappedStatus = subStatus && statusMap[subStatus] ? statusMap[subStatus] : "ACTIVE";
-          const renewalDate = activeSub?.current_period_end ? new Date(activeSub.current_period_end) : null;
-          const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null;
-          await db.subscription.update({
-            where: { id: sub.id },
-            data: {
-              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
-              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null
-            }
-          });
-          await setSubscriptionPlanAndStatus(
-            sub.id,
-            productId || null,
-            mappedStatus,
-            renewalDate,
-            trialEndsAt
-          );
-          break;
-        }
-        default:
-          break;
-      }
-      return { success: true };
-    } catch (error) {
-      console.error("Polar webhook error:", error);
-      return { success: false, error: error?.message || "Internal error" };
-    }
-  },
-  async createSubscription(data) {
-    try {
-      const subscription2 = await polar.subscriptions.create({
-        customerId: data.customerId,
-        productId: data.productId
-      });
-      return subscription2;
-    } catch (error) {
-      console.error("Polar create subscription error:", error);
-      return null;
-    }
-  },
-  async createCustomer(data) {
-    try {
-      const customer = await polar.customers.create({
-        email: data.email,
-        name: data.name,
-        externalId: data.externalId
-        //organizationId: process.env.POLAR_ORGANIZATION_ID as string,
-      });
-      return customer;
-    } catch (error) {
-      console.error("Polar create customer error:", error);
-      return null;
-    }
-  }
-};
-
-// src/features/auth/commands/auth.commands.ts
 var scrypt = (0, import_node_util.promisify)(import_node_crypto.default.scrypt);
 async function hashPassword(password) {
-  const salt = import_node_crypto.default.randomBytes(16).toString("hex");
-  const derivedKey = await scrypt(password, salt, 64);
-  return `${salt}:${derivedKey.toString("hex")}`;
+  return await import_bcryptjs.default.hash(password, 12);
 }
 async function comparePassword(password, hash) {
-  const [salt, key] = hash.split(":");
-  const derivedKey = await scrypt(password, salt, 64);
-  const keyBuffer = Buffer.from(key, "hex");
-  return import_node_crypto.default.timingSafeEqual(derivedKey, keyBuffer);
+  if (hash.startsWith("$2")) {
+    return await import_bcryptjs.default.compare(password, hash);
+  }
+  try {
+    const [salt, key] = hash.split(":");
+    if (!salt || !key) {
+      return false;
+    }
+    const derivedKey = await scrypt(password, salt, 64);
+    const keyBuffer = Buffer.from(key, "hex");
+    return import_node_crypto.default.timingSafeEqual(derivedKey, keyBuffer);
+  } catch {
+    return false;
+  }
 }
 var AuthCommands = {
   async register(data) {
@@ -8146,40 +8248,6 @@ var AuthCommands = {
       }
     });
     try {
-      const freePlan = await PolarQueries.getFreePlan();
-      if (freePlan) {
-        const polarCustomer = await PolarCommands.createCustomer({
-          email: user.email,
-          name: user.name || "",
-          externalId: user.id
-        });
-        let polarSubscription = null;
-        if (polarCustomer?.id) {
-          polarSubscription = await PolarCommands.createSubscription({
-            customerId: polarCustomer.id,
-            productId: freePlan.id
-          });
-        }
-        await db.subscription.create({
-          data: {
-            userId: user.id,
-            status: "ACTIVE",
-            polarCustomerId: polarCustomer?.id || null,
-            polarSubscriptionId: polarSubscription?.id || null,
-            polarProductId: freePlan.id,
-            polarPlanName: freePlan.name,
-            priceAmount: 0,
-            priceInterval: freePlan.recurringInterval === "month" ? "MONTHLY" : "YEARLY",
-            currency: "BRL"
-          }
-        });
-      } else {
-        console.warn("Nenhum plano free encontrado no Polar");
-      }
-    } catch (e) {
-      console.error("Falha ao associar plano free ao usu\xE1rio:", e);
-    }
-    try {
       await EmailService.sendEmailVerification({
         email: user.email,
         name: user.name || "",
@@ -8195,9 +8263,20 @@ var AuthCommands = {
   async login(data) {
     const { email, password } = data;
     const user = await db.user.findUnique({
-      where: { email, status: true }
+      where: { email, status: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        emailVerified: true,
+        storeId: true
+      }
     });
     if (!user) {
+      throw new Error("Invalid credentials");
+    }
+    if (!user.password) {
       throw new Error("Invalid credentials");
     }
     const isValidPassword = await comparePassword(password, user.password);
@@ -8238,7 +8317,8 @@ var AuthCommands = {
         name: user.name,
         email: user.email,
         emailVerified: user.emailVerified,
-        lastLoginAt: /* @__PURE__ */ new Date()
+        lastLoginAt: /* @__PURE__ */ new Date(),
+        storeId: user.storeId || null
       },
       store: store || void 0,
       token
@@ -8484,40 +8564,6 @@ var AuthCommands = {
             lastLoginAt: /* @__PURE__ */ new Date()
           }
         });
-        try {
-          const freePlan = await PolarQueries.getFreePlan();
-          if (freePlan) {
-            const polarCustomer = await PolarCommands.createCustomer({
-              email: user.email,
-              name: user.name || "",
-              externalId: user.id
-            });
-            let polarSubscription = null;
-            if (polarCustomer?.id) {
-              polarSubscription = await PolarCommands.createSubscription({
-                customerId: polarCustomer.id,
-                productId: freePlan.id
-              });
-            }
-            await db.subscription.create({
-              data: {
-                userId: user.id,
-                status: "ACTIVE",
-                polarCustomerId: polarCustomer?.id || null,
-                polarSubscriptionId: polarSubscription?.id || null,
-                polarProductId: freePlan.id,
-                polarPlanName: freePlan.name,
-                priceAmount: 0,
-                priceInterval: freePlan.recurringInterval === "month" ? "MONTHLY" : "YEARLY",
-                currency: "BRL"
-              }
-            });
-          } else {
-            console.warn("Nenhum plano free encontrado no Polar (Google login)");
-          }
-        } catch (e) {
-          console.error("Falha ao associar plano free (Google):", e);
-        }
       } else {
         await db.user.update({
           where: { id: user.id },
@@ -8554,7 +8600,8 @@ var AuthCommands = {
           name: user.name,
           email: user.email,
           emailVerified: user.emailVerified,
-          lastLoginAt: user.lastLoginAt
+          lastLoginAt: user.lastLoginAt,
+          storeId: user.storeId || null
         },
         store: store || void 0,
         token: jwtToken
@@ -8575,7 +8622,7 @@ var AuthCommands = {
   }
 };
 
-// src/features/auth/auth.controller.ts
+// src/features/(core)/auth/auth.controller.ts
 var AuthController = {
   async register(request, reply) {
     try {
@@ -8830,7 +8877,7 @@ var AuthController = {
   }
 };
 
-// src/features/auth/auth.schema.ts
+// src/features/(core)/auth/auth.schema.ts
 var registerSchema = {
   body: {
     type: "object",
@@ -9278,7 +9325,7 @@ var AuthSchemas = {
   googleLogin: googleLoginSchema
 };
 
-// src/features/auth/auth.routes.ts
+// src/features/(core)/auth/auth.routes.ts
 async function AuthRoutes(fastify2) {
   fastify2.post("/signup", {
     schema: AuthSchemas.register,
@@ -9323,6 +9370,7 @@ async function AuthRoutes(fastify2) {
 }
 
 // src/middlewares/auth.middleware.ts
+init_prisma();
 var import_jsonwebtoken2 = __toESM(require("jsonwebtoken"));
 async function Auth(request, reply) {
   try {
@@ -9333,7 +9381,10 @@ async function Auth(request, reply) {
     const token = authHeader.slice(7);
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-      throw new Error("JWT secret not configured");
+      request.log.error("JWT_SECRET n\xE3o configurado nas vari\xE1veis de ambiente");
+      return reply.status(500).send({
+        error: "Internal server error - JWT secret not configured"
+      });
     }
     const payload = import_jsonwebtoken2.default.verify(token, secret);
     const user = await db.user.findUnique({
@@ -9367,6 +9418,7 @@ async function Auth(request, reply) {
 }
 
 // src/middlewares/permission.middleware.ts
+init_prisma();
 var Permission = (resource, action) => {
   return async (request, reply) => {
     try {
@@ -9398,6 +9450,7 @@ var Permission = (resource, action) => {
 };
 
 // src/middlewares/store.middleware.ts
+init_prisma();
 var Store = async (request, reply) => {
   try {
     const store = await db.store.findFirst({
@@ -9428,7 +9481,8 @@ var Middlewares = {
   permission: Permission
 };
 
-// src/features/category/commands/category.commands.ts
+// src/features/(erp)/category/commands/category.commands.ts
+init_prisma();
 var CategoryCommands = {
   async create(data) {
     return await db.category.create({
@@ -9654,7 +9708,8 @@ var CategoryCommands = {
   }
 };
 
-// src/features/category/queries/category.queries.ts
+// src/features/(erp)/category/queries/category.queries.ts
+init_prisma();
 var CategoryQueries = {
   async getById(id) {
     return await db.category.findUnique({
@@ -10541,7 +10596,7 @@ var CategoryQueries = {
   }
 };
 
-// src/features/category/category.controller.ts
+// src/features/(erp)/category/category.controller.ts
 var CategoryController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -10961,7 +11016,7 @@ var CategoryController = {
   }
 };
 
-// src/features/category/category.schema.ts
+// src/features/(erp)/category/category.schema.ts
 var createCategorySchema = {
   body: {
     type: "object",
@@ -11706,7 +11761,7 @@ var CategorySchemas = {
   bulkDelete: bulkDeleteCategoriesSchema
 };
 
-// src/features/category/category.routes.ts
+// src/features/(erp)/category/category.routes.ts
 async function CategoryRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -11816,7 +11871,11 @@ async function CategoryRoutes(fastify2) {
   });
 }
 
-// src/features/movement/queries/movement.queries.ts
+// src/features/(ai)/chat/commands/chat.commands.ts
+init_prisma();
+
+// src/features/(erp)/movement/queries/movement.queries.ts
+init_prisma();
 var MovementQueries = {
   async getById(id) {
     console.log("MovementQueries.getById: Searching for movement with id:", id);
@@ -12921,7 +12980,8 @@ var MovementQueries = {
   }
 };
 
-// src/features/product/queries/product.queries.ts
+// src/features/(erp)/product/queries/product.queries.ts
+init_prisma();
 async function calculateCurrentStock(productId) {
   const movements = await db.movement.findMany({
     where: { productId },
@@ -13213,7 +13273,8 @@ var ProductQueries = {
   }
 };
 
-// src/features/supplier/queries/supplier.queries.ts
+// src/features/(erp)/supplier/queries/supplier.queries.ts
+init_prisma();
 var SupplierQueries = {
   async getById(id) {
     const supplier = await db.supplier.findUnique({
@@ -13430,7 +13491,8 @@ var SupplierQueries = {
   }
 };
 
-// src/features/chat/queries/chat.query.ts
+// src/features/(ai)/chat/queries/chat.query.ts
+init_prisma();
 var ChatToolbox = {
   // === SERVIÇOS DE PRODUTOS ===
   async getProducts(params) {
@@ -13960,7 +14022,7 @@ var ChatQueries = {
   }
 };
 
-// src/features/chat/commands/chat.commands.ts
+// src/features/(ai)/chat/commands/chat.commands.ts
 var ChatCommands = {
   // === CRIAÇÃO DE SESSÃO ===
   async createSession(data) {
@@ -14230,7 +14292,7 @@ var ChatCommands = {
   }
 };
 
-// src/features/chat/chat.controller.ts
+// src/features/(ai)/chat/chat.controller.ts
 var ChatController = {
   // === ENVIO DE MENSAGENS ===
   async sendMessage(request, reply) {
@@ -14551,7 +14613,7 @@ var ChatController = {
   }
 };
 
-// src/features/chat/chat.schema.ts
+// src/features/(ai)/chat/chat.schema.ts
 var sendMessageSchema = {
   body: {
     type: "object",
@@ -14870,7 +14932,7 @@ var ChatSchemas = {
   getAnalytics: getAnalyticsSchema
 };
 
-// src/features/chat/chat.routes.ts
+// src/features/(ai)/chat/chat.routes.ts
 async function ChatRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -14935,7 +14997,8 @@ async function ChatRoutes(fastify2) {
   });
 }
 
-// src/features/crm/commands/crm.commands.ts
+// src/features/(crm)/contact/commands/crm.commands.ts
+init_prisma();
 var CrmCommands = {
   async create(data) {
     if (data.stageId) {
@@ -15039,7 +15102,8 @@ var CrmCommands = {
   }
 };
 
-// src/features/crm/commands/crm.stage.commands.ts
+// src/features/(crm)/contact/commands/crm.stage.commands.ts
+init_prisma();
 var CrmStageCommands = {
   async create(data) {
     return await db.crmStage.create({
@@ -15106,7 +15170,8 @@ var CrmStageCommands = {
   }
 };
 
-// src/features/crm/queries/crm.queries.ts
+// src/features/(crm)/contact/queries/crm.queries.ts
+init_prisma();
 var CrmQueries = {
   async getById(id, storeId) {
     return await db.crmClient.findFirst({
@@ -15268,7 +15333,8 @@ var CrmQueries = {
   }
 };
 
-// src/features/crm/queries/crm.stage.queries.ts
+// src/features/(crm)/contact/queries/crm.stage.queries.ts
+init_prisma();
 var CrmStageQueries = {
   async getById(id, storeId) {
     return await db.crmStage.findFirst({
@@ -15349,7 +15415,7 @@ var CrmStageQueries = {
   }
 };
 
-// src/features/crm/crm.controller.ts
+// src/features/(crm)/contact/crm.controller.ts
 var CrmController = {
   // === ENDPOINT DE TESTE TEMPORÁRIO ===
   async testGrouped(request, reply) {
@@ -15747,7 +15813,7 @@ var CrmController = {
   }
 };
 
-// src/features/crm/crm.schema.ts
+// src/features/(crm)/contact/crm.schema.ts
 var createCrmClientSchema = {
   body: {
     type: "object",
@@ -16332,7 +16398,7 @@ var CrmSchemas = {
   reorderStage: reorderCrmStageSchema
 };
 
-// src/features/crm/crm.routes.ts
+// src/features/(crm)/contact/crm.routes.ts
 async function CrmRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -16402,592 +16468,8 @@ async function CrmRoutes(fastify2) {
   });
 }
 
-// src/features/flow-execution/commands/flow-execution.commands.ts
-var FlowExecutionCommands = {
-  async create(data) {
-    try {
-      const execution = await db.flowExecution.create({
-        data: {
-          flowId: data.flowId,
-          status: data.status,
-          triggerType: data.triggerType,
-          triggerData: data.triggerData,
-          executionLog: data.executionLog
-        }
-      });
-      return execution;
-    } catch (error) {
-      console.error("Error creating flow execution:", error);
-      throw error;
-    }
-  },
-  async update(executionId, data) {
-    try {
-      const execution = await db.flowExecution.update({
-        where: { id: executionId },
-        data: {
-          ...data,
-          executionLog: data.executionLog
-        }
-      });
-      return execution;
-    } catch (error) {
-      console.error("Error updating flow execution:", error);
-      throw error;
-    }
-  },
-  async cancel(executionId) {
-    try {
-      const execution = await db.flowExecution.update({
-        where: { id: executionId },
-        data: {
-          status: "CANCELLED",
-          completedAt: /* @__PURE__ */ new Date()
-        }
-      });
-      return execution;
-    } catch (error) {
-      console.error("Error cancelling flow execution:", error);
-      throw error;
-    }
-  },
-  async finalize(executionId, success, error) {
-    try {
-      const startTime = await db.flowExecution.findUnique({
-        where: { id: executionId },
-        select: { startedAt: true }
-      });
-      const durationMs = startTime ? Date.now() - startTime.startedAt.getTime() : void 0;
-      const execution = await db.flowExecution.update({
-        where: { id: executionId },
-        data: {
-          status: success ? "SUCCESS" : "FAILED",
-          error,
-          completedAt: /* @__PURE__ */ new Date(),
-          durationMs
-        }
-      });
-      return execution;
-    } catch (error2) {
-      console.error("Error finalizing flow execution:", error2);
-      throw error2;
-    }
-  }
-};
-
-// src/features/flow-execution/queries/flow-execution.queries.ts
-var FlowExecutionQueries = {
-  async getById(id) {
-    try {
-      const execution = await db.flowExecution.findUnique({
-        where: { id },
-        include: {
-          flow: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        }
-      });
-      if (!execution) {
-        return null;
-      }
-      return execution;
-    } catch (error) {
-      console.error("Error getting flow execution by id:", error);
-      throw error;
-    }
-  },
-  async list(params) {
-    try {
-      const { page = 1, limit = 10, flowId, status, triggerType, startDate, endDate } = params;
-      const skip2 = (page - 1) * limit;
-      const where = {};
-      if (flowId) {
-        where.flowId = flowId;
-      }
-      if (status) {
-        where.status = status;
-      }
-      if (triggerType) {
-        where.triggerType = triggerType;
-      }
-      if (startDate || endDate) {
-        where.startedAt = {};
-        if (startDate) {
-          where.startedAt.gte = new Date(startDate);
-        }
-        if (endDate) {
-          where.startedAt.lte = new Date(endDate);
-        }
-      }
-      const [executions, total] = await Promise.all([
-        db.flowExecution.findMany({
-          where,
-          skip: skip2,
-          take: limit,
-          orderBy: { startedAt: "desc" },
-          include: {
-            flow: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
-          }
-        }),
-        db.flowExecution.count({ where })
-      ]);
-      return {
-        executions,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit)
-        }
-      };
-    } catch (error) {
-      console.error("Error listing flow executions:", error);
-      throw error;
-    }
-  },
-  async getByFlow(flowId, params) {
-    try {
-      const { page = 1, limit = 10, status } = params;
-      const skip2 = (page - 1) * limit;
-      const where = {
-        flowId
-      };
-      if (status) {
-        where.status = status;
-      }
-      const [executions, total] = await Promise.all([
-        db.flowExecution.findMany({
-          where,
-          skip: skip2,
-          take: limit,
-          orderBy: { startedAt: "desc" },
-          include: {
-            flow: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
-          }
-        }),
-        db.flowExecution.count({ where })
-      ]);
-      return {
-        executions,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit)
-        }
-      };
-    } catch (error) {
-      console.error("Error getting flow executions by flow:", error);
-      throw error;
-    }
-  },
-  async getStats(flowId) {
-    try {
-      const [total, byStatus, byTrigger, durations] = await Promise.all([
-        db.flowExecution.count({
-          where: { flowId }
-        }),
-        db.flowExecution.groupBy({
-          by: ["status"],
-          where: { flowId },
-          _count: true
-        }),
-        db.flowExecution.groupBy({
-          by: ["triggerType"],
-          where: { flowId },
-          _count: true
-        }),
-        db.flowExecution.findMany({
-          where: {
-            flowId,
-            durationMs: { not: null }
-          },
-          select: { durationMs: true }
-        })
-      ]);
-      const statusMap = {
-        success: 0,
-        failed: 0,
-        running: 0,
-        cancelled: 0
-      };
-      for (const item of byStatus) {
-        statusMap[item.status.toLowerCase()] = item._count;
-      }
-      const triggerMap = {};
-      for (const item of byTrigger) {
-        triggerMap[item.triggerType] = item._count;
-      }
-      const completedDurations = durations.filter((d) => d.duration !== null).map((d) => d.duration);
-      const averageDuration = completedDurations.length > 0 ? completedDurations.reduce((a, b) => a + b, 0) / completedDurations.length : 0;
-      const lastExecution = await db.flowExecution.findFirst({
-        where: { flowId },
-        orderBy: { startedAt: "desc" },
-        include: {
-          flow: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        }
-      });
-      return {
-        total,
-        byStatus: statusMap,
-        byTrigger: triggerMap,
-        averageDuration,
-        lastExecution
-      };
-    } catch (error) {
-      console.error("Error getting flow execution stats:", error);
-      throw error;
-    }
-  }
-};
-
-// src/features/flow-execution/flow-execution.controller.ts
-var FlowExecutionController = {
-  async get(request, reply) {
-    try {
-      const { id } = request.params;
-      const result = await FlowExecutionQueries.getById(id);
-      if (!result) {
-        return reply.status(404).send({
-          error: "Flow execution not found"
-        });
-      }
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Flow execution not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async list(request, reply) {
-    try {
-      const {
-        page = 1,
-        limit = 10,
-        flowId,
-        status,
-        triggerType,
-        startDate,
-        endDate
-      } = request.query;
-      const result = await FlowExecutionQueries.list({
-        page,
-        limit,
-        flowId,
-        status,
-        triggerType,
-        startDate,
-        endDate
-      });
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getByFlow(request, reply) {
-    try {
-      const { flowId } = request.params;
-      const { page = 1, limit = 10, status } = request.query;
-      const result = await FlowExecutionQueries.getByFlow(flowId, {
-        page,
-        limit,
-        status
-      });
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getStats(request, reply) {
-    try {
-      const { flowId } = request.params;
-      const result = await FlowExecutionQueries.getStats(flowId);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async cancel(request, reply) {
-    try {
-      const { id } = request.params;
-      const result = await FlowExecutionCommands.cancel(id);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Flow execution not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  }
-};
-
-// src/features/flow-execution/flow-execution.schema.ts
-var getFlowExecutionSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        flowId: { type: "string" },
-        status: {
-          type: "string",
-          enum: ["SUCCESS", "FAILED", "RUNNING", "CANCELLED"]
-        },
-        triggerType: { type: "string" },
-        triggerData: {},
-        executionLog: { type: "array" },
-        error: { type: "string", nullable: true },
-        startedAt: { type: "string" },
-        completedAt: { type: "string", nullable: true },
-        duration: { type: "number", nullable: true }
-      }
-    },
-    404: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var listFlowExecutionsSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      page: { type: "number", minimum: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100 },
-      flowId: { type: "string" },
-      status: {
-        type: "string",
-        enum: ["SUCCESS", "FAILED", "RUNNING", "CANCELLED"]
-      },
-      triggerType: { type: "string" },
-      startDate: { type: "string" },
-      endDate: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        executions: { type: "array" },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var getByFlowSchema = {
-  params: {
-    type: "object",
-    required: ["flowId"],
-    properties: {
-      flowId: { type: "string" }
-    }
-  },
-  querystring: {
-    type: "object",
-    properties: {
-      page: { type: "number", minimum: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100 },
-      status: {
-        type: "string",
-        enum: ["SUCCESS", "FAILED", "RUNNING", "CANCELLED"]
-      }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        executions: { type: "array" },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var getStatsSchema = {
-  params: {
-    type: "object",
-    required: ["flowId"],
-    properties: {
-      flowId: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        total: { type: "number" },
-        byStatus: {
-          type: "object",
-          properties: {
-            success: { type: "number" },
-            failed: { type: "number" },
-            running: { type: "number" },
-            cancelled: { type: "number" }
-          }
-        },
-        byTrigger: { type: "object" },
-        averageDuration: { type: "number" },
-        lastExecution: {}
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var cancelExecutionSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        status: {
-          type: "string",
-          enum: ["SUCCESS", "FAILED", "RUNNING", "CANCELLED"]
-        },
-        cancelledAt: { type: "string" }
-      }
-    },
-    404: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var FlowExecutionSchemas = {
-  get: getFlowExecutionSchema,
-  list: listFlowExecutionsSchema,
-  getByFlow: getByFlowSchema,
-  getStats: getStatsSchema,
-  cancel: cancelExecutionSchema
-};
-
-// src/features/flow-execution/flow-execution.routes.ts
-async function FlowExecutionRoutes(fastify2) {
-  fastify2.addHook("preHandler", Middlewares.auth);
-  fastify2.addHook("preHandler", Middlewares.store);
-  fastify2.get("/flow-executions", {
-    schema: FlowExecutionSchemas.list,
-    handler: FlowExecutionController.list
-  });
-  fastify2.get("/flow-executions/:id", {
-    schema: FlowExecutionSchemas.get,
-    handler: FlowExecutionController.get
-  });
-  fastify2.get("/flow-executions/flow/:flowId", {
-    schema: FlowExecutionSchemas.getByFlow,
-    handler: FlowExecutionController.getByFlow
-  });
-  fastify2.get("/flow-executions/flow/:flowId/stats", {
-    schema: FlowExecutionSchemas.getStats,
-    handler: FlowExecutionController.getStats
-  });
-  fastify2.post("/flow-executions/:id/cancel", {
-    schema: FlowExecutionSchemas.cancel,
-    handler: FlowExecutionController.cancel
-  });
-}
-
-// src/features/flow/commands/flow.commands.ts
+// src/features/(ai)/flow/commands/flow.commands.ts
+init_prisma();
 var FlowCommands = {
   async create(data) {
     try {
@@ -17137,7 +16619,8 @@ var FlowCommands = {
   }
 };
 
-// src/features/flow/queries/flow.queries.ts
+// src/features/(ai)/flow/queries/flow.queries.ts
+init_prisma();
 var FlowQueries = {
   async getById(id) {
     try {
@@ -17368,7 +16851,7 @@ var FlowQueries = {
   }
 };
 
-// src/features/flow/flow.controller.ts
+// src/features/(ai)/flow/flow.controller.ts
 var FlowController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -17599,7 +17082,7 @@ var FlowController = {
   }
 };
 
-// src/features/flow/flow.schema.ts
+// src/features/(ai)/flow/flow.schema.ts
 var createFlowSchema = {
   body: {
     type: "object",
@@ -18066,54 +17549,55 @@ var FlowSchemas = {
   test: testFlowSchema
 };
 
-// src/features/flow/flow.routes.ts
+// src/features/(ai)/flow/flow.routes.ts
 async function FlowRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
-  fastify2.post("/flows", {
+  fastify2.post("/", {
     schema: FlowSchemas.create,
     handler: FlowController.create
   });
-  fastify2.get("/flows", {
+  fastify2.get("/", {
     schema: FlowSchemas.list,
     handler: FlowController.list
   });
-  fastify2.get("/flows/stats", {
+  fastify2.get("/stats", {
     handler: FlowController.getStats
   });
-  fastify2.get("/flows/search", {
+  fastify2.get("/search", {
     handler: FlowController.search
   });
-  fastify2.get("/flows/store", {
+  fastify2.get("/store", {
     handler: FlowController.getByStore
   });
-  fastify2.get("/flows/:id", {
+  fastify2.get("/:id", {
     schema: FlowSchemas.get,
     handler: FlowController.get
   });
-  fastify2.put("/flows/:id", {
+  fastify2.put("/:id", {
     schema: FlowSchemas.update,
     handler: FlowController.update
   });
-  fastify2.delete("/flows/:id", {
+  fastify2.delete("/:id", {
     schema: FlowSchemas.delete,
     handler: FlowController.delete
   });
-  fastify2.patch("/flows/:id/status", {
+  fastify2.patch("/:id/status", {
     schema: FlowSchemas.updateStatus,
     handler: FlowController.updateStatus
   });
-  fastify2.post("/flows/:id/duplicate", {
+  fastify2.post("/:id/duplicate", {
     schema: FlowSchemas.duplicate,
     handler: FlowController.duplicate
   });
-  fastify2.post("/flows/:id/test", {
+  fastify2.post("/:id/test", {
     schema: FlowSchemas.test,
     handler: FlowController.test
   });
 }
 
 // src/features/invoice/commands/invoice.commands.ts
+init_prisma();
 var InvoiceCommands = {
   async create(data) {
     const { subscriptionId, ...createData } = data;
@@ -18202,6 +17686,7 @@ var InvoiceCommands = {
 };
 
 // src/features/invoice/queries/invoice.queries.ts
+init_prisma();
 var InvoiceQueries = {
   async getById(id) {
     const invoice = await db.invoice.findUnique({
@@ -19476,7 +18961,88 @@ async function InvoiceRoutes(fastify2) {
   });
 }
 
+// src/features/(erp)/movement/movement.controller.ts
+init_prisma();
+
+// src/features/(erp)/movement/commands/movement.commands.ts
+init_prisma();
+
+// src/features/(ai)/flow-execution/commands/flow-execution.commands.ts
+init_prisma();
+var FlowExecutionCommands = {
+  async create(data) {
+    try {
+      const execution = await db.flowExecution.create({
+        data: {
+          flowId: data.flowId,
+          status: data.status,
+          triggerType: data.triggerType,
+          triggerData: data.triggerData,
+          executionLog: data.executionLog
+        }
+      });
+      return execution;
+    } catch (error) {
+      console.error("Error creating flow execution:", error);
+      throw error;
+    }
+  },
+  async update(executionId, data) {
+    try {
+      const execution = await db.flowExecution.update({
+        where: { id: executionId },
+        data: {
+          ...data,
+          executionLog: data.executionLog
+        }
+      });
+      return execution;
+    } catch (error) {
+      console.error("Error updating flow execution:", error);
+      throw error;
+    }
+  },
+  async cancel(executionId) {
+    try {
+      const execution = await db.flowExecution.update({
+        where: { id: executionId },
+        data: {
+          status: "CANCELLED",
+          completedAt: /* @__PURE__ */ new Date()
+        }
+      });
+      return execution;
+    } catch (error) {
+      console.error("Error cancelling flow execution:", error);
+      throw error;
+    }
+  },
+  async finalize(executionId, success, error) {
+    try {
+      const startTime = await db.flowExecution.findUnique({
+        where: { id: executionId },
+        select: { startedAt: true }
+      });
+      const durationMs = startTime ? Date.now() - startTime.startedAt.getTime() : void 0;
+      const execution = await db.flowExecution.update({
+        where: { id: executionId },
+        data: {
+          status: success ? "SUCCESS" : "FAILED",
+          error,
+          completedAt: /* @__PURE__ */ new Date(),
+          durationMs
+        }
+      });
+      return execution;
+    } catch (error2) {
+      console.error("Error finalizing flow execution:", error2);
+      throw error2;
+    }
+  }
+};
+
 // src/services/workflow-engine/action-executor.service.ts
+init_prisma();
 var ActionExecutor = {
   async executeAction(actionConfig, context) {
     try {
@@ -20159,7 +19725,7 @@ var TriggerHandler = {
   }
 };
 
-// src/features/movement/commands/movement.commands.ts
+// src/features/(erp)/movement/commands/movement.commands.ts
 var MovementCommands = {
   async create(data) {
     console.log("MovementCommands.create called with:", data);
@@ -20756,7 +20322,7 @@ var MovementCommands = {
   }
 };
 
-// src/features/movement/movement.controller.ts
+// src/features/(erp)/movement/movement.controller.ts
 var MovementController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -21428,7 +20994,7 @@ var MovementController = {
   }
 };
 
-// src/features/movement/movement.schema.ts
+// src/features/(erp)/movement/movement.schema.ts
 var createMovementSchema = {
   body: {
     type: "object",
@@ -22321,7 +21887,7 @@ var MovementSchemas = {
   getAnalytics: getMovementAnalyticsSchema
 };
 
-// src/features/movement/movement.routes.ts
+// src/features/(erp)/movement/movement.routes.ts
 async function MovementRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -22446,7 +22012,8 @@ async function MovementRoutes(fastify2) {
   });
 }
 
-// src/features/notification/commands/notification.commands.ts
+// src/features/(core)/notification/commands/notification.commands.ts
+init_prisma();
 var NotificationCommands = {
   async create(data) {
     return await db.notification.create({
@@ -22575,7 +22142,8 @@ var NotificationCommands = {
   }
 };
 
-// src/features/notification/queries/notification.queries.ts
+// src/features/(core)/notification/queries/notification.queries.ts
+init_prisma();
 var NotificationQueries = {
   async getById(id) {
     return await db.notification.findUnique({
@@ -22857,7 +22425,7 @@ var NotificationQueries = {
   }
 };
 
-// src/features/notification/notification.controller.ts
+// src/features/(core)/notification/notification.controller.ts
 var NotificationController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -23193,7 +22761,7 @@ var NotificationController = {
   }
 };
 
-// src/features/notification/notification.schema.ts
+// src/features/(core)/notification/notification.schema.ts
 var notificationTypeEnum = [
   "INFO",
   "SUCCESS",
@@ -23613,7 +23181,7 @@ var getRecentSchema = {
     }
   }
 };
-var getStatsSchema2 = {
+var getStatsSchema = {
   querystring: {
     type: "object",
     properties: {
@@ -23679,11 +23247,11 @@ var NotificationSchemas = {
   getByType: getByTypeSchema,
   getByPriority: getByPrioritySchema,
   getRecent: getRecentSchema,
-  getStats: getStatsSchema2,
+  getStats: getStatsSchema,
   search: searchSchema
 };
 
-// src/features/notification/notification.routes.ts
+// src/features/(core)/notification/notification.routes.ts
 async function NotificationRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -23802,6 +23370,342 @@ async function NotificationRoutes(fastify2) {
 
 // src/features/polar/polar.controller.ts
 var import_node_crypto2 = require("crypto");
+
+// src/plugins/polar.ts
+var import_sdk = require("@polar-sh/sdk");
+var polar = new import_sdk.Polar({
+  accessToken: process.env.POLAR_ACCESS_KEY,
+  server: "sandbox"
+  //"sandbox") as "production" | "sandbox"
+});
+
+// src/features/polar/commands/polar.commands.ts
+init_prisma();
+var PolarCommands = {
+  async checkout(data) {
+    try {
+      const checkout = await polar.checkouts.create({
+        customerBillingAddress: {
+          country: "BR"
+        },
+        customerEmail: data.customer.email,
+        customerName: data.customer.name,
+        products: [data.productId]
+      });
+      if (!checkout) {
+        throw new Error("Failed to create checkout");
+      }
+      return checkout;
+    } catch (error) {
+      console.error("Polar checkout error:", error);
+      throw new Error("Failed to create checkout");
+    }
+  },
+  async webhook(event) {
+    try {
+      const type = event?.type || "";
+      const data = event?.data || {};
+      const findOrCreateSubscriptionByUserId = async (userId) => {
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: {
+            storeId: true,
+            ownedStore: {
+              select: {
+                id: true
+              }
+            }
+          }
+        });
+        if (!user) return null;
+        const storeId = user.storeId || user.ownedStore?.id;
+        if (!storeId) return null;
+        let subscription3 = await db.subscription.findUnique({ where: { storeId } });
+        if (!subscription3) {
+          subscription3 = await db.subscription.create({
+            data: {
+              storeId,
+              status: "ACTIVE"
+            }
+          });
+        }
+        return subscription3;
+      };
+      const findSubscriptionByPolarOrEmail = async (opts) => {
+        const { polarCustomerId, email } = opts;
+        if (polarCustomerId) {
+          const byPolar = await db.subscription.findUnique({
+            where: { polarCustomerId }
+          });
+          if (byPolar) return byPolar;
+        }
+        if (email) {
+          const user = await db.user.findFirst({
+            where: { email },
+            select: {
+              id: true,
+              storeId: true,
+              ownedStore: {
+                select: { id: true }
+              }
+            }
+          });
+          if (user) {
+            const storeId = user.storeId || user.ownedStore?.id;
+            if (storeId) {
+              const subscription3 = await db.subscription.findUnique({ where: { storeId } });
+              if (subscription3) return subscription3;
+              return await findOrCreateSubscriptionByUserId(user.id);
+            }
+          }
+        }
+        return null;
+      };
+      const setSubscriptionPlanAndStatus = async (subscriptionId, polarProductId, status, renewalDate, trialEndsAt) => {
+        return await db.subscription.update({
+          where: { id: subscriptionId },
+          data: {
+            polarProductId: polarProductId || null,
+            status,
+            currentPeriodEnd: renewalDate || null,
+            trialEndsAt: trialEndsAt || null
+          }
+        });
+      };
+      const upsertInvoice = async (subscriptionId, amountCents, polarInvoiceId, status = "PENDING", paymentDate) => {
+        if (!amountCents && !polarInvoiceId) return null;
+        const amount = amountCents ? Number(amountCents) / 100 : 0;
+        const existing = polarInvoiceId ? await db.invoice.findUnique({ where: { polarInvoiceId } }) : null;
+        if (existing) {
+          return await db.invoice.update({
+            where: { id: existing.id },
+            data: {
+              status,
+              paymentDate: paymentDate || existing.paymentDate || null
+            }
+          });
+        }
+        return await db.invoice.create({
+          data: {
+            subscriptionId,
+            amount,
+            status,
+            polarInvoiceId: polarInvoiceId || null,
+            paymentDate: paymentDate || null
+          }
+        });
+      };
+      const checkout = data?.checkout_session;
+      const subscription2 = data?.subscription;
+      switch (type) {
+        case "checkout.succeeded": {
+          const userIdFromMetadata = checkout?.metadata?.user_id;
+          const polarCustomerId = checkout?.customer_id;
+          const polarSubscriptionId = checkout?.subscription_id;
+          if (userIdFromMetadata) {
+            const subscription3 = await findOrCreateSubscriptionByUserId(userIdFromMetadata);
+            if (!subscription3) break;
+            await db.subscription.update({
+              where: { id: subscription3.id },
+              data: {
+                polarCustomerId: polarCustomerId || subscription3.polarCustomerId || null,
+                polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
+              }
+            });
+          } else if (polarCustomerId) {
+            const subscription3 = await findSubscriptionByPolarOrEmail({
+              polarCustomerId,
+              email: null
+            });
+            if (subscription3) {
+              await db.subscription.update({
+                where: { id: subscription3.id },
+                data: {
+                  polarCustomerId,
+                  polarSubscriptionId: polarSubscriptionId || subscription3.polarSubscriptionId || null
+                }
+              });
+            }
+          }
+          break;
+        }
+        case "subscription.created":
+        case "subscription.updated":
+        case "subscription.canceled": {
+          const polarCustomerId = subscription2?.customer_id;
+          const polarSubscriptionId = subscription2?.id;
+          if (polarCustomerId || polarSubscriptionId) {
+            const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email: null });
+            if (sub) {
+              await db.subscription.update({
+                where: { id: sub.id },
+                data: {
+                  polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                  polarSubscriptionId: polarSubscriptionId || sub.polarSubscriptionId || null
+                }
+              });
+            }
+          }
+          break;
+        }
+        // === NOVOS EVENTOS DE ORDER ===
+        case "order.created":
+        case "order.updated": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const productId = order?.product_id || order?.productId;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (sub) {
+            await db.subscription.update({
+              where: { id: sub.id },
+              data: {
+                polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+                polarProductId: productId || sub.polarProductId || null
+              }
+            });
+          }
+          break;
+        }
+        case "order.paid": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const productId = order?.product_id || order?.productId;
+          const amountCents = order?.amount || order?.amount_cents || order?.total_amount_cents;
+          const invoiceId = order?.invoice_id || order?.invoiceId;
+          const currentPeriodEndIso = order?.current_period_end;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          const renewalDate = currentPeriodEndIso ? new Date(currentPeriodEndIso) : null;
+          await setSubscriptionPlanAndStatus(sub.id, productId || null, "ACTIVE", renewalDate, null);
+          await upsertInvoice(sub.id, amountCents, invoiceId || null, "PAID", /* @__PURE__ */ new Date());
+          break;
+        }
+        case "order.refunded": {
+          const order = data;
+          const polarCustomerId = order?.customer_id || order?.customerId;
+          const email = order?.customer?.email || order?.email;
+          const invoiceId = order?.invoice_id || order?.invoiceId;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          await setSubscriptionPlanAndStatus(sub.id, sub.polarProductId, "INACTIVE", null, null);
+          await upsertInvoice(sub.id, null, invoiceId || null, "REFUNDED", null);
+          break;
+        }
+        case "customer.state_changed": {
+          const email = data?.email;
+          const polarCustomerId = data?.id;
+          const activeSub = Array.isArray(data?.active_subscriptions) && data.active_subscriptions.length > 0 ? data.active_subscriptions[0] : null;
+          const sub = await findSubscriptionByPolarOrEmail({ polarCustomerId, email });
+          if (!sub) break;
+          const productId = activeSub?.product_id;
+          const statusMap = {
+            active: "ACTIVE",
+            trialing: "TRIAL",
+            canceled: "CANCELLED",
+            paused: "INACTIVE",
+            past_due: "PAST_DUE",
+            expired: "EXPIRED"
+          };
+          const subStatus = activeSub?.status;
+          const mappedStatus = subStatus && statusMap[subStatus] ? statusMap[subStatus] : "ACTIVE";
+          const renewalDate = activeSub?.current_period_end ? new Date(activeSub.current_period_end) : null;
+          const trialEndsAt = activeSub?.trial_end ? new Date(activeSub.trial_end) : null;
+          await db.subscription.update({
+            where: { id: sub.id },
+            data: {
+              polarCustomerId: polarCustomerId || sub.polarCustomerId || null,
+              polarSubscriptionId: activeSub?.id || sub.polarSubscriptionId || null
+            }
+          });
+          await setSubscriptionPlanAndStatus(
+            sub.id,
+            productId || null,
+            mappedStatus,
+            renewalDate,
+            trialEndsAt
+          );
+          break;
+        }
+        default:
+          break;
+      }
+      return { success: true };
+    } catch (error) {
+      console.error("Polar webhook error:", error);
+      return { success: false, error: error?.message || "Internal error" };
+    }
+  },
+  async createSubscription(data) {
+    try {
+      const subscription2 = await polar.subscriptions.create({
+        customerId: data.customerId,
+        productId: data.productId
+      });
+      return subscription2;
+    } catch (error) {
+      console.error("Polar create subscription error:", error);
+      return null;
+    }
+  },
+  async createCustomer(data) {
+    try {
+      const customer = await polar.customers.create({
+        email: data.email,
+        name: data.name,
+        externalId: data.externalId
+        //organizationId: process.env.POLAR_ORGANIZATION_ID as string,
+      });
+      return customer;
+    } catch (error) {
+      console.error("Polar create customer error:", error);
+      return null;
+    }
+  }
+};
+
+// src/features/polar/queries/polar.queries.ts
+var PolarQueries = {
+  async list({ page, limit }) {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID,
+        page,
+        limit
+      });
+      return {
+        items: result.items,
+        pagination: {
+          page,
+          limit
+        }
+      };
+    } catch (error) {
+      console.error("Polar products list error:", error);
+      throw new Error(`Failed to fetch products: ${error}`);
+    }
+  },
+  async getFreePlan() {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID,
+        page: 1,
+        limit: 10
+      });
+      console.log(result);
+      const freeProduct = result.items.find(
+        (product) => product.prices.some((price) => price.amountType === "free")
+      );
+      return freeProduct || null;
+    } catch (error) {
+      console.error("Polar get free plan error:", error);
+      return null;
+    }
+  }
+};
+
+// src/features/polar/polar.controller.ts
 var PolarController = {
   async list(request, reply) {
     try {
@@ -24020,7 +23924,8 @@ async function PolarRoutes(fastify2) {
   });
 }
 
-// src/features/product/commands/product.commands.ts
+// src/features/(erp)/product/commands/product.commands.ts
+init_prisma();
 var ProductCommands = {
   async create(data) {
     const { categoryIds, supplierId, storeId, ...createData } = data;
@@ -24581,7 +24486,7 @@ var ProductCommands = {
   }
 };
 
-// src/features/product/product.controller.ts
+// src/features/(erp)/product/product.controller.ts
 var ProductController = {
   async create(request, reply) {
     try {
@@ -24890,7 +24795,7 @@ var ProductController = {
   }
 };
 
-// src/features/product/product.schema.ts
+// src/features/(erp)/product/product.schema.ts
 var createProductSchema = {
   body: {
     type: "object",
@@ -25818,7 +25723,7 @@ var ProductSchemas = {
   getByCategory: getProductsByCategorySchema
 };
 
-// src/features/product/product.routes.ts
+// src/features/(erp)/product/product.routes.ts
 async function ProductRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -25875,7 +25780,8 @@ async function ProductRoutes(fastify2) {
   });
 }
 
-// src/features/profile/commands/profile.commands.ts
+// src/features/(core)/profile/commands/profile.commands.ts
+init_prisma();
 var ProfileCommands = {
   async update(userId, data) {
     const user = await db.user.update({
@@ -25896,7 +25802,8 @@ var ProfileCommands = {
   }
 };
 
-// src/features/profile/queires/profile.queries.ts
+// src/features/(core)/profile/queires/profile.queries.ts
+init_prisma();
 var ProfileQueries = {
   async single(userId) {
     const user = await db.user.findUnique({
@@ -25940,7 +25847,7 @@ var ProfileQueries = {
   }
 };
 
-// src/features/profile/profile.controller.ts
+// src/features/(core)/profile/profile.controller.ts
 var ProfileController = {
   async single(request, reply) {
     try {
@@ -25984,7 +25891,7 @@ var ProfileController = {
   }
 };
 
-// src/features/profile/profile.schema.ts
+// src/features/(core)/profile/profile.schema.ts
 var update = {
   body: {
     type: "object",
@@ -26088,7 +25995,7 @@ var ProfileSchemas = {
   subscription
 };
 
-// src/features/profile/profile.routes.ts
+// src/features/(core)/profile/profile.routes.ts
 async function ProfileRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -26109,382 +26016,8 @@ async function ProfileRoutes(fastify2) {
   });
 }
 
-// src/features/push-subscription/commands/push-subscription.commands.ts
-var PushSubscriptionCommands = class {
-  constructor(prisma2) {
-    this.prisma = prisma2;
-  }
-  async create(data, userId) {
-    const existing = await this.prisma.pushSubscription.findFirst({
-      where: {
-        userId,
-        endpoint: data.endpoint
-      }
-    });
-    if (existing) {
-      return await this.prisma.pushSubscription.update({
-        where: { id: existing.id },
-        data: {
-          endpoint: data.endpoint,
-          p256dh: data.keys.p256dh,
-          auth: data.keys.auth,
-          userAgent: data.userAgent,
-          deviceInfo: data.deviceInfo,
-          updatedAt: /* @__PURE__ */ new Date()
-        }
-      });
-    }
-    return await this.prisma.pushSubscription.create({
-      data: {
-        userId,
-        endpoint: data.endpoint,
-        p256dh: data.keys.p256dh,
-        auth: data.keys.auth,
-        userAgent: data.userAgent,
-        deviceInfo: data.deviceInfo
-      }
-    });
-  }
-  async delete(id, userId) {
-    const subscription2 = await this.prisma.pushSubscription.findFirst({
-      where: {
-        id,
-        userId
-      }
-    });
-    if (!subscription2) {
-      throw new Error("Push subscription not found");
-    }
-    return await this.prisma.pushSubscription.delete({
-      where: { id }
-    });
-  }
-  async deleteByEndpoint(endpoint, userId) {
-    return await this.prisma.pushSubscription.deleteMany({
-      where: {
-        endpoint,
-        userId
-      }
-    });
-  }
-  async deleteByUser(userId) {
-    return await this.prisma.pushSubscription.deleteMany({
-      where: {
-        userId
-      }
-    });
-  }
-};
-
-// src/features/push-subscription/queries/push-subscription.queries.ts
-var PushSubscriptionQueries = class {
-  constructor(prisma2) {
-    this.prisma = prisma2;
-  }
-  async getById(id, userId) {
-    const subscription2 = await this.prisma.pushSubscription.findFirst({
-      where: {
-        id,
-        userId
-      }
-    });
-    if (!subscription2) {
-      throw new Error("Push subscription not found");
-    }
-    return subscription2;
-  }
-  async listByUser(userId) {
-    return await this.prisma.pushSubscription.findMany({
-      where: {
-        userId
-      },
-      orderBy: {
-        createdAt: "desc"
-      }
-    });
-  }
-  async list(page = 1, limit = 10) {
-    const skip2 = (page - 1) * limit;
-    const [items, total] = await Promise.all([
-      this.prisma.pushSubscription.findMany({
-        skip: skip2,
-        take: limit,
-        orderBy: {
-          createdAt: "desc"
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        }
-      }),
-      this.prisma.pushSubscription.count()
-    ]);
-    return {
-      items,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
-  }
-};
-
-// src/features/push-subscription/push-subscription.controller.ts
-var PushSubscriptionController = {
-  async create(request, reply) {
-    try {
-      const { endpoint, keys, userAgent, deviceInfo } = request.body;
-      const userId = request.user?.id;
-      if (!userId) {
-        return reply.status(401).send({
-          error: "User not authenticated"
-        });
-      }
-      const prisma2 = request.server.prisma;
-      const commands = new PushSubscriptionCommands(prisma2);
-      const result = await commands.create(
-        {
-          endpoint,
-          keys,
-          userAgent,
-          deviceInfo
-        },
-        userId
-      );
-      return reply.status(201).send(result);
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Push subscription not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async delete(request, reply) {
-    try {
-      const { id } = request.params;
-      const userId = request.user?.id;
-      if (!userId) {
-        return reply.status(401).send({
-          error: "User not authenticated"
-        });
-      }
-      const prisma2 = request.server.prisma;
-      const commands = new PushSubscriptionCommands(prisma2);
-      await commands.delete(id, userId);
-      return reply.status(204).send();
-    } catch (error) {
-      request.log.error(error);
-      if (error.message === "Push subscription not found") {
-        return reply.status(404).send({
-          error: error.message
-        });
-      }
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async listByUser(request, reply) {
-    try {
-      const { userId } = request.params;
-      const currentUserId = request.user?.id;
-      if (!currentUserId || currentUserId !== userId) {
-        return reply.status(403).send({
-          error: "Forbidden"
-        });
-      }
-      const prisma2 = request.server.prisma;
-      const queries = new PushSubscriptionQueries(prisma2);
-      const result = await queries.listByUser(userId);
-      return reply.send({ subscriptions: result });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async list(request, reply) {
-    try {
-      const { page = 1, limit = 10 } = request.query;
-      const prisma2 = request.server.prisma;
-      const queries = new PushSubscriptionQueries(prisma2);
-      const result = await queries.list(page, limit);
-      return reply.send(result);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  },
-  async getVapidKey(request, reply) {
-    try {
-      const fastify2 = request.server;
-      const publicKey = fastify2.getVapidPublicKey();
-      return reply.send({
-        publicKey
-      });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        error: "Internal server error"
-      });
-    }
-  }
-};
-
-// src/features/push-subscription/push-subscription.schema.ts
-var createPushSubscriptionSchema = {
-  body: {
-    type: "object",
-    required: ["endpoint", "keys"],
-    properties: {
-      endpoint: { type: "string" },
-      keys: {
-        type: "object",
-        required: ["p256dh", "auth"],
-        properties: {
-          p256dh: { type: "string" },
-          auth: { type: "string" }
-        }
-      },
-      userAgent: { type: "string" },
-      deviceInfo: {}
-    }
-  },
-  response: {
-    201: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-        userId: { type: "string" },
-        endpoint: { type: "string" },
-        createdAt: { type: "string" },
-        updatedAt: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var deletePushSubscriptionSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
-  response: {
-    204: { type: "null" },
-    404: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var listPushSubscriptionsSchema = {
-  querystring: {
-    type: "object",
-    properties: {
-      page: { type: "number", minimum: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100 }
-    }
-  },
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        items: { type: "array" },
-        pagination: {
-          type: "object",
-          properties: {
-            page: { type: "number" },
-            limit: { type: "number" },
-            total: { type: "number" },
-            totalPages: { type: "number" }
-          }
-        }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var getVapidKeySchema = {
-  response: {
-    200: {
-      type: "object",
-      properties: {
-        publicKey: { type: "string" }
-      }
-    },
-    500: {
-      type: "object",
-      properties: {
-        error: { type: "string" }
-      }
-    }
-  }
-};
-var PushSubscriptionSchemas = {
-  create: createPushSubscriptionSchema,
-  delete: deletePushSubscriptionSchema,
-  list: listPushSubscriptionsSchema,
-  getVapidKey: getVapidKeySchema
-};
-
-// src/features/push-subscription/push-subscription.routes.ts
-async function PushSubscriptionRoutes(fastify2) {
-  fastify2.addHook("preHandler", Middlewares.auth);
-  fastify2.addHook("preHandler", Middlewares.store);
-  fastify2.post("/", {
-    schema: PushSubscriptionSchemas.create,
-    handler: PushSubscriptionController.create
-  });
-  fastify2.delete("/:id", {
-    schema: PushSubscriptionSchemas.delete,
-    handler: PushSubscriptionController.delete
-  });
-  fastify2.get("/user/:userId", {
-    handler: PushSubscriptionController.listByUser
-  });
-  fastify2.get("/vapid-key", {
-    schema: PushSubscriptionSchemas.getVapidKey,
-    handler: PushSubscriptionController.getVapidKey
-  });
-}
-
-// src/features/quote/commands/quote.commands.ts
+// src/features/(crm)/quote/commands/quote.commands.ts
+init_prisma();
 var import_library = require("@prisma/client/runtime/library");
 var QuoteCommands = {
   async create(data) {
@@ -26933,7 +26466,8 @@ Rejection reason: ${reason}`.trim() : quote.observations
   }
 };
 
-// src/features/quote/queries/quote.queries.ts
+// src/features/(crm)/quote/queries/quote.queries.ts
+init_prisma();
 var QuoteQueries = {
   async getById(id) {
     const quote = await db.quote.findUnique({
@@ -27391,7 +26925,7 @@ var QuoteQueries = {
   }
 };
 
-// src/features/quote/quote.controller.ts
+// src/features/(crm)/quote/quote.controller.ts
 var QuoteController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -27805,7 +27339,7 @@ var QuoteController = {
   }
 };
 
-// src/features/quote/quote.schema.ts
+// src/features/(crm)/quote/quote.schema.ts
 var createQuoteSchema = {
   body: {
     type: "object",
@@ -28418,7 +27952,7 @@ var QuoteSchemas = {
   getStats: getQuoteStatsSchema
 };
 
-// src/features/quote/quote.routes.ts
+// src/features/(crm)/quote/quote.routes.ts
 async function QuoteRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -28599,7 +28133,8 @@ async function QuoteRoutes(fastify2) {
   });
 }
 
-// src/features/roadmap/commands/milestone.commands.ts
+// src/features/(pms)/roadmap/commands/milestone.commands.ts
+init_prisma();
 var MilestoneCommands = {
   async create(data) {
     const roadmap = await db.roadmap.findUnique({
@@ -28748,7 +28283,8 @@ var MilestoneCommands = {
   }
 };
 
-// src/features/roadmap/queries/milestone.queries.ts
+// src/features/(pms)/roadmap/queries/milestone.queries.ts
+init_prisma();
 var MilestoneQueries = {
   async getById(id, roadmapId) {
     const milestone = await db.milestone.findFirst({
@@ -28912,7 +28448,7 @@ var MilestoneQueries = {
   }
 };
 
-// src/features/roadmap/milestone.controller.ts
+// src/features/(pms)/roadmap/milestone.controller.ts
 var MilestoneController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -29172,7 +28708,7 @@ var MilestoneController = {
   }
 };
 
-// src/features/roadmap/milestone.schema.ts
+// src/features/(pms)/roadmap/milestone.schema.ts
 var createMilestoneSchema = {
   params: {
     type: "object",
@@ -29525,7 +29061,8 @@ var MilestoneSchemas = {
   reorder: reorderMilestonesSchema
 };
 
-// src/features/roadmap/commands/roadmap.commands.ts
+// src/features/(pms)/roadmap/commands/roadmap.commands.ts
+init_prisma();
 var RoadmapCommands = {
   async create(data) {
     return await db.roadmap.create({ data });
@@ -29549,7 +29086,8 @@ var RoadmapCommands = {
   }
 };
 
-// src/features/roadmap/queries/roadmap.queries.ts
+// src/features/(pms)/roadmap/queries/roadmap.queries.ts
+init_prisma();
 var RoadmapQueries = {
   async getById(id) {
     return await db.roadmap.findUnique({
@@ -29669,7 +29207,7 @@ var RoadmapQueries = {
   }
 };
 
-// src/features/roadmap/roadmap.controller.ts
+// src/features/(pms)/roadmap/roadmap.controller.ts
 var RoadmapController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -29836,7 +29374,7 @@ var RoadmapController = {
   }
 };
 
-// src/features/roadmap/roadmap.schema.ts
+// src/features/(pms)/roadmap/roadmap.schema.ts
 var createRoadmapSchema = {
   body: {
     type: "object",
@@ -30028,7 +29566,7 @@ var RoadmapSchemas = {
   list: listRoadmapsSchema
 };
 
-// src/features/roadmap/roadmap.routes.ts
+// src/features/(pms)/roadmap/roadmap.routes.ts
 async function RoadmapRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -30116,7 +29654,8 @@ async function RoadmapRoutes(fastify2) {
   });
 }
 
-// src/features/store/commands/store.commands.ts
+// src/features/(core)/store/commands/store.commands.ts
+init_prisma();
 var StoreCommands = {
   async create(data) {
     const existingStore = await db.store.findUnique({
@@ -30131,7 +29670,16 @@ var StoreCommands = {
     if (!owner) {
       throw new Error("Owner not found");
     }
-    return await db.store.create({
+    const storeInclude = {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      }
+    };
+    const store = await db.store.create({
       data: {
         ownerId: data.ownerId,
         name: data.name,
@@ -30144,16 +29692,53 @@ var StoreCommands = {
         address: data.address || null,
         status: data.status !== void 0 ? data.status : true
       },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
+      include: storeInclude
     });
+    let storeWithPlan = store;
+    try {
+      const freePlan = await PolarQueries.getFreePlan();
+      if (freePlan) {
+        const priceInterval = freePlan.recurringInterval === "month" ? "MONTHLY" : freePlan.recurringInterval === "year" ? "YEARLY" : null;
+        let polarCustomer = null;
+        if (owner.email) {
+          polarCustomer = await PolarCommands.createCustomer({
+            email: owner.email,
+            name: owner.name || "",
+            externalId: owner.id
+          });
+        }
+        let polarSubscription = null;
+        if (polarCustomer?.id) {
+          polarSubscription = await PolarCommands.createSubscription({
+            customerId: polarCustomer.id,
+            productId: freePlan.id
+          });
+        }
+        await db.subscription.create({
+          data: {
+            storeId: store.id,
+            status: "ACTIVE",
+            polarCustomerId: polarCustomer?.id || null,
+            polarSubscriptionId: polarSubscription?.id || null,
+            polarProductId: freePlan.id,
+            polarPlanName: freePlan.name,
+            priceAmount: 0,
+            ...priceInterval ? { priceInterval } : {},
+            currency: "BRL"
+          }
+        });
+        storeWithPlan = await db.store.update({
+          where: { id: store.id },
+          data: { plan: freePlan.name },
+          include: storeInclude
+        });
+      } else {
+        console.warn("Nenhum plano default encontrado no Polar");
+      }
+    } catch (error) {
+      console.error("Falha ao atribuir plano default \xE0 loja:", error);
+    }
+    return storeWithPlan;
   },
   async update(id, data) {
     const existingStore = await db.store.findUnique({
@@ -30211,7 +29796,8 @@ var StoreCommands = {
   }
 };
 
-// src/features/store/queries/store.queries.ts
+// src/features/(core)/store/queries/store.queries.ts
+init_prisma();
 var StoreQueries = {
   async getById(id) {
     const store = await db.store.findUnique({
@@ -30248,7 +29834,7 @@ var StoreQueries = {
   }
 };
 
-// src/features/store/store.controller.ts
+// src/features/(core)/store/store.controller.ts
 var StoreController = {
   async create(request, reply) {
     try {
@@ -30348,7 +29934,7 @@ var StoreController = {
   }
 };
 
-// src/features/store/store.schema.ts
+// src/features/(core)/store/store.schema.ts
 var createStoreSchema = {
   body: {
     type: "object",
@@ -30394,13 +29980,6 @@ var createStoreSchema = {
   }
 };
 var updateStoreSchema = {
-  params: {
-    type: "object",
-    required: ["id"],
-    properties: {
-      id: { type: "string" }
-    }
-  },
   body: {
     type: "object",
     properties: {
@@ -31195,7 +30774,7 @@ var StoreSchemas = {
   transferOwnership: transferOwnershipSchema
 };
 
-// src/features/store/store.routes.ts
+// src/features/(core)/store/store.routes.ts
 async function StoreRoutes(fastify2) {
   fastify2.post("/", {
     schema: StoreSchemas.create,
@@ -31218,14 +30797,2897 @@ async function StoreRoutes(fastify2) {
   });
 }
 
+// src/features/(pms)/document/commands/document.commands.ts
+init_prisma();
+var DocumentCommands = {
+  async create(data) {
+    if (data.folderId) {
+      const folder = await db.documentFolder.findUnique({
+        where: { id: data.folderId, storeId: data.storeId }
+      });
+      if (!folder) {
+        throw new Error("Folder not found");
+      }
+    }
+    let contentData = data.content;
+    if (data.type === "TEXT" && data.content && typeof data.content === "string") {
+      try {
+        contentData = JSON.parse(data.content);
+      } catch {
+        contentData = data.content;
+      }
+    }
+    return await db.document.create({
+      data: {
+        storeId: data.storeId,
+        folderId: data.folderId,
+        title: data.title,
+        type: data.type,
+        format: data.format,
+        content: contentData,
+        path: data.path,
+        size: data.size,
+        mimeType: data.mimeType,
+        visibility: data.visibility || "PRIVATE",
+        status: data.status || "ACTIVE",
+        pinned: data.pinned || false,
+        createdById: data.createdById
+      },
+      include: {
+        folder: true,
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        updatedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    const document = await db.document.findUnique({
+      where: { id }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    if (data.folderId) {
+      const folder = await db.documentFolder.findUnique({
+        where: { id: data.folderId }
+      });
+      if (!folder) {
+        throw new Error("Folder not found");
+      }
+    }
+    let contentData = data.content;
+    if (data.content !== void 0 && (data.type === "TEXT" || document.type === "TEXT")) {
+      if (typeof data.content === "string") {
+        try {
+          contentData = JSON.parse(data.content);
+        } catch {
+          contentData = data.content;
+        }
+      }
+    }
+    const updateData = {
+      ...data,
+      content: contentData,
+      updatedById: data.updatedById
+    };
+    if (data.content !== void 0) {
+      updateData.version = { increment: 1 };
+    }
+    return await db.document.update({
+      where: { id },
+      data: updateData,
+      include: {
+        folder: true,
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        updatedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async delete(id) {
+    const document = await db.document.findUnique({
+      where: { id }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    return await db.document.update({
+      where: { id },
+      data: {
+        deletedAt: /* @__PURE__ */ new Date(),
+        status: "DELETED"
+      }
+    });
+  },
+  async hardDelete(id) {
+    const document = await db.document.findUnique({
+      where: { id }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    return await db.document.delete({
+      where: { id }
+    });
+  },
+  async togglePinned(id) {
+    const document = await db.document.findUnique({
+      where: { id }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    return await db.document.update({
+      where: { id },
+      data: {
+        pinned: !document.pinned
+      }
+    });
+  },
+  async updateStatus(id, status) {
+    const document = await db.document.findUnique({
+      where: { id }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    const updateData = { status };
+    if (status === "DELETED") {
+      updateData.deletedAt = /* @__PURE__ */ new Date();
+    }
+    return await db.document.update({
+      where: { id },
+      data: updateData
+    });
+  }
+};
+
+// src/features/(pms)/document/queries/document.queries.ts
+init_prisma();
+var DocumentQueries = {
+  async list(params) {
+    const {
+      page = 1,
+      limit = 10,
+      storeId,
+      search,
+      type,
+      format,
+      folderId,
+      status,
+      visibility
+    } = params;
+    const skip2 = (page - 1) * limit;
+    const where = {
+      storeId,
+      deletedAt: null
+    };
+    if (search) {
+      where.title = { contains: search, mode: "insensitive" };
+    }
+    if (type) {
+      where.type = type;
+    }
+    if (format) {
+      where.format = format;
+    }
+    if (folderId) {
+      where.folderId = folderId;
+    }
+    if (status) {
+      where.status = status;
+    }
+    if (visibility) {
+      where.visibility = visibility;
+    }
+    const [data, total] = await Promise.all([
+      db.document.findMany({
+        where,
+        skip: skip2,
+        take: limit,
+        orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+        include: {
+          folder: true,
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          },
+          updatedBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      }),
+      db.document.count({ where })
+    ]);
+    return {
+      items: data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  },
+  async getById(id, storeId) {
+    const document = await db.document.findFirst({
+      where: {
+        id,
+        storeId,
+        deletedAt: null
+      },
+      include: {
+        folder: true,
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        updatedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        versions: {
+          orderBy: { version: "desc" },
+          take: 10,
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!document) {
+      throw new Error("Document not found");
+    }
+    return document;
+  },
+  async search(storeId, query, limit, page) {
+    const skip2 = (page - 1) * limit;
+    const documents = await db.document.findMany({
+      where: {
+        storeId,
+        deletedAt: null,
+        OR: [{ title: { contains: query, mode: "insensitive" } }]
+      },
+      skip: skip2,
+      take: limit || 10,
+      orderBy: { createdAt: "desc" },
+      include: {
+        folder: true,
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    return {
+      items: documents,
+      pagination: {
+        page,
+        limit,
+        total: documents.length,
+        totalPages: Math.ceil(documents.length / limit)
+      }
+    };
+  },
+  async getByFolder(storeId, folderId) {
+    const documents = await db.document.findMany({
+      where: {
+        storeId,
+        folderId,
+        deletedAt: null
+      },
+      orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    return { documents };
+  },
+  async getPinned(storeId) {
+    const documents = await db.document.findMany({
+      where: {
+        storeId,
+        pinned: true,
+        deletedAt: null
+      },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        folder: true,
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    return { documents };
+  },
+  async getStats(storeId) {
+    const [total, byType, byStatus] = await Promise.all([
+      db.document.count({
+        where: {
+          storeId,
+          deletedAt: null
+        }
+      }),
+      db.document.groupBy({
+        by: ["type"],
+        where: {
+          storeId,
+          deletedAt: null
+        },
+        _count: true
+      }),
+      db.document.groupBy({
+        by: ["status"],
+        where: {
+          storeId,
+          deletedAt: null
+        },
+        _count: true
+      })
+    ]);
+    return {
+      total,
+      byType,
+      byStatus
+    };
+  }
+};
+
+// src/features/(pms)/document/commands/folder.commands.ts
+init_prisma();
+var FolderCommands = {
+  async create(data) {
+    const existingFolder = await db.documentFolder.findFirst({
+      where: {
+        storeId: data.storeId,
+        name: data.name,
+        deletedAt: null
+      }
+    });
+    if (existingFolder) {
+      throw new Error("Folder with this name already exists");
+    }
+    if (data.parentId) {
+      const parent = await db.documentFolder.findFirst({
+        where: {
+          id: data.parentId,
+          storeId: data.storeId,
+          deletedAt: null
+        }
+      });
+      if (!parent) {
+        throw new Error("Parent folder not found");
+      }
+    }
+    return await db.documentFolder.create({
+      data: {
+        storeId: data.storeId,
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        icon: data.icon,
+        parentId: data.parentId,
+        createdById: data.createdById
+      },
+      include: {
+        parent: true,
+        children: true,
+        documents: {
+          where: {
+            deletedAt: null
+          },
+          take: 5,
+          orderBy: { createdAt: "desc" }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    const folder = await db.documentFolder.findUnique({
+      where: { id }
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    if (data.name && data.name !== folder.name) {
+      const existingFolder = await db.documentFolder.findFirst({
+        where: {
+          storeId: folder.storeId,
+          name: data.name,
+          deletedAt: null,
+          id: { not: id }
+        }
+      });
+      if (existingFolder) {
+        throw new Error("Folder with this name already exists");
+      }
+    }
+    if (data.parentId) {
+      if (data.parentId === id) {
+        throw new Error("Folder cannot be its own parent");
+      }
+      const parent = await db.documentFolder.findFirst({
+        where: {
+          id: data.parentId,
+          storeId: folder.storeId,
+          deletedAt: null
+        }
+      });
+      if (!parent) {
+        throw new Error("Parent folder not found");
+      }
+      const checkCircular = async (folderId, parentId) => {
+        if (folderId === parentId) {
+          return true;
+        }
+        const currentFolder = await db.documentFolder.findUnique({
+          where: { id: folderId },
+          select: { parentId: true }
+        });
+        if (currentFolder?.parentId) {
+          return checkCircular(currentFolder.parentId, parentId);
+        }
+        return false;
+      };
+      const wouldCreateCycle = await checkCircular(data.parentId, id);
+      if (wouldCreateCycle) {
+        throw new Error("Cannot move folder: would create circular reference");
+      }
+    }
+    return await db.documentFolder.update({
+      where: { id },
+      data,
+      include: {
+        parent: true,
+        children: true,
+        documents: {
+          where: {
+            deletedAt: null
+          },
+          take: 5,
+          orderBy: { createdAt: "desc" }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async delete(id) {
+    const folder = await db.documentFolder.findUnique({
+      where: { id },
+      include: {
+        documents: {
+          where: {
+            deletedAt: null
+          }
+        },
+        children: {
+          where: {
+            deletedAt: null
+          }
+        }
+      }
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    if (folder.documents.length > 0) {
+      throw new Error("Cannot delete folder: it contains documents");
+    }
+    if (folder.children.length > 0) {
+      throw new Error("Cannot delete folder: it contains subfolders");
+    }
+    return await db.documentFolder.update({
+      where: { id },
+      data: {
+        deletedAt: /* @__PURE__ */ new Date()
+      }
+    });
+  },
+  async forceDelete(id) {
+    const folder = await db.documentFolder.findUnique({
+      where: { id }
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    return await db.documentFolder.delete({
+      where: { id }
+    });
+  }
+};
+
+// src/features/(pms)/document/queries/folder.queries.ts
+init_prisma();
+var FolderQueries = {
+  async list(params) {
+    const { page = 1, limit = 10, storeId, search, parentId } = params;
+    const skip2 = (page - 1) * limit;
+    const where = {
+      storeId,
+      deletedAt: null
+    };
+    if (search) {
+      where.name = { contains: search, mode: "insensitive" };
+    }
+    if (parentId) {
+      where.parentId = parentId;
+    } else {
+      where.parentId = null;
+    }
+    const [data, total] = await Promise.all([
+      db.documentFolder.findMany({
+        where,
+        skip: skip2,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          parent: true,
+          _count: {
+            select: {
+              children: {
+                where: {
+                  deletedAt: null
+                }
+              },
+              documents: {
+                where: {
+                  deletedAt: null
+                }
+              }
+            }
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      }),
+      db.documentFolder.count({ where })
+    ]);
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  },
+  async getById(id, storeId) {
+    const folder = await db.documentFolder.findFirst({
+      where: {
+        id,
+        storeId,
+        deletedAt: null
+      },
+      include: {
+        parent: true,
+        children: {
+          where: {
+            deletedAt: null
+          },
+          orderBy: { name: "asc" },
+          include: {
+            _count: {
+              select: {
+                children: {
+                  where: {
+                    deletedAt: null
+                  }
+                },
+                documents: {
+                  where: {
+                    deletedAt: null
+                  }
+                }
+              }
+            }
+          }
+        },
+        documents: {
+          where: {
+            deletedAt: null
+          },
+          orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    return folder;
+  },
+  async search(storeId, query, limit) {
+    const folders = await db.documentFolder.findMany({
+      where: {
+        storeId,
+        deletedAt: null,
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { description: { contains: query, mode: "insensitive" } }
+        ]
+      },
+      take: limit || 10,
+      orderBy: { name: "asc" },
+      include: {
+        parent: true,
+        _count: {
+          select: {
+            children: {
+              where: {
+                deletedAt: null
+              }
+            },
+            documents: {
+              where: {
+                deletedAt: null
+              }
+            }
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    return { folders };
+  },
+  async getTree(storeId) {
+    const rootFolders = await db.documentFolder.findMany({
+      where: {
+        storeId,
+        parentId: null,
+        deletedAt: null
+      },
+      orderBy: { name: "asc" },
+      include: {
+        _count: {
+          select: {
+            children: {
+              where: {
+                deletedAt: null
+              }
+            },
+            documents: {
+              where: {
+                deletedAt: null
+              }
+            }
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+    const buildTree = async (folders) => {
+      return Promise.all(
+        folders.map(async (folder) => {
+          const children = await db.documentFolder.findMany({
+            where: {
+              parentId: folder.id,
+              deletedAt: null
+            },
+            orderBy: { name: "asc" },
+            include: {
+              _count: {
+                select: {
+                  children: {
+                    where: {
+                      deletedAt: null
+                    }
+                  },
+                  documents: {
+                    where: {
+                      deletedAt: null
+                    }
+                  }
+                }
+              },
+              createdBy: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true
+                }
+              }
+            }
+          });
+          return {
+            ...folder,
+            children: children.length > 0 ? await buildTree(children) : []
+          };
+        })
+      );
+    };
+    return { tree: await buildTree(rootFolders) };
+  },
+  async getStats(storeId) {
+    const total = await db.documentFolder.count({
+      where: {
+        storeId,
+        deletedAt: null
+      }
+    });
+    const rootFolders = await db.documentFolder.count({
+      where: {
+        storeId,
+        parentId: null,
+        deletedAt: null
+      }
+    });
+    return {
+      total,
+      rootFolders,
+      subFolders: total - rootFolders
+    };
+  }
+};
+
+// src/features/(pms)/document/document.controller.ts
+var DocumentController = {
+  // === CRUD BÁSICO DE DOCUMENTOS ===
+  async create(request, reply) {
+    try {
+      const {
+        folderId,
+        title,
+        type,
+        format,
+        content,
+        path: path4,
+        size,
+        mimeType,
+        visibility,
+        status,
+        pinned
+      } = request.body;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await DocumentCommands.create({
+        storeId,
+        folderId,
+        title,
+        type,
+        format,
+        content,
+        path: path4,
+        size,
+        mimeType,
+        visibility,
+        status,
+        pinned,
+        createdById: request.user?.id
+      });
+      return reply.status(201).send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Folder not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async list(request, reply) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        search,
+        type,
+        format,
+        folderId,
+        status,
+        visibility
+      } = request.query;
+      const storeId = request.store?.id;
+      const result = await DocumentQueries.list({
+        storeId,
+        page: Number(page),
+        limit: Number(limit),
+        search,
+        type,
+        format,
+        folderId,
+        status,
+        visibility
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async get(request, reply) {
+    try {
+      const { id } = request.params;
+      const storeId = request.store?.id;
+      const result = await DocumentQueries.getById(id, storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Document not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const updateData = { ...request.body };
+      const result = await DocumentCommands.update(id, {
+        ...updateData,
+        updatedById: request.user?.id
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Document not found" || error.message === "Folder not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async delete(request, reply) {
+    try {
+      const { id } = request.params;
+      await DocumentCommands.delete(id);
+      return reply.status(204).send();
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Document not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async search(request, reply) {
+    try {
+      const { search, limit } = request.query;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await DocumentQueries.search(storeId, search, limit);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async getByFolder(request, reply) {
+    try {
+      const { folderId } = request.params;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await DocumentQueries.getByFolder(storeId, folderId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async getPinned(request, reply) {
+    try {
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await DocumentQueries.getPinned(storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async getStats(request, reply) {
+    try {
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await DocumentQueries.getStats(storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async togglePinned(request, reply) {
+    try {
+      const { id } = request.params;
+      const result = await DocumentCommands.togglePinned(id);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Document not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  }
+};
+var FolderController = {
+  // === CRUD BÁSICO DE PASTAS ===
+  async create(request, reply) {
+    try {
+      const { name, description, color, icon, parentId } = request.body;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderCommands.create({
+        storeId,
+        name,
+        description,
+        color,
+        icon,
+        parentId,
+        createdById: request.user?.id
+      });
+      return reply.status(201).send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Folder with this name already exists") {
+        return reply.status(400).send({ error: error.message });
+      }
+      if (error.message === "Parent folder not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async list(request, reply) {
+    try {
+      const { page = 1, limit = 10, search, parentId } = request.query;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderQueries.list({
+        storeId,
+        page: Number(page),
+        limit: Number(limit),
+        search,
+        parentId
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async get(request, reply) {
+    try {
+      const { id } = request.params;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderQueries.getById(id, storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Folder not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const updateData = { ...request.body };
+      const result = await FolderCommands.update(id, updateData);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Folder not found" || error.message === "Parent folder not found" || error.message === "Folder with this name already exists" || error.message === "Folder cannot be its own parent" || error.message === "Cannot move folder: would create circular reference") {
+        return reply.status(400).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async delete(request, reply) {
+    try {
+      const { id } = request.params;
+      await FolderCommands.delete(id);
+      return reply.status(204).send();
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "Folder not found") {
+        return reply.status(404).send({ error: error.message });
+      }
+      if (error.message === "Cannot delete folder: it contains documents" || error.message === "Cannot delete folder: it contains subfolders") {
+        return reply.status(400).send({ error: error.message });
+      }
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async search(request, reply) {
+    try {
+      const { search, limit } = request.query;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderQueries.search(storeId, search, limit);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async getTree(request, reply) {
+    try {
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderQueries.getTree(storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  },
+  async getStats(request, reply) {
+    try {
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({ error: "Store context required" });
+      }
+      const result = await FolderQueries.getStats(storeId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: "Internal server error" });
+    }
+  }
+};
+
+// src/features/(pms)/document/document.schemas.ts
+var createDocumentSchema = {
+  body: {
+    type: "object",
+    required: ["title", "type"],
+    properties: {
+      folderId: { type: "string" },
+      title: { type: "string" },
+      type: { type: "string", enum: ["TEXT", "DOCX", "PDF", "TEMPLATE", "OTHER"] },
+      format: { type: "string", enum: ["MARKDOWN", "HTML", "JSON", "DOCX", "PDF"] },
+      content: {},
+      path: { type: "string" },
+      size: { type: "number" },
+      mimeType: { type: "string" },
+      visibility: { type: "string", enum: ["PRIVATE", "PUBLIC", "INTERNAL"] },
+      status: { type: "string", enum: ["ACTIVE", "ARCHIVED", "DELETED"] },
+      pinned: { type: "boolean" }
+    }
+  }
+};
+var listDocumentsSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number" },
+      limit: { type: "number" },
+      search: { type: "string" },
+      type: { type: "string", enum: ["TEXT", "DOCX", "PDF", "TEMPLATE", "OTHER"] },
+      format: { type: "string", enum: ["MARKDOWN", "HTML", "JSON", "DOCX", "PDF"] },
+      folderId: { type: "string" },
+      status: { type: "string", enum: ["ACTIVE", "ARCHIVED", "DELETED"] },
+      visibility: { type: "string", enum: ["PRIVATE", "PUBLIC", "INTERNAL"] }
+    }
+  }
+};
+var getDocumentSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var updateDocumentSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      folderId: { type: "string" },
+      title: { type: "string" },
+      type: { type: "string", enum: ["TEXT", "DOCX", "PDF", "TEMPLATE", "OTHER"] },
+      format: { type: "string", enum: ["MARKDOWN", "HTML", "JSON", "DOCX", "PDF"] },
+      content: {},
+      path: { type: "string" },
+      size: { type: "number" },
+      mimeType: { type: "string" },
+      visibility: { type: "string", enum: ["PRIVATE", "PUBLIC", "INTERNAL"] },
+      status: { type: "string", enum: ["ACTIVE", "ARCHIVED", "DELETED"] },
+      pinned: { type: "boolean" }
+    }
+  }
+};
+var deleteDocumentSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var searchDocumentsSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      search: { type: "string" },
+      limit: { type: "number" }
+    }
+  }
+};
+var DocumentSchemas = {
+  create: createDocumentSchema,
+  list: listDocumentsSchema,
+  get: getDocumentSchema,
+  update: updateDocumentSchema,
+  delete: deleteDocumentSchema,
+  search: searchDocumentsSchema
+};
+
+// src/features/(pms)/document/document.routes.ts
+async function DocumentRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    schema: DocumentSchemas.create,
+    handler: DocumentController.create
+  });
+  fastify2.get("/", {
+    schema: DocumentSchemas.list,
+    handler: DocumentController.list
+  });
+  fastify2.get("/:id", {
+    schema: DocumentSchemas.get,
+    handler: DocumentController.get
+  });
+  fastify2.put("/:id", {
+    schema: DocumentSchemas.update,
+    handler: DocumentController.update
+  });
+  fastify2.delete("/:id", {
+    schema: DocumentSchemas.delete,
+    handler: DocumentController.delete
+  });
+  fastify2.get("/search", {
+    schema: DocumentSchemas.search,
+    handler: DocumentController.search
+  });
+  fastify2.get("/folder/:folderId", {
+    handler: DocumentController.getByFolder
+  });
+  fastify2.get("/pinned/list", {
+    handler: DocumentController.getPinned
+  });
+  fastify2.get("/stats/summary", {
+    handler: DocumentController.getStats
+  });
+  fastify2.patch("/:id/toggle-pinned", {
+    handler: DocumentController.togglePinned
+  });
+}
+
+// src/features/(pms)/document/folder.schemas.ts
+var createFolderSchema = {
+  body: {
+    type: "object",
+    required: ["name"],
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      color: { type: "string" },
+      icon: { type: "string" },
+      parentId: { type: "string" }
+    }
+  }
+};
+var listFoldersSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number" },
+      limit: { type: "number" },
+      search: { type: "string" },
+      parentId: { type: "string" }
+    }
+  }
+};
+var getFolderSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var updateFolderSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      color: { type: "string" },
+      icon: { type: "string" },
+      parentId: { type: "string" }
+    }
+  }
+};
+var deleteFolderSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var searchFoldersSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      search: { type: "string" },
+      limit: { type: "number" }
+    }
+  }
+};
+var FolderSchemas = {
+  create: createFolderSchema,
+  list: listFoldersSchema,
+  get: getFolderSchema,
+  update: updateFolderSchema,
+  delete: deleteFolderSchema,
+  search: searchFoldersSchema
+};
+
+// src/features/(pms)/document/folder.routes.ts
+async function FolderRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    schema: FolderSchemas.create,
+    handler: FolderController.create
+  });
+  fastify2.get("/", {
+    schema: FolderSchemas.list,
+    handler: FolderController.list
+  });
+  fastify2.get("/:id", {
+    schema: FolderSchemas.get,
+    handler: FolderController.get
+  });
+  fastify2.put("/:id", {
+    schema: FolderSchemas.update,
+    handler: FolderController.update
+  });
+  fastify2.delete("/:id", {
+    schema: FolderSchemas.delete,
+    handler: FolderController.delete
+  });
+  fastify2.get("/search", {
+    schema: FolderSchemas.search,
+    handler: FolderController.search
+  });
+  fastify2.get("/tree/list", {
+    handler: FolderController.getTree
+  });
+  fastify2.get("/stats/summary", {
+    handler: FolderController.getStats
+  });
+}
+
+// src/features/(core)/permission/commands/permission.commands.ts
+init_prisma();
+
+// src/features/(core)/permission/crm.ts
+var CRM_PERMISSIONS = [
+  //CONTACTS
+  {
+    resource: "CONTACTS",
+    action: "READ",
+    name: "Visualizar Contatos",
+    description: "Permite visualizar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "UPDATE",
+    name: "Atualizar Contatos",
+    description: "Permite atualizar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "CREATE",
+    name: "Criar Contatos",
+    description: "Permite criar contatos"
+  },
+  {
+    resource: "CONTACTS",
+    action: "DELETE",
+    name: "Deletar Contatos",
+    description: "Permite deletar contatos"
+  },
+  //QUOTES
+  {
+    resource: "QUOTES",
+    action: "READ",
+    name: "Visualizar Or\xE7amentos",
+    description: "Permite visualizar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "UPDATE",
+    name: "Atualizar Or\xE7amentos",
+    description: "Permite atualizar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "CREATE",
+    name: "Criar Or\xE7amentos",
+    description: "Permite criar or\xE7amentos"
+  },
+  {
+    resource: "QUOTES",
+    action: "DELETE",
+    name: "Deletar Or\xE7amentos",
+    description: "Permite deletar or\xE7amentos"
+  },
+  //PIPELINES
+  {
+    resource: "PIPELINES",
+    action: "READ",
+    name: "Visualizar Pipelines",
+    description: "Permite visualizar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "UPDATE",
+    name: "Atualizar Pipelines",
+    description: "Permite atualizar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "CREATE",
+    name: "Criar Pipelines",
+    description: "Permite criar pipelines"
+  },
+  {
+    resource: "PIPELINES",
+    action: "DELETE",
+    name: "Deletar Pipelines",
+    description: "Permite deletar pipelines"
+  },
+  //STAGES
+  {
+    resource: "STAGES",
+    action: "READ",
+    name: "Visualizar Etapas",
+    description: "Permite visualizar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "UPDATE",
+    name: "Atualizar Etapas",
+    description: "Permite atualizar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "CREATE",
+    name: "Criar Etapas",
+    description: "Permite criar etapas"
+  },
+  {
+    resource: "STAGES",
+    action: "DELETE",
+    name: "Deletar Etapas",
+    description: "Permite deletar etapas"
+  }
+];
+
+// src/features/(core)/permission/erp.ts
+var ERP_PERMISSIONS = [
+  //CATEGORIES
+  {
+    resource: "CATEGORIES",
+    action: "READ",
+    name: "Visualizar Categorias",
+    description: "Permite visualizar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "UPDATE",
+    name: "Atualizar Categorias",
+    description: "Permite atualizar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "CREATE",
+    name: "Criar Categorias",
+    description: "Permite criar categorias"
+  },
+  {
+    resource: "CATEGORIES",
+    action: "DELETE",
+    name: "Deletar Categorias",
+    description: "Permite deletar categorias"
+  },
+  //SUPPLIERS
+  {
+    resource: "SUPPLIERS",
+    action: "READ",
+    name: "Visualizar Fornecedores",
+    description: "Permite visualizar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "UPDATE",
+    name: "Atualizar Fornecedores",
+    description: "Permite atualizar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "CREATE",
+    name: "Criar Fornecedores",
+    description: "Permite criar fornecedores"
+  },
+  {
+    resource: "SUPPLIERS",
+    action: "DELETE",
+    name: "Deletar Fornecedores",
+    description: "Permite deletar fornecedores"
+  },
+  //MOVEMENTS
+  {
+    resource: "MOVEMENTS",
+    action: "READ",
+    name: "Visualizar Movimentos",
+    description: "Permite visualizar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "UPDATE",
+    name: "Atualizar Movimentos",
+    description: "Permite atualizar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "CREATE",
+    name: "Criar Movimentos",
+    description: "Permite criar movimentos"
+  },
+  {
+    resource: "MOVEMENTS",
+    action: "DELETE",
+    name: "Deletar Movimentos",
+    description: "Permite deletar movimentos"
+  },
+  // PRODUCTS
+  {
+    resource: "PRODUCTS",
+    action: "CREATE",
+    name: "Criar Produto",
+    description: "Permite criar novos produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "READ",
+    name: "Visualizar Produtos",
+    description: "Permite visualizar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "UPDATE",
+    name: "Atualizar Produto",
+    description: "Permite atualizar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "DELETE",
+    name: "Deletar Produto",
+    description: "Permite deletar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "MANAGE",
+    name: "Gerenciar Produtos",
+    description: "Permite gerenciar completamente produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "IMPORT",
+    name: "Importar Produtos",
+    description: "Permite importar produtos"
+  },
+  {
+    resource: "PRODUCTS",
+    action: "EXPORT",
+    name: "Exportar Produtos",
+    description: "Permite exportar produtos"
+  },
+  // REPORTS
+  {
+    resource: "REPORTS",
+    action: "READ",
+    name: "Visualizar Relat\xF3rios",
+    description: "Permite visualizar relat\xF3rios"
+  },
+  {
+    resource: "REPORTS",
+    action: "EXPORT",
+    name: "Exportar Relat\xF3rios",
+    description: "Permite exportar relat\xF3rios"
+  }
+];
+
+// src/features/(core)/permission/pms.ts
+var PMS_PERMISSIONS = [
+  // DOCUMENTS
+  {
+    resource: "DOCUMENTS",
+    action: "READ",
+    name: "Visualizar Documentos",
+    description: "Permite visualizar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "UPDATE",
+    name: "Atualizar Documentos",
+    description: "Permite atualizar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "CREATE",
+    name: "Criar Documentos",
+    description: "Permite criar documentos"
+  },
+  {
+    resource: "DOCUMENTS",
+    action: "DELETE",
+    name: "Deletar Documentos",
+    description: "Permite deletar documentos"
+  },
+  //ROADMAP
+  {
+    resource: "ROADMAP",
+    action: "READ",
+    name: "Visualizar Roadmap",
+    description: "Permite visualizar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "UPDATE",
+    name: "Atualizar Roadmap",
+    description: "Permite atualizar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "CREATE",
+    name: "Criar Roadmap",
+    description: "Permite criar roadmap"
+  },
+  {
+    resource: "ROADMAP",
+    action: "DELETE",
+    name: "Deletar Roadmap",
+    description: "Permite deletar roadmap"
+  },
+  //MILESTONES
+  {
+    resource: "MILESTONES",
+    action: "READ",
+    name: "Visualizar Milestones",
+    description: "Permite visualizar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "UPDATE",
+    name: "Atualizar Milestones",
+    description: "Permite atualizar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "CREATE",
+    name: "Criar Milestones",
+    description: "Permite criar milestones"
+  },
+  {
+    resource: "MILESTONES",
+    action: "DELETE",
+    name: "Deletar Milestones",
+    description: "Permite deletar milestones"
+  },
+  //GALLERY
+  {
+    resource: "GALLERY",
+    action: "READ",
+    name: "Visualizar galeria",
+    description: "Permite visualizar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "UPDATE",
+    name: "Atualizar galeria",
+    description: "Permite atualizar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "CREATE",
+    name: "Criar galeria",
+    description: "Permite criar galeria de imagens"
+  },
+  {
+    resource: "GALLERY",
+    action: "DELETE",
+    name: "Deletar galeria",
+    description: "Permite deletar galeria de imagens"
+  }
+];
+
+// src/features/(core)/permission/wfm.ts
+var WFM_PERMISSIONS = [
+  // SHIFTS
+  {
+    resource: "SHIFTS",
+    action: "READ",
+    name: "Visualizar Escalas",
+    description: "Permite visualizar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "UPDATE",
+    name: "Atualizar Escala",
+    description: "Permite atualizar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "CREATE",
+    name: "Criar Escala",
+    description: "Permite criar escalas"
+  },
+  {
+    resource: "SHIFTS",
+    action: "DELETE",
+    name: "Deletar Escala",
+    description: "Permite deletar escalas"
+  },
+  // SPACES
+  {
+    resource: "SPACES",
+    action: "READ",
+    name: "Visualizar Espa\xE7os",
+    description: "Permite visualizar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "UPDATE",
+    name: "Atualizar Espa\xE7o",
+    description: "Permite atualizar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "CREATE",
+    name: "Criar Espa\xE7o",
+    description: "Permite criar espa\xE7os"
+  },
+  {
+    resource: "SPACES",
+    action: "DELETE",
+    name: "Deletar Espa\xE7o",
+    description: "Permite deletar espa\xE7os"
+  },
+  // SCHEDULES
+  {
+    resource: "SCHEDULES",
+    action: "READ",
+    name: "Visualizar Agendamentos",
+    description: "Permite visualizar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "UPDATE",
+    name: "Atualizar Agendamento",
+    description: "Permite atualizar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "CREATE",
+    name: "Criar Agendamento",
+    description: "Permite criar agendamentos"
+  },
+  {
+    resource: "SCHEDULES",
+    action: "DELETE",
+    name: "Deletar Agendamento",
+    description: "Permite deletar agendamentos"
+  },
+  // SCHEDULE OCCURRENCES
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "READ",
+    name: "Visualizar Ocorr\xEAncias de Agendamento",
+    description: "Permite visualizar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "UPDATE",
+    name: "Atualizar Ocorr\xEAncia de Agendamento",
+    description: "Permite atualizar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "CREATE",
+    name: "Criar Ocorr\xEAncia de Agendamento",
+    description: "Permite criar ocorr\xEAncias de agendamentos"
+  },
+  {
+    resource: "SCHEDULE_OCCURRENCES",
+    action: "DELETE",
+    name: "Deletar Ocorr\xEAncia de Agendamento",
+    description: "Permite deletar ocorr\xEAncias de agendamentos"
+  }
+];
+
+// src/features/(core)/permission/core.ts
+var CORE_PERMISSIONS = [
+  // USERS
+  {
+    resource: "USERS",
+    action: "CREATE",
+    name: "Criar Usu\xE1rio",
+    description: "Permite criar novos usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "READ",
+    name: "Visualizar Usu\xE1rios",
+    description: "Permite visualizar usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "UPDATE",
+    name: "Atualizar Usu\xE1rio",
+    description: "Permite atualizar informa\xE7\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "DELETE",
+    name: "Deletar Usu\xE1rio",
+    description: "Permite deletar usu\xE1rios"
+  },
+  {
+    resource: "USERS",
+    action: "MANAGE",
+    name: "Gerenciar Usu\xE1rios",
+    description: "Permite gerenciar completamente usu\xE1rios"
+  },
+  // STORES
+  {
+    resource: "STORES",
+    action: "CREATE",
+    name: "Criar Loja",
+    description: "Permite criar novas lojas"
+  },
+  {
+    resource: "STORES",
+    action: "READ",
+    name: "Visualizar Lojas",
+    description: "Permite visualizar lojas"
+  },
+  {
+    resource: "STORES",
+    action: "UPDATE",
+    name: "Atualizar Loja",
+    description: "Permite atualizar informa\xE7\xF5es da loja"
+  },
+  {
+    resource: "STORES",
+    action: "DELETE",
+    name: "Deletar Loja",
+    description: "Permite deletar lojas"
+  },
+  {
+    resource: "STORES",
+    action: "MANAGE",
+    name: "Gerenciar Lojas",
+    description: "Permite gerenciar completamente lojas"
+  },
+  // PERMISSIONS
+  {
+    resource: "PERMISSIONS",
+    action: "READ",
+    name: "Visualizar Permiss\xF5es",
+    description: "Permite visualizar permiss\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "UPDATE",
+    name: "Gerenciar Permiss\xF5es",
+    description: "Permite atribuir e remover permiss\xF5es de usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "ASSIGN",
+    name: "Atribuir Permiss\xF5es",
+    description: "Permite atribuir permiss\xF5es a usu\xE1rios"
+  },
+  {
+    resource: "PERMISSIONS",
+    action: "REMOVE",
+    name: "Remover Permiss\xF5es",
+    description: "Permite remover permiss\xF5es de usu\xE1rios"
+  },
+  // SETTINGS
+  {
+    resource: "SETTINGS",
+    action: "READ",
+    name: "Visualizar Configura\xE7\xF5es",
+    description: "Permite visualizar configura\xE7\xF5es"
+  },
+  {
+    resource: "SETTINGS",
+    action: "UPDATE",
+    name: "Atualizar Configura\xE7\xF5es",
+    description: "Permite atualizar configura\xE7\xF5es"
+  },
+  {
+    resource: "SETTINGS",
+    action: "MANAGE",
+    name: "Gerenciar Configura\xE7\xF5es",
+    description: "Permite gerenciar completamente configura\xE7\xF5es"
+  }
+];
+
+// src/features/(core)/permission/permission.constants.ts
+var AVAILABLE_PERMISSIONS = [
+  ...CRM_PERMISSIONS,
+  ...ERP_PERMISSIONS,
+  ...PMS_PERMISSIONS,
+  ...WFM_PERMISSIONS,
+  ...CORE_PERMISSIONS
+];
+function getPermissionDefinition(resource, action) {
+  return AVAILABLE_PERMISSIONS.find((p) => p.resource === resource && p.action === action);
+}
+function getAvailableResources() {
+  const resources = /* @__PURE__ */ new Set();
+  for (const p of AVAILABLE_PERMISSIONS) {
+    resources.add(p.resource);
+  }
+  return Array.from(resources).sort();
+}
+function getAvailableActions() {
+  const actions = /* @__PURE__ */ new Set();
+  for (const p of AVAILABLE_PERMISSIONS) {
+    actions.add(p.action);
+  }
+  return Array.from(actions).sort();
+}
+function getPermissionsByResource(resource) {
+  return AVAILABLE_PERMISSIONS.filter((p) => p.resource === resource);
+}
+function getPermissionsByAction(action) {
+  return AVAILABLE_PERMISSIONS.filter((p) => p.action === action);
+}
+
+// src/features/(core)/permission/commands/permission.commands.ts
+var PermissionCommands = {
+  // Atribuir permissões a usuário
+  async assignToUser(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    );
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
+      );
+    }
+    const existingPermissions = await db.userPermission.findMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action
+        }))
+      }
+    });
+    const existingMap = new Map(
+      existingPermissions.map((ep) => [`${ep.resource}:${ep.action}`, ep])
+    );
+    const newPermissions = data.permissions.filter(
+      (p) => !existingMap.has(`${p.resource}:${p.action}`)
+    );
+    if (newPermissions.length === 0) {
+      return {
+        message: "All permissions already assigned",
+        assigned: 0
+      };
+    }
+    await db.userPermission.createMany({
+      data: newPermissions.map((p) => ({
+        userId: data.userId,
+        resource: p.resource,
+        action: p.action,
+        scope: data.scope || null,
+        grant: true,
+        expiresAt: data.expiresAt || null,
+        conditions: data.conditions ? JSON.stringify(data.conditions) : null
+      })),
+      skipDuplicates: true
+    });
+    return {
+      message: "Permissions assigned successfully",
+      assigned: newPermissions.length,
+      permissions: newPermissions.map((p) => ({
+        resource: p.resource,
+        action: p.action
+      }))
+    };
+  },
+  // Remover permissões de usuário
+  async removeFromUser(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const result = await db.userPermission.deleteMany({
+      where: {
+        userId: data.userId,
+        OR: data.permissions.map((p) => ({
+          resource: p.resource,
+          action: p.action
+        }))
+      }
+    });
+    return {
+      message: "Permissions removed successfully",
+      removed: result.count
+    };
+  },
+  // Remover todas as permissões de um usuário
+  async removeAllFromUser(userId) {
+    const user = await db.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const result = await db.userPermission.deleteMany({
+      where: { userId }
+    });
+    return {
+      message: "All permissions removed successfully",
+      removed: result.count
+    };
+  },
+  // Sincronizar permissões de usuário (substitui todas)
+  async syncUserPermissions(data) {
+    const user = await db.user.findUnique({
+      where: { id: data.userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const invalidPermissions = data.permissions.filter(
+      (p) => !getPermissionDefinition(p.resource, p.action)
+    );
+    if (invalidPermissions.length > 0) {
+      throw new Error(
+        `Invalid permissions: ${invalidPermissions.map((p) => `${p.resource}:${p.action}`).join(", ")}`
+      );
+    }
+    return await db.$transaction(async (tx) => {
+      await tx.userPermission.deleteMany({
+        where: { userId: data.userId }
+      });
+      if (data.permissions.length > 0) {
+        await tx.userPermission.createMany({
+          data: data.permissions.map((p) => ({
+            userId: data.userId,
+            resource: p.resource,
+            action: p.action,
+            scope: data.scope || null,
+            grant: true,
+            expiresAt: data.expiresAt || null,
+            conditions: data.conditions ? JSON.stringify(data.conditions) : null
+          }))
+        });
+      }
+      return {
+        message: "Permissions synchronized successfully",
+        total: data.permissions.length,
+        permissions: data.permissions
+      };
+    });
+  },
+  // Atualizar uma permissão específica de usuário
+  async updateUserPermission(userId, resource, action, data) {
+    const user = await db.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const permission = await db.userPermission.findFirst({
+      where: {
+        userId,
+        resource,
+        action
+      }
+    });
+    if (!permission) {
+      throw new Error("Permission not found for this user");
+    }
+    return await db.userPermission.update({
+      where: {
+        id: permission.id
+      },
+      data: {
+        grant: data.grant !== void 0 ? data.grant : permission.grant,
+        scope: data.scope !== void 0 ? data.scope : permission.scope,
+        expiresAt: data.expiresAt !== void 0 ? data.expiresAt : permission.expiresAt,
+        conditions: data.conditions !== void 0 ? JSON.stringify(data.conditions) : permission.conditions
+      }
+    });
+  }
+};
+
+// src/features/(core)/permission/queries/permission.query.ts
+init_prisma();
+var PermissionQueries = {
+  // Listar todas as permissões disponíveis (lista pré-definida)
+  async listAvailable(filters) {
+    let permissions = [...AVAILABLE_PERMISSIONS];
+    if (filters?.resource) {
+      permissions = permissions.filter((p) => p.resource === filters.resource);
+    }
+    if (filters?.action) {
+      permissions = permissions.filter((p) => p.action === filters.action);
+    }
+    if (filters?.search) {
+      const searchLower = filters.search.toLowerCase();
+      permissions = permissions.filter(
+        (p) => p.name.toLowerCase().includes(searchLower) || p.description.toLowerCase().includes(searchLower) || p.resource.toLowerCase().includes(searchLower) || p.action.toLowerCase().includes(searchLower)
+      );
+    }
+    return permissions.sort((a, b) => {
+      if (a.resource !== b.resource) {
+        return a.resource.localeCompare(b.resource);
+      }
+      return a.action.localeCompare(b.action);
+    });
+  },
+  // Buscar permissões disponíveis por recurso
+  async getByResource(resource) {
+    return getPermissionsByResource(resource);
+  },
+  // Buscar permissões disponíveis por ação
+  async getByAction(action) {
+    return getPermissionsByAction(action);
+  },
+  // Listar recursos disponíveis
+  async getResources(search) {
+    let resources = getAvailableResources();
+    if (search) {
+      const searchLower = search.toLowerCase();
+      resources = resources.filter((r) => r.toLowerCase().includes(searchLower));
+    }
+    return resources;
+  },
+  // Listar ações disponíveis
+  async getActions(search) {
+    let actions = getAvailableActions();
+    if (search) {
+      const searchLower = search.toLowerCase();
+      actions = actions.filter((a) => a.toLowerCase().includes(searchLower));
+    }
+    return actions;
+  },
+  // Buscar permissões atribuídas a um usuário
+  async getUserPermissions(userId) {
+    const userPermissions = await db.userPermission.findMany({
+      where: { userId },
+      orderBy: [{ createdAt: "desc" }]
+    });
+    return userPermissions;
+  },
+  // Verificar se usuário tem permissão específica
+  async checkUserPermission(userId, resource, action) {
+    const permissionDef = getPermissionDefinition(resource, action);
+    if (!permissionDef) {
+      return {
+        userId,
+        resource,
+        action,
+        hasPermission: false,
+        permissionName: null,
+        message: "Permission not found in available permissions"
+      };
+    }
+    const userPermission = await db.userPermission.findFirst({
+      where: {
+        userId,
+        resource,
+        action
+      }
+    });
+    const hasPermission = userPermission !== null && userPermission.grant === true && (userPermission.expiresAt === null || userPermission.expiresAt > /* @__PURE__ */ new Date());
+    return {
+      userId,
+      resource,
+      action,
+      hasPermission,
+      permissionName: permissionDef.name,
+      userPermission: userPermission ? {
+        grant: userPermission.grant,
+        scope: userPermission.scope,
+        expiresAt: userPermission.expiresAt,
+        conditions: userPermission.conditions ? JSON.parse(userPermission.conditions) : null
+      } : null
+    };
+  },
+  // Listar usuários com determinada permissão
+  async getUsersWithPermission(resource, action, filters) {
+    const { page = 1, limit = 10 } = filters || {};
+    const [userPermissions, total] = await Promise.all([
+      db.userPermission.findMany({
+        where: {
+          resource,
+          action,
+          grant: true
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: { id: true, name: true, email: true }
+          }
+        }
+      }),
+      db.userPermission.count({
+        where: {
+          resource,
+          action,
+          grant: true
+        }
+      })
+    ]);
+    const permissionDef = getPermissionDefinition(resource, action);
+    return {
+      permission: permissionDef || null,
+      users: userPermissions.map((up) => ({
+        id: up.user.id,
+        name: up.user.name,
+        email: up.user.email,
+        assignedAt: up.createdAt,
+        scope: up.scope,
+        expiresAt: up.expiresAt
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
+  },
+  // Estatísticas de permissões
+  async getStats() {
+    const [
+      totalUserPermissions,
+      activeUserPermissions,
+      expiredUserPermissions,
+      permissionsByResource,
+      permissionsByAction
+    ] = await Promise.all([
+      db.userPermission.count(),
+      db.userPermission.count({
+        where: {
+          grant: true,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: /* @__PURE__ */ new Date() } }]
+        }
+      }),
+      db.userPermission.count({
+        where: {
+          expiresAt: { lte: /* @__PURE__ */ new Date() }
+        }
+      }),
+      db.userPermission.groupBy({
+        by: ["resource"],
+        _count: { resource: true },
+        where: { grant: true },
+        orderBy: { _count: { resource: "desc" } }
+      }),
+      db.userPermission.groupBy({
+        by: ["action"],
+        _count: { action: true },
+        where: { grant: true },
+        orderBy: { _count: { action: "desc" } }
+      })
+    ]);
+    return {
+      availablePermissions: AVAILABLE_PERMISSIONS.length,
+      totalUserPermissions,
+      activeUserPermissions,
+      expiredUserPermissions,
+      permissionsByResource: permissionsByResource.map((p) => ({
+        resource: p.resource,
+        count: p._count.resource
+      })),
+      permissionsByAction: permissionsByAction.map((p) => ({
+        action: p.action,
+        count: p._count.action
+      }))
+    };
+  },
+  // Buscar permissões de um usuário por recurso
+  async getUserPermissionsByResource(userId, resource) {
+    const userPermissions = await db.userPermission.findMany({
+      where: {
+        userId,
+        resource,
+        grant: true
+      },
+      orderBy: { action: "asc" }
+    });
+    const permissionDefs = userPermissions.map(
+      (up) => getPermissionDefinition(up.resource, up.action)
+    );
+    return {
+      resource,
+      permissions: userPermissions.map((up, index) => ({
+        ...up,
+        definition: permissionDefs[index] || null
+      }))
+    };
+  }
+};
+
+// src/features/(core)/permission/permission.controller.ts
+var PermissionController = {
+  // ================================
+  // LISTAR PERMISSÕES DISPONÍVEIS (LISTA PRÉ-DEFINIDA)
+  // ================================
+  async listAvailable(request, reply) {
+    try {
+      const query = request.query;
+      const result = await PermissionQueries.listAvailable({
+        resource: query.resource,
+        action: query.action,
+        search: query.search
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getMePermissions(request, reply) {
+    try {
+      const result = await PermissionQueries.getUserPermissions(request.user?.id);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getByResource(request, reply) {
+    try {
+      const { resource } = request.params;
+      const result = await PermissionQueries.getByResource(resource);
+      return reply.send({ permissions: result });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getByAction(request, reply) {
+    try {
+      const { action } = request.params;
+      const result = await PermissionQueries.getByAction(action);
+      return reply.send({ permissions: result });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getResources(request, reply) {
+    try {
+      const query = request.query;
+      const { search } = query;
+      const result = await PermissionQueries.getResources(search);
+      return reply.send({ resources: result });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getActions(request, reply) {
+    try {
+      const query = request.query;
+      const { search } = query;
+      const result = await PermissionQueries.getActions(search);
+      return reply.send({ actions: result });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getStats(request, reply) {
+    try {
+      const result = await PermissionQueries.getStats();
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  // ================================
+  // ATRIBUIÇÃO DE PERMISSÕES A USUÁRIOS
+  // ================================
+  async assignToUser(request, reply) {
+    try {
+      const body = request.body;
+      const { userId, permissions } = body;
+      const currentUserId = request.user?.id || "system";
+      const result = await PermissionCommands.assignToUser({
+        userId,
+        permissions,
+        assignedBy: currentUserId
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "User not found" || error.message.includes("Invalid permissions")) {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async removeFromUser(request, reply) {
+    try {
+      const body = request.body;
+      const { userId, permissions } = body;
+      const result = await PermissionCommands.removeFromUser({
+        userId,
+        permissions
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "User not found") {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async removeAllFromUser(request, reply) {
+    try {
+      const { userId } = request.params;
+      const result = await PermissionCommands.removeAllFromUser(userId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "User not found") {
+        return reply.status(404).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async syncUserPermissions(request, reply) {
+    try {
+      const body = request.body;
+      const { userId, permissions, scope, expiresAt, conditions } = body;
+      const currentUserId = request.user?.id || "system";
+      const result = await PermissionCommands.syncUserPermissions({
+        userId,
+        permissions,
+        assignedBy: currentUserId,
+        scope,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        conditions
+      });
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      if (error.message === "User not found" || error.message.includes("Invalid permissions")) {
+        return reply.status(400).send({
+          error: error.message
+        });
+      }
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getUserPermissions(request, reply) {
+    try {
+      const params = request.params;
+      const { userId } = params;
+      const result = await PermissionQueries.getUserPermissions(userId);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async checkUserPermission(request, reply) {
+    try {
+      const body = request.body;
+      const { userId, resource, action } = body;
+      const result = await PermissionQueries.checkUserPermission(userId, resource, action);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
+  async getUsersWithPermission(request, reply) {
+    try {
+      const { resource, action } = request.params;
+      const { page = 1, limit = 10 } = request.query;
+      const result = await PermissionQueries.getUsersWithPermission(
+        resource,
+        action,
+        {
+          page,
+          limit
+        }
+      );
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  }
+};
+
+// src/features/(core)/permission/permission.schema.ts
+var PermissionSchemas = {
+  // Listar permissões disponíveis
+  listAvailable: {
+    querystring: {
+      type: "object",
+      properties: {
+        resource: { type: "string" },
+        action: { type: "string" },
+        search: { type: "string", maxLength: 100 }
+      }
+    }
+  },
+  // Buscar por recurso
+  getByResource: {
+    params: {
+      type: "object",
+      required: ["resource"],
+      properties: {
+        resource: { type: "string", minLength: 1 }
+      }
+    }
+  },
+  // Buscar por ação
+  getByAction: {
+    params: {
+      type: "object",
+      required: ["action"],
+      properties: {
+        action: { type: "string", minLength: 1 }
+      }
+    }
+  },
+  // Listar recursos
+  getResources: {
+    querystring: {
+      type: "object",
+      properties: {
+        search: { type: "string", maxLength: 100 }
+      }
+    }
+  },
+  // Listar ações
+  getActions: {
+    querystring: {
+      type: "object",
+      properties: {
+        search: { type: "string", maxLength: 100 }
+      }
+    }
+  },
+  // ================================
+  // SCHEMAS PARA ATRIBUIÇÃO DE PERMISSÕES
+  // ================================
+  // Atribuir permissões a usuário
+  assignToUser: {
+    body: {
+      type: "object",
+      required: ["userId", "permissions"],
+      properties: {
+        userId: {
+          type: "string",
+          minLength: 1
+        },
+        permissions: {
+          type: "array",
+          items: {
+            type: "object",
+            required: ["resource", "action"],
+            properties: {
+              resource: {
+                type: "string",
+                minLength: 1
+              },
+              action: {
+                type: "string",
+                minLength: 1
+              }
+            }
+          },
+          minItems: 1,
+          maxItems: 100
+        },
+        scope: {
+          type: "string",
+          maxLength: 100
+        },
+        expiresAt: {
+          type: "string",
+          format: "date-time"
+        },
+        conditions: {
+          type: "object"
+        }
+      }
+    }
+  },
+  // Remover permissões de usuário
+  removeFromUser: {
+    body: {
+      type: "object",
+      required: ["userId", "permissions"],
+      properties: {
+        userId: {
+          type: "string",
+          minLength: 1
+        },
+        permissions: {
+          type: "array",
+          items: {
+            type: "object",
+            required: ["resource", "action"],
+            properties: {
+              resource: {
+                type: "string",
+                minLength: 1
+              },
+              action: {
+                type: "string",
+                minLength: 1
+              }
+            }
+          },
+          minItems: 1,
+          maxItems: 100
+        }
+      }
+    }
+  },
+  // Remover todas as permissões de usuário
+  removeAllFromUser: {
+    params: {
+      type: "object",
+      required: ["userId"],
+      properties: {
+        userId: { type: "string", minLength: 1 }
+      }
+    }
+  },
+  // Sincronizar permissões de usuário
+  syncUserPermissions: {
+    body: {
+      type: "object",
+      required: ["userId", "permissions"],
+      properties: {
+        userId: {
+          type: "string",
+          minLength: 1
+        },
+        permissions: {
+          type: "array",
+          items: {
+            type: "object",
+            required: ["resource", "action"],
+            properties: {
+              resource: {
+                type: "string",
+                minLength: 1
+              },
+              action: {
+                type: "string",
+                minLength: 1
+              }
+            }
+          },
+          maxItems: 100
+        },
+        scope: {
+          type: "string",
+          maxLength: 100
+        },
+        expiresAt: {
+          type: "string",
+          format: "date-time"
+        },
+        conditions: {
+          type: "object"
+        }
+      }
+    }
+  },
+  // Buscar permissões de usuário
+  getUserPermissions: {
+    params: {
+      type: "object",
+      required: ["userId"],
+      properties: {
+        userId: { type: "string", minLength: 1 }
+      }
+    }
+  },
+  // Verificar permissão de usuário
+  checkUserPermission: {
+    body: {
+      type: "object",
+      required: ["userId", "resource", "action"],
+      properties: {
+        userId: {
+          type: "string",
+          minLength: 1
+        },
+        resource: {
+          type: "string",
+          minLength: 1
+        },
+        action: {
+          type: "string",
+          minLength: 1
+        }
+      }
+    }
+  }
+};
+
+// src/features/(core)/permission/permission.routes.ts
+async function PermissionRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.get("/", {
+    handler: PermissionController.listAvailable
+  });
+  fastify2.get("/stats", {
+    handler: PermissionController.getStats
+  });
+  fastify2.get("/resource/:resource", {
+    handler: PermissionController.getByResource
+  });
+  fastify2.get("/action/:action", {
+    handler: PermissionController.getByAction
+  });
+  fastify2.get("/resources", {
+    handler: PermissionController.getResources
+  });
+  fastify2.get("/actions", {
+    handler: PermissionController.getActions
+  });
+  fastify2.post("/assign", {
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'UPDATE')],
+    schema: PermissionSchemas.assignToUser,
+    handler: PermissionController.assignToUser
+  });
+  fastify2.post("/remove", {
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'UPDATE')],
+    schema: PermissionSchemas.removeFromUser,
+    handler: PermissionController.removeFromUser
+  });
+  fastify2.delete("/user/:userId/all", {
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'UPDATE')],
+    schema: PermissionSchemas.removeAllFromUser,
+    handler: PermissionController.removeAllFromUser
+  });
+  fastify2.post("/sync", {
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'UPDATE')],
+    schema: PermissionSchemas.syncUserPermissions,
+    handler: PermissionController.syncUserPermissions
+  });
+  fastify2.get("/user/:userId", {
+    //preHandler: [Middlewares.permission('PERMISSIONS', 'READ')],
+    schema: PermissionSchemas.getUserPermissions,
+    handler: PermissionController.getUserPermissions
+  });
+  fastify2.post("/check", {
+    schema: PermissionSchemas.checkUserPermission,
+    handler: PermissionController.checkUserPermission
+  });
+  fastify2.get("/:resource/:action/users", {
+    handler: PermissionController.getUsersWithPermission
+  });
+  fastify2.get("/me", {
+    handler: PermissionController.getMePermissions
+  });
+}
+
 // src/features/subscription/commands/subscription.commands.ts
+init_prisma();
 var SubscriptionCommands = {
   async create(data) {
     const existingSubscription = await db.subscription.findFirst({
-      where: { userId: data.userId }
+      where: { storeId: data.storeId }
     });
     if (existingSubscription) {
-      throw new Error("Subscription with this user already exists");
+      throw new Error("Subscription with this store already exists");
     }
     return await db.subscription.create({
       data: {
@@ -31233,11 +33695,11 @@ var SubscriptionCommands = {
         priceInterval: data.interval
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true
+            name: true,
+            plan: true
           }
         }
       }
@@ -31257,11 +33719,11 @@ var SubscriptionCommands = {
         ...data.interval && { priceInterval: data.interval }
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true
+            name: true,
+            plan: true
           }
         }
       }
@@ -31271,18 +33733,13 @@ var SubscriptionCommands = {
     const subscription2 = await db.subscription.findUnique({
       where: { id },
       include: {
-        user: {
+        store: {
           select: { id: true }
         }
       }
     });
     if (!subscription2) {
       throw new Error("Plan not found");
-    }
-    if (subscription2.user) {
-      throw new Error(
-        `Cannot delete subscription. It has ${subscription2.user} associated customers. Please reassign or delete the customers first.`
-      );
     }
     return await db.subscription.delete({
       where: { id }
@@ -31295,9 +33752,8 @@ var SubscriptionCommands = {
     if (!subscription2) {
       throw new Error("Plan not found");
     }
-    await db.subscription.updateMany({
-      where: { userId: id },
-      data: { userId: null }
+    await db.invoice.deleteMany({
+      where: { subscriptionId: id }
     });
     return await db.subscription.delete({
       where: { id }
@@ -31316,11 +33772,11 @@ var SubscriptionCommands = {
         status: active ? "ACTIVE" : "INACTIVE"
       },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
-            status: true,
-            createdAt: true
+            name: true,
+            plan: true
           }
         }
       }
@@ -31329,17 +33785,30 @@ var SubscriptionCommands = {
 };
 
 // src/features/subscription/queries/subscription.queries.ts
+init_prisma();
 var SubscriptionQueries = {
   async getById(id) {
     const subscription2 = await db.subscription.findUnique({
       where: { id },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
+            plan: true,
+            status: true,
             email: true
           }
+        },
+        invoices: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5
         }
       }
     });
@@ -31355,12 +33824,16 @@ var SubscriptionQueries = {
     const skip2 = (page - 1) * limit;
     const where = {};
     if (interval) {
-      where.interval = interval;
+      where.priceInterval = interval;
     }
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } }
+        { polarPlanName: { contains: search, mode: "insensitive" } },
+        {
+          store: {
+            name: { contains: search, mode: "insensitive" }
+          }
+        }
       ];
     }
     const [subscriptions, total] = await Promise.all([
@@ -31370,11 +33843,12 @@ var SubscriptionQueries = {
         take: limit,
         orderBy: { createdAt: "desc" },
         include: {
-          user: {
+          store: {
             select: {
               id: true,
               name: true,
-              email: true
+              plan: true,
+              status: true
             }
           }
         }
@@ -31396,13 +33870,15 @@ var SubscriptionQueries = {
   },
   async getActive() {
     const subscriptions = await db.subscription.findMany({
+      where: { status: "ACTIVE" },
       orderBy: { createdAt: "desc" },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
-            email: true
+            plan: true,
+            status: true
           }
         }
       }
@@ -31419,11 +33895,12 @@ var SubscriptionQueries = {
       where: { id: { in: planIds } },
       orderBy: { createdAt: "desc" },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
-            email: true
+            plan: true,
+            status: true
           }
         }
       }
@@ -31437,48 +33914,78 @@ var SubscriptionQueries = {
     const { page = 1, limit = 10, status } = params;
     const skip2 = (page - 1) * limit;
     const plan = await db.subscription.findUnique({
-      where: { id: planId }
+      where: { id: planId },
+      include: {
+        invoices: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5
+        }
+      }
     });
     if (!plan) {
       throw new Error("Plan not found");
     }
-    const where = {
-      userId: planId
-    };
-    if (status) {
-      where.status = status;
+    if (status && plan.status !== status) {
+      return {
+        customers: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0
+        }
+      };
     }
+    const userWhere = {
+      storeId: plan.storeId
+    };
     const [customers, total] = await Promise.all([
-      db.subscription.findMany({
-        where,
+      db.user.findMany({
+        where: userWhere,
         skip: skip2,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          },
-          invoices: {
-            select: {
-              id: true,
-              amount: true,
-              status: true,
-              createdAt: true
-            },
-            orderBy: { createdAt: "desc" },
-            take: 5
-            // Últimas 5 faturas
-          }
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          createdAt: true
         }
       }),
-      db.subscription.count({ where })
+      db.user.count({ where: userWhere })
     ]);
+    const invoices = plan.invoices.map((invoice) => ({
+      ...invoice,
+      amount: Number(invoice.amount)
+    }));
     return {
-      customers,
+      customers: customers.map((customer) => ({
+        id: customer.id,
+        status: plan.status,
+        renewalDate: plan.currentPeriodEnd,
+        trialEndsAt: plan.trialEndsAt,
+        createdAt: customer.createdAt,
+        user: {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone
+        },
+        subscription: {
+          id: plan.id,
+          name: plan.polarPlanName,
+          price: plan.priceAmount ? Number(plan.priceAmount) : null,
+          interval: plan.priceInterval
+        },
+        invoices
+      })),
       pagination: {
         page,
         limit,
@@ -31510,9 +34017,9 @@ var SubscriptionController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
     try {
-      const { userId, description, price, interval, features } = request.body;
+      const { storeId, description, price, interval, features } = request.body;
       const result = await SubscriptionCommands.create({
-        userId,
+        storeId,
         description,
         price,
         interval,
@@ -31728,9 +34235,9 @@ var SubscriptionController = {
 var createSubscriptionSchema = {
   body: {
     type: "object",
-    required: ["userId", "price", "interval"],
+    required: ["storeId", "price", "interval"],
     properties: {
-      userId: { type: "string" },
+      storeId: { type: "string" },
       description: { type: "string" },
       price: { type: "number", minimum: 0.01 },
       interval: {
@@ -31778,6 +34285,7 @@ var updateSubscriptionSchema = {
   body: {
     type: "object",
     properties: {
+      storeId: { type: "string" },
       name: { type: "string", minLength: 1 },
       description: { type: "string" },
       price: { type: "number", minimum: 0.01 },
@@ -32175,7 +34683,8 @@ async function SubscriptionRoutes(fastify2) {
   });
 }
 
-// src/features/supplier/commands/supplier-responsible.commands.ts
+// src/features/(erp)/supplier/commands/supplier-responsible.commands.ts
+init_prisma();
 var SupplierResponsibleCommands = {
   async create({
     supplierId,
@@ -32343,7 +34852,8 @@ var SupplierResponsibleCommands = {
   }
 };
 
-// src/features/supplier/queries/supplier-responsible.queries.ts
+// src/features/(erp)/supplier/queries/supplier-responsible.queries.ts
+init_prisma();
 var SupplierResponsibleQueries = {
   async getById({ supplierId, responsibleId }) {
     const responsible = await db.supplierResponsible.findFirst({
@@ -32516,7 +35026,7 @@ var SupplierResponsibleQueries = {
   }
 };
 
-// src/features/supplier/supplier-responsible.controller.ts
+// src/features/(erp)/supplier/supplier-responsible.controller.ts
 var SupplierResponsibleController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -32791,7 +35301,7 @@ var SupplierResponsibleController = {
   }
 };
 
-// src/features/supplier/supplier-responsible.schema.ts
+// src/features/(erp)/supplier/supplier-responsible.schema.ts
 var createSupplierResponsibleSchema = {
   params: {
     type: "object",
@@ -33014,7 +35524,7 @@ var SupplierResponsibleSchemas = {
   getByCpf: getSupplierResponsibleByCpfSchema
 };
 
-// src/features/supplier/supplier-responsible.routes.ts
+// src/features/(erp)/supplier/supplier-responsible.routes.ts
 async function SupplierResponsibleRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -33066,7 +35576,8 @@ async function SupplierResponsibleRoutes(fastify2) {
   });
 }
 
-// src/features/supplier/commands/supplier.commands.ts
+// src/features/(erp)/supplier/commands/supplier.commands.ts
+init_prisma();
 var SupplierCommands = {
   async create(data) {
     const existingSupplier = await db.supplier.findUnique({
@@ -33190,7 +35701,7 @@ var SupplierCommands = {
   }
 };
 
-// src/features/supplier/supplier.controller.ts
+// src/features/(erp)/supplier/supplier.controller.ts
 var SupplierController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -33422,7 +35933,7 @@ var SupplierController = {
   }
 };
 
-// src/features/supplier/supplier.schema.ts
+// src/features/(erp)/supplier/supplier.schema.ts
 var createSupplierSchema = {
   body: {
     type: "object",
@@ -33774,7 +36285,7 @@ var SupplierSchemas = {
   search: searchSuppliersSchema
 };
 
-// src/features/supplier/supplier.routes.ts
+// src/features/(erp)/supplier/supplier.routes.ts
 async function SupplierRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -33830,12 +36341,13 @@ async function SupplierRoutes(fastify2) {
   await fastify2.register(SupplierResponsibleRoutes);
 }
 
-// src/features/upload/upload.controller.ts
+// src/features/(pms)/upload/upload.controller.ts
 var import_node_path2 = __toESM(require("path"));
 var import_promises = __toESM(require("fs/promises"));
 var import_node_os2 = __toESM(require("os"));
 
-// src/features/upload/commands/upload.commands.ts
+// src/features/(pms)/upload/commands/upload.commands.ts
+init_prisma();
 var UploadCommands = {
   async create(data) {
     const upload = await db.media.create({
@@ -34034,7 +36546,8 @@ var UploadCommands = {
   }
 };
 
-// src/features/upload/queries/upload.queries.ts
+// src/features/(pms)/upload/queries/upload.queries.ts
+init_prisma();
 var UploadQueries = {
   async getById(id) {
     const upload = await db.media.findUnique({
@@ -34320,7 +36833,7 @@ var UploadQueries = {
   }
 };
 
-// src/features/upload/upload.service.ts
+// src/features/(pms)/upload/upload.service.ts
 var import_node_crypto3 = require("crypto");
 var import_node_fs = require("fs");
 var import_node_path = __toESM(require("path"));
@@ -34607,7 +37120,7 @@ var UploadService = class _UploadService {
 };
 var uploadService = UploadService.getInstance();
 
-// src/features/upload/upload.controller.ts
+// src/features/(pms)/upload/upload.controller.ts
 var UploadController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -35258,7 +37771,7 @@ var UploadController = {
   }
 };
 
-// src/features/upload/upload.schema.ts
+// src/features/(pms)/upload/upload.schema.ts
 var createUploadSchema = {
   body: {
     type: "object",
@@ -35405,7 +37918,7 @@ var getEntityMediaSchema = {
   }
 };
 
-// src/features/upload/upload.route.ts
+// src/features/(pms)/upload/upload.route.ts
 async function UploadRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -35492,7 +38005,8 @@ async function UploadRoutes(fastify2) {
   });
 }
 
-// src/features/user-preferences/commands/user-preferences.commands.ts
+// src/features/(core)/preferences/commands/user-preferences.commands.ts
+init_prisma();
 var UserPreferencesCommands = {
   async create(data) {
     try {
@@ -35797,7 +38311,8 @@ var UserPreferencesCommands = {
   }
 };
 
-// src/features/user-preferences/queries/user-preferences.query.ts
+// src/features/(core)/preferences/queries/user-preferences.query.ts
+init_prisma();
 var UserPreferencesQueries = {
   // ================================
   // GET OPERATIONS
@@ -36265,7 +38780,7 @@ var UserPreferencesQueries = {
   }
 };
 
-// src/features/user-preferences/user-preferences.controller.ts
+// src/features/(core)/preferences/user-preferences.controller.ts
 var UserPreferencesController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
@@ -36575,7 +39090,7 @@ var UserPreferencesController = {
   }
 };
 
-// src/features/user-preferences/user-preferences.schema.ts
+// src/features/(core)/preferences/user-preferences.schema.ts
 var createUserPreferencesSchema = {
   body: {
     type: "object",
@@ -37378,7 +39893,7 @@ var validateUserPreferencesSchema = {
   }
 };
 
-// src/features/user-preferences/user-preferences.routes.ts
+// src/features/(core)/preferences/user-preferences.routes.ts
 async function UserPreferencesRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
@@ -37452,9 +39967,16 @@ async function UserPreferencesRoutes(fastify2) {
   });
 }
 
-// src/features/user/commands/user.commands.ts
-var import_bcryptjs = __toESM(require("bcryptjs"));
+// src/features/(core)/user/commands/user.commands.ts
+init_prisma();
+var import_bcryptjs2 = __toESM(require("bcryptjs"));
 var UserCommands = {
+  async bulkDelete(ids) {
+    const result = await db.user.deleteMany({
+      where: { id: { in: ids } }
+    });
+    return result;
+  },
   async create(data) {
     const existingUser = await db.user.findUnique({
       where: { email: data.email }
@@ -37462,21 +39984,38 @@ var UserCommands = {
     if (existingUser) {
       throw new Error("User with this email already exists");
     }
-    const hashedPassword = await import_bcryptjs.default.hash(data.password, 12);
+    const password = Math.random().toString(36).substring(2, 15);
+    const hashedPassword = await import_bcryptjs2.default.hash(password, 12);
     const user = await db.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
-        name: data.name
+        name: data.name,
+        status: true,
+        isOwner: false,
+        emailVerified: true,
+        storeId: data.storeId || null
       },
       select: {
         id: true,
         email: true,
         name: true,
         status: true,
+        storeId: true,
         createdAt: true
       }
     });
+    try {
+      const loginUrl = process.env.FRONTEND_URL || process.env.APP_URL || "https://app.25stock.com/login";
+      await EmailService.sendInitialPasswordEmail({
+        name: user.name,
+        email: user.email,
+        password,
+        loginUrl
+      });
+    } catch (error) {
+      console.error("Error sending initial password email:", error);
+    }
     return user;
   },
   async update(id, data) {
@@ -37488,7 +40027,7 @@ var UserCommands = {
     }
     const updateData = { ...data };
     if (updateData.password) {
-      updateData.password = await import_bcryptjs.default.hash(updateData.password, 12);
+      updateData.password = await import_bcryptjs2.default.hash(updateData.password, 12);
     }
     if (updateData.email && updateData.email !== existingUser.email) {
       const emailExists = await db.user.findUnique({
@@ -37520,11 +40059,10 @@ var UserCommands = {
     if (!existingUser) {
       throw new Error("User not found");
     }
-    await db.user.update({
-      where: { id },
-      data: { status: false }
+    await db.user.delete({
+      where: { id }
     });
-    return { success: true };
+    return true;
   },
   async verifyEmail(id) {
     const user = await db.user.update({
@@ -37547,6 +40085,9 @@ var UserCommands = {
     return { success: true };
   }
 };
+
+// src/features/(core)/user/querys/user.query.ts
+init_prisma();
 
 // src/utils/pagination.ts
 var PaginationUtils = {
@@ -37633,7 +40174,7 @@ var PaginationUtils = {
   }
 };
 
-// src/features/user/querys/user.query.ts
+// src/features/(core)/user/querys/user.query.ts
 var UserQueries = {
   async getById(id) {
     const user = await db.user.findUnique({
@@ -37690,24 +40231,8 @@ var UserQueries = {
     });
     return user;
   },
-  async list(filters) {
-    const where = {};
-    if (filters.search) {
-      where.OR = [
-        { email: { contains: filters.search, mode: "insensitive" } },
-        { name: { contains: filters.search, mode: "insensitive" } }
-      ];
-    }
-    if (filters.status !== void 0) {
-      where.status = filters.status;
-    }
-    if (filters.roles && filters.roles.length > 0) {
-      where.roles = {
-        hasSome: filters.roles
-      };
-    }
+  async list(page = 1, limit = 10) {
     const result = await PaginationUtils.paginate(db, "user", {
-      where,
       select: {
         id: true,
         email: true,
@@ -37720,8 +40245,8 @@ var UserQueries = {
       },
       orderBy: { createdAt: "desc" },
       params: {
-        page: filters.page,
-        limit: filters.limit
+        page,
+        limit
       },
       paginationOptions: {
         defaultPage: 1,
@@ -37729,7 +40254,7 @@ var UserQueries = {
         maxLimit: 100
       }
     });
-    return PaginationUtils.transformPaginationResult(result, "users");
+    return PaginationUtils.transformPaginationResult(result, "items");
   },
   async getActive() {
     const users = await db.user.findMany({
@@ -37769,7 +40294,7 @@ var UserQueries = {
     });
     return !!user;
   },
-  async search(searchTerm, limit = 10) {
+  async search(searchTerm, page = 1, limit = 10) {
     const users = await db.user.findMany({
       where: {
         OR: [
@@ -37784,23 +40309,37 @@ var UserQueries = {
         name: true,
         emailVerified: true
       },
+      skip: (page - 1) * limit,
       take: limit,
       orderBy: { name: "asc" }
     });
-    return users;
+    return {
+      items: users,
+      pagination: {
+        page,
+        limit,
+        total: users.length,
+        totalPages: Math.ceil(users.length / limit)
+      }
+    };
   }
 };
 
-// src/features/user/user.controller.ts
+// src/features/(core)/user/user.controller.ts
 var UserController = {
   async create(request, reply) {
     try {
-      const { email, password, name, roles = ["user"] } = request.body;
+      const { email, name } = request.body;
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store context is required to create a user"
+        });
+      }
       const user = await UserCommands.create({
         email,
-        password,
         name,
-        roles
+        storeId
       });
       return reply.status(201).send(user);
     } catch (error) {
@@ -37872,16 +40411,23 @@ var UserController = {
       });
     }
   },
+  async bulkDelete(request, reply) {
+    try {
+      const { ids } = request.body;
+      const result = await UserCommands.bulkDelete(ids);
+      return reply.send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: "Internal server error"
+      });
+    }
+  },
   async list(request, reply) {
     try {
-      const { page = 1, limit = 10, search, status } = request.query;
-      const result = await UserQueries.list({
-        page,
-        limit,
-        search,
-        status
-      });
-      return reply.send(result);
+      const { page = 1, limit = 10 } = request.query;
+      const result = await UserQueries.list(page, limit);
+      return reply.send({ items: result.items, pagination: result.pagination });
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({
@@ -37933,7 +40479,7 @@ var UserController = {
     try {
       const { q, limit = 10 } = request.query;
       const users = await UserQueries.search(q, limit);
-      return reply.send({ users });
+      return reply.send({ items: users.items, pagination: users.pagination });
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({
@@ -37973,20 +40519,14 @@ var UserController = {
   }
 };
 
-// src/features/user/user.schema.ts
+// src/features/(core)/user/user.schema.ts
 var createUserSchema = {
   body: {
     type: "object",
-    required: ["email", "password", "name"],
+    required: ["email", "name"],
     properties: {
       email: { type: "string", format: "email" },
-      password: { type: "string", minLength: 6 },
-      name: { type: "string", minLength: 2 },
-      roles: {
-        type: "array",
-        items: { type: "string" },
-        default: ["user"]
-      }
+      name: { type: "string", minLength: 2 }
     }
   },
   response: {
@@ -37996,8 +40536,8 @@ var createUserSchema = {
         id: { type: "string" },
         email: { type: "string" },
         name: { type: "string" },
-        roles: { type: "array", items: { type: "string" } },
         status: { type: "boolean" },
+        storeId: { type: "string" },
         createdAt: { type: "string", format: "date-time" }
       }
     }
@@ -38018,7 +40558,6 @@ var getUserSchema = {
         id: { type: "string" },
         email: { type: "string" },
         name: { type: "string" },
-        roles: { type: "array", items: { type: "string" } },
         status: { type: "boolean" },
         emailVerified: { type: "boolean" },
         lastLoginAt: { type: "string", format: "date-time" },
@@ -38040,9 +40579,7 @@ var updateUserSchema = {
     type: "object",
     properties: {
       email: { type: "string", format: "email" },
-      password: { type: "string", minLength: 6 },
       name: { type: "string", minLength: 2 },
-      roles: { type: "array", items: { type: "string" } },
       status: { type: "boolean" },
       emailVerified: { type: "boolean" }
     }
@@ -38054,7 +40591,6 @@ var updateUserSchema = {
         id: { type: "string" },
         email: { type: "string" },
         name: { type: "string" },
-        roles: { type: "array", items: { type: "string" } },
         status: { type: "boolean" },
         emailVerified: { type: "boolean" },
         updatedAt: { type: "string", format: "date-time" }
@@ -38079,16 +40615,14 @@ var listUsersSchema = {
     type: "object",
     properties: {
       page: { type: "number", minimum: 1, default: 1 },
-      limit: { type: "number", minimum: 1, maximum: 100, default: 10 },
-      search: { type: "string" },
-      status: { type: "boolean" }
+      limit: { type: "number", minimum: 1, maximum: 100, default: 10 }
     }
   },
   response: {
     200: {
       type: "object",
       properties: {
-        users: {
+        items: {
           type: "array",
           items: {
             type: "object",
@@ -38096,7 +40630,7 @@ var listUsersSchema = {
               id: { type: "string" },
               email: { type: "string" },
               name: { type: "string" },
-              roles: { type: "array", items: { type: "string" } },
+              isOwner: { type: "boolean" },
               status: { type: "boolean" },
               emailVerified: { type: "boolean" },
               lastLoginAt: { type: "string", format: "date-time" },
@@ -38117,16 +40651,62 @@ var listUsersSchema = {
     }
   }
 };
+var bulkDeleteSchema = {
+  body: {
+    type: "object",
+    required: ["ids"]
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        deleted: { type: "number" },
+        failed: { type: "number" }
+      }
+    }
+  }
+};
+var searchUsersSchema = {
+  querystring: {
+    type: "object",
+    properties: {
+      q: { type: "string" },
+      page: { type: "number", minimum: 1, default: 1 },
+      limit: { type: "number", minimum: 1, maximum: 100, default: 10 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        items: { type: "array", items: { type: "object" } },
+        pagination: {
+          type: "object",
+          properties: {
+            page: { type: "number" },
+            limit: { type: "number" },
+            total: { type: "number" },
+            totalPages: { type: "number" }
+          }
+        }
+      }
+    }
+  }
+};
 var UserSchemas = {
   create: createUserSchema,
   get: getUserSchema,
+  search: searchUsersSchema,
   update: updateUserSchema,
   delete: deleteUserSchema,
-  list: listUsersSchema
+  list: listUsersSchema,
+  bulkDelete: bulkDeleteSchema
 };
 
-// src/features/user/user.routes.ts
+// src/features/(core)/user/user.routes.ts
 async function UserRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
   fastify2.post("/", {
     schema: UserSchemas.create,
     handler: UserController.create
@@ -38147,6 +40727,10 @@ async function UserRoutes(fastify2) {
     schema: UserSchemas.delete,
     handler: UserController.delete
   });
+  fastify2.delete("/bulk-delete", {
+    schema: UserSchemas.bulkDelete,
+    handler: UserController.bulkDelete
+  });
   fastify2.get("/email", {
     handler: UserController.getByEmail
   });
@@ -38157,6 +40741,7 @@ async function UserRoutes(fastify2) {
     handler: UserController.getStats
   });
   fastify2.get("/search", {
+    schema: UserSchemas.search,
     handler: UserController.search
   });
   fastify2.patch("/:id/verify-email", {
@@ -38167,10 +40752,2170 @@ async function UserRoutes(fastify2) {
   });
 }
 
+// src/features/(wfm)/shift/shift.commands.ts
+init_prisma();
+var ShiftCommands = {
+  async create(data) {
+    return await db.shift.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        storeId: data.storeId,
+        occurrenceId: data.occurrenceId,
+        createdById: data.createdById
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        occurrence: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    return await db.shift.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        occurrenceId: data.occurrenceId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        occurrence: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      }
+    });
+  },
+  async remove(id) {
+    return await db.shift.delete({
+      where: { id }
+    });
+  },
+  async addParticipant(data) {
+    return await db.shiftParticipant.create({
+      data: {
+        shiftId: data.shiftId,
+        userId: data.userId,
+        storeId: data.storeId,
+        role: data.role,
+        note: data.note,
+        createdById: data.createdById,
+        status: "PENDING"
+      },
+      include: {
+        shift: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async updateParticipant(participantId, data) {
+    const updateData = {};
+    if (data.role !== void 0) {
+      updateData.role = data.role;
+    }
+    if (data.note !== void 0) {
+      updateData.note = data.note;
+    }
+    if (data.status !== void 0) {
+      updateData.status = data.status;
+      if (data.status === "CONFIRMED") {
+        updateData.confirmedAt = /* @__PURE__ */ new Date();
+        updateData.deniedAt = null;
+      } else if (data.status === "DECLINED") {
+        updateData.deniedAt = /* @__PURE__ */ new Date();
+        updateData.confirmedAt = null;
+      } else if (data.status === "PENDING") {
+        updateData.confirmedAt = null;
+        updateData.deniedAt = null;
+      }
+    }
+    return await db.shiftParticipant.update({
+      where: { id: participantId },
+      data: updateData,
+      include: {
+        shift: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async removeParticipant(participantId) {
+    return await db.shiftParticipant.delete({
+      where: { id: participantId }
+    });
+  }
+};
+
+// src/features/(wfm)/shift/shift.queries.ts
+init_prisma();
+var ShiftQueries = {
+  async getAll(storeId, filters) {
+    const where = {
+      storeId
+    };
+    if (filters?.occurrenceId) {
+      where.occurrenceId = filters.occurrenceId;
+    }
+    return await db.shift.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        occurrence: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+  },
+  async getById(id, storeId) {
+    return await db.shift.findFirst({
+      where: {
+        id,
+        storeId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        occurrence: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
+      }
+    });
+  },
+  async getByQuery(query, storeId) {
+    const where = {
+      storeId
+    };
+    if (query?.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: "insensitive" } },
+        { description: { contains: query.search, mode: "insensitive" } }
+      ];
+    }
+    if (query?.occurrenceId) {
+      where.occurrenceId = query.occurrenceId;
+    }
+    return await db.shift.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        occurrence: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
+      },
+      take: query?.limit ? Number.parseInt(query.limit) : void 0,
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+  }
+};
+
+// src/features/(wfm)/shift/shift.controller.ts
+var ShiftController = {
+  async create(request, reply) {
+    try {
+      const { name, description, occurrenceId } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: "Authentication required"
+        });
+      }
+      if (occurrenceId) {
+        const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+        const occurrence = await db2.scheduleOccurrence.findFirst({
+          where: {
+            id: occurrenceId,
+            schedule: {
+              storeId: request.store.id
+            }
+          }
+        });
+        if (!occurrence) {
+          return reply.status(404).send({
+            error: "Schedule occurrence not found in this store"
+          });
+        }
+      }
+      const shift = await ShiftCommands.create({
+        name,
+        description,
+        storeId: request.store.id,
+        occurrenceId,
+        createdById: request.user.id
+      });
+      return reply.status(201).send(shift);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getAll(request, reply) {
+    try {
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const query = request.query;
+      const filters = {
+        occurrenceId: query?.occurrenceId
+      };
+      const shifts = await ShiftQueries.getAll(request.store.id, filters);
+      return reply.status(200).send(shifts);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getById(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const shift = await ShiftQueries.getById(id, request.store.id);
+      if (!shift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      return reply.status(200).send(shift);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const { name, description, occurrenceId } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingShift = await ShiftQueries.getById(id, request.store.id);
+      if (!existingShift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      if (occurrenceId) {
+        const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+        const occurrence = await db2.scheduleOccurrence.findFirst({
+          where: {
+            id: occurrenceId,
+            schedule: {
+              storeId: request.store.id
+            }
+          }
+        });
+        if (!occurrence) {
+          return reply.status(404).send({
+            error: "Schedule occurrence not found in this store"
+          });
+        }
+      }
+      const shift = await ShiftCommands.update(id, {
+        name,
+        description,
+        occurrenceId
+      });
+      return reply.status(200).send(shift);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async remove(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingShift = await ShiftQueries.getById(id, request.store.id);
+      if (!existingShift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      const shift = await ShiftCommands.remove(id);
+      return reply.status(200).send(shift);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getByQuery(request, reply) {
+    try {
+      const query = request.query;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const shifts = await ShiftQueries.getByQuery(query, request.store.id);
+      return reply.status(200).send(shifts);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async addParticipant(request, reply) {
+    try {
+      const { shiftId } = request.params;
+      const { userId, role, note } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: "Authentication required"
+        });
+      }
+      const shift = await ShiftQueries.getById(shiftId, request.store.id);
+      if (!shift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+      const existingParticipant = await db2.shiftParticipant.findFirst({
+        where: {
+          shiftId,
+          userId
+        }
+      });
+      if (existingParticipant) {
+        return reply.status(400).send({
+          error: "User is already a participant in this shift"
+        });
+      }
+      const participant = await ShiftCommands.addParticipant({
+        shiftId,
+        userId,
+        storeId: request.store.id,
+        role,
+        note,
+        createdById: request.user.id
+      });
+      return reply.status(201).send(participant);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async updateParticipant(request, reply) {
+    try {
+      const { shiftId, participantId } = request.params;
+      const { role, status, note } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const shift = await ShiftQueries.getById(shiftId, request.store.id);
+      if (!shift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+      const participant = await db2.shiftParticipant.findFirst({
+        where: {
+          id: participantId,
+          shiftId,
+          storeId: request.store.id
+        }
+      });
+      if (!participant) {
+        return reply.status(404).send({
+          error: "Participant not found"
+        });
+      }
+      const updatedParticipant = await ShiftCommands.updateParticipant(participantId, {
+        role,
+        status,
+        note
+      });
+      return reply.status(200).send(updatedParticipant);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async removeParticipant(request, reply) {
+    try {
+      const { shiftId, participantId } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const shift = await ShiftQueries.getById(shiftId, request.store.id);
+      if (!shift) {
+        return reply.status(404).send({
+          error: "Shift not found"
+        });
+      }
+      const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+      const participant = await db2.shiftParticipant.findFirst({
+        where: {
+          id: participantId,
+          shiftId,
+          storeId: request.store.id
+        }
+      });
+      if (!participant) {
+        return reply.status(404).send({
+          error: "Participant not found"
+        });
+      }
+      const removedParticipant = await ShiftCommands.removeParticipant(participantId);
+      return reply.status(200).send(removedParticipant);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  }
+};
+
+// src/features/(wfm)/shift/shift.schemas.ts
+var create = {
+  body: {
+    type: "object",
+    required: ["name"],
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      occurrenceId: { type: "string" }
+    }
+  }
+};
+var getAll = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number" },
+      limit: { type: "number" },
+      search: { type: "string" },
+      occurrenceId: { type: "string" }
+    }
+  }
+};
+var getById = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var update2 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      occurrenceId: { type: "string" }
+    }
+  }
+};
+var remove = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var getByQuery = {
+  querystring: {
+    type: "object",
+    properties: {
+      search: { type: "string" },
+      limit: { type: "number" },
+      occurrenceId: { type: "string" }
+    }
+  }
+};
+var addParticipant = {
+  params: {
+    type: "object",
+    required: ["shiftId"],
+    properties: {
+      shiftId: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    required: ["userId"],
+    properties: {
+      userId: { type: "string" },
+      role: { type: "string" },
+      note: { type: "string" }
+    }
+  }
+};
+var updateParticipant = {
+  params: {
+    type: "object",
+    required: ["shiftId", "participantId"],
+    properties: {
+      shiftId: { type: "string" },
+      participantId: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      role: { type: "string" },
+      status: { type: "string", enum: ["PENDING", "CONFIRMED", "DECLINED"] },
+      note: { type: "string" }
+    }
+  }
+};
+var removeParticipant = {
+  params: {
+    type: "object",
+    required: ["shiftId", "participantId"],
+    properties: {
+      shiftId: { type: "string" },
+      participantId: { type: "string" }
+    }
+  }
+};
+var ShiftSchemas = {
+  create,
+  getAll,
+  getById,
+  update: update2,
+  remove,
+  getByQuery,
+  addParticipant,
+  updateParticipant,
+  removeParticipant
+};
+
+// src/features/(wfm)/shift/shift.routes.ts
+async function ShiftRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    preHandler: [Middlewares.permission("SHIFTS", "CREATE")],
+    schema: ShiftSchemas.create,
+    handler: ShiftController.create
+  });
+  fastify2.get("/", {
+    preHandler: [Middlewares.permission("SHIFTS", "READ")],
+    schema: ShiftSchemas.getAll,
+    handler: ShiftController.getAll
+  });
+  fastify2.get("/:id", {
+    preHandler: [Middlewares.permission("SHIFTS", "READ")],
+    schema: ShiftSchemas.getById,
+    handler: ShiftController.getById
+  });
+  fastify2.put("/:id", {
+    preHandler: [Middlewares.permission("SHIFTS", "UPDATE")],
+    schema: ShiftSchemas.update,
+    handler: ShiftController.update
+  });
+  fastify2.delete("/:id", {
+    preHandler: [Middlewares.permission("SHIFTS", "DELETE")],
+    schema: ShiftSchemas.remove,
+    handler: ShiftController.remove
+  });
+  fastify2.get("/search", {
+    preHandler: [Middlewares.permission("SHIFTS", "READ")],
+    schema: ShiftSchemas.getByQuery,
+    handler: ShiftController.getByQuery
+  });
+  fastify2.post("/:shiftId/participants", {
+    preHandler: [Middlewares.permission("SHIFTS", "CREATE")],
+    schema: ShiftSchemas.addParticipant,
+    handler: ShiftController.addParticipant
+  });
+  fastify2.put("/:shiftId/participants/:participantId", {
+    preHandler: [Middlewares.permission("SHIFTS", "UPDATE")],
+    schema: ShiftSchemas.updateParticipant,
+    handler: ShiftController.updateParticipant
+  });
+  fastify2.delete("/:shiftId/participants/:participantId", {
+    preHandler: [Middlewares.permission("SHIFTS", "DELETE")],
+    schema: ShiftSchemas.removeParticipant,
+    handler: ShiftController.removeParticipant
+  });
+}
+
+// src/features/(wfm)/schedule/schedule.commands.ts
+init_prisma();
+init_schedule_utils();
+var ScheduleCommands = {
+  async create(data) {
+    const schedule = await db.schedule.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        rrule: data.rrule,
+        timezone: data.timezone,
+        status: data.status || "PENDING",
+        storeId: data.storeId,
+        spaceId: data.spaceId,
+        userId: data.userId,
+        createdById: data.createdById
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        }
+      }
+    });
+    if (data.rrule) {
+      const occurrences = await generateOccurrences(
+        schedule.id,
+        data.startTime,
+        data.endTime,
+        data.rrule,
+        data.timezone
+      );
+      await createScheduleOccurrences(schedule.id, occurrences, data.status || "PENDING");
+    } else {
+      await createScheduleOccurrences(
+        schedule.id,
+        [{ startTime: data.startTime, endTime: data.endTime }],
+        data.status || "PENDING"
+      );
+    }
+    return await db.schedule.findUnique({
+      where: { id: schedule.id },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          },
+          orderBy: {
+            startTime: "asc"
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    return await db.schedule.update({
+      where: { id },
+      data: {
+        title: data.title,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        rrule: data.rrule,
+        timezone: data.timezone,
+        status: data.status,
+        spaceId: data.spaceId,
+        userId: data.userId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          }
+        }
+      }
+    });
+  },
+  async remove(id) {
+    return await db.schedule.delete({
+      where: { id }
+    });
+  }
+};
+
+// src/features/(wfm)/schedule/schedule.queries.ts
+init_prisma();
+var ScheduleQueries = {
+  async getAll(storeId, filters) {
+    const where = {
+      storeId
+    };
+    if (filters?.spaceId) {
+      where.spaceId = filters.spaceId;
+    }
+    if (filters?.userId) {
+      where.userId = filters.userId;
+    }
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+    if (filters?.startDate || filters?.endDate) {
+      if (filters.startDate) {
+        where.startTime = { gte: filters.startDate };
+      }
+      if (filters.endDate) {
+        where.endTime = { lte: filters.endDate };
+      }
+    }
+    const schedules = await db.schedule.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          },
+          orderBy: {
+            startTime: "asc"
+          }
+        }
+      },
+      orderBy: {
+        startTime: "asc"
+      }
+    });
+    const total = await db.schedule.count({ where });
+    return {
+      items: schedules,
+      pagination: {
+        page: filters?.page || 1,
+        limit: filters?.limit ? Number.parseInt(filters.limit.toString()) : 10,
+        total,
+        totalPages: Math.ceil(total / (filters?.limit ? Number.parseInt(filters.limit.toString()) : 10))
+      }
+    };
+  },
+  async getById(id, storeId) {
+    return await db.schedule.findFirst({
+      where: {
+        id,
+        storeId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          },
+          orderBy: {
+            startTime: "asc"
+          }
+        }
+      }
+    });
+  },
+  async getByQuery(query, storeId) {
+    const where = {
+      storeId
+    };
+    if (query?.search) {
+      where.OR = [
+        { title: { contains: query.search, mode: "insensitive" } },
+        { description: { contains: query.search, mode: "insensitive" } }
+      ];
+    }
+    if (query?.spaceId) {
+      where.spaceId = query.spaceId;
+    }
+    if (query?.userId) {
+      where.userId = query.userId;
+    }
+    if (query?.status) {
+      where.status = query.status;
+    }
+    if (query?.startDate || query?.endDate) {
+      if (query.startDate) {
+        where.startTime = { gte: new Date(query.startDate) };
+      }
+      if (query.endDate) {
+        where.endTime = { lte: new Date(query.endDate) };
+      }
+    }
+    const schedules = await db.schedule.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        space: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true
+          },
+          orderBy: {
+            startTime: "asc"
+          }
+        }
+      },
+      take: query?.limit ? Number.parseInt(query.limit.toString()) : void 0,
+      skip: query?.page ? (query.page - 1) * Number.parseInt(query.limit.toString()) : void 0,
+      orderBy: {
+        startTime: "asc"
+      }
+    });
+    const total = await db.schedule.count({ where });
+    return {
+      items: schedules,
+      pagination: {
+        page: query?.page || 1,
+        limit: query?.limit ? Number.parseInt(query.limit.toString()) : 10,
+        total,
+        totalPages: Math.ceil(total / (query?.limit ? Number.parseInt(query.limit.toString()) : 10))
+      }
+    };
+  }
+};
+
+// src/features/(wfm)/schedule/schedule.controller.ts
+init_schedule_utils();
+var ScheduleController = {
+  async create(request, reply) {
+    try {
+      const { title, description, date, startTime, endTime, rrule, timezone, status, spaceId } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: "Authentication required"
+        });
+      }
+      const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+      const spaceExists = await db2.space.findFirst({
+        where: {
+          id: spaceId,
+          storeId: request.store.id
+        }
+      });
+      if (!spaceExists) {
+        return reply.status(404).send({
+          error: "Space not found in this store"
+        });
+      }
+      let start;
+      let end;
+      try {
+        const times = processScheduleTimes(date, startTime, endTime, rrule);
+        start = times.start;
+        end = times.end;
+      } catch (error) {
+        return reply.status(400).send({
+          error: error.message || "Invalid date/time format"
+        });
+      }
+      const conflictCheck = await checkScheduleConflicts(
+        spaceId,
+        start,
+        end,
+        rrule,
+        timezone
+      );
+      if (conflictCheck.hasConflict) {
+        return reply.status(409).send({
+          error: "Schedule conflict detected",
+          message: "This schedule conflicts with existing schedules",
+          conflicts: conflictCheck.conflictingSchedules
+        });
+      }
+      const schedule = await ScheduleCommands.create({
+        title,
+        description,
+        startTime: start,
+        endTime: end,
+        rrule,
+        timezone,
+        status,
+        storeId: request.store.id,
+        spaceId,
+        userId: request.user.id,
+        createdById: request.user.id
+      });
+      return reply.status(201).send(schedule);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getAll(request, reply) {
+    try {
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const query = request.query;
+      const filters = {
+        spaceId: query?.spaceId,
+        userId: query?.userId,
+        status: query?.status,
+        startDate: query?.startDate ? new Date(query.startDate) : void 0,
+        endDate: query?.endDate ? new Date(query.endDate) : void 0
+      };
+      const schedules = await ScheduleQueries.getAll(request.store.id, filters);
+      return reply.status(200).send(schedules);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getById(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const schedule = await ScheduleQueries.getById(id, request.store.id);
+      if (!schedule) {
+        return reply.status(404).send({
+          error: "Schedule not found"
+        });
+      }
+      return reply.status(200).send(schedule);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const { title, description, date, startTime, endTime, rrule, timezone, status, spaceId } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingSchedule = await ScheduleQueries.getById(id, request.store.id);
+      if (!existingSchedule) {
+        return reply.status(404).send({
+          error: "Schedule not found"
+        });
+      }
+      const finalSpaceId = spaceId || existingSchedule.spaceId;
+      if (spaceId) {
+        const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+        const spaceExists = await db2.space.findFirst({
+          where: {
+            id: spaceId,
+            storeId: request.store.id
+          }
+        });
+        if (!spaceExists) {
+          return reply.status(404).send({
+            error: "Space not found in this store"
+          });
+        }
+      }
+      const finalRrule = rrule !== void 0 ? rrule : existingSchedule.rrule || void 0;
+      let start;
+      let end;
+      if (date || startTime || endTime || rrule !== void 0) {
+        let finalDate;
+        let finalStartTime;
+        let finalEndTime;
+        if (date) {
+          finalDate = date;
+        } else {
+          const existingDate = existingSchedule.startTime.toISOString().split("T")[0];
+          finalDate = existingDate;
+        }
+        if (startTime && endTime) {
+          finalStartTime = startTime;
+          finalEndTime = endTime;
+        } else {
+          const existingStartDate = new Date(existingSchedule.startTime);
+          const existingEndDate = new Date(existingSchedule.endTime);
+          const existingStartTime = `${String(existingStartDate.getUTCHours()).padStart(2, "0")}:${String(existingStartDate.getUTCMinutes()).padStart(2, "0")}`;
+          const existingEndTime = `${String(existingEndDate.getUTCHours()).padStart(2, "0")}:${String(existingEndDate.getUTCMinutes()).padStart(2, "0")}`;
+          finalStartTime = startTime || existingStartTime;
+          finalEndTime = endTime || existingEndTime;
+        }
+        try {
+          const times = processScheduleTimes(finalDate, finalStartTime, finalEndTime, finalRrule);
+          start = times.start;
+          end = times.end;
+        } catch (error) {
+          return reply.status(400).send({
+            error: error.message || "Invalid date/time format"
+          });
+        }
+      } else {
+        start = existingSchedule.startTime;
+        end = existingSchedule.endTime;
+      }
+      const finalTimezone = timezone !== void 0 ? timezone : existingSchedule.timezone || void 0;
+      const conflictCheck = await checkScheduleConflicts(
+        finalSpaceId,
+        start,
+        end,
+        finalRrule,
+        finalTimezone,
+        id
+        // Excluir o próprio agendamento
+      );
+      if (conflictCheck.hasConflict) {
+        return reply.status(409).send({
+          error: "Schedule conflict detected",
+          message: "This schedule conflicts with existing schedules",
+          conflicts: conflictCheck.conflictingSchedules
+        });
+      }
+      if (rrule !== void 0 && rrule !== existingSchedule.rrule) {
+        const { db: db2 } = await Promise.resolve().then(() => (init_prisma(), prisma_exports));
+        const { generateOccurrences: generateOccurrences2, createScheduleOccurrences: createScheduleOccurrences2 } = await Promise.resolve().then(() => (init_schedule_utils(), schedule_utils_exports));
+        await db2.scheduleOccurrence.deleteMany({
+          where: { scheduleId: id }
+        });
+        const occurrences = await generateOccurrences2(
+          id,
+          start,
+          end,
+          rrule || void 0,
+          finalTimezone
+        );
+        await createScheduleOccurrences2(
+          id,
+          occurrences,
+          status || existingSchedule.status
+        );
+      }
+      const schedule = await ScheduleCommands.update(id, {
+        title,
+        description,
+        startTime: start,
+        endTime: end,
+        rrule: finalRrule,
+        timezone: finalTimezone,
+        status,
+        spaceId,
+        userId: request.user.id
+      });
+      return reply.status(200).send(schedule);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async remove(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingSchedule = await ScheduleQueries.getById(id, request.store.id);
+      if (!existingSchedule) {
+        return reply.status(404).send({
+          error: "Schedule not found"
+        });
+      }
+      const schedule = await ScheduleCommands.remove(id);
+      return reply.status(200).send(schedule);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getByQuery(request, reply) {
+    try {
+      const query = request.query;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const schedules = await ScheduleQueries.getByQuery(query, request.store.id);
+      return reply.status(200).send(schedules);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  }
+};
+
+// src/features/(wfm)/schedule/schedule.schemas.ts
+var create2 = {
+  body: {
+    type: "object",
+    required: ["title", "date", "startTime", "endTime", "spaceId"],
+    properties: {
+      title: { type: "string" },
+      description: { type: "string" },
+      date: {
+        type: "string",
+        format: "date",
+        description: "Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, ser\xE1 a data de in\xEDcio da recorr\xEAncia."
+      },
+      startTime: {
+        type: "string",
+        description: 'Hor\xE1rio de in\xEDcio no formato HH:mm (ex: "10:30")'
+      },
+      endTime: {
+        type: "string",
+        description: 'Hor\xE1rio de t\xE9rmino no formato HH:mm (ex: "11:30")'
+      },
+      rrule: { type: "string" },
+      timezone: { type: "string", default: "America/Sao_Paulo" },
+      status: { type: "string", enum: ["PENDING", "CONFIRMED", "CANCELLED"] },
+      spaceId: { type: "string" }
+    }
+  }
+};
+var getAll2 = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number" },
+      limit: { type: "number" },
+      spaceId: { type: "string" },
+      status: { type: "string", enum: ["PENDING", "CONFIRMED", "CANCELLED"] },
+      startDate: { type: "string", format: "date-time" },
+      endDate: { type: "string", format: "date-time" }
+    }
+  }
+};
+var getById2 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var update3 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      title: { type: "string" },
+      description: { type: "string" },
+      date: {
+        type: "string",
+        format: "date",
+        description: "Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, ser\xE1 a data de in\xEDcio da recorr\xEAncia."
+      },
+      startTime: {
+        type: "string",
+        description: 'Hor\xE1rio de in\xEDcio no formato HH:mm (ex: "10:30")'
+      },
+      endTime: {
+        type: "string",
+        description: 'Hor\xE1rio de t\xE9rmino no formato HH:mm (ex: "11:30")'
+      },
+      rrule: { type: "string" },
+      timezone: { type: "string" },
+      status: { type: "string", enum: ["PENDING", "CONFIRMED", "CANCELLED"] },
+      spaceId: { type: "string" }
+    }
+  }
+};
+var remove2 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var getByQuery2 = {
+  querystring: {
+    type: "object",
+    properties: {
+      search: { type: "string" },
+      page: { type: "number" },
+      limit: { type: "number" },
+      spaceId: { type: "string" },
+      status: { type: "string", enum: ["PENDING", "CONFIRMED", "CANCELLED"] },
+      startDate: { type: "string", format: "date-time" },
+      endDate: { type: "string", format: "date-time" }
+    }
+  }
+};
+var ScheduleSchemas = {
+  create: create2,
+  getAll: getAll2,
+  getById: getById2,
+  update: update3,
+  remove: remove2,
+  getByQuery: getByQuery2
+};
+
+// src/features/(wfm)/schedule/schedule.routes.ts
+async function ScheduleRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    preHandler: [Middlewares.permission("SCHEDULES", "CREATE")],
+    schema: ScheduleSchemas.create,
+    handler: ScheduleController.create
+  });
+  fastify2.get("/", {
+    preHandler: [Middlewares.permission("SCHEDULES", "READ")],
+    schema: ScheduleSchemas.getAll,
+    handler: ScheduleController.getAll
+  });
+  fastify2.get("/:id", {
+    preHandler: [Middlewares.permission("SCHEDULES", "READ")],
+    schema: ScheduleSchemas.getById,
+    handler: ScheduleController.getById
+  });
+  fastify2.put("/:id", {
+    preHandler: [Middlewares.permission("SCHEDULES", "UPDATE")],
+    schema: ScheduleSchemas.update,
+    handler: ScheduleController.update
+  });
+  fastify2.delete("/:id", {
+    preHandler: [Middlewares.permission("SCHEDULES", "DELETE")],
+    schema: ScheduleSchemas.remove,
+    handler: ScheduleController.remove
+  });
+  fastify2.get("/search", {
+    preHandler: [Middlewares.permission("SCHEDULES", "READ")],
+    schema: ScheduleSchemas.getByQuery,
+    handler: ScheduleController.getByQuery
+  });
+}
+
+// src/features/(wfm)/space/space.commands.ts
+init_prisma();
+var SpaceCommands = {
+  async create(data) {
+    return await db.space.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        capacity: data.capacity,
+        location: data.location,
+        storeId: data.storeId,
+        createdById: data.createdById
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async update(id, data) {
+    return await db.space.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        capacity: data.capacity,
+        location: data.location
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  },
+  async remove(id) {
+    return await db.space.delete({
+      where: { id }
+    });
+  }
+};
+
+// src/features/(wfm)/space/space.queries.ts
+init_prisma();
+var SpaceQueries = {
+  async getAll({ page, limit }, storeId) {
+    const spaces = await db.space.findMany({
+      where: {
+        storeId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        schedules: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      take: limit ? Number.parseInt(limit.toString()) : void 0,
+      skip: page ? (page - 1) * limit : void 0
+    });
+    const total = await db.space.count({ where: { storeId } });
+    return {
+      items: spaces,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  },
+  async getById(id, storeId) {
+    return await db.space.findFirst({
+      where: {
+        id,
+        storeId
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        schedules: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true
+          }
+        }
+      }
+    });
+  },
+  async getByQuery({ page, limit, search }, storeId) {
+    const where = {
+      storeId
+    };
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { location: { contains: search, mode: "insensitive" } }
+      ];
+    }
+    const spaces = await db.space.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      },
+      take: limit ? Number.parseInt(limit.toString()) : void 0,
+      skip: page ? (page - 1) * limit : void 0,
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+    const total = await db.space.count({ where });
+    return {
+      items: spaces,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+};
+
+// src/features/(wfm)/space/space.controller.ts
+var SpaceController = {
+  async create(request, reply) {
+    try {
+      const { name, description, capacity, location } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: "Authentication required"
+        });
+      }
+      const space = await SpaceCommands.create({
+        name,
+        description,
+        capacity,
+        location,
+        storeId: request.store.id,
+        createdById: request.user.id
+      });
+      return reply.status(201).send(space);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getAll(request, reply) {
+    try {
+      const { page, limit } = request.query;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const spaces = await SpaceQueries.getAll({ page, limit }, request.store.id);
+      return reply.status(200).send(spaces);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getById(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const space = await SpaceQueries.getById(id, request.store.id);
+      if (!space) {
+        return reply.status(404).send({
+          error: "Space not found"
+        });
+      }
+      return reply.status(200).send(space);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async update(request, reply) {
+    try {
+      const { id } = request.params;
+      const { name, description, capacity, location } = request.body;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingSpace = await SpaceQueries.getById(id, request.store.id);
+      if (!existingSpace) {
+        return reply.status(404).send({
+          error: "Space not found"
+        });
+      }
+      const space = await SpaceCommands.update(id, {
+        name,
+        description,
+        capacity,
+        location
+      });
+      return reply.status(200).send(space);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async remove(request, reply) {
+    try {
+      const { id } = request.params;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const existingSpace = await SpaceQueries.getById(id, request.store.id);
+      if (!existingSpace) {
+        return reply.status(404).send({
+          error: "Space not found"
+        });
+      }
+      const space = await SpaceCommands.remove(id);
+      return reply.status(200).send(space);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  },
+  async getByQuery(request, reply) {
+    try {
+      const { page, limit, search } = request.query;
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: "Store not found for this user"
+        });
+      }
+      const spaces = await SpaceQueries.getByQuery({ page, limit, search }, request.store.id);
+      return reply.status(200).send(spaces);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        error: error.message || "Internal server error"
+      });
+    }
+  }
+};
+
+// src/features/(wfm)/space/space.schemas.ts
+var create3 = {
+  body: {
+    type: "object",
+    required: ["name"],
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      capacity: { type: "number" },
+      location: { type: "string" }
+    }
+  }
+};
+var getAll3 = {
+  querystring: {
+    type: "object",
+    properties: {
+      page: { type: "number" },
+      limit: { type: "number" }
+    }
+  }
+};
+var getById3 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var update4 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      description: { type: "string" },
+      capacity: { type: "number" },
+      location: { type: "string" }
+    }
+  }
+};
+var remove3 = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string" }
+    }
+  }
+};
+var getByQuery3 = {
+  querystring: {
+    type: "object",
+    properties: {
+      search: { type: "string" },
+      page: { type: "number" },
+      limit: { type: "number" }
+    }
+  }
+};
+var SpaceSchemas = {
+  create: create3,
+  getAll: getAll3,
+  getById: getById3,
+  update: update4,
+  remove: remove3,
+  getByQuery: getByQuery3
+};
+
+// src/features/(wfm)/space/space.routes.ts
+async function SpaceRoutes(fastify2) {
+  fastify2.addHook("preHandler", Middlewares.auth);
+  fastify2.addHook("preHandler", Middlewares.store);
+  fastify2.post("/", {
+    preHandler: [Middlewares.permission("SPACES", "CREATE")],
+    schema: SpaceSchemas.create,
+    handler: SpaceController.create
+  });
+  fastify2.get("/", {
+    preHandler: [Middlewares.permission("SPACES", "READ")],
+    schema: SpaceSchemas.getAll,
+    handler: SpaceController.getAll
+  });
+  fastify2.get("/:id", {
+    preHandler: [Middlewares.permission("SPACES", "READ")],
+    schema: SpaceSchemas.getById,
+    handler: SpaceController.getById
+  });
+  fastify2.put("/:id", {
+    preHandler: [Middlewares.permission("SPACES", "UPDATE")],
+    schema: SpaceSchemas.update,
+    handler: SpaceController.update
+  });
+  fastify2.delete("/:id", {
+    preHandler: [Middlewares.permission("SPACES", "DELETE")],
+    schema: SpaceSchemas.remove,
+    handler: SpaceController.remove
+  });
+  fastify2.get("/search", {
+    preHandler: [Middlewares.permission("SPACES", "READ")],
+    schema: SpaceSchemas.getByQuery,
+    handler: SpaceController.getByQuery
+  });
+}
+
+// src/router.ts
+async function registerRoutes(fastify2) {
+  await fastify2.register(AuthRoutes, { prefix: "/auth" });
+  await fastify2.register(UserRoutes, { prefix: "/users" });
+  await fastify2.register(PermissionRoutes, { prefix: "/permissions" });
+  await fastify2.register(ProductRoutes, { prefix: "/products" });
+  await fastify2.register(SupplierRoutes, { prefix: "/suppliers" });
+  await fastify2.register(CategoryRoutes, { prefix: "/categories" });
+  await fastify2.register(MovementRoutes, { prefix: "/movements" });
+  await fastify2.register(NotificationRoutes, { prefix: "/notifications" });
+  await fastify2.register(ChatRoutes, { prefix: "/chat" });
+  await fastify2.register(RoadmapRoutes, { prefix: "/roadmaps" });
+  await fastify2.register(QuoteRoutes, { prefix: "/quotes" });
+  await fastify2.register(InvoiceRoutes, { prefix: "/invoices" });
+  await fastify2.register(CrmRoutes, { prefix: "/crm" });
+  await fastify2.register(UserPreferencesRoutes, { prefix: "/preferences" });
+  await fastify2.register(FlowRoutes, { prefix: "/flows" });
+  await fastify2.register(DocumentRoutes, { prefix: "/documents" });
+  await fastify2.register(FolderRoutes, { prefix: "/folders" });
+  await fastify2.register(PolarRoutes, { prefix: "/polar" });
+  await fastify2.register(StoreRoutes, { prefix: "/store" });
+  await fastify2.register(ProfileRoutes, { prefix: "/profile" });
+  await fastify2.register(SubscriptionRoutes, { prefix: "/subscriptions" });
+  await fastify2.register(UploadRoutes, { prefix: "/uploads" });
+  await fastify2.register(ShiftRoutes, { prefix: "/shifts" });
+  await fastify2.register(ScheduleRoutes, { prefix: "/schedules" });
+  await fastify2.register(SpaceRoutes, { prefix: "/spaces" });
+}
+
 // src/server.ts
 var fastify = (0, import_fastify.default)({
-  logger: true,
-  // Desabilitado - usando bootstrap UI para feedback visual
+  logger: {
+    level: process.env.NODE_ENV === "production" ? "info" : "debug",
+    transport: process.env.NODE_ENV === "development" ? {
+      target: "pino-pretty",
+      options: {
+        translateTime: "HH:MM:ss Z",
+        ignore: "pid,hostname",
+        colorize: true,
+        singleLine: true
+      }
+    } : void 0
+  },
   requestTimeout: 6e4,
   // 30 segundos para timeout de requisições
   keepAliveTimeout: 5e3,
@@ -38230,20 +42975,19 @@ process.on("unhandledRejection", (reason) => {
 async function startServer() {
   const success = await bootstrapUI.run([
     {
-      name: "Conectando ao banco de dados",
+      name: "\u2705 Conectando ao banco de dados",
       action: async () => {
         await connectDb();
       }
     },
     {
-      name: "Registrando plugins",
+      name: "\u2705 Registrando plugins",
       action: async () => {
-        await fastify.register(dbPlugin);
-        await fastify.register(pushPlugin);
+        await registerPlugins(fastify);
       }
     },
     {
-      name: "Configurando CORS",
+      name: "\u2705 Configurando CORS",
       action: async () => {
         await fastify.register(import_cors.default, {
           origin: true,
@@ -38254,9 +42998,9 @@ async function startServer() {
       }
     },
     {
-      name: "Registrando raw body parser",
+      name: "\u2705 Registrando raw body parser",
       action: async () => {
-        await fastify.register(require("fastify-raw-body"), {
+        await fastify.register(import_fastify_raw_body.default, {
           field: "rawBody",
           global: true,
           encoding: "utf8",
@@ -38265,63 +43009,43 @@ async function startServer() {
       }
     },
     {
-      name: "Configurando arquivos est\xE1ticos",
+      name: "\u2705 Configurando arquivos est\xE1ticos",
       action: async () => {
-        await fastify.register(require("@fastify/static"), {
-          root: import_node_path3.default.join(process.cwd(), "src", "uploads"),
+        await fastify.register(import_static.default, {
+          root: import_node_path3.default.resolve(process.env.STORAGE_PATH || "src/uploads"),
           prefix: "/uploads/",
           decorateReply: false
         });
       }
     },
     {
-      name: "Registrando rotas",
+      name: "\u2705 Registrando rotas",
       action: async () => {
-        await fastify.register(AuthRoutes, { prefix: "/auth" });
-        await fastify.register(UserRoutes, { prefix: "/users" });
-        await fastify.register(ProductRoutes, { prefix: "/products" });
-        await fastify.register(SupplierRoutes, { prefix: "/suppliers" });
-        await fastify.register(CategoryRoutes, { prefix: "/categories" });
-        await fastify.register(MovementRoutes, { prefix: "/movements" });
-        await fastify.register(NotificationRoutes, { prefix: "/notifications" });
-        await fastify.register(ChatRoutes, { prefix: "/chat" });
-        await fastify.register(RoadmapRoutes, { prefix: "/roadmaps" });
-        await fastify.register(UploadRoutes, { prefix: "/uploads" });
-        await fastify.register(QuoteRoutes, { prefix: "/quotes" });
-        await fastify.register(InvoiceRoutes, { prefix: "/invoices" });
-        await fastify.register(CrmRoutes, { prefix: "/crm" });
-        await fastify.register(UserPreferencesRoutes, { prefix: "/preferences" });
-        await fastify.register(FlowRoutes, { prefix: "/flows" });
-        await fastify.register(FlowExecutionRoutes, { prefix: "" });
-        await fastify.register(PushSubscriptionRoutes, { prefix: "/push-subscriptions" });
-        await fastify.register(PolarRoutes, { prefix: "/polar" });
-        await fastify.register(StoreRoutes, { prefix: "/store" });
-        await fastify.register(ProfileRoutes, { prefix: "/profile" });
-        await fastify.register(SubscriptionRoutes, { prefix: "/subscriptions" });
+        await registerRoutes(fastify);
       }
     },
     {
-      name: "Configurando sistema de logs",
-      action: async () => {
+      name: "\u2705 Configurando sistema de logs",
+      action: () => {
         bootstrapUI.setupFastifyHooks(fastify);
       }
     },
     {
-      name: "Iniciando servidor",
+      name: "\u2705 Iniciando servidor",
       action: async () => {
         await fastify.listen({ port: PORT, host: HOST });
       }
     }
   ]);
   if (!success) {
-    bootstrapUI.showError("Falha ao inicializar o servidor");
+    bootstrapUI.showError("\u274C Falha ao inicializar o servidor");
     process.exit(1);
   }
   bootstrapUI.showServerInfo(fastify, PORT, HOST);
 }
 startServer().catch((err) => {
-  console.error("Erro fatal ao iniciar o servidor:", err);
-  bootstrapUI.showError("Erro fatal ao iniciar o servidor", err);
+  console.error("\u274C Erro fatal ao iniciar o servidor:", err);
+  bootstrapUI.showError("\u274C Erro fatal ao iniciar o servidor", err);
   process.exit(1);
 });
 /*! Bundled license information:

@@ -1,4 +1,4 @@
-import { FlowExecutionCommands } from '@/features/flow-execution/commands/flow-execution.commands'
+import { FlowExecutionCommands } from '@/features/(ai)/flow-execution/commands/flow-execution.commands'
 
 const MAX_LOOP_ITERATIONS = 100
 

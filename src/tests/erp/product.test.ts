@@ -2,10 +2,27 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import request from 'supertest'
 import Fastify from 'fastify'
 
-import { dbPlugin } from '../plugins/prisma'
-import { AuthRoutes } from '../features/(core)/auth/auth.routes'
-import { ProductRoutes } from '../features/(erp)/product/product.routes'
-import { CategoryRoutes } from '../features/(erp)/category/category.routes'
+import { dbPlugin } from '../../plugins/prisma'
+import { AuthRoutes } from '../../features/(core)/auth/auth.routes'
+import { ProductRoutes } from '../../features/(erp)/product/product.routes'
+import { CategoryRoutes } from '../../features/(erp)/category/category.routes'
+
+/*
+TESTES DE INTEGRAÇÃO
+
+[x] Autenticação
+[ ] Listagem de produtos
+[ ] Criação de produto
+[ ] Atualização de produto
+[ ] Exclusão de produto
+[ ] Forçar exclusão de produto
+[ ] Listagem de produtos ativos
+[ ] Estatísticas de produtos
+[ ] Busca de produtos
+[ ] Filtragem de produtos
+[ ] Ordenação de produtos
+[ ] Paginação de produtos
+*/
 
 let app: any
 let token: string
@@ -47,4 +64,15 @@ describe('🔐 Autenticação e fluxo completo', () => {
     expect(response.status).toBe(200)
     expectPaginatedResponse(response.body)
   })
+
+  /*
+    it("deve listar produtos do usuário autenticado", async () => {
+      const response = await request(app.server)
+        .get("/products")
+        .set("Authorization", `Bearer ${token}`);
+  
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+  */
 })

@@ -5,12 +5,24 @@ export const SubscriptionQueries = {
     const subscription = await db.subscription.findUnique({
       where: { id },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
+            plan: true,
+            status: true,
             email: true,
           },
+        },
+        invoices: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
         },
       },
     })
@@ -36,13 +48,17 @@ export const SubscriptionQueries = {
     const where: any = {}
 
     if (interval) {
-      where.interval = interval
+      where.priceInterval = interval
     }
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { polarPlanName: { contains: search, mode: 'insensitive' } },
+        {
+          store: {
+            name: { contains: search, mode: 'insensitive' },
+          },
+        },
       ]
     }
 
@@ -53,11 +69,12 @@ export const SubscriptionQueries = {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          user: {
+          store: {
             select: {
               id: true,
               name: true,
-              email: true,
+              plan: true,
+              status: true,
             },
           },
         },
@@ -82,13 +99,15 @@ export const SubscriptionQueries = {
 
   async getActive() {
     const subscriptions = await db.subscription.findMany({
+      where: { status: 'ACTIVE' },
       orderBy: { createdAt: 'desc' },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
-            email: true,
+            plan: true,
+            status: true,
           },
         },
       },
@@ -108,11 +127,12 @@ export const SubscriptionQueries = {
       where: { id: { in: planIds } },
       orderBy: { createdAt: 'desc' },
       include: {
-        user: {
+        store: {
           select: {
             id: true,
             name: true,
-            email: true,
+            plan: true,
+            status: true,
           },
         },
       },
@@ -139,51 +159,83 @@ export const SubscriptionQueries = {
     // Verificar se o plano existe
     const plan = await db.subscription.findUnique({
       where: { id: planId },
+      include: {
+        invoices: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+        },
+      },
     })
 
     if (!plan) {
       throw new Error('Plan not found')
     }
 
-    const where: any = {
-      userId: planId,
+    if (status && plan.status !== status) {
+      return {
+        customers: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+        },
+      }
     }
 
-    if (status) {
-      where.status = status
+    const userWhere = {
+      storeId: plan.storeId,
     }
 
     const [customers, total] = await Promise.all([
-      db.subscription.findMany({
-        where,
+      db.user.findMany({
+        where: userWhere,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-          invoices: {
-            select: {
-              id: true,
-              amount: true,
-              status: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 5, // Últimas 5 faturas
-          },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          createdAt: true,
         },
       }),
-      db.subscription.count({ where }),
+      db.user.count({ where: userWhere }),
     ])
 
+    const invoices = plan.invoices.map((invoice) => ({
+      ...invoice,
+      amount: Number(invoice.amount),
+    }))
+
     return {
-      customers,
+      customers: customers.map((customer) => ({
+        id: customer.id,
+        status: plan.status,
+        renewalDate: plan.currentPeriodEnd,
+        trialEndsAt: plan.trialEndsAt,
+        createdAt: customer.createdAt,
+        user: {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone,
+        },
+        subscription: {
+          id: plan.id,
+          name: plan.polarPlanName,
+          price: plan.priceAmount ? Number(plan.priceAmount) : null,
+          interval: plan.priceInterval,
+        },
+        invoices,
+      })),
       pagination: {
         page,
         limit,

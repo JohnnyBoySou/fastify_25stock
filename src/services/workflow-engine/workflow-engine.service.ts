@@ -1,10 +1,10 @@
-import { FlowExecutionCommands } from '@/features/flow-execution/commands/flow-execution.commands'
+import { FlowExecutionCommands } from '@/features/(ai)/flow-execution/commands/flow-execution.commands'
 import type {
   ActionConfig,
   ConditionConfig,
   ExecutionContext,
   FlowNode,
-} from '@/features/flow/flow.interfaces'
+} from '@/features/(ai)/flow/flow.interfaces'
 import { ActionExecutor } from './action-executor.service'
 import { ConditionEvaluator } from './condition-evaluator.service'
 import { LoopController } from './loop-controller.service'

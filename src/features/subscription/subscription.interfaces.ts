@@ -3,7 +3,7 @@ import type { FastifyRequest } from 'fastify'
 // Interfaces para Plan
 export interface CreateSubscriptionRequest extends FastifyRequest {
   body: {
-    userId: string
+    storeId: string
     description?: string
     price: number
     interval: 'MONTHLY' | 'YEARLY'
@@ -14,7 +14,7 @@ export interface CreateSubscriptionRequest extends FastifyRequest {
 export interface UpdateSubscriptionRequest extends FastifyRequest {
   params: { id: string }
   body: {
-    userId?: string
+    storeId?: string
     description?: string
     price?: number
     interval?: 'MONTHLY' | 'YEARLY'
@@ -63,7 +63,7 @@ export interface GetSubscriptionCustomersRequest extends FastifyRequest {
 
 export interface SubscriptionResponse {
   id: string
-  userId: string
+  storeId: string
   description?: string
   price: number
   interval: 'MONTHLY' | 'YEARLY'

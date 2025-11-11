@@ -3,9 +3,9 @@ import type { FastifySchema } from 'fastify'
 export const createSubscriptionSchema: FastifySchema = {
   body: {
     type: 'object',
-    required: ['userId', 'price', 'interval'],
+    required: ['storeId', 'price', 'interval'],
     properties: {
-      userId: { type: 'string' },
+      storeId: { type: 'string' },
       description: { type: 'string' },
       price: { type: 'number', minimum: 0.01 },
       interval: {
@@ -54,6 +54,7 @@ export const updateSubscriptionSchema: FastifySchema = {
   body: {
     type: 'object',
     properties: {
+      storeId: { type: 'string' },
       name: { type: 'string', minLength: 1 },
       description: { type: 'string' },
       price: { type: 'number', minimum: 0.01 },

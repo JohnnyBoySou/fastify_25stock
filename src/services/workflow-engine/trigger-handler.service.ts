@@ -1,4 +1,4 @@
-import { FlowQueries } from '@/features/flow/queries/flow.queries'
+import { FlowQueries } from '@/features/(ai)/flow/queries/flow.queries'
 import { WorkflowEngine } from './workflow-engine.service'
 
 export const TriggerHandler = {
