@@ -150,6 +150,10 @@ export const getStoreSchema: FastifySchema = {
             },
           },
         },
+        plan: {
+          type: 'object',
+          nullable: true,
+        },
         _count: {
           type: 'object',
           properties: {

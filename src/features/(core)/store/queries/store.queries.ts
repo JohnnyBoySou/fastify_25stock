@@ -1,4 +1,5 @@
 import { db } from '@/plugins/prisma'
+import { PolarQueries } from '../../../polar/queries/polar.queries'
 
 export const StoreQueries = {
   async getById(id: string) {
@@ -45,8 +46,15 @@ export const StoreQueries = {
       },
     })
 
-    if (!store) {
-      throw new Error('Store not found')
+    if (store?.subscription?.polarProductId) {
+      const plan = await PolarQueries.getPlanById(store.subscription.polarProductId)
+      return {
+        ...store,
+        subscription: {
+          ...store.subscription,
+          plan,
+        },
+      }
     }
 
     return store

@@ -23,6 +23,22 @@ export const PolarQueries = {
     }
   },
 
+  async getPlanById(id: string) {
+    try {
+      const { result } = await polar.products.list({
+        organizationId: process.env.POLAR_ORGANIZATION_ID as string,
+        page: 1,
+        limit: 10,
+      })
+
+      const plan = result.items.find((product: any) => product.id === id)
+      return plan || null
+    } catch (error) {
+      console.error('Polar get plan by id error:', error)
+      throw new Error(`Failed to fetch plan: ${error}`)
+    }
+  },
+
   async getFreePlan() {
     try {
       const { result } = await polar.products.list({
