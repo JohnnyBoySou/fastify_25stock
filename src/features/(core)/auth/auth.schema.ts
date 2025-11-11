@@ -37,6 +37,7 @@ export const registerSchema: FastifySchema = {
             email: { type: 'string' },
             emailVerified: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
+            storeId: { type: ['string', 'null'] },
           },
         },
         message: { type: 'string' },
@@ -410,6 +411,7 @@ export const googleLoginSchema: FastifySchema = {
             email: { type: 'string' },
             emailVerified: { type: 'boolean' },
             lastLoginAt: { type: ['string', 'null'], format: 'date-time' },
+            storeId: { type: ['string', 'null'] },
           },
         },
         store: {
