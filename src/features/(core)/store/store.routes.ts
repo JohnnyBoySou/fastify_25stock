@@ -26,4 +26,9 @@ export async function StoreRoutes(fastify: FastifyInstance) {
     preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.delete,
   })
+
+  fastify.get('/stats', {
+    preHandler: [Middlewares.auth, Middlewares.store],
+    handler: StoreController.getStats,
+  })
 }

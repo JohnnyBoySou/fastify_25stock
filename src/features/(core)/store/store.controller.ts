@@ -1,4 +1,4 @@
-import type { FastifyReply } from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import { StoreCommands } from './commands/store.commands'
 import { StoreQueries } from './queries/store.queries'
 import type {
@@ -127,4 +127,19 @@ export const StoreController = {
       })
     }
   },
+  
+  async getStats(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const id = request.store?.id
+
+      const result = await StoreQueries.getStats(id)
+
+      return reply.send(result)
+  } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  }
 }
