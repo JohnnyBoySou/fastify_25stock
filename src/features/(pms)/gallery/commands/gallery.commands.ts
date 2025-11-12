@@ -10,6 +10,17 @@ export const GalleryCommands = {
         name: data.name,
         type: data.type,
         size: data.size,
+        ...(data.storeId
+          ? {
+              storeId: data.storeId,
+              storeMedia: {
+                create: {
+                  storeId: data.storeId,
+                },
+              },
+            }
+          : {}),
+        ...(data.uploadedById && { uploadedById: data.uploadedById }),
       },
     })
 

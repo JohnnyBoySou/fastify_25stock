@@ -15,11 +15,16 @@ export const GalleryQueries = {
   },
 
   async list(filters: ListUploadsFilters) {
-    const { page, limit, search, type, entityType, entityId } = filters
+    const { page, limit, search, type, entityType, entityId, storeId } = filters
     const skip = (page - 1) * limit
 
     // Construir condições de filtro
     const where: any = {}
+
+    // Filtrar por loja (obrigatório para segurança)
+    if (storeId) {
+      where.storeId = storeId
+    }
 
     if (search) {
       where.OR = [
@@ -101,11 +106,17 @@ export const GalleryQueries = {
     }
   },
 
-  async getByType(type: string, limit = 10) {
+  async getByType(type: string, limit = 10, storeId?: string) {
+    const where: any = {
+      type: { contains: type, mode: 'insensitive' },
+    }
+
+    if (storeId) {
+      where.storeId = storeId
+    }
+
     const uploads = await db.media.findMany({
-      where: {
-        type: { contains: type, mode: 'insensitive' },
-      },
+      where,
       take: limit,
       orderBy: { createdAt: 'desc' },
     })
@@ -113,8 +124,15 @@ export const GalleryQueries = {
     return uploads
   },
 
-  async getRecent(limit = 20) {
+  async getRecent(limit = 20, storeId?: string) {
+    const where: any = {}
+
+    if (storeId) {
+      where.storeId = storeId
+    }
+
     const uploads = await db.media.findMany({
+      where,
       take: limit,
       orderBy: { createdAt: 'desc' },
     })
@@ -215,14 +233,20 @@ export const GalleryQueries = {
     return media
   },
 
-  async search(query: string, limit = 10) {
+  async search(query: string, limit = 10, storeId?: string) {
+    const where: any = {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { type: { contains: query, mode: 'insensitive' } },
+      ],
+    }
+
+    if (storeId) {
+      where.storeId = storeId
+    }
+
     const uploads = await db.media.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { type: { contains: query, mode: 'insensitive' } },
-        ],
-      },
+      where,
       take: limit,
       orderBy: { createdAt: 'desc' },
     })
@@ -230,20 +254,29 @@ export const GalleryQueries = {
     return uploads
   },
 
-  async getStats() {
+  async getStats(storeId?: string) {
+    const where: any = {}
+    const whereRecent: any = {
+      createdAt: {
+        gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Últimas 24h
+      },
+    }
+
+    if (storeId) {
+      where.storeId = storeId
+      whereRecent.storeId = storeId
+    }
+
     const [total, byType, recentCount] = await Promise.all([
-      db.media.count(),
+      db.media.count({ where }),
       db.media.groupBy({
         by: ['type'],
+        where,
         _count: { type: true },
         orderBy: { _count: { type: 'desc' } },
       }),
       db.media.count({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Últimas 24h
-          },
-        },
+        where: whereRecent,
       }),
     ])
 
@@ -257,20 +290,26 @@ export const GalleryQueries = {
     }
   },
 
-  async getUnusedMedia(daysOld = 30) {
+  async getUnusedMedia(daysOld = 30, storeId?: string) {
     const cutoffDate = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000)
+
+    const where: any = {
+      createdAt: { lt: cutoffDate },
+      AND: [
+        { productMedia: { none: {} } },
+        { supplierMedia: { none: {} } },
+        { userMedia: { none: {} } },
+        { storeMedia: { none: {} } },
+      ],
+    }
+
+    if (storeId) {
+      where.storeId = storeId
+    }
 
     // Buscar mídias antigas que não estão sendo usadas
     const unusedMedia = await db.media.findMany({
-      where: {
-        createdAt: { lt: cutoffDate },
-        AND: [
-          { productMedia: { none: {} } },
-          { supplierMedia: { none: {} } },
-          { userMedia: { none: {} } },
-          { storeMedia: { none: {} } },
-        ],
-      },
+      where,
       orderBy: { createdAt: 'asc' },
     })
 

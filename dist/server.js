@@ -36759,21 +36759,30 @@ async function SupplierRoutes(fastify2) {
   await fastify2.register(SupplierResponsibleRoutes);
 }
 
-// src/features/(pms)/upload/upload.controller.ts
+// src/features/(pms)/gallery/gallery.controller.ts
 var import_node_path2 = __toESM(require("path"));
 var import_promises = __toESM(require("fs/promises"));
 var import_node_os2 = __toESM(require("os"));
 
-// src/features/(pms)/upload/commands/upload.commands.ts
+// src/features/(pms)/gallery/commands/gallery.commands.ts
 init_prisma();
-var UploadCommands = {
+var GalleryCommands = {
   async create(data) {
     const upload = await db.media.create({
       data: {
         url: data.url,
         name: data.name,
         type: data.type,
-        size: data.size
+        size: data.size,
+        ...data.storeId ? {
+          storeId: data.storeId,
+          storeMedia: {
+            create: {
+              storeId: data.storeId
+            }
+          }
+        } : {},
+        ...data.uploadedById && { uploadedById: data.uploadedById }
       }
     });
     return upload;
@@ -36964,9 +36973,9 @@ var UploadCommands = {
   }
 };
 
-// src/features/(pms)/upload/queries/upload.queries.ts
+// src/features/(pms)/gallery/queries/gallery.queries.ts
 init_prisma();
-var UploadQueries = {
+var GalleryQueries = {
   async getById(id) {
     const upload = await db.media.findUnique({
       where: { id }
@@ -36977,9 +36986,12 @@ var UploadQueries = {
     return upload;
   },
   async list(filters) {
-    const { page, limit, search, type, entityType, entityId } = filters;
+    const { page, limit, search, type, entityType, entityId, storeId } = filters;
     const skip2 = (page - 1) * limit;
     const where = {};
+    if (storeId) {
+      where.storeId = storeId;
+    }
     if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
@@ -37048,18 +37060,27 @@ var UploadQueries = {
       }
     };
   },
-  async getByType(type, limit = 10) {
+  async getByType(type, limit = 10, storeId) {
+    const where = {
+      type: { contains: type, mode: "insensitive" }
+    };
+    if (storeId) {
+      where.storeId = storeId;
+    }
     const uploads = await db.media.findMany({
-      where: {
-        type: { contains: type, mode: "insensitive" }
-      },
+      where,
       take: limit,
       orderBy: { createdAt: "desc" }
     });
     return uploads;
   },
-  async getRecent(limit = 20) {
+  async getRecent(limit = 20, storeId) {
+    const where = {};
+    if (storeId) {
+      where.storeId = storeId;
+    }
     const uploads = await db.media.findMany({
+      where,
       take: limit,
       orderBy: { createdAt: "desc" }
     });
@@ -37145,34 +37166,45 @@ var UploadQueries = {
     }
     return media;
   },
-  async search(query, limit = 10) {
+  async search(query, limit = 10, storeId) {
+    const where = {
+      OR: [
+        { name: { contains: query, mode: "insensitive" } },
+        { type: { contains: query, mode: "insensitive" } }
+      ]
+    };
+    if (storeId) {
+      where.storeId = storeId;
+    }
     const uploads = await db.media.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { type: { contains: query, mode: "insensitive" } }
-        ]
-      },
+      where,
       take: limit,
       orderBy: { createdAt: "desc" }
     });
     return uploads;
   },
-  async getStats() {
+  async getStats(storeId) {
+    const where = {};
+    const whereRecent = {
+      createdAt: {
+        gte: new Date(Date.now() - 24 * 60 * 60 * 1e3)
+        // Últimas 24h
+      }
+    };
+    if (storeId) {
+      where.storeId = storeId;
+      whereRecent.storeId = storeId;
+    }
     const [total, byType, recentCount] = await Promise.all([
-      db.media.count(),
+      db.media.count({ where }),
       db.media.groupBy({
         by: ["type"],
+        where,
         _count: { type: true },
         orderBy: { _count: { type: "desc" } }
       }),
       db.media.count({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1e3)
-            // Últimas 24h
-          }
-        }
+        where: whereRecent
       })
     ]);
     return {
@@ -37184,18 +37216,22 @@ var UploadQueries = {
       recentCount
     };
   },
-  async getUnusedMedia(daysOld = 30) {
+  async getUnusedMedia(daysOld = 30, storeId) {
     const cutoffDate = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1e3);
+    const where = {
+      createdAt: { lt: cutoffDate },
+      AND: [
+        { productMedia: { none: {} } },
+        { supplierMedia: { none: {} } },
+        { userMedia: { none: {} } },
+        { storeMedia: { none: {} } }
+      ]
+    };
+    if (storeId) {
+      where.storeId = storeId;
+    }
     const unusedMedia = await db.media.findMany({
-      where: {
-        createdAt: { lt: cutoffDate },
-        AND: [
-          { productMedia: { none: {} } },
-          { supplierMedia: { none: {} } },
-          { userMedia: { none: {} } },
-          { storeMedia: { none: {} } }
-        ]
-      },
+      where,
       orderBy: { createdAt: "asc" }
     });
     return unusedMedia;
@@ -37251,7 +37287,7 @@ var UploadQueries = {
   }
 };
 
-// src/features/(pms)/upload/upload.service.ts
+// src/features/(pms)/gallery/gallery.service.ts
 var import_node_crypto3 = require("crypto");
 var import_node_fs = require("fs");
 var import_node_path = __toESM(require("path"));
@@ -37538,18 +37574,27 @@ var UploadService = class _UploadService {
 };
 var uploadService = UploadService.getInstance();
 
-// src/features/(pms)/upload/upload.controller.ts
-var UploadController = {
+// src/features/(pms)/gallery/gallery.controller.ts
+var GalleryController = {
   // === CRUD BÁSICO ===
   async create(request, reply) {
     try {
       const { name, type, size } = request.body;
-      const result = await UploadCommands.create({
+      const storeId = request.store?.id;
+      const uploadedById = request.user?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryCommands.create({
         url: "",
         // Será preenchida pelo service
         name,
         type,
-        size
+        size,
+        storeId,
+        uploadedById
       });
       return reply.status(201).send(result);
     } catch (error) {
@@ -37564,10 +37609,10 @@ var UploadController = {
       });
     }
   },
-  async get(request, reply) {
+  async findById(request, reply) {
     try {
       const { id } = request.params;
-      const result = await UploadQueries.getById(id);
+      const result = await GalleryQueries.getById(id);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -37585,7 +37630,7 @@ var UploadController = {
     try {
       const { id } = request.params;
       const updateData = { ...request.body };
-      const result = await UploadCommands.update(id, updateData);
+      const result = await GalleryCommands.update(id, updateData);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -37604,16 +37649,16 @@ var UploadController = {
       });
     }
   },
-  async delete(request, reply) {
+  async remove(request, reply) {
     try {
       const { id } = request.params;
-      const media = await UploadQueries.getById(id);
+      const media = await GalleryQueries.getById(id);
       if (!media) {
         return reply.status(404).send({
           error: "Media not found"
         });
       }
-      await UploadCommands.delete(id);
+      await GalleryCommands.delete(id);
       try {
         const filePath = import_node_path2.default.join(
           process.cwd(),
@@ -37638,22 +37683,29 @@ var UploadController = {
       });
     }
   },
-  async list(request, reply) {
+  async findAll(request, reply) {
     try {
       const { page = 1, limit = 10, search, type, entityType, entityId } = request.query;
-      const result = await UploadQueries.list({
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.list({
         page,
         limit,
         search,
         type,
         entityType,
-        entityId
+        entityId,
+        storeId
       });
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const responseData = {
         ...result,
-        uploads: result.uploads?.map((upload) => ({
+        items: result.uploads?.map((upload) => ({
           ...upload,
           fullUrl: `${protocol}://${host}${upload.url}`
         })) || []
@@ -37670,7 +37722,13 @@ var UploadController = {
   async getByType(request, reply) {
     try {
       const { type, limit = 10 } = request.query;
-      const result = await UploadQueries.getByType(type, limit);
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.getByType(type, limit, storeId);
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const uploadsWithFullUrl = result.map((upload) => ({
@@ -37688,7 +37746,13 @@ var UploadController = {
   async getRecent(request, reply) {
     try {
       const { limit = 20 } = request.query;
-      const result = await UploadQueries.getRecent(limit);
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.getRecent(limit, storeId);
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const uploadsWithFullUrl = result.map((upload) => ({
@@ -37706,7 +37770,7 @@ var UploadController = {
   async getEntityMedia(request, reply) {
     try {
       const { entityType, entityId } = request.params;
-      const result = await UploadQueries.getEntityMedia(entityType, entityId);
+      const result = await GalleryQueries.getEntityMedia(entityType, entityId);
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const mediaWithFullUrl = result.map((media) => ({
@@ -37729,7 +37793,7 @@ var UploadController = {
   async getPrimaryMedia(request, reply) {
     try {
       const { entityType, entityId } = request.params;
-      const result = await UploadQueries.getPrimaryMedia(entityType, entityId);
+      const result = await GalleryQueries.getPrimaryMedia(entityType, entityId);
       if (!result) {
         return reply.status(404).send({
           error: "No media found"
@@ -37756,7 +37820,13 @@ var UploadController = {
   },
   async getStats(request, reply) {
     try {
-      const result = await UploadQueries.getStats();
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.getStats(storeId);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -37768,7 +37838,13 @@ var UploadController = {
   async search(request, reply) {
     try {
       const { q, limit = 10 } = request.query;
-      const result = await UploadQueries.search(q, limit);
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.search(q, limit, storeId);
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const uploadsWithFullUrl = result.map((upload) => ({
@@ -37786,7 +37862,7 @@ var UploadController = {
   async getMediaUsage(request, reply) {
     try {
       const { id } = request.params;
-      const result = await UploadQueries.getMediaUsage(id);
+      const result = await GalleryQueries.getMediaUsage(id);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -37798,7 +37874,13 @@ var UploadController = {
   async getUnusedMedia(request, reply) {
     try {
       const { daysOld = 30 } = request.query;
-      const result = await UploadQueries.getUnusedMedia(daysOld);
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
+      const result = await GalleryQueries.getUnusedMedia(daysOld, storeId);
       const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
       const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
       const uploadsWithFullUrl = result.map((upload) => ({
@@ -37821,7 +37903,7 @@ var UploadController = {
       let result;
       switch (entityType) {
         case "product":
-          result = await UploadCommands.attachToProduct({
+          result = await GalleryCommands.attachToProduct({
             mediaId: id,
             entityType,
             entityId,
@@ -37829,21 +37911,21 @@ var UploadController = {
           });
           break;
         case "supplier":
-          result = await UploadCommands.attachToSupplier({
+          result = await GalleryCommands.attachToSupplier({
             mediaId: id,
             entityType,
             entityId
           });
           break;
         case "user":
-          result = await UploadCommands.attachToUser({
+          result = await GalleryCommands.attachToUser({
             mediaId: id,
             entityType,
             entityId
           });
           break;
         case "store":
-          result = await UploadCommands.attachToStore({
+          result = await GalleryCommands.attachToStore({
             mediaId: id,
             entityType,
             entityId
@@ -37873,16 +37955,16 @@ var UploadController = {
       const { entityType, entityId } = request.body;
       switch (entityType) {
         case "product":
-          await UploadCommands.detachFromProduct(id, entityId);
+          await GalleryCommands.detachFromProduct(id, entityId);
           break;
         case "supplier":
-          await UploadCommands.detachFromSupplier(id, entityId);
+          await GalleryCommands.detachFromSupplier(id, entityId);
           break;
         case "user":
-          await UploadCommands.detachFromUser(id, entityId);
+          await GalleryCommands.detachFromUser(id, entityId);
           break;
         case "store":
-          await UploadCommands.detachFromStore(id, entityId);
+          await GalleryCommands.detachFromStore(id, entityId);
           break;
         default:
           return reply.status(400).send({
@@ -37907,7 +37989,7 @@ var UploadController = {
       const { id } = request.params;
       const { entityType, entityId } = request.body;
       if (entityType === "product") {
-        await UploadCommands.setPrimaryForProduct(id, entityId);
+        await GalleryCommands.setPrimaryForProduct(id, entityId);
       } else {
         return reply.status(400).send({
           error: "Primary media is only supported for products"
@@ -37929,7 +38011,7 @@ var UploadController = {
   async bulkDelete(request, reply) {
     try {
       const { mediaIds } = request.body;
-      const result = await UploadCommands.bulkDelete(mediaIds);
+      const result = await GalleryCommands.bulkDelete(mediaIds);
       return reply.send(result);
     } catch (error) {
       request.log.error(error);
@@ -37973,6 +38055,12 @@ var UploadController = {
       if (!userId) {
         return reply.status(401).send({
           error: "Usu\xE1rio n\xE3o autenticado"
+        });
+      }
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
         });
       }
       let filePath;
@@ -38023,11 +38111,13 @@ var UploadController = {
         entityType,
         userId
       });
-      const dbResult = await UploadCommands.create({
+      const dbResult = await GalleryCommands.create({
         url: uploadResult.url,
         name: uploadResult.name,
         type: uploadResult.type,
-        size: uploadResult.size
+        size: uploadResult.size,
+        storeId,
+        uploadedById: userId
       });
       if (filePath?.includes("temp-")) {
         try {
@@ -38068,6 +38158,12 @@ var UploadController = {
           error: "Usu\xE1rio n\xE3o autenticado"
         });
       }
+      const storeId = request.store?.id;
+      if (!storeId) {
+        return reply.status(400).send({
+          error: "Store n\xE3o encontrada para o usu\xE1rio autenticado"
+        });
+      }
       for await (const file of files) {
         if (file.file) {
           const fileData = {
@@ -38099,11 +38195,13 @@ var UploadController = {
       });
       const dbResults = [];
       for (const uploadResult of uploadResults) {
-        const dbResult = await UploadCommands.create({
+        const dbResult = await GalleryCommands.create({
           url: uploadResult.url,
           name: uploadResult.name,
           type: uploadResult.type,
-          size: uploadResult.size
+          size: uploadResult.size,
+          storeId,
+          uploadedById: userId
         });
         const protocol = request.headers["x-forwarded-proto"] || request.server.https ? "https" : "http";
         const host = request.headers["x-forwarded-host"] || request.headers.host || "localhost:3000";
@@ -38133,7 +38231,7 @@ var UploadController = {
   // === SERVIÇOS DE MANUTENÇÃO ===
   async cleanupOrphanedFiles(request, reply) {
     try {
-      const usedFiles = await UploadQueries.getAllUsedFilePaths();
+      const usedFiles = await GalleryQueries.getAllUsedFilePaths();
       const result = await uploadService.cleanupOrphanedFiles(usedFiles);
       return reply.send({
         message: "Limpeza conclu\xEDda",
@@ -38189,7 +38287,7 @@ var UploadController = {
   }
 };
 
-// src/features/(pms)/upload/upload.schema.ts
+// src/features/(pms)/gallery/gallery.schema.ts
 var createUploadSchema = {
   body: {
     type: "object",
@@ -38226,6 +38324,84 @@ var createUploadSchema = {
     }
   }
 };
+var updateUploadSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  body: {
+    type: "object",
+    properties: {
+      name: { type: "string", minLength: 1, maxLength: 255 },
+      type: { type: "string", minLength: 1, maxLength: 100 },
+      size: { type: "number", minimum: 0 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        url: { type: "string" },
+        name: { type: "string", nullable: true },
+        type: { type: "string", nullable: true },
+        size: { type: "number", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" }
+      }
+    },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var getUploadSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        url: { type: "string" },
+        name: { type: "string", nullable: true },
+        type: { type: "string", nullable: true },
+        size: { type: "number", nullable: true },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" }
+      }
+    },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
 var listUploadsSchema = {
   querystring: {
     type: "object",
@@ -38245,7 +38421,7 @@ var listUploadsSchema = {
     200: {
       type: "object",
       properties: {
-        uploads: {
+        items: {
           type: "array",
           items: {
             type: "object",
@@ -38269,6 +38445,122 @@ var listUploadsSchema = {
             totalPages: { type: "number" }
           }
         }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var deleteUploadSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  response: {
+    204: { type: "null" },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var attachMediaSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  body: {
+    type: "object",
+    required: ["entityType", "entityId"],
+    properties: {
+      entityType: {
+        type: "string",
+        enum: ["product", "supplier", "user", "store"]
+      },
+      entityId: { type: "string", minLength: 1 },
+      isPrimary: { type: "boolean", default: false }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        mediaId: { type: "string" },
+        entityType: { type: "string" },
+        entityId: { type: "string" },
+        isPrimary: { type: "boolean", nullable: true },
+        createdAt: { type: "string", format: "date-time" }
+      }
+    },
+    400: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var detachMediaSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  body: {
+    type: "object",
+    required: ["entityType", "entityId"],
+    properties: {
+      entityType: {
+        type: "string",
+        enum: ["product", "supplier", "user", "store"]
+      },
+      entityId: { type: "string", minLength: 1 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        success: { type: "boolean" }
+      }
+    },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
       }
     },
     500: {
@@ -38335,9 +38627,135 @@ var getEntityMediaSchema = {
     }
   }
 };
+var setPrimaryMediaSchema = {
+  params: {
+    type: "object",
+    required: ["id"],
+    properties: {
+      id: { type: "string", minLength: 1 }
+    }
+  },
+  body: {
+    type: "object",
+    required: ["entityType", "entityId"],
+    properties: {
+      entityType: {
+        type: "string",
+        enum: ["product", "supplier", "user", "store"]
+      },
+      entityId: { type: "string", minLength: 1 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        success: { type: "boolean" }
+      }
+    },
+    404: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var getByTypeSchema2 = {
+  params: {
+    type: "object",
+    required: ["type"],
+    properties: {
+      type: { type: "string", minLength: 1 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        uploads: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              url: { type: "string" },
+              name: { type: "string", nullable: true },
+              type: { type: "string", nullable: true },
+              size: { type: "number", nullable: true },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" }
+            }
+          }
+        }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var getRecentSchema2 = {
+  querystring: {
+    type: "object",
+    properties: {
+      limit: { type: "number", minimum: 1, maximum: 50, default: 10 }
+    }
+  },
+  response: {
+    200: {
+      type: "object",
+      properties: {
+        uploads: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              url: { type: "string" },
+              name: { type: "string", nullable: true },
+              type: { type: "string", nullable: true },
+              size: { type: "number", nullable: true },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" }
+            }
+          }
+        }
+      }
+    },
+    500: {
+      type: "object",
+      properties: {
+        error: { type: "string" }
+      }
+    }
+  }
+};
+var GallerySchemas = {
+  create: createUploadSchema,
+  update: updateUploadSchema,
+  findById: getUploadSchema,
+  findAll: listUploadsSchema,
+  remove: deleteUploadSchema,
+  attachMedia: attachMediaSchema,
+  detachMedia: detachMediaSchema,
+  getEntityMedia: getEntityMediaSchema,
+  setPrimaryMedia: setPrimaryMediaSchema,
+  getByType: getByTypeSchema2,
+  getRecent: getRecentSchema2
+};
 
-// src/features/(pms)/upload/upload.route.ts
-async function UploadRoutes(fastify2) {
+// src/features/(pms)/gallery/gallery.route.ts
+async function GalleryRoutes(fastify2) {
   fastify2.addHook("preHandler", Middlewares.auth);
   fastify2.addHook("preHandler", Middlewares.store);
   await fastify2.register(require("@fastify/multipart"), {
@@ -38353,73 +38771,98 @@ async function UploadRoutes(fastify2) {
     // Schema para validação
   });
   fastify2.post("/", {
-    schema: createUploadSchema,
-    handler: UploadController.create
+    preHandler: [Middlewares.permission("GALLERY", "CREATE")],
+    schema: GallerySchemas.create,
+    handler: GalleryController.create
   });
   fastify2.get("/", {
-    schema: listUploadsSchema,
-    handler: UploadController.list
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    schema: GallerySchemas.findAll,
+    handler: GalleryController.findAll
   });
   fastify2.get("/:id", {
-    handler: UploadController.get
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    schema: GallerySchemas.findById,
+    handler: GalleryController.findById
   });
   fastify2.put("/:id", {
-    handler: UploadController.update
+    preHandler: [Middlewares.permission("GALLERY", "UPDATE")],
+    schema: GallerySchemas.update,
+    handler: GalleryController.update
   });
   fastify2.delete("/:id", {
-    handler: UploadController.delete
+    preHandler: [Middlewares.permission("GALLERY", "DELETE")],
+    schema: GallerySchemas.remove,
+    handler: GalleryController.remove
   });
   fastify2.post("/upload", {
-    handler: UploadController.uploadSingle
+    preHandler: [Middlewares.permission("GALLERY", "CREATE")],
+    handler: GalleryController.uploadSingle
   });
   fastify2.post("/upload-multiple", {
-    handler: UploadController.uploadMultiple
+    preHandler: [Middlewares.permission("GALLERY", "CREATE")],
+    handler: GalleryController.uploadMultiple
   });
   fastify2.get("/type/:type", {
-    handler: UploadController.getByType
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getByType
   });
   fastify2.get("/recent", {
-    handler: UploadController.getRecent
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getRecent
   });
   fastify2.get("/stats", {
-    handler: UploadController.getStats
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getStats
   });
   fastify2.get("/search", {
-    handler: UploadController.search
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.search
   });
   fastify2.get("/:id/usage", {
-    handler: UploadController.getMediaUsage
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getMediaUsage
   });
   fastify2.get("/unused", {
-    handler: UploadController.getUnusedMedia
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getUnusedMedia
   });
   fastify2.post("/:id/attach", {
-    handler: UploadController.attachMedia
+    preHandler: [Middlewares.permission("GALLERY", "CREATE")],
+    handler: GalleryController.attachMedia
   });
   fastify2.post("/:id/detach", {
-    handler: UploadController.detachMedia
+    preHandler: [Middlewares.permission("GALLERY", "UPDATE")],
+    handler: GalleryController.detachMedia
   });
   fastify2.patch("/:id/set-primary", {
-    handler: UploadController.setPrimaryMedia
+    preHandler: [Middlewares.permission("GALLERY", "UPDATE")],
+    handler: GalleryController.setPrimaryMedia
   });
   fastify2.get("/entity/:entityType/:entityId", {
-    schema: getEntityMediaSchema,
-    handler: UploadController.getEntityMedia
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    schema: GallerySchemas.getEntityMedia,
+    handler: GalleryController.getEntityMedia
   });
   fastify2.get("/entity/:entityType/:entityId/primary", {
-    handler: UploadController.getPrimaryMedia
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getPrimaryMedia
   });
   fastify2.post("/bulk-delete", {
-    handler: UploadController.bulkDelete
+    preHandler: [Middlewares.permission("GALLERY", "DELETE")],
+    handler: GalleryController.bulkDelete
   });
   fastify2.post("/cleanup-orphaned", {
-    handler: UploadController.cleanupOrphanedFiles
+    preHandler: [Middlewares.permission("GALLERY", "DELETE")],
+    handler: GalleryController.cleanupOrphanedFiles
   });
   fastify2.get("/service/config", {
-    handler: UploadController.getServiceConfig
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getServiceConfig
   });
   fastify2.get("/service/stats", {
-    handler: UploadController.getFileSystemStats
+    preHandler: [Middlewares.permission("GALLERY", "READ")],
+    handler: GalleryController.getFileSystemStats
   });
 }
 
@@ -43314,7 +43757,7 @@ async function registerRoutes(fastify2) {
   await fastify2.register(StoreRoutes, { prefix: "/store" });
   await fastify2.register(ProfileRoutes, { prefix: "/profile" });
   await fastify2.register(SubscriptionRoutes, { prefix: "/subscriptions" });
-  await fastify2.register(UploadRoutes, { prefix: "/uploads" });
+  await fastify2.register(GalleryRoutes, { prefix: "/gallery" });
   await fastify2.register(ShiftRoutes, { prefix: "/shifts" });
   await fastify2.register(ScheduleRoutes, { prefix: "/schedules" });
   await fastify2.register(SpaceRoutes, { prefix: "/spaces" });

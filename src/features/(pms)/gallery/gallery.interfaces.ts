@@ -100,6 +100,8 @@ export interface CreateUploadData {
   name?: string
   type?: string
   size?: number
+  storeId?: string
+  uploadedById?: string
 }
 
 export interface ListUploadsFilters {
@@ -109,6 +111,7 @@ export interface ListUploadsFilters {
   type?: string
   entityType?: string
   entityId?: string
+  storeId?: string
 }
 
 export interface AttachMediaData {

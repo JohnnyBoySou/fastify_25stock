@@ -20,12 +20,22 @@ export const GalleryController = {
   async create(request: CreateUploadRequest, reply: FastifyReply) {
     try {
       const { name, type, size } = request.body
+      const storeId = request.store?.id
+      const uploadedById = request.user?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
 
       const result = await GalleryCommands.create({
         url: '', // Será preenchida pelo service
         name,
         type,
         size,
+        storeId,
+        uploadedById,
       })
 
       return reply.status(201).send(result)
@@ -142,6 +152,13 @@ export const GalleryController = {
   async findAll(request: ListUploadsRequest, reply: FastifyReply) {
     try {
       const { page = 1, limit = 10, search, type, entityType, entityId } = request.query
+      const storeId = request.store?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
 
       const result = await GalleryQueries.list({
         page,
@@ -150,6 +167,7 @@ export const GalleryController = {
         type,
         entityType,
         entityId,
+        storeId,
       })
 
       // Gerar URL completa baseada no request
@@ -183,8 +201,15 @@ export const GalleryController = {
   ) {
     try {
       const { type, limit = 10 } = request.query
+      const storeId = request.store?.id
 
-      const result = await GalleryQueries.getByType(type, limit)
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
+      const result = await GalleryQueries.getByType(type, limit, storeId)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -212,8 +237,15 @@ export const GalleryController = {
   ) {
     try {
       const { limit = 20 } = request.query
+      const storeId = request.store?.id
 
-      const result = await GalleryQueries.getRecent(limit)
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
+      const result = await GalleryQueries.getRecent(limit, storeId)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -315,7 +347,15 @@ export const GalleryController = {
 
   async getStats(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const result = await GalleryQueries.getStats()
+      const storeId = request.store?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
+      const result = await GalleryQueries.getStats(storeId)
 
       return reply.send(result)
     } catch (error) {
@@ -332,8 +372,15 @@ export const GalleryController = {
   ) {
     try {
       const { q, limit = 10 } = request.query
+      const storeId = request.store?.id
 
-      const result = await GalleryQueries.search(q, limit)
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
+      const result = await GalleryQueries.search(q, limit, storeId)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -376,8 +423,15 @@ export const GalleryController = {
   ) {
     try {
       const { daysOld = 30 } = request.query
+      const storeId = request.store?.id
 
-      const result = await GalleryQueries.getUnusedMedia(daysOld)
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
+      const result = await GalleryQueries.getUnusedMedia(daysOld, storeId)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -594,6 +648,13 @@ export const GalleryController = {
         })
       }
 
+      const storeId = request.store?.id
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
       // Determinar o path do arquivo baseado na estrutura
       let filePath: string | undefined
       let fileSize = 0
@@ -667,6 +728,8 @@ export const GalleryController = {
         name: uploadResult.name,
         type: uploadResult.type,
         size: uploadResult.size,
+        storeId,
+        uploadedById: userId,
       })
 
       // Limpar arquivo temporário se foi criado
@@ -722,6 +785,13 @@ export const GalleryController = {
         })
       }
 
+      const storeId = request.store?.id
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store não encontrada para o usuário autenticado',
+        })
+      }
+
       // Processar arquivos
       for await (const file of files) {
         // Verificar se o arquivo tem as propriedades necessárias
@@ -762,6 +832,8 @@ export const GalleryController = {
           name: uploadResult.name,
           type: uploadResult.type,
           size: uploadResult.size,
+          storeId,
+          uploadedById: userId,
         })
 
         // Gerar URL completa baseada no request
