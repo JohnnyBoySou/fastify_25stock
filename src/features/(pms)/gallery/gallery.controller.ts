@@ -160,7 +160,7 @@ export const GalleryController = {
       // Adicionar fullUrl para cada upload
       const responseData = {
         ...result,
-        uploads:
+        items:
           result.uploads?.map((upload: any) => ({
             ...upload,
             fullUrl: `${protocol}://${host}${upload.url}`,

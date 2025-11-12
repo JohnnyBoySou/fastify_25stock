@@ -142,7 +142,7 @@ export const listUploadsSchema: FastifySchema = {
     200: {
       type: 'object',
       properties: {
-        uploads: {
+        items: {
           type: 'array',
           items: {
             type: 'object',
