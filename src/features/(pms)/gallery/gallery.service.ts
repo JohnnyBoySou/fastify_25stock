@@ -3,7 +3,11 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
 // === CONFIGURAÇÕES ===
-const UPLOAD_DIR = path.join(process.cwd(), 'src', 'uploads')
+// Usar STORAGE_PATH se definido (volume montado), senão usar o padrão
+const STORAGE_PATH = process.env.STORAGE_PATH || '/uploads'
+const UPLOAD_DIR = STORAGE_PATH.startsWith('/')
+  ? STORAGE_PATH // Caminho absoluto (volume montado)
+  : path.join(process.cwd(), STORAGE_PATH) // Caminho relativo ao projeto
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const ALLOWED_TYPES = [
   'image/jpeg',
@@ -56,6 +60,8 @@ export class UploadService {
 
   constructor() {
     this.uploadDir = UPLOAD_DIR
+    console.log(`[UploadService] Diretório de upload configurado: ${this.uploadDir}`)
+    console.log(`[UploadService] STORAGE_PATH: ${process.env.STORAGE_PATH || 'não definido (usando padrão)'}`)
     this.ensureUploadDirectories()
   }
 

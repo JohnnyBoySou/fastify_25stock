@@ -122,12 +122,10 @@ export const GalleryController = {
 
       // Tentar deletar o arquivo físico (não falha se não existir)
       try {
-        const filePath = path.join(
-          process.cwd(),
-          'src',
-          'uploads',
-          media.url.replace('/uploads/', '')
-        )
+        // Remover o prefixo /uploads da URL e construir o caminho físico completo
+        const relativePath = media.url.replace(/^\/uploads\//, '')
+        const uploadDir = uploadService.getUploadDir()
+        const filePath = path.join(uploadDir, relativePath)
         await uploadService.deleteFile(filePath)
       } catch {
         request.log.warn(`Arquivo físico não encontrado: ${media.url}`)
