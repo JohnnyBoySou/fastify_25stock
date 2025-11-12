@@ -718,6 +718,7 @@ export const GalleryController = {
       const uploadResult = await uploadService.uploadSingle(fileData, {
         entityType: entityType as any,
         userId: userId,
+        storeId: storeId,
       })
 
       // Criar registro no banco
@@ -819,6 +820,7 @@ export const GalleryController = {
       const uploadResults = await uploadService.uploadMultiple(uploadedFiles, {
         entityType: entityType as any,
         userId: userId,
+        storeId: storeId,
         maxFiles: maxFiles as number,
       })
 

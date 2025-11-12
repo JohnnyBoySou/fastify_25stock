@@ -48,6 +48,7 @@ export interface UploadResult {
 export interface UploadConfig {
   entityType?: 'product' | 'supplier' | 'user' | 'store' | 'general'
   userId?: string
+  storeId?: string
   maxFiles?: number
   allowedTypes?: string[]
   maxFileSize?: number
@@ -84,12 +85,6 @@ export class UploadService {
     console.log('[UploadService] Os diretórios devem já existir no volume montado')
   }
 
-  // === OBTER CAMINHO DO DIRETÓRIO DO USUÁRIO ===
-  private getUserDirectoryPath(userId: string): string {
-    // Apenas construir o caminho - o diretório já deve existir no volume
-    return path.join(UPLOAD_DIR, 'users', userId)
-  }
-
   // === VALIDAÇÃO ===
   private validateFile(file: UploadedFile, config: UploadConfig = {}): void {
     const allowedTypes = config.allowedTypes || ALLOWED_TYPES
@@ -107,11 +102,22 @@ export class UploadService {
   }
 
   // === GERAR NOME ÚNICO ===
-  private generateUniqueFilename(originalName: string): string {
+  private generateUniqueFilename(originalName: string, storeId?: string, userId?: string): string {
     const ext = path.extname(originalName)
     const name = path.basename(originalName, ext)
-    const uuid = randomUUID()
-    return `${name}-${uuid}${ext}`
+      .replace(/[^a-zA-Z0-9-_]/g, '-') // Remover caracteres especiais
+      .toLowerCase()
+      .substring(0, 50) // Limitar tamanho do nome
+    
+    const timestamp = Date.now()
+    const parts: string[] = []
+    
+    if (storeId) parts.push(storeId)
+    if (userId) parts.push(userId)
+    parts.push(name)
+    parts.push(timestamp.toString())
+    
+    return `${parts.join('-')}${ext}`
   }
 
   // === UPLOAD ÚNICO ===
@@ -132,47 +138,34 @@ export class UploadService {
         throw new Error(`Arquivo temporário não encontrado: ${file.path} ${error}`)
       }
 
-      // Determinar diretório de destino
-      const entityType = config.entityType || 'general'
-      let destinationDir: string
-      let publicUrl: string
+      // Salvar diretamente em /uploads - sem subdiretórios
+      // Nome do arquivo: storeId-userId-nome-timestamp.ext
+      const uniqueFilename = this.generateUniqueFilename(
+        file.originalname,
+        config.storeId,
+        config.userId
+      )
+      const destination = path.join(this.uploadDir, uniqueFilename)
+      const publicUrl = `/uploads/${uniqueFilename}`
 
-      if (config.userId) {
-        // Usar estrutura organizada por usuário: uploads/users/userId/entityType/
-        const userDir = this.getUserDirectoryPath(config.userId)
-        destinationDir = path.join(userDir, entityType)
-        publicUrl = `/uploads/users/${config.userId}/${entityType}`
-      } else {
-        // Estrutura tradicional: uploads/entityType/
-        destinationDir = path.join(this.uploadDir, entityType)
-        publicUrl = `/uploads/${entityType}`
-      }
-
-      // Gerar nome único
-      const uniqueFilename = this.generateUniqueFilename(file.originalname)
-      const destination = path.join(destinationDir, uniqueFilename)
-
-      // Salvar arquivo diretamente - o diretório já deve existir no volume montado
+      // Salvar arquivo diretamente em /uploads
       try {
         await fs.copyFile(file.path, destination)
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           throw new Error(
-            `Diretório não existe: ${destinationDir}. Certifique-se de que o volume está montado corretamente no Railway.`
+            `Diretório não existe: ${this.uploadDir}. Certifique-se de que o volume está montado corretamente no Railway.`
           )
         }
         
         if (error.code === 'EACCES') {
           throw new Error(
-            `Sem permissão para escrever em ${destinationDir}. Verifique as permissões do volume montado.`
+            `Sem permissão para escrever em ${this.uploadDir}. Verifique as permissões do volume montado.`
           )
         }
         
         throw error
       }
-
-      // Completar URL pública
-      publicUrl = `${publicUrl}/${uniqueFilename}`
 
       // Criar resultado
       const result: UploadResult = {
