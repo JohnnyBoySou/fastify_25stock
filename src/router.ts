@@ -19,7 +19,7 @@ import { FolderRoutes } from '@/features/(pms)/document/folder.routes'
 import { PermissionRoutes } from '@/features/(core)/permission/permission.routes'
 import { SubscriptionRoutes } from '@/features/subscription/subscription.routes'
 import { SupplierRoutes } from '@/features/(erp)/supplier/supplier.routes'
-import { UploadRoutes } from '@/features/(pms)/upload/upload.route'
+import { GalleryRoutes } from '@/features/(pms)/gallery/gallery.route'
 import { UserPreferencesRoutes } from '@/features/(core)/preferences/user-preferences.routes'
 import { UserRoutes } from '@/features/(core)/user/user.routes'
 import { ShiftRoutes } from './features/(wfm)/shift/shift.routes'
@@ -51,7 +51,7 @@ export async function registerRoutes(fastify: FastifyInstance) {
   await fastify.register(StoreRoutes, { prefix: '/store' })
   await fastify.register(ProfileRoutes, { prefix: '/profile' })
   await fastify.register(SubscriptionRoutes, { prefix: '/subscriptions' })
-  await fastify.register(UploadRoutes, { prefix: '/uploads' })
+  await fastify.register(GalleryRoutes, { prefix: '/gallery' })
   await fastify.register(ShiftRoutes, { prefix: '/shifts' })
   await fastify.register(ScheduleRoutes, { prefix: '/schedules' })
   await fastify.register(SpaceRoutes, { prefix: '/spaces' })

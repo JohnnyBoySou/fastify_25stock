@@ -2,8 +2,8 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { UploadCommands } from './commands/upload.commands'
-import { UploadQueries } from './queries/upload.queries'
+import { GalleryCommands } from './commands/gallery.commands'
+import { GalleryQueries } from './queries/gallery.queries'
 import type {
   AttachMediaRequest,
   CreateUploadRequest,
@@ -12,17 +12,16 @@ import type {
   GetUploadRequest,
   ListUploadsRequest,
   UpdateUploadRequest,
-} from './upload.interfaces'
-import { uploadService } from './upload.service'
+} from './gallery.interfaces'
+import { uploadService } from './gallery.service'
 
-export const UploadController = {
+export const GalleryController = {
   // === CRUD BÁSICO ===
   async create(request: CreateUploadRequest, reply: FastifyReply) {
     try {
       const { name, type, size } = request.body
 
-      // URL será fornecida pelo service de upload
-      const result = await UploadCommands.create({
+      const result = await GalleryCommands.create({
         url: '', // Será preenchida pelo service
         name,
         type,
@@ -45,11 +44,11 @@ export const UploadController = {
     }
   },
 
-  async get(request: GetUploadRequest, reply: FastifyReply) {
+  async findById(request: GetUploadRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
 
-      const result = await UploadQueries.getById(id)
+      const result = await GalleryQueries.getById(id)
 
       return reply.send(result)
     } catch (error: any) {
@@ -72,7 +71,7 @@ export const UploadController = {
       const { id } = request.params
       const updateData = { ...request.body }
 
-      const result = await UploadCommands.update(id, updateData)
+      const result = await GalleryCommands.update(id, updateData)
 
       return reply.send(result)
     } catch (error: any) {
@@ -96,12 +95,12 @@ export const UploadController = {
     }
   },
 
-  async delete(request: DeleteUploadRequest, reply: FastifyReply) {
+  async remove(request: DeleteUploadRequest, reply: FastifyReply) {
     try {
       const { id } = request.params
 
       // Obter informações da mídia antes de deletar
-      const media = await UploadQueries.getById(id)
+      const media = await GalleryQueries.getById(id)
       if (!media) {
         return reply.status(404).send({
           error: 'Media not found',
@@ -109,7 +108,7 @@ export const UploadController = {
       }
 
       // Deletar do banco de dados
-      await UploadCommands.delete(id)
+      await GalleryCommands.delete(id)
 
       // Tentar deletar o arquivo físico (não falha se não existir)
       try {
@@ -140,11 +139,11 @@ export const UploadController = {
     }
   },
 
-  async list(request: ListUploadsRequest, reply: FastifyReply) {
+  async findAll(request: ListUploadsRequest, reply: FastifyReply) {
     try {
       const { page = 1, limit = 10, search, type, entityType, entityId } = request.query
 
-      const result = await UploadQueries.list({
+      const result = await GalleryQueries.list({
         page,
         limit,
         search,
@@ -185,7 +184,7 @@ export const UploadController = {
     try {
       const { type, limit = 10 } = request.query
 
-      const result = await UploadQueries.getByType(type, limit)
+      const result = await GalleryQueries.getByType(type, limit)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -214,7 +213,7 @@ export const UploadController = {
     try {
       const { limit = 20 } = request.query
 
-      const result = await UploadQueries.getRecent(limit)
+      const result = await GalleryQueries.getRecent(limit)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -243,7 +242,7 @@ export const UploadController = {
     try {
       const { entityType, entityId } = request.params
 
-      const result = await UploadQueries.getEntityMedia(entityType, entityId)
+      const result = await GalleryQueries.getEntityMedia(entityType, entityId)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -279,7 +278,7 @@ export const UploadController = {
     try {
       const { entityType, entityId } = request.params
 
-      const result = await UploadQueries.getPrimaryMedia(entityType, entityId)
+      const result = await GalleryQueries.getPrimaryMedia(entityType, entityId)
 
       if (!result) {
         return reply.status(404).send({
@@ -316,7 +315,7 @@ export const UploadController = {
 
   async getStats(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const result = await UploadQueries.getStats()
+      const result = await GalleryQueries.getStats()
 
       return reply.send(result)
     } catch (error) {
@@ -334,7 +333,7 @@ export const UploadController = {
     try {
       const { q, limit = 10 } = request.query
 
-      const result = await UploadQueries.search(q, limit)
+      const result = await GalleryQueries.search(q, limit)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -360,7 +359,7 @@ export const UploadController = {
     try {
       const { id } = request.params
 
-      const result = await UploadQueries.getMediaUsage(id)
+          const result = await GalleryQueries.getMediaUsage(id)
 
       return reply.send(result)
     } catch (error) {
@@ -378,7 +377,7 @@ export const UploadController = {
     try {
       const { daysOld = 30 } = request.query
 
-      const result = await UploadQueries.getUnusedMedia(daysOld)
+      const result = await GalleryQueries.getUnusedMedia(daysOld)
 
       // Gerar URL completa baseada no request
       const protocol =
@@ -410,7 +409,7 @@ export const UploadController = {
 
       switch (entityType) {
         case 'product':
-          result = await UploadCommands.attachToProduct({
+          result = await GalleryCommands.attachToProduct({
             mediaId: id,
             entityType,
             entityId,
@@ -418,21 +417,21 @@ export const UploadController = {
           })
           break
         case 'supplier':
-          result = await UploadCommands.attachToSupplier({
+          result = await GalleryCommands.attachToSupplier({
             mediaId: id,
             entityType,
             entityId,
           })
           break
         case 'user':
-          result = await UploadCommands.attachToUser({
+          result = await GalleryCommands.attachToUser({
             mediaId: id,
             entityType,
             entityId,
           })
           break
         case 'store':
-          result = await UploadCommands.attachToStore({
+          result = await GalleryCommands.attachToStore({
             mediaId: id,
             entityType,
             entityId,
@@ -467,16 +466,16 @@ export const UploadController = {
 
       switch (entityType) {
         case 'product':
-          await UploadCommands.detachFromProduct(id, entityId)
+          await GalleryCommands.detachFromProduct(id, entityId)
           break
         case 'supplier':
-          await UploadCommands.detachFromSupplier(id, entityId)
+          await GalleryCommands.detachFromSupplier(id, entityId)
           break
         case 'user':
-          await UploadCommands.detachFromUser(id, entityId)
+          await GalleryCommands.detachFromUser(id, entityId)
           break
         case 'store':
-          await UploadCommands.detachFromStore(id, entityId)
+          await GalleryCommands.detachFromStore(id, entityId)
           break
         default:
           return reply.status(400).send({
@@ -512,7 +511,7 @@ export const UploadController = {
       const { entityType, entityId } = request.body
 
       if (entityType === 'product') {
-        await UploadCommands.setPrimaryForProduct(id, entityId)
+        await GalleryCommands.setPrimaryForProduct(id, entityId)
       } else {
         return reply.status(400).send({
           error: 'Primary media is only supported for products',
@@ -539,7 +538,7 @@ export const UploadController = {
     try {
       const { mediaIds } = request.body
 
-      const result = await UploadCommands.bulkDelete(mediaIds)
+      const result = await GalleryCommands.bulkDelete(mediaIds)
 
       return reply.send(result)
     } catch (error) {
@@ -663,7 +662,7 @@ export const UploadController = {
       })
 
       // Criar registro no banco
-      const dbResult = await UploadCommands.create({
+      const dbResult = await GalleryCommands.create({
         url: uploadResult.url,
         name: uploadResult.name,
         type: uploadResult.type,
@@ -758,7 +757,7 @@ export const UploadController = {
       // Criar registros no banco
       const dbResults = []
       for (const uploadResult of uploadResults) {
-        const dbResult = await UploadCommands.create({
+        const dbResult = await GalleryCommands.create({
           url: uploadResult.url,
           name: uploadResult.name,
           type: uploadResult.type,
@@ -805,7 +804,7 @@ export const UploadController = {
   async cleanupOrphanedFiles(request: FastifyRequest, reply: FastifyReply) {
     try {
       // Obter todos os caminhos de arquivos usados no banco
-      const usedFiles = await UploadQueries.getAllUsedFilePaths()
+      const usedFiles = await GalleryQueries.getAllUsedFilePaths()
 
       // Limpar arquivos órfãos
       const result = await uploadService.cleanupOrphanedFiles(usedFiles)

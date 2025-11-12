@@ -1,8 +1,8 @@
-import type { AttachMediaData, CreateUploadData } from '../upload.interfaces'
+import type { AttachMediaData, CreateUploadData } from '../gallery.interfaces'
 
 import { db } from '@/plugins/prisma'
 
-export const UploadCommands = {
+export const GalleryCommands = {
   async create(data: CreateUploadData) {
     const upload = await db.media.create({
       data: {

@@ -1,7 +1,7 @@
 import { db } from '@/plugins/prisma'
-import type { ListUploadsFilters } from '../upload.interfaces'
+import type { ListUploadsFilters } from '../gallery.interfaces'
 
-export const UploadQueries = {
+export const GalleryQueries = {
   async getById(id: string) {
     const upload = await db.media.findUnique({
       where: { id },

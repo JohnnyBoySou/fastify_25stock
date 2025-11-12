@@ -693,3 +693,18 @@ export const bulkDeleteSchema: FastifySchema = {
     },
   },
 }
+
+
+export const GallerySchemas = {
+  create: createUploadSchema,
+  update: updateUploadSchema,
+  findById: getUploadSchema,
+  findAll: listUploadsSchema,
+  remove: deleteUploadSchema,
+  attachMedia: attachMediaSchema,
+  detachMedia: detachMediaSchema,
+  getEntityMedia: getEntityMediaSchema,
+  setPrimaryMedia: setPrimaryMediaSchema,
+  getByType: getByTypeSchema,
+  getRecent: getRecentSchema,
+}
