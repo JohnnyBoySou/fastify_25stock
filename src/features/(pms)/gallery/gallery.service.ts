@@ -62,7 +62,11 @@ export class UploadService {
     this.uploadDir = UPLOAD_DIR
     console.log(`[UploadService] Diretório de upload configurado: ${this.uploadDir}`)
     console.log(`[UploadService] STORAGE_PATH: ${process.env.STORAGE_PATH || 'não definido (usando padrão)'}`)
-    this.ensureUploadDirectories()
+    // Inicialização assíncrona não bloqueante - diretórios serão criados quando necessário
+    this.ensureUploadDirectories().catch((error) => {
+      console.error('[UploadService] Erro na inicialização de diretórios:', error.message)
+      // Não lançar erro aqui - os diretórios serão criados de forma lazy quando necessário
+    })
   }
 
   static getInstance(): UploadService {
@@ -74,8 +78,41 @@ export class UploadService {
 
   // === INICIALIZAÇÃO ===
   private async ensureUploadDirectories() {
+    // Verificar se o diretório base existe e tem permissão de escrita
+    try {
+      await fs.access(UPLOAD_DIR, fs.constants.F_OK | fs.constants.W_OK)
+    } catch (error: any) {
+      if (error.code === 'EACCES') {
+        console.error(
+          `[UploadService] ERRO: Sem permissão para escrever em ${UPLOAD_DIR}. Verifique as permissões do volume montado.`
+        )
+        throw new Error(
+          `Sem permissão para acessar o diretório de upload: ${UPLOAD_DIR}. Verifique as permissões do volume montado.`
+        )
+      }
+      
+      if (error.code === 'ENOENT') {
+        // Diretório não existe, tentar criar
+        try {
+          await fs.mkdir(UPLOAD_DIR, { recursive: true, mode: 0o755 })
+          console.log(`[UploadService] Diretório base criado: ${UPLOAD_DIR}`)
+        } catch (mkdirError: any) {
+          console.error(
+            `[UploadService] ERRO: Não foi possível criar o diretório ${UPLOAD_DIR}:`,
+            mkdirError.message
+          )
+          throw new Error(
+            `Não foi possível criar o diretório de upload: ${UPLOAD_DIR}. Verifique as permissões.`
+          )
+        }
+        return
+      }
+      
+      throw error
+    }
+
+    // Criar subdiretórios apenas se necessário (lazy creation)
     const directories = [
-      UPLOAD_DIR,
       path.join(UPLOAD_DIR, 'product'),
       path.join(UPLOAD_DIR, 'supplier'),
       path.join(UPLOAD_DIR, 'user'),
@@ -87,7 +124,15 @@ export class UploadService {
       try {
         await fs.access(dir)
       } catch {
-        await fs.mkdir(dir, { recursive: true })
+        try {
+          await fs.mkdir(dir, { recursive: true, mode: 0o755 })
+        } catch (error: any) {
+          // Log mas não falha - os diretórios serão criados quando necessário
+          console.warn(
+            `[UploadService] Aviso: Não foi possível criar o diretório ${dir}:`,
+            error.message
+          )
+        }
       }
     }
   }
@@ -96,9 +141,27 @@ export class UploadService {
   private async ensureUserDirectory(userId: string) {
     const userDir = path.join(UPLOAD_DIR, 'users', userId)
     try {
-      await fs.access(userDir)
-    } catch {
-      await fs.mkdir(userDir, { recursive: true })
+      await fs.access(userDir, fs.constants.F_OK | fs.constants.W_OK)
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        // Diretório não existe, tentar criar
+        try {
+          await fs.mkdir(userDir, { recursive: true, mode: 0o755 })
+        } catch (mkdirError: any) {
+          if (mkdirError.code === 'EACCES') {
+            throw new Error(
+              `Sem permissão para criar diretório do usuário em ${userDir}. Verifique as permissões do volume montado.`
+            )
+          }
+          throw mkdirError
+        }
+      } else if (error.code === 'EACCES') {
+        throw new Error(
+          `Sem permissão para acessar o diretório do usuário ${userDir}. Verifique as permissões do volume montado.`
+        )
+      } else {
+        throw error
+      }
     }
     return userDir
   }
@@ -157,15 +220,57 @@ export class UploadService {
 
         // Criar subdiretório se não existir
         try {
-          await fs.access(destinationDir)
-        } catch {
-          await fs.mkdir(destinationDir, { recursive: true })
+          await fs.access(destinationDir, fs.constants.F_OK | fs.constants.W_OK)
+        } catch (error: any) {
+          if (error.code === 'ENOENT') {
+            try {
+              await fs.mkdir(destinationDir, { recursive: true, mode: 0o755 })
+            } catch (mkdirError: any) {
+              if (mkdirError.code === 'EACCES') {
+                throw new Error(
+                  `Sem permissão para criar diretório em ${destinationDir}. Verifique as permissões do volume montado.`
+                )
+              }
+              throw mkdirError
+            }
+          } else if (error.code === 'EACCES') {
+            throw new Error(
+              `Sem permissão para acessar o diretório ${destinationDir}. Verifique as permissões do volume montado.`
+            )
+          } else {
+            throw error
+          }
         }
 
         publicUrl = `/uploads/users/${config.userId}/${entityType}`
       } else {
         // Estrutura tradicional: uploads/entityType/
         destinationDir = path.join(this.uploadDir, entityType)
+        
+        // Verificar/criar diretório se necessário
+        try {
+          await fs.access(destinationDir, fs.constants.F_OK | fs.constants.W_OK)
+        } catch (error: any) {
+          if (error.code === 'ENOENT') {
+            try {
+              await fs.mkdir(destinationDir, { recursive: true, mode: 0o755 })
+            } catch (mkdirError: any) {
+              if (mkdirError.code === 'EACCES') {
+                throw new Error(
+                  `Sem permissão para criar diretório em ${destinationDir}. Verifique as permissões do volume montado.`
+                )
+              }
+              throw mkdirError
+            }
+          } else if (error.code === 'EACCES') {
+            throw new Error(
+              `Sem permissão para acessar o diretório ${destinationDir}. Verifique as permissões do volume montado.`
+            )
+          } else {
+            throw error
+          }
+        }
+        
         publicUrl = `/uploads/${entityType}`
       }
 
