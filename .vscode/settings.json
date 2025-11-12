@@ -12,7 +12,7 @@
         "tsconfig.paths.json": true,
         "vite.config.ts": true,
         "src/types": true,
-        "src/uploads": true,
+        "src/uploads": false,
         "docker-compose.yml": true,
         "src/utils": true,
         "src/generated": true,
