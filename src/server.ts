@@ -128,11 +128,18 @@ async function startServer() {
     {
       name: '✅ Configurando arquivos estáticos',
       action: async () => {
+        const storagePath = process.env.STORAGE_PATH || 'src/uploads'
+        const staticRoot = storagePath.startsWith('/')
+          ? storagePath // Caminho absoluto (volume montado)
+          : path.resolve(storagePath) // Caminho relativo ao projeto
+        
         await fastify.register(fastifyStatic, {
-          root: path.resolve(process.env.STORAGE_PATH || 'src/uploads'),
+          root: staticRoot,
           prefix: '/uploads/',
           decorateReply: false,
         })
+        
+        console.log(`[Server] Arquivos estáticos servidos de: ${staticRoot}`)
       },
     },
     {
