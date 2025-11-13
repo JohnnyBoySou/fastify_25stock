@@ -189,7 +189,8 @@ export const StoreController = {
       return reply.send({
         success: true,
         domain: customDomain,
-        cloudflareStatus: cf.status
+        cloudflareStatus: cf.status,
+        txt: cf,
       })
     } catch (error: any) {
       request.log.error(error)

@@ -61,6 +61,7 @@ export async function createCloudflareCustomHostname(hostname: string) {
       status: data.result.status,
     });
 
+    console.log(data);
     return data.result;
   } catch (error: any) {
     console.error(`[Cloudflare] Exception while creating custom hostname ${hostname}:`, {
