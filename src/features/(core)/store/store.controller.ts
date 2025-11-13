@@ -8,7 +8,7 @@ import type {
   UpdateStoreRequest,
 } from './store.interfaces'
 import dns from "node:dns/promises";
-import { createCloudflareCustomHostname } from '@/plugins/cloudflare';
+import { createCloudflareCustomHostname, getCloudflareHostnameInfo } from '@/plugins/cloudflare';
 
 
 async function validateDomain(domain: string): Promise<boolean> {
@@ -198,5 +198,74 @@ export const StoreController = {
         error: 'Internal server error',
       })
     }
-  }
+  },
+
+  async getCloudflareHostnameInfo(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const storeId = request.store?.id
+
+      if (!storeId) {
+        return reply.status(400).send({
+          error: 'Store not found',
+        })
+      }
+
+      // 1️⃣ Buscar a store para pegar o cloudflareHostnameId
+      const store = await StoreQueries.getById(storeId)
+
+      if (!store) {
+        return reply.status(404).send({
+          error: 'Store not found',
+        })
+      }
+
+      if (!store.cloudflareHostnameId) {
+        return reply.status(404).send({
+          error: 'Custom domain not configured',
+        })
+      }
+
+      // 2️⃣ Buscar informações do hostname no Cloudflare
+      const cfInfo = await getCloudflareHostnameInfo(store.cloudflareHostnameId)
+
+      // 3️⃣ Extrair registros de validação SSL (TXT)
+      const sslValidation = cfInfo.ssl?.validation_records?.[0]
+
+      // 4️⃣ Formatar resposta com o TXT de validação
+      const txtName = sslValidation?.txt_name || `_acme-challenge.${store.customDomain}`
+      const txtValue = sslValidation?.txt_value || ''
+
+      return reply.send({
+        domain: store.customDomain,
+        status: cfInfo.status || store.cloudflareStatus,
+        validationRecord: sslValidation
+          ? {
+              name: txtName,
+              type: 'TXT',
+              value: txtValue,
+              // Formato legível para exibir ao usuário
+              formatted: `${txtName} TXT ${txtValue}`,
+            }
+          : null,
+        cloudflareInfo: {
+          id: cfInfo.id,
+          status: cfInfo.status,
+          hostname: cfInfo.hostname,
+        },
+      })
+    } catch (error: any) {
+      request.log.error(error)
+
+      if (error.message?.includes('Cloudflare API error')) {
+        return reply.status(500).send({
+          error: 'Failed to fetch Cloudflare hostname info',
+          details: error.message,
+        })
+      }
+
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  },
 }

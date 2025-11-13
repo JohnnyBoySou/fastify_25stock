@@ -36,4 +36,9 @@ export async function StoreRoutes(fastify: FastifyInstance) {
     preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.createCustomDomain,
   })
+
+  fastify.get('/custom-domain', {
+    preHandler: [Middlewares.auth, Middlewares.store],
+    handler: StoreController.getCloudflareHostnameInfo,
+  })
 }
