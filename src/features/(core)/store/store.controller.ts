@@ -168,57 +168,38 @@ export const StoreController = {
       const id = request.store?.id
       const { customDomain } = request.body as { customDomain: string }
 
-      console.log('[StoreController] createCustomDomain called:', {
-        storeId: id,
-        customDomain,
-      })
-
-      if (!id) {
-        console.error('[StoreController] Store ID not found in request')
-        return reply.status(400).send({ error: 'Store ID not found' })
-      }
-
       // 1️⃣ Validar DNS
-      console.log(`[StoreController] Validating domain DNS: ${customDomain}`)
       const isValid = await validateDomain(customDomain)
-      console.log('[StoreController] Domain validation result:', { customDomain, isValid })
       
       if (!isValid) {
         return reply.status(400).send({ error: 'Invalid domain' })
       }
 
       // 2️⃣ Criar Custom Hostname no Cloudflare
-      console.log(`[StoreController] Creating Cloudflare custom hostname: ${customDomain}`)
       const cf = await createCloudflareCustomHostname(customDomain)
 
-      console.log('[StoreController] Cloudflare hostname created:', {
-        id: cf.id,
-        status: cf.status,
-      })
+      if (!cf.id) {
+        return reply.status(500).send({
+          error: 'Failed to create custom hostname',
+          details: 'Cloudflare API did not return a hostname ID',
+        })
+      }
 
       // cf.id  → ID do hostname
       // cf.status → pending_validation, ssl_pending, active, etc.
 
       // 3️⃣ Salvar no banco
-      console.log('[StoreController] Saving to database:', {
-        storeId: id,
-        customDomain,
-        cloudflareHostnameId: cf.id,
-        cloudflareStatus: cf.status,
-      })
       
-      await StoreCommands.createCustomDomain(id, customDomain, cf.id, cf.status)
-
-      console.log('[StoreController] Successfully saved custom domain to database')
-
+     await StoreCommands.createCustomDomain(id, customDomain, cf.id, cf.status)
+      
       // 4️⃣ Retornar ao front
       // O SSL validation será buscado via GET /custom-domain quando necessário
       return reply.send({
         success: true,
         domain: customDomain,
         cloudflareHostnameId: cf.id,
+        txt: cf,
         cloudflareStatus: cf.status,
-        message: 'Custom domain created successfully. Use GET /custom-domain to retrieve SSL validation records.',
       })
     } catch (error: any) {
       console.error('[StoreController] Error in createCustomDomain:', {
@@ -238,48 +219,21 @@ export const StoreController = {
     try {
       const storeId = request.store?.id
 
-      console.log('[StoreController] getCloudflareHostnameInfo called:', {
-        storeId,
-      })
-
-      if (!storeId) {
-        console.error('[StoreController] Store ID not found in request')
-        return reply.status(400).send({
-          error: 'Store not found',
-        })
-      }
-
       // 1️⃣ Buscar a store para pegar o cloudflareHostnameId
-      console.log(`[StoreController] Fetching store from database: ${storeId}`)
       const store = await StoreQueries.getById(storeId)
 
       if (!store) {
-        console.error(`[StoreController] Store not found in database: ${storeId}`)
         return reply.status(404).send({
           error: 'Store not found',
         })
       }
-
-      console.log('[StoreController] Store found:', {
-        storeId: store.id,
-        customDomain: store.customDomain,
-        cloudflareHostnameId: store.cloudflareHostnameId,
-        cloudflareStatus: store.cloudflareStatus,
-      })
-
       if (!store.cloudflareHostnameId) {
-        console.warn(`[StoreController] Store ${storeId} has no cloudflareHostnameId configured`)
         return reply.status(404).send({
           error: 'Custom domain not configured',
         })
       }
 
       // 2️⃣ Buscar informações do hostname no Cloudflare
-      console.log('[StoreController] Fetching Cloudflare hostname info:', {
-        cloudflareHostnameId: store.cloudflareHostnameId,
-        customDomain: store.customDomain,
-      })
-      
       let cfInfo: any
       try {
         cfInfo = await getCloudflareHostnameInfo(store.cloudflareHostnameId)
