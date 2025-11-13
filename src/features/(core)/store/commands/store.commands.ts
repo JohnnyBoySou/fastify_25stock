@@ -251,10 +251,25 @@ export const StoreCommands = {
   },
 
   async createCustomDomain(id: string, customDomain: string, cloudflareHostnameId: string | null, cloudflareStatus: string | null) {
+    console.log('[StoreCommands] createCustomDomain called:', {
+      storeId: id,
+      customDomain,
+      cloudflareHostnameId,
+      cloudflareStatus,
+    })
+
     const storeWithCustomDomain = await db.store.update({
       where: { id },
       data: { customDomain, cloudflareHostnameId, cloudflareStatus },
     })
+
+    console.log('[StoreCommands] Custom domain saved successfully:', {
+      storeId: storeWithCustomDomain.id,
+      customDomain: storeWithCustomDomain.customDomain,
+      cloudflareHostnameId: storeWithCustomDomain.cloudflareHostnameId,
+      cloudflareStatus: storeWithCustomDomain.cloudflareStatus,
+    })
+
     return storeWithCustomDomain
   },
 }

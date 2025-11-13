@@ -30,15 +30,43 @@ export async function createCloudflareCustomHostname(hostname: string) {
 
     const data = await response.json();
 
+    console.log(`[Cloudflare] Create hostname response status: ${response.status}`, {
+      success: data.success,
+      resultId: data.result?.id,
+      resultStatus: data.result?.status,
+      resultHostname: data.result?.hostname,
+      errors: data.errors,
+    });
+
     if (!response.ok || !data.success) {
       const errorMessage = data.errors?.[0]?.message || "Unknown Cloudflare API error";
-      console.error(`[Cloudflare] Error creating hostname ${hostname}:`, data);
+      console.error(`[Cloudflare] Error creating hostname ${hostname}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        data: JSON.stringify(data, null, 2),
+      });
       throw new Error(errorMessage);
     }
 
     const result = data.result;
 
+    if (!result || !result.id) {
+      console.error('[Cloudflare] Invalid result from create hostname API:', {
+        result,
+        fullData: data,
+      });
+      throw new Error('Cloudflare API returned invalid result (missing id)');
+    }
+
+    console.log('[Cloudflare] Hostname created successfully:', {
+      id: result.id,
+      hostname: result.hostname,
+      status: result.status,
+      ssl: result.ssl ? 'present' : 'missing',
+    });
+
     // 🔥 Segunda etapa: pegar ACME challenge
+    console.log(`[Cloudflare] Fetching hostname info for ID: ${result.id}`);
     const hostnameInfo = await getCloudflareHostnameInfo(result.id);
 
     // Pega o TXT do SSL (ACME)
@@ -67,6 +95,13 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
   try {
     const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames/${hostnameId}`;
 
+    console.log('[Cloudflare] Fetching hostname info:', {
+      hostnameId,
+      url,
+      zoneId: CF_ZONE_ID ? 'present' : 'missing',
+      apiToken: CF_API_TOKEN ? 'present' : 'missing',
+    });
+
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -77,13 +112,57 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
 
     const data = await response.json();
 
+    console.log('[Cloudflare] Get hostname response:', {
+      status: response.status,
+      statusText: response.statusText,
+      success: data.success,
+      resultId: data.result?.id,
+      resultHostname: data.result?.hostname,
+      resultStatus: data.result?.status,
+      hasSsl: !!data.result?.ssl,
+      hasValidationRecords: !!data.result?.ssl?.validation_records,
+      validationRecordsCount: data.result?.ssl?.validation_records?.length || 0,
+      errors: data.errors,
+    });
+
     if (!response.ok) {
       const errorMessage = data.errors?.[0]?.message || `HTTP ${response.status}: ${response.statusText}`;
-      console.error(`[Cloudflare] Failed to fetch hostname info ${hostnameId}:`, data);
+      console.error(`[Cloudflare] Failed to fetch hostname info ${hostnameId}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        errorCode: data.errors?.[0]?.code,
+        errorMessage,
+        fullResponse: JSON.stringify(data, null, 2),
+      });
       throw new Error(`Cloudflare API error: ${errorMessage}`);
     }
 
-    console.log(`[Cloudflare] Hostname ${hostnameId} fetched successfully`);
+    if (!data.success) {
+      console.error(`[Cloudflare] API returned success=false for hostname ${hostnameId}:`, {
+        errors: data.errors,
+        fullResponse: JSON.stringify(data, null, 2),
+      });
+      throw new Error(`Cloudflare API error: ${data.errors?.[0]?.message || 'Unknown error'}`);
+    }
+
+    if (!data.result) {
+      console.error(`[Cloudflare] No result returned for hostname ${hostnameId}:`, {
+        fullResponse: JSON.stringify(data, null, 2),
+      });
+      throw new Error('Cloudflare API returned no result');
+    }
+
+    console.log(`[Cloudflare] Hostname ${hostnameId} fetched successfully:`, {
+      id: data.result.id,
+      hostname: data.result.hostname,
+      status: data.result.status,
+      sslStatus: data.result.ssl?.status,
+      validationRecords: data.result.ssl?.validation_records?.map((r: any) => ({
+        txt_name: r.txt_name,
+        txt_value: r.txt_value ? `${r.txt_value.substring(0, 20)}...` : null,
+      })),
+    });
+
     return data.result;
 
   } catch (error: any) {
