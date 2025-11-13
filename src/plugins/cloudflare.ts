@@ -10,7 +10,7 @@ export async function createCloudflareCustomHostname(hostname: string) {
     const body = {
       hostname,
       ssl: {
-        method: "cname",
+        method: "txt",
         type: "dv",
         settings: { 
           min_tls_version: "1.2"
