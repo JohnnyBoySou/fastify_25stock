@@ -244,19 +244,10 @@ export const StoreCommands = {
     throw lastError || new Error('Failed to create default store')
   },
 
-  async createCustomDomain(id: string, customDomain: string, ) {
+  async createCustomDomain(id: string, customDomain: string, cloudflareHostnameId: string | null, cloudflareStatus: string | null) {
     const storeWithCustomDomain = await db.store.update({
       where: { id },
-      data: { customDomain },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
+      data: { customDomain, cloudflareHostnameId, cloudflareStatus },
     })
     return storeWithCustomDomain
   },

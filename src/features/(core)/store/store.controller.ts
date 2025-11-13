@@ -8,6 +8,7 @@ import type {
   UpdateStoreRequest,
 } from './store.interfaces'
 import dns from "node:dns/promises";
+import { createCloudflareCustomHostname } from '@/plugins/cloudflare';
 
 
 async function validateDomain(domain: string): Promise<boolean> {
@@ -161,20 +162,35 @@ export const StoreController = {
       })
     }
   },
+
   async createCustomDomain(request: FastifyRequest, reply: FastifyReply) {
     try {
       const id = request.store?.id
-      const { customDomain,  } = request.body as { customDomain: string; }
+      const { customDomain } = request.body as { customDomain: string }
+
       console.log(customDomain)
 
+      // 1️⃣ Validar DNS
       const isValid = await validateDomain(customDomain)
       if (!isValid) {
-        return reply.status(400).send({
-          error: 'Invalid domain',
-        })
+        return reply.status(400).send({ error: 'Invalid domain' })
       }
-      const result = await StoreCommands.createCustomDomain(id, customDomain, )
-      return reply.send(result)
+
+      // 2️⃣ Criar Custom Hostname no Cloudflare
+      const cf = await createCloudflareCustomHostname(customDomain)
+
+      // cf.id  → ID do hostname
+      // cf.status → pending_validation, ssl_pending, active, etc.
+
+      // 3️⃣ Salvar no banco
+      await StoreCommands.createCustomDomain(id, customDomain, cf.id, cf.status)
+
+      // 4️⃣ Retornar ao front
+      return reply.send({
+        success: true,
+        domain: customDomain,
+        cloudflareStatus: cf.status
+      })
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({

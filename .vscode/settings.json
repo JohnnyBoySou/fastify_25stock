@@ -18,7 +18,7 @@
         "src/generated": true,
         "bun.lock": true,
         "biome.json": true,
-        ".env": true,
+        ".env": false,
         "package.json": false,
         "tsconfig.json": true,
         "vitest.config.ts": true

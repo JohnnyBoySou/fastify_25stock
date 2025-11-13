@@ -189,9 +189,11 @@ model Store {
   description String? // opcional: pode ser mostrado no dashboard
   logoUrl     String? // opcional: imagem da loja
   website     String? // opcional
+
   subdomain     String?    // opcional
   customDomain  String?    // ex: espaco.cbvn.com
-  domainStatus  String     @default("pending") // pending | verified
+  cloudflareHostnameId String?
+  cloudflareStatus String? @default("pending_validation")
 
   // Endereço
   cep     String?
