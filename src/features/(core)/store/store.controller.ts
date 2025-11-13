@@ -272,20 +272,37 @@ export const StoreController = {
         hostname: cfInfo.hostname,
         status: cfInfo.status,
         hasSsl: !!cfInfo.ssl,
+        sslStatus: cfInfo.ssl?.status,
+        sslMethod: cfInfo.ssl?.method,
+        sslType: cfInfo.ssl?.type,
         hasValidationRecords: !!cfInfo.ssl?.validation_records,
+        validationRecordsCount: cfInfo.ssl?.validation_records?.length || 0,
+        sslKeys: cfInfo.ssl ? Object.keys(cfInfo.ssl) : [],
+        fullSsl: JSON.stringify(cfInfo.ssl, null, 2),
       })
 
       // 3️⃣ Extrair registros de validação SSL (TXT)
+      // Quando o SSL está ativo, os registros podem não estar mais disponíveis
       const sslValidation = cfInfo.ssl?.validation_records?.[0]
+      
+      // Se não houver validation_records, verificar se há outros campos com dados de validação
+      let txtName = sslValidation?.txt_name
+      let txtValue = sslValidation?.txt_value
+      
+      // Se o status é "active", pode ser que o certificado já foi validado
+      // e os registros de validação não estão mais disponíveis
+      if (!sslValidation && cfInfo.status === 'active') {
+        console.log('[StoreController] SSL is active but no validation records found - certificate already validated')
+      }
 
       // 4️⃣ Formatar resposta com o TXT de validação
-      const txtName = sslValidation?.txt_name || `_acme-challenge.${store.customDomain}`
-      const txtValue = sslValidation?.txt_value || ''
+      txtName = txtName || `_acme-challenge.${store.customDomain}`
+      txtValue = txtValue || ''
 
       return reply.send({
         domain: store.customDomain,
         status: cfInfo.status || store.cloudflareStatus,
-        validationRecord: sslValidation
+        validationRecord: sslValidation && txtValue
           ? {
               name: txtName,
               type: 'TXT',
@@ -294,11 +311,23 @@ export const StoreController = {
               formatted: `${txtName} TXT ${txtValue}`,
             }
           : null,
+        sslInfo: {
+          status: cfInfo.ssl?.status,
+          method: cfInfo.ssl?.method,
+          type: cfInfo.ssl?.type,
+          // Se o SSL está ativo, não há mais registros de validação necessários
+          needsValidation: cfInfo.status !== 'active' && !sslValidation,
+        },
         cloudflareInfo: {
           id: cfInfo.id,
           status: cfInfo.status,
           hostname: cfInfo.hostname,
         },
+        message: cfInfo.status === 'active' 
+          ? 'SSL certificate is active. No validation records needed.'
+          : sslValidation 
+            ? 'Please add the TXT record to your DNS to validate the SSL certificate.'
+            : 'Waiting for SSL validation records to be generated.',
       })
     } catch (error: any) {
       console.error('[StoreController] Error in getCloudflareHostnameInfo:', {
