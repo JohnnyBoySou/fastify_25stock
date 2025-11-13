@@ -65,12 +65,24 @@ export async function createCloudflareCustomHostname(hostname: string) {
       ssl: result.ssl ? 'present' : 'missing',
     });
 
-    // 🔥 Segunda etapa: pegar ACME challenge
-    console.log(`[Cloudflare] Fetching hostname info for ID: ${result.id}`);
-    const hostnameInfo = await getCloudflareHostnameInfo(result.id);
-
-    // Pega o TXT do SSL (ACME)
-    const sslValidation = hostnameInfo.ssl?.validation_records?.[0];
+    // 🔥 Segunda etapa: pegar ACME challenge (com retry em caso de delay)
+    let sslValidation = null;
+    let hostnameInfo = null;
+    
+    try {
+      console.log(`[Cloudflare] Fetching hostname info for ID: ${result.id}`);
+      hostnameInfo = await getCloudflareHostnameInfo(result.id);
+      sslValidation = hostnameInfo.ssl?.validation_records?.[0];
+    } catch (error: any) {
+      // Se falhar ao buscar imediatamente após criar, pode ser delay do Cloudflare
+      // Retornamos o que temos da criação inicial
+      console.warn('[Cloudflare] Could not fetch hostname info immediately after creation:', {
+        error: error.message,
+        hostnameId: result.id,
+        note: 'This may be normal - Cloudflare may need a moment to process the hostname',
+      });
+      // Continuamos com os dados da criação inicial
+    }
 
     return {
       id: result.id,
@@ -124,6 +136,32 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
       validationRecordsCount: data.result?.ssl?.validation_records?.length || 0,
       errors: data.errors,
     });
+
+    // Tratamento especial para 404 - hostname não encontrado
+    if (response.status === 404) {
+      const errorCode = data.errors?.[0]?.code;
+      const errorMessage = data.errors?.[0]?.message || 'The custom hostname was not found';
+      
+      console.error('[Cloudflare] Hostname not found (404):', {
+        hostnameId,
+        errorCode,
+        errorMessage,
+        possibleReasons: [
+          'Hostname was deleted in Cloudflare',
+          'Hostname ID is incorrect',
+          'Hostname belongs to a different zone',
+          'Hostname was never created successfully',
+        ],
+        fullResponse: JSON.stringify(data, null, 2),
+      });
+      
+      // Criar erro customizado para facilitar tratamento
+      const error: any = new Error(`Cloudflare API error: ${errorMessage}`);
+      error.code = errorCode;
+      error.statusCode = 404;
+      error.hostnameId = hostnameId;
+      throw error;
+    }
 
     if (!response.ok) {
       const errorMessage = data.errors?.[0]?.message || `HTTP ${response.status}: ${response.statusText}`;

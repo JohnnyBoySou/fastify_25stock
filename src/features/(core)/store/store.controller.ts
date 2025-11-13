@@ -279,7 +279,36 @@ export const StoreController = {
         customDomain: store.customDomain,
       })
       
-      const cfInfo = await getCloudflareHostnameInfo(store.cloudflareHostnameId)
+      let cfInfo: any
+      try {
+        cfInfo = await getCloudflareHostnameInfo(store.cloudflareHostnameId)
+      } catch (error: any) {
+        // Se o hostname não foi encontrado (404), limpar dados inválidos do banco
+        if (error.statusCode === 404 || error.code === 1436) {
+          console.error('[StoreController] Hostname not found in Cloudflare, clearing invalid data:', {
+            storeId: store.id,
+            cloudflareHostnameId: store.cloudflareHostnameId,
+            customDomain: store.customDomain,
+          })
+
+          // Limpar o cloudflareHostnameId inválido do banco
+          await StoreCommands.createCustomDomain(
+            store.id,
+            store.customDomain || null,
+            null, // cloudflareHostnameId = null
+            'not_found' // cloudflareStatus = 'not_found'
+          )
+
+          return reply.status(404).send({
+            error: 'Custom hostname not found in Cloudflare',
+            message: 'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
+            domain: store.customDomain,
+            cloudflareHostnameId: store.cloudflareHostnameId,
+          })
+        }
+        // Re-throw outros erros
+        throw error
+      }
       
       console.log('[StoreController] Cloudflare hostname info retrieved:', {
         id: cfInfo.id,
@@ -315,6 +344,12 @@ export const StoreController = {
         },
       })
     } catch (error: any) {
+      console.error('[StoreController] Error in getCloudflareHostnameInfo:', {
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      })
       request.log.error(error)
 
       if (error.message?.includes('Cloudflare API error')) {
@@ -326,6 +361,7 @@ export const StoreController = {
 
       return reply.status(500).send({
         error: 'Internal server error',
+        details: error.message,
       })
     }
   },
