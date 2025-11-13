@@ -13,8 +13,10 @@ import dns from "node:dns/promises";
 async function validateDomain(domain: string): Promise<boolean> {
   try {
     const records = await dns.resolveCname(domain);
+    console.log(records)
     return records.some(r => r.includes("app.25stock.com"));
   } catch (e: any) {
+    console.log(e)
     return false;
   }
 }
@@ -157,6 +159,7 @@ export const StoreController = {
     try {
       const id = request.store?.id
       const { customDomain,  } = request.body as { customDomain: string; }
+      console.log(customDomain)
 
       const isValid = await validateDomain(customDomain)
       if (!isValid) {
