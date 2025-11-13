@@ -2,6 +2,7 @@
 
 const CF_ZONE_ID = process.env.CF_ZONE_ID as string;
 const CF_API_TOKEN = process.env.CF_API_TOKEN as string;
+
 export async function createCloudflareCustomHostname(hostname: string) {
   try {
     const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames`;
@@ -17,7 +18,6 @@ export async function createCloudflareCustomHostname(hostname: string) {
       },
     };
 
-    console.log(`[Cloudflare] Creating custom hostname: ${hostname}`);
 
     const response = await fetch(url, {
       method: "POST",
@@ -30,43 +30,17 @@ export async function createCloudflareCustomHostname(hostname: string) {
 
     const data = await response.json();
 
-    console.log(`[Cloudflare] Create hostname response status: ${response.status}`, {
-      success: data.success,
-      resultId: data.result?.id,
-      resultStatus: data.result?.status,
-      resultHostname: data.result?.hostname,
-      errors: data.errors,
-    });
-
     if (!response.ok || !data.success) {
       const errorMessage = data.errors?.[0]?.message || "Unknown Cloudflare API error";
-      console.error(`[Cloudflare] Error creating hostname ${hostname}:`, {
-        status: response.status,
-        statusText: response.statusText,
-        data: JSON.stringify(data, null, 2),
-      });
       throw new Error(errorMessage);
     }
 
     const result = data.result;
 
     if (!result || !result.id) {
-      console.error('[Cloudflare] Invalid result from create hostname API:', {
-        result,
-        fullData: data,
-      });
       throw new Error('Cloudflare API returned invalid result (missing id)');
     }
 
-    console.log('[Cloudflare] Hostname created successfully:', {
-      id: result.id,
-      hostname: result.hostname,
-      status: result.status,
-      ssl: result.ssl ? 'present' : 'missing',
-    });
-
-    // Retornar apenas os dados da criação
-    // O SSL validation será buscado posteriormente via getCloudflareHostnameInfo
     return {
       id: result.id,
       status: result.status,
@@ -83,14 +57,6 @@ export async function createCloudflareCustomHostname(hostname: string) {
 export async function getCloudflareHostnameInfo(hostnameId: string) {
   try {
     const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames/${hostnameId}`;
-
-    console.log('[Cloudflare] Fetching hostname info:', {
-      hostnameId,
-      url,
-      zoneId: CF_ZONE_ID ? 'present' : 'missing',
-      apiToken: CF_API_TOKEN ? 'present' : 'missing',
-    });
-
     const response = await fetch(url, {
       method: "GET",
       headers: {

@@ -170,6 +170,7 @@ export const StoreController = {
 
       // 1️⃣ Validar DNS
       const isValid = await validateDomain(customDomain)
+      console.log('isValid', isValid)
       
       if (!isValid) {
         return reply.status(400).send({ error: 'Invalid domain' })
@@ -177,7 +178,8 @@ export const StoreController = {
 
       // 2️⃣ Criar Custom Hostname no Cloudflare
       const cf = await createCloudflareCustomHostname(customDomain)
-
+      console.log('cf', cf)
+      
       if (!cf.id) {
         return reply.status(500).send({
           error: 'Failed to create custom hostname',
