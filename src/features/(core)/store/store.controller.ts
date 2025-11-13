@@ -16,7 +16,13 @@ async function validateDomain(domain: string): Promise<boolean> {
     console.log(records)
     return records.some(r => r.includes("app.25stock.com"));
   } catch (e: any) {
-    console.log(e)
+    // Trata erros DNS (ENOTFOUND, ETIMEDOUT, etc.)
+    if (e.code === 'ENOTFOUND' || e.code === 'ETIMEDOUT' || e.code === 'ESERVFAIL') {
+      console.log(`DNS error for domain ${domain}:`, e.code)
+      return false;
+    }
+    // Para outros erros, também retorna false mas loga o erro completo
+    console.log(`Error validating domain ${domain}:`, e)
     return false;
   }
 }
