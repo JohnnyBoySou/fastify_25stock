@@ -20,6 +20,7 @@ export const StoreQueries = {
             priceInterval: true,
             currency: true,
             createdAt: true,
+           
             updatedAt: true,
             invoices: {
               select: {
@@ -38,6 +39,7 @@ export const StoreQueries = {
             email: true,
           },
         },
+        
         _count: {
           select: {
             users: true,
@@ -77,6 +79,7 @@ export const StoreQueries = {
             documents: true,
             flows: true,
             crmClients: true,
+
           },
         },
       },
