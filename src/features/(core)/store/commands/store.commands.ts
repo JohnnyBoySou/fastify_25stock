@@ -144,6 +144,9 @@ export const StoreCommands = {
       state?: string
       address?: string
       status?: boolean
+      logoUrl?: string
+      website?: string
+      description?: string
     }
   ) {
     // Check if store exists
@@ -176,6 +179,9 @@ export const StoreCommands = {
         city: data.city === '' ? null : data.city,
         state: data.state === '' ? null : data.state,
         address: data.address === '' ? null : data.address,
+        logoUrl: data.logoUrl === '' ? null : data.logoUrl,
+        website: data.website === '' ? null : data.website,
+        description: data.description === '' ? null : data.description,
       },
       include: {
         owner: {

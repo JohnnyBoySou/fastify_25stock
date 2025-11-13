@@ -58,6 +58,9 @@ export const updateStoreSchema: FastifySchema = {
       state: { type: 'string' },
       address: { type: 'string' },
       status: { type: 'boolean' },
+      logoUrl: { type: 'string' },
+      website: { type: 'string' },
+      description: { type: 'string' },
     },
   },
   response: {
