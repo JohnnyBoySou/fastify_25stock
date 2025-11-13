@@ -7,6 +7,17 @@ import type {
   GetStoreRequest,
   UpdateStoreRequest,
 } from './store.interfaces'
+import dns from "node:dns/promises";
+
+
+async function validateDomain(domain: string): Promise<boolean> {
+  try {
+    const records = await dns.resolveCname(domain);
+    return records.some(r => r.includes("app.25stock.com"));
+  } catch (e: any) {
+    return false;
+  }
+}
 
 export const StoreController = {
   async create(request: CreateStoreRequest, reply: FastifyReply) {
@@ -127,7 +138,7 @@ export const StoreController = {
       })
     }
   },
-  
+
   async getStats(request: FastifyRequest, reply: FastifyReply) {
     try {
       const id = request.store?.id
@@ -135,7 +146,27 @@ export const StoreController = {
       const result = await StoreQueries.getStats(id)
 
       return reply.send(result)
-  } catch (error: any) {
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  },
+  async createCustomDomain(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const id = request.store?.id
+      const { customDomain,  } = request.body as { customDomain: string; }
+
+      const isValid = await validateDomain(customDomain)
+      if (!isValid) {
+        return reply.status(400).send({
+          error: 'Invalid domain',
+        })
+      }
+      const result = await StoreCommands.createCustomDomain(id, customDomain, )
+      return reply.send(result)
+    } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({
         error: 'Internal server error',

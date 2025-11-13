@@ -243,4 +243,21 @@ export const StoreCommands = {
 
     throw lastError || new Error('Failed to create default store')
   },
+
+  async createCustomDomain(id: string, customDomain: string, ) {
+    const storeWithCustomDomain = await db.store.update({
+      where: { id },
+      data: { customDomain },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+    return storeWithCustomDomain
+  },
 }
