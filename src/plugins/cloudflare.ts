@@ -65,35 +65,12 @@ export async function createCloudflareCustomHostname(hostname: string) {
       ssl: result.ssl ? 'present' : 'missing',
     });
 
-    // 🔥 Segunda etapa: pegar ACME challenge (com retry em caso de delay)
-    let sslValidation = null;
-    let hostnameInfo = null;
-    
-    try {
-      console.log(`[Cloudflare] Fetching hostname info for ID: ${result.id}`);
-      hostnameInfo = await getCloudflareHostnameInfo(result.id);
-      sslValidation = hostnameInfo.ssl?.validation_records?.[0];
-    } catch (error: any) {
-      // Se falhar ao buscar imediatamente após criar, pode ser delay do Cloudflare
-      // Retornamos o que temos da criação inicial
-      console.warn('[Cloudflare] Could not fetch hostname info immediately after creation:', {
-        error: error.message,
-        hostnameId: result.id,
-        note: 'This may be normal - Cloudflare may need a moment to process the hostname',
-      });
-      // Continuamos com os dados da criação inicial
-    }
-
+    // Retornar apenas os dados da criação
+    // O SSL validation será buscado posteriormente via getCloudflareHostnameInfo
     return {
       id: result.id,
       status: result.status,
       ownership: result.ownership_verification,
-      sslValidation: sslValidation
-        ? {
-          txtName: sslValidation.txt_name,
-          txtValue: sslValidation.txt_value,
-        }
-        : null,
     };
 
   } catch (error: any) {

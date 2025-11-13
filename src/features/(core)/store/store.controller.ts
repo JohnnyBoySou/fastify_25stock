@@ -194,7 +194,6 @@ export const StoreController = {
       console.log('[StoreController] Cloudflare hostname created:', {
         id: cf.id,
         status: cf.status,
-        hasSslValidation: !!cf.sslValidation,
       })
 
       // cf.id  → ID do hostname
@@ -213,11 +212,13 @@ export const StoreController = {
       console.log('[StoreController] Successfully saved custom domain to database')
 
       // 4️⃣ Retornar ao front
+      // O SSL validation será buscado via GET /custom-domain quando necessário
       return reply.send({
         success: true,
         domain: customDomain,
+        cloudflareHostnameId: cf.id,
         cloudflareStatus: cf.status,
-        txt: cf,
+        message: 'Custom domain created successfully. Use GET /custom-domain to retrieve SSL validation records.',
       })
     } catch (error: any) {
       console.error('[StoreController] Error in createCustomDomain:', {
