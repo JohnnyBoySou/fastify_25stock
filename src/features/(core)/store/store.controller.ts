@@ -29,6 +29,7 @@ async function validateDomain(domain: string): Promise<boolean> {
 }
 
 export const StoreController = {
+
   async create(request: CreateStoreRequest, reply: FastifyReply) {
     try {
       const { name, cnpj, email, phone, cep, city, state, address, status } = request.body
@@ -163,6 +164,19 @@ export const StoreController = {
     }
   },
 
+  async verifyDns(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { domain } = request.body as { domain: string }
+      const isValid = await validateDomain(domain)
+      return reply.send({ isValid })
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: 'Internal server error',
+      })
+    }
+  },
+
   async createCustomDomain(request: FastifyRequest, reply: FastifyReply) {
     try {
       const id = request.store?.id
@@ -170,8 +184,7 @@ export const StoreController = {
 
       // 1️⃣ Validar DNS
       const isValid = await validateDomain(customDomain)
-      console.log('isValid', isValid)
-      
+
       if (!isValid) {
         return reply.status(400).send({ error: 'Invalid domain' })
       }
@@ -179,7 +192,7 @@ export const StoreController = {
       // 2️⃣ Criar Custom Hostname no Cloudflare
       const cf = await createCloudflareCustomHostname(customDomain)
       console.log('cf', cf)
-      
+
       if (!cf.id) {
         return reply.status(500).send({
           error: 'Failed to create custom hostname',
@@ -187,13 +200,8 @@ export const StoreController = {
         })
       }
 
-      // cf.id  → ID do hostname
-      // cf.status → pending_validation, ssl_pending, active, etc.
+      await StoreCommands.createCustomDomain(id, customDomain, cf.id, cf.status)
 
-      // 3️⃣ Salvar no banco
-      
-     await StoreCommands.createCustomDomain(id, customDomain, cf.id, cf.status)
-      
       // 4️⃣ Retornar ao front
       // O SSL validation será buscado via GET /custom-domain quando necessário
       return reply.send({
@@ -266,7 +274,7 @@ export const StoreController = {
         // Re-throw outros erros
         throw error
       }
-      
+
       console.log('[StoreController] Cloudflare hostname info retrieved:', {
         id: cfInfo.id,
         hostname: cfInfo.hostname,
@@ -284,11 +292,11 @@ export const StoreController = {
       // 3️⃣ Extrair registros de validação SSL (TXT)
       // Quando o SSL está ativo, os registros podem não estar mais disponíveis
       const sslValidation = cfInfo.ssl?.validation_records?.[0]
-      
+
       // Se não houver validation_records, verificar se há outros campos com dados de validação
       let txtName = sslValidation?.txt_name
       let txtValue = sslValidation?.txt_value
-      
+
       // Se o status é "active", pode ser que o certificado já foi validado
       // e os registros de validação não estão mais disponíveis
       if (!sslValidation && cfInfo.status === 'active') {
@@ -304,12 +312,12 @@ export const StoreController = {
         status: cfInfo.status || store.cloudflareStatus,
         validationRecord: sslValidation && txtValue
           ? {
-              name: txtName,
-              type: 'TXT',
-              value: txtValue,
-              // Formato legível para exibir ao usuário
-              formatted: `${txtName} TXT ${txtValue}`,
-            }
+            name: txtName,
+            type: 'TXT',
+            value: txtValue,
+            // Formato legível para exibir ao usuário
+            formatted: `${txtName} TXT ${txtValue}`,
+          }
           : null,
         sslInfo: {
           status: cfInfo.ssl?.status,
@@ -323,9 +331,9 @@ export const StoreController = {
           status: cfInfo.status,
           hostname: cfInfo.hostname,
         },
-        message: cfInfo.status === 'active' 
+        message: cfInfo.status === 'active'
           ? 'SSL certificate is active. No validation records needed.'
-          : sslValidation 
+          : sslValidation
             ? 'Please add the TXT record to your DNS to validate the SSL certificate.'
             : 'Waiting for SSL validation records to be generated.',
       })

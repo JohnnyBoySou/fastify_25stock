@@ -32,6 +32,11 @@ export async function StoreRoutes(fastify: FastifyInstance) {
     handler: StoreController.getStats,
   })
 
+  fastify.post('/verify-dns', {
+    preHandler: [Middlewares.auth, Middlewares.store],
+    handler: StoreController.verifyDns,
+  })
+
   fastify.post('/custom-domain', {
     preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.createCustomDomain,
