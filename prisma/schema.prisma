@@ -1783,7 +1783,7 @@ model Folder {
 
   // Hierarquia
   parentId    String?
-  parent      Folder?    @relation("FolderHierarchy", fields: [parentId], references: [id])
+  parent      Folder?    @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children    Folder[]   @relation("FolderHierarchy")
 
   // Info

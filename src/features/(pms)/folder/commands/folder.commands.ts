@@ -38,21 +38,23 @@ export const FolderCommands = {
       }
     }
 
-    // Construir objeto data sem incluir campos null/undefined
-    const createData: any = {
+    // Construir objeto data - não incluir parentId se for null/undefined
+    const createData: Parameters<typeof db.folder.create>[0]['data'] = {
       storeId: data.storeId,
       name: data.name,
     }
 
-    if (data.description !== undefined) {
+    // Incluir campos opcionais apenas se definidos e não null
+    if (data.description !== undefined && data.description !== null) {
       createData.description = data.description
     }
-    if (data.color !== undefined) {
+    if (data.color !== undefined && data.color !== null) {
       createData.color = data.color
     }
-    if (data.icon !== undefined) {
+    if (data.icon !== undefined && data.icon !== null) {
       createData.icon = data.icon
     }
+    // Não incluir parentId se for null ou undefined
     if (data.parentId !== null && data.parentId !== undefined) {
       createData.parentId = data.parentId
     }
