@@ -29,7 +29,7 @@ export const FolderController = {
         description,
         color,
         icon,
-        parentId,
+        parentId: parentId ?? undefined, // Converter null para undefined
         createdById: request.user?.id,
       })
 

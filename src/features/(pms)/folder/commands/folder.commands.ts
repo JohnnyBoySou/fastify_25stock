@@ -38,16 +38,30 @@ export const FolderCommands = {
       }
     }
 
+    // Construir objeto data sem incluir campos null/undefined
+    const createData: any = {
+      storeId: data.storeId,
+      name: data.name,
+    }
+
+    if (data.description !== undefined) {
+      createData.description = data.description
+    }
+    if (data.color !== undefined) {
+      createData.color = data.color
+    }
+    if (data.icon !== undefined) {
+      createData.icon = data.icon
+    }
+    if (data.parentId !== null && data.parentId !== undefined) {
+      createData.parentId = data.parentId
+    }
+    if (data.createdById !== null && data.createdById !== undefined) {
+      createData.createdById = data.createdById
+    }
+
     return await db.folder.create({
-      data: {
-        storeId: data.storeId,
-        name: data.name,
-        description: data.description,
-        color: data.color,
-        icon: data.icon,
-        parentId: data.parentId,
-        createdById: data.createdById,
-      },
+      data: createData,
       include: {
         parent: true,
         children: true,
@@ -146,9 +160,29 @@ export const FolderCommands = {
       }
     }
 
+    // Construir objeto data sem incluir campos undefined
+    const updateData: any = {}
+    if (data.name !== undefined) {
+      updateData.name = data.name
+    }
+    if (data.description !== undefined) {
+      updateData.description = data.description
+    }
+    if (data.color !== undefined) {
+      updateData.color = data.color
+    }
+    if (data.icon !== undefined) {
+      updateData.icon = data.icon
+    }
+    // Se parentId for null, definir explicitamente como null para remover o parent
+    // Se for undefined, não incluir no objeto
+    if (data.parentId !== undefined) {
+      updateData.parentId = data.parentId
+    }
+
     return await db.folder.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         parent: true,
         children: true,
