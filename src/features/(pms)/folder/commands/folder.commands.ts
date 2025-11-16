@@ -4,84 +4,77 @@ export const FolderCommands = {
   async create(data: {
     storeId: string
     name: string
-    description?: string
-    color?: string
-    icon?: string
-    parentId?: string
-    createdById?: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    parentId?: string | null
+    createdById?: string | null
   }) {
-    // Verificar se já existe uma pasta com o mesmo nome na mesma store
-    const existingFolder = await db.folder.findFirst({
-      where: {
-        storeId: data.storeId,
-        name: data.name,
-        deletedAt: null,
-      },
-    })
+    const { storeId, name, parentId } = data
 
-    if (existingFolder) {
-      throw new Error('Folder with this name already exists')
-    }
+    return await db.$transaction(async (tx) => {
+      // 1. Parent folder: validar se existe
+      if (parentId) {
+        const parent = await tx.folder.findFirst({
+          where: {
+            id: parentId,
+            storeId,
+            deletedAt: null,
+          },
+        })
 
-    // Se parentId foi fornecido, verificar se existe
-    if (data.parentId) {
-      const parent = await db.folder.findFirst({
+        if (!parent) {
+          throw new Error("A pasta pai informada não existe.")
+        }
+      }
+
+      // 2. Verificar duplicidade de nome no mesmo nível
+      const duplicate = await tx.folder.findFirst({
         where: {
-          id: data.parentId,
-          storeId: data.storeId,
+          storeId,
+          parentId: parentId ?? null,
+          name,
           deletedAt: null,
         },
       })
 
-      if (!parent) {
-        throw new Error('Parent folder not found')
+      if (duplicate) {
+        throw new Error("Já existe uma pasta com esse nome neste nível.")
       }
-    }
 
-    // Construir objeto data - não incluir parentId se for null/undefined
-    const createData: Parameters<typeof db.folder.create>[0]['data'] = {
-      storeId: data.storeId,
-      name: data.name,
-    }
-
-    // Incluir campos opcionais apenas se definidos e não null
-    if (data.description !== undefined && data.description !== null) {
-      createData.description = data.description
-    }
-    if (data.color !== undefined && data.color !== null) {
-      createData.color = data.color
-    }
-    if (data.icon !== undefined && data.icon !== null) {
-      createData.icon = data.icon
-    }
-    // Não incluir parentId se for null ou undefined
-    if (data.parentId !== null && data.parentId !== undefined) {
-      createData.parentId = data.parentId
-    }
-    if (data.createdById !== null && data.createdById !== undefined) {
-      createData.createdById = data.createdById
-    }
-
-    return await db.folder.create({
-      data: createData,
-      include: {
-        parent: true,
-        children: true,
-        documents: {
-          where: {
-            deletedAt: null,
-          },
-          take: 5,
-          orderBy: { createdAt: 'desc' },
+      // 3. Criar pasta
+      const folder = await tx.folder.create({
+        data: {
+          storeId,
+          name,
+          description: data.description || null,
+          color: data.color || null,
+          icon: data.icon || null,
+          parentId: parentId || null,
+          createdById: data.createdById || null,
         },
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+      })
+
+      // 4. Retornar pasta com dados essenciais
+      return tx.folder.findUnique({
+        where: { id: folder.id },
+        include: {
+          parent: true,
+          children: true,
+          documents: {
+            where: { deletedAt: null },
+            take: 5,
+            orderBy: { createdAt: "desc" },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-      },
+      })
     })
   },
 
