@@ -62,7 +62,7 @@ export const FolderQueries = {
     ])
 
     return {
-      data,
+      items: data,
       pagination: {
         page,
         limit,
@@ -135,8 +135,10 @@ export const FolderQueries = {
     return folder
   },
 
-  async search(storeId: string, query: string, limit?: number) {
-    const folders = await db.folder.findMany({
+  async search(storeId: string, query: string, limit?: number, page?: number) {
+    const skip = (page - 1) * limit
+    const [folders, total] = await Promise.all([
+      db.folder.findMany({
       where: {
         storeId,
         deletedAt: null,
@@ -145,6 +147,7 @@ export const FolderQueries = {
           { description: { contains: query, mode: 'insensitive' } },
         ],
       },
+      skip,
       take: limit || 10,
       orderBy: { name: 'asc' },
       include: {
@@ -171,9 +174,12 @@ export const FolderQueries = {
           },
         },
       },
-    })
+    }),
+    
+    db.folder.count({ where: { storeId, deletedAt: null, OR: [ { name: { contains: query, mode: 'insensitive' } }, { description: { contains: query, mode: 'insensitive' } } ] } })
+    ])
 
-    return { folders }
+    return { items: folders, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
   },
 
   async getTree(storeId: string) {

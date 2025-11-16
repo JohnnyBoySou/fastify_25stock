@@ -56,6 +56,7 @@ export interface SearchFoldersRequest extends FastifyRequest {
   query: {
     search: string
     limit?: number
+    page?: number
   }
 }
 

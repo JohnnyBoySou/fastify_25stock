@@ -148,14 +148,14 @@ export const FolderController = {
 
   async search(request: SearchFoldersRequest, reply: FastifyReply) {
     try {
-      const { search, limit } = request.query
+      const { search, limit, page = 1 } = request.query
       const storeId = request.store?.id
 
       if (!storeId) {
         return reply.status(400).send({ error: 'Store context required' })
       }
 
-      const result = await FolderQueries.search(storeId, search, limit)
+      const result = await FolderQueries.search(storeId, search, limit, page)
 
       return reply.send(result)
     } catch (error) {
