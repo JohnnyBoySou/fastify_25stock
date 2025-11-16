@@ -58,3 +58,4 @@ export interface SearchFoldersRequest extends FastifyRequest {
     limit?: number
   }
 }
+

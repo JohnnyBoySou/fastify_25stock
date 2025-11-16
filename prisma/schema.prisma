@@ -67,7 +67,7 @@ model User {
   media         UserMedia[]
   uploadedMedia Media[]
   quotes        Quote[]
-  createdDocumentFolders DocumentFolder[] @relation("FolderCreatedBy")
+  createdFolders Folder[] @relation("FolderCreatedBy")
   createdDocuments Document[] @relation("DocumentCreatedBy")
   updatedDocuments Document[] @relation("DocumentUpdatedBy")
   createdDocumentVersions DocumentVersion[] @relation("DocumentVersionCreatedBy")
@@ -230,7 +230,7 @@ model Store {
   quotes        Quote[]
   chatSessions  ChatSession[]
   subscription  Subscription?
-  documentFolders DocumentFolder[]
+  folders        Folder[]
   documents     Document[]
   spaces        Space[]
   shifts        Shift[]
@@ -991,6 +991,7 @@ model Media {
   supplierMedia SupplierMedia[]
   userMedia     UserMedia[]
   storeMedia    StoreMedia[]
+  folderMedia   FolderMedia[]
 
   @@map("media")
 
@@ -1511,36 +1512,6 @@ enum ChatMessageRole {
 ///  - Cada documento pertence a uma Store e pode ser criado/editado por um User.
 ///  - Suporte a pastas, versionamento, templates e automações.
 /// ===============================
-
-model DocumentFolder {
-  id          String    @id @default(cuid())
-  storeId     String
-  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  name        String
-  description String?
-  color       String?    // opcional: cor para exibição no front
-  icon        String?    // ex: "folder", "file-text"
-  parentId    String?    // subpastas
-  parent      DocumentFolder? @relation("FolderHierarchy", fields: [parentId], references: [id])
-  children    DocumentFolder[] @relation("FolderHierarchy")
-
-  // Controle e auditoria
-  createdById String?
-  createdBy   User?      @relation("FolderCreatedBy", fields: [createdById], references: [id])
-  deletedAt   DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  documents   Document[]
-
-  @@map("document_folders")
-  @@index([storeId])
-  @@index([parentId])
-  @@index([deletedAt])
-  @@unique([storeId, name])
-}
-
 model Document {
   id            String   @id @default(cuid())
 
@@ -1548,35 +1519,31 @@ model Document {
   store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   folderId      String?
-  folder        DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  folder        Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   title         String
-  type          DocumentType     @default(TEXT)    // texto, PDF, DOCX
-  format        DocumentFormat?  // "markdown", "html", "json", "docx", etc.
-  content       Json?            // conteúdo serializado (Tiptap JSON, por exemplo)
-  path          String?          // caminho no storage local/S3
+  type          DocumentType     @default(TEXT)
+  format        DocumentFormat?
+  content       Json?
+  path          String?
   version       Int              @default(1)
   size          Int?
   mimeType      String?
   visibility    DocumentVisibility @default(PRIVATE)
 
-  // Controle de autoria
   createdById   String?
   createdBy     User? @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   updatedById   String?
   updatedBy     User? @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
-  // Status e controle
   status        DocumentStatus   @default(ACTIVE)
   pinned        Boolean          @default(false)
   deletedAt     DateTime?
 
-  // Auditoria
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   lastAccessedAt DateTime?
 
-  // Relacionamentos
   versions      DocumentVersion[]
 
   @@map("documents")
@@ -1588,6 +1555,7 @@ model Document {
   @@index([updatedById])
   @@index([title])
 }
+
 
 model DocumentVersion {
   id          String   @id @default(cuid())
@@ -1805,4 +1773,53 @@ enum ResourceType {
   VEHICLE
   FURNITURE
   OTHER
+}
+
+model Folder {
+  id          String   @id @default(cuid())
+
+  storeId     String
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // Hierarquia
+  parentId    String?
+  parent      Folder?    @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children    Folder[]   @relation("FolderHierarchy")
+
+  // Info
+  name        String
+  description String?
+  color       String?
+  icon        String?
+
+  // Auditoria
+  createdById String?
+  createdBy   User? @relation("FolderCreatedBy", fields: [createdById], references: [id])
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  documents   Document[]
+  media       FolderMedia[]
+
+  @@map("folders")
+  @@index([storeId])
+  @@index([parentId])
+  @@index([deletedAt])
+  @@unique([storeId, name, parentId])
+}
+
+model FolderMedia {
+  id        String   @id @default(cuid())
+  folderId  String
+  mediaId   String
+  sortOrder Int      @default(0)
+
+  folder    Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  media     Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@map("folder_media")
+  @@unique([folderId, mediaId])
+  @@index([folderId])
 }

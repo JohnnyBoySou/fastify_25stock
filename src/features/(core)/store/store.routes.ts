@@ -46,4 +46,9 @@ export async function StoreRoutes(fastify: FastifyInstance) {
     preHandler: [Middlewares.auth, Middlewares.store],
     handler: StoreController.getCloudflareHostnameInfo,
   })
+
+  fastify.get('/verify-ssl-certificate', {
+    preHandler: [Middlewares.auth, Middlewares.store],
+    handler: StoreController.verifySslCertificate,
+  })
 }

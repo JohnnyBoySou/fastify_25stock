@@ -359,4 +359,135 @@ export const StoreController = {
       })
     }
   },
+
+  async verifySslCertificate(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const storeId = request.store?.id
+
+      // 1️⃣ Buscar a store para pegar o cloudflareHostnameId
+      const store = await StoreQueries.getById(storeId)
+
+      if (!store) {
+        return reply.status(404).send({
+          error: 'Store not found',
+        })
+      }
+
+      if (!store.cloudflareHostnameId) {
+        return reply.status(404).send({
+          error: 'Custom domain not configured',
+          message: 'No custom domain has been configured for this store.',
+        })
+      }
+
+      // 2️⃣ Buscar informações do hostname no Cloudflare
+      let cfInfo: any
+      try {
+        cfInfo = await getCloudflareHostnameInfo(store.cloudflareHostnameId)
+      } catch (error: any) {
+        // Se o hostname não foi encontrado (404), limpar dados inválidos do banco
+        if (error.statusCode === 404 || error.code === 1436) {
+          console.error('[StoreController] Hostname not found in Cloudflare during SSL verification:', {
+            storeId: store.id,
+            cloudflareHostnameId: store.cloudflareHostnameId,
+            customDomain: store.customDomain,
+          })
+
+          // Limpar o cloudflareHostnameId inválido do banco
+          await StoreCommands.createCustomDomain(
+            store.id,
+            store.customDomain || null,
+            null, // cloudflareHostnameId = null
+            'not_found' // cloudflareStatus = 'not_found'
+          )
+
+          return reply.status(404).send({
+            error: 'Custom hostname not found in Cloudflare',
+            message: 'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
+            isValid: false,
+          })
+        }
+        // Re-throw outros erros
+        throw error
+      }
+
+      // 3️⃣ Verificar o status do certificado SSL
+      const hostnameStatus = cfInfo.status // 'active', 'pending_validation', 'pending_deployment', etc.
+      const sslStatus = cfInfo.ssl?.status // 'active', 'pending_validation', 'pending_issuance', etc.
+      
+      // O certificado está validado quando o status do hostname é 'active'
+      const isCertificateValid = hostnameStatus === 'active'
+      
+      // 4️⃣ Atualizar o status no banco de dados se mudou
+      if (store.cloudflareStatus !== hostnameStatus) {
+        await StoreCommands.createCustomDomain(
+          store.id,
+          store.customDomain || null,
+          store.cloudflareHostnameId,
+          hostnameStatus
+        )
+        console.log('[StoreController] Updated cloudflareStatus in database:', {
+          storeId: store.id,
+          oldStatus: store.cloudflareStatus,
+          newStatus: hostnameStatus,
+        })
+      }
+
+      // 5️⃣ Preparar resposta detalhada
+      const response = {
+        isValid: isCertificateValid,
+        domain: store.customDomain,
+        hostnameStatus,
+        sslStatus,
+        sslMethod: cfInfo.ssl?.method,
+        sslType: cfInfo.ssl?.type,
+        cloudflareHostnameId: cfInfo.id,
+        message: isCertificateValid
+          ? 'SSL certificate is active and validated successfully.'
+          : hostnameStatus === 'pending_validation'
+            ? 'SSL certificate is pending validation. Please add the TXT record to your DNS.'
+            : hostnameStatus === 'pending_deployment'
+              ? 'SSL certificate is validated but pending deployment.'
+              : `SSL certificate status: ${hostnameStatus}`,
+        // Informações adicionais para debug
+        details: {
+          hostname: cfInfo.hostname,
+          createdAt: cfInfo.created_at,
+          sslValidationRecords: cfInfo.ssl?.validation_records || [],
+        },
+      }
+
+      console.log('[StoreController] SSL certificate verification result:', {
+        storeId: store.id,
+        domain: store.customDomain,
+        isValid: isCertificateValid,
+        hostnameStatus,
+        sslStatus,
+      })
+
+      return reply.send(response)
+    } catch (error: any) {
+      console.error('[StoreController] Error in verifySslCertificate:', {
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      })
+      request.log.error(error)
+
+      if (error.message?.includes('Cloudflare API error')) {
+        return reply.status(500).send({
+          error: 'Failed to verify SSL certificate',
+          details: error.message,
+          isValid: false,
+        })
+      }
+
+      return reply.status(500).send({
+        error: 'Internal server error',
+        details: error.message,
+        isValid: false,
+      })
+    }
+  },
 }

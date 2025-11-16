@@ -28,7 +28,7 @@ export const FolderQueries = {
     }
 
     const [data, total] = await Promise.all([
-      db.documentFolder.findMany({
+      db.folder.findMany({
         where,
         skip,
         take: limit,
@@ -58,7 +58,7 @@ export const FolderQueries = {
           },
         },
       }),
-      db.documentFolder.count({ where }),
+      db.folder.count({ where }),
     ])
 
     return {
@@ -73,7 +73,7 @@ export const FolderQueries = {
   },
 
   async getById(id: string, storeId: string) {
-    const folder = await db.documentFolder.findFirst({
+    const folder = await db.folder.findFirst({
       where: {
         id,
         storeId,
@@ -136,7 +136,7 @@ export const FolderQueries = {
   },
 
   async search(storeId: string, query: string, limit?: number) {
-    const folders = await db.documentFolder.findMany({
+    const folders = await db.folder.findMany({
       where: {
         storeId,
         deletedAt: null,
@@ -177,7 +177,7 @@ export const FolderQueries = {
   },
 
   async getTree(storeId: string) {
-    const rootFolders = await db.documentFolder.findMany({
+    const rootFolders = await db.folder.findMany({
       where: {
         storeId,
         parentId: null,
@@ -213,7 +213,7 @@ export const FolderQueries = {
     const buildTree = async (folders: any[]): Promise<any[]> => {
       return Promise.all(
         folders.map(async (folder) => {
-          const children = await db.documentFolder.findMany({
+          const children = await db.folder.findMany({
             where: {
               parentId: folder.id,
               deletedAt: null,
@@ -256,14 +256,14 @@ export const FolderQueries = {
   },
 
   async getStats(storeId: string) {
-    const total = await db.documentFolder.count({
+    const total = await db.folder.count({
       where: {
         storeId,
         deletedAt: null,
       },
     })
 
-    const rootFolders = await db.documentFolder.count({
+    const rootFolders = await db.folder.count({
       where: {
         storeId,
         parentId: null,

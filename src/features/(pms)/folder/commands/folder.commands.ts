@@ -11,7 +11,7 @@ export const FolderCommands = {
     createdById?: string
   }) {
     // Verificar se já existe uma pasta com o mesmo nome na mesma store
-    const existingFolder = await db.documentFolder.findFirst({
+    const existingFolder = await db.folder.findFirst({
       where: {
         storeId: data.storeId,
         name: data.name,
@@ -25,7 +25,7 @@ export const FolderCommands = {
 
     // Se parentId foi fornecido, verificar se existe
     if (data.parentId) {
-      const parent = await db.documentFolder.findFirst({
+      const parent = await db.folder.findFirst({
         where: {
           id: data.parentId,
           storeId: data.storeId,
@@ -38,7 +38,7 @@ export const FolderCommands = {
       }
     }
 
-    return await db.documentFolder.create({
+    return await db.folder.create({
       data: {
         storeId: data.storeId,
         name: data.name,
@@ -80,7 +80,7 @@ export const FolderCommands = {
     }
   ) {
     // Verificar se a pasta existe
-    const folder = await db.documentFolder.findUnique({
+    const folder = await db.folder.findUnique({
       where: { id },
     })
 
@@ -90,7 +90,7 @@ export const FolderCommands = {
 
     // Se name foi alterado, verificar se não existe duplicata
     if (data.name && data.name !== folder.name) {
-      const existingFolder = await db.documentFolder.findFirst({
+      const existingFolder = await db.folder.findFirst({
         where: {
           storeId: folder.storeId,
           name: data.name,
@@ -110,7 +110,7 @@ export const FolderCommands = {
         throw new Error('Folder cannot be its own parent')
       }
 
-      const parent = await db.documentFolder.findFirst({
+      const parent = await db.folder.findFirst({
         where: {
           id: data.parentId,
           storeId: folder.storeId,
@@ -128,7 +128,7 @@ export const FolderCommands = {
           return true
         }
 
-        const currentFolder = await db.documentFolder.findUnique({
+        const currentFolder = await db.folder.findUnique({
           where: { id: folderId },
           select: { parentId: true },
         })
@@ -146,7 +146,7 @@ export const FolderCommands = {
       }
     }
 
-    return await db.documentFolder.update({
+    return await db.folder.update({
       where: { id },
       data,
       include: {
@@ -172,7 +172,7 @@ export const FolderCommands = {
 
   async delete(id: string) {
     // Verificar se a pasta existe
-    const folder = await db.documentFolder.findUnique({
+    const folder = await db.folder.findUnique({
       where: { id },
       include: {
         documents: {
@@ -202,7 +202,7 @@ export const FolderCommands = {
     }
 
     // Soft delete: apenas marcar como deletado
-    return await db.documentFolder.update({
+    return await db.folder.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -212,7 +212,7 @@ export const FolderCommands = {
 
   async forceDelete(id: string) {
     // Verificar se a pasta existe
-    const folder = await db.documentFolder.findUnique({
+    const folder = await db.folder.findUnique({
       where: { id },
     })
 
@@ -221,7 +221,7 @@ export const FolderCommands = {
     }
 
     // Hard delete: remover permanentemente (cascade do Prisma cuidará dos relacionamentos)
-    return await db.documentFolder.delete({
+    return await db.folder.delete({
       where: { id },
     })
   },

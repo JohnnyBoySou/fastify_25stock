@@ -1,6 +1,6 @@
 import { Middlewares } from '@/middlewares'
 import type { FastifyInstance } from 'fastify'
-import { FolderController } from './document.controller'
+import { FolderController } from './folder.controller'
 import { FolderSchemas } from './folder.schemas'
 
 export async function FolderRoutes(fastify: FastifyInstance) {
