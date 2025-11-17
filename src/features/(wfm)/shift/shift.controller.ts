@@ -114,14 +114,18 @@ export const ShiftController = {
 
       const query = request.query as {
         occurrenceId?: string
+        page?: number
+        limit?: number
       }
 
       const filters = {
         occurrenceId: query?.occurrenceId,
+        page: query?.page ? Number(query.page) : undefined,
+        limit: query?.limit ? Number(query.limit) : undefined,
       }
 
-      const shifts = await ShiftQueries.getAll(request.store.id, filters)
-      return reply.status(200).send(shifts)
+      const result = await ShiftQueries.getAll(request.store.id, filters)
+      return reply.status(200).send(result)
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({
