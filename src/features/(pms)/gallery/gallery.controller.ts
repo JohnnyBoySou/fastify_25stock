@@ -621,7 +621,6 @@ export const GalleryController = {
     try {
       // Verificar Content-Type
       const contentType = request.headers['content-type'] || ''
-      console.log('Content-Type recebido:', contentType)
       
       if (!contentType.includes('multipart/form-data')) {
         return reply.status(400).send({
@@ -630,18 +629,59 @@ export const GalleryController = {
       }
 
       // Coletar arquivo e campos do formulário do multipart
-      let data: any = null
+      let fileData: any = null
       const formFields: Record<string, any> = {}
+      let filePath: string | undefined
+      let fileSize = 0
       
       try {
         const parts = (request as any).parts()
         
         for await (const part of parts) {
           if (part.type === 'file') {
-            // Se ainda não encontrou um arquivo, usar este
+            // Processar o arquivo IMEDIATAMENTE dentro do loop para evitar "Premature close"
             // Priorizar arquivo com fieldname "file", mas aceitar qualquer arquivo
-            if (!data || part.fieldname === 'file') {
-              data = part
+            if (!fileData || part.fieldname === 'file') {
+              // Converter stream para buffer DENTRO do loop, antes que o stream seja fechado
+              let buffer: Buffer
+              
+              if (part.toBuffer) {
+                // Método 1: Usar toBuffer do próprio part
+                buffer = await part.toBuffer()
+              } else if (part.file?.toBuffer) {
+                buffer = await part.file.toBuffer()
+              } else {
+                // Tentar ler o stream manualmente
+                const chunks: Buffer[] = []
+                const stream = part.file || part
+                
+                for await (const chunk of stream) {
+                  chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+                }
+                buffer = Buffer.concat(chunks)
+              }
+              
+              fileSize = buffer.length
+              
+              // Salvar em arquivo temporário
+              const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${part.filename}`)
+              await fs.writeFile(tempPath, buffer)
+              filePath = tempPath
+              
+              // Armazenar metadados do arquivo
+              fileData = {
+                fieldname: part.fieldname || 'file',
+                filename: part.filename || 'unknown',
+                originalname: part.filename || 'unknown',
+                encoding: part.encoding || '7bit',
+                mimetype: part.mimetype || 'application/octet-stream',
+                size: fileSize,
+                destination: '',
+                path: filePath,
+                url: '',
+              }
+              
+              console.log(`Arquivo temporário criado: ${tempPath} (${fileSize} bytes)`)
             }
           } else if (part.type === 'field') {
             // Coletar campos do formulário
@@ -664,42 +704,16 @@ export const GalleryController = {
         throw error
       }
 
-      if (!data) {
+      if (!fileData) {
         return reply.status(400).send({
           error: 'Nenhum arquivo enviado. Certifique-se de usar o campo "file" no FormData.',
         })
       }
 
-      // Debug: Log da estrutura do objeto para entender melhor
-      console.log(
-        'Estrutura do objeto data:',
-        JSON.stringify(
-          {
-            fieldname: data.fieldname,
-            filename: data.filename,
-            mimetype: data.mimetype,
-            encoding: data.encoding,
-            hasFile: !!data.file,
-            fileKeys: data.file ? Object.keys(data.file) : 'no file object',
-            filePath: data.file?.path,
-            fileFilename: data.file?.filename,
-            // Verificar se é um stream
-            isStream: data.file?.toBuffer ? 'yes' : 'no',
-            // Verificar outras propriedades possíveis
-            allKeys: Object.keys(data),
-          },
-          null,
-          2
-        )
-      )
-
       // Obter configurações dos campos do formulário ou query
       const entityType = formFields.entityType || (request.query as any)?.entityType || 'general'
       const folderId = formFields.folderId || (request.query as any)?.folderId
       
-      // Debug: Log dos campos coletados
-      console.log('Campos do formulário coletados:', formFields)
-      console.log('folderId coletado:', folderId)
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id
@@ -716,61 +730,8 @@ export const GalleryController = {
         })
       }
 
-      // Determinar o path do arquivo baseado na estrutura
-      let filePath: string | undefined
-      let fileSize = 0
-
-      // O @fastify/multipart retorna streams, precisamos convertê-los para arquivos temporários
-      if (data.toBuffer) {
-        // Método 1: Usar toBuffer do próprio data
-        console.log('Convertendo stream para buffer usando data.toBuffer...')
-        const buffer = await data.toBuffer()
-        fileSize = buffer.length
-
-        // Salvar em arquivo temporário
-        const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${data.filename}`)
-        await fs.writeFile(tempPath, buffer)
-        filePath = tempPath
-
-        console.log(`Arquivo temporário criado: ${tempPath}`)
-      } else if (data.file?.toBuffer) {
-        // Método 2: Usar toBuffer do data.file
-        console.log('Convertendo stream para buffer usando data.file.toBuffer...')
-        const buffer = await data.file.toBuffer()
-        fileSize = buffer.length
-
-        // Salvar em arquivo temporário
-        const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${data.filename}`)
-        await fs.writeFile(tempPath, buffer)
-        filePath = tempPath
-
-        console.log(`Arquivo temporário criado: ${tempPath}`)
-      } else if (data.file?.bytesRead) {
-        // Método 3: Arquivo já salvo temporariamente
-        filePath = data.file.path || data.file.filepath || data.file.filename
-        fileSize = data.file.bytesRead
-      } else {
-        // Método 4: Tentar outras propriedades
-        filePath = data.path || data.filepath || data.filename
-        fileSize = data.size || data.bytesRead || 0
-      }
-
-      // Preparar objeto de arquivo no formato esperado pelo service
-      const fileData = {
-        fieldname: data.fieldname || 'file',
-        filename: data.filename || 'unknown',
-        originalname: data.filename || 'unknown',
-        encoding: data.encoding || '7bit',
-        mimetype: data.mimetype || 'application/octet-stream',
-        size: fileSize,
-        destination: '', // Será definido pelo service
-        path: filePath,
-        url: '', // Será definido pelo service
-      }
-
       // Validação adicional do path
       if (!fileData.path) {
-        console.error('Estrutura completa do data:', JSON.stringify(data, null, 2))
         return reply.status(400).send({
           error:
             'Não foi possível determinar o caminho do arquivo. Estrutura do objeto inesperada.',
@@ -785,7 +746,6 @@ export const GalleryController = {
       })
 
       // Criar registro no banco
-      console.log('Criando registro no banco com folderId:', folderId)
       const dbResult = await GalleryCommands.create({
         url: uploadResult.url,
         name: uploadResult.name,
@@ -795,7 +755,6 @@ export const GalleryController = {
         uploadedById: userId,
         folderId: folderId || undefined,
       })
-      console.log('Registro criado com sucesso. Media ID:', dbResult.id)
 
       // Limpar arquivo temporário se foi criado
       if (filePath?.includes('temp-')) {

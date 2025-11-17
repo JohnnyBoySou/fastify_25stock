@@ -26,7 +26,6 @@ export const GalleryCommands = {
 
     // Se folderId foi fornecido, criar a relação
     if (data.folderId) {
-      console.log(`[GalleryCommands] Criando relação com folder: ${data.folderId} para media: ${upload.id}`)
       
       // Verificar se a pasta existe
       const folder = await db.folder.findFirst({
@@ -37,7 +36,6 @@ export const GalleryCommands = {
       })
 
       if (folder) {
-        console.log(`[GalleryCommands] Folder encontrado: ${folder.name}`)
         
         // Obter o maior sortOrder para adicionar no final
         const maxSortOrder = await db.folderMedia.findFirst({
@@ -47,9 +45,8 @@ export const GalleryCommands = {
         })
 
         const newSortOrder = maxSortOrder ? maxSortOrder.sortOrder + 1 : 0
-        console.log(`[GalleryCommands] Criando FolderMedia com sortOrder: ${newSortOrder}`)
 
-        const folderMedia = await db.folderMedia.create({
+        await db.folderMedia.create({
           data: {
             folderId: data.folderId,
             mediaId: upload.id,
@@ -57,12 +54,7 @@ export const GalleryCommands = {
           },
         })
         
-        console.log(`[GalleryCommands] Relação FolderMedia criada com sucesso: ${folderMedia.id}`)
-      } else {
-        console.warn(`[GalleryCommands] Folder não encontrado ou deletado: ${data.folderId}`)
       }
-    } else {
-      console.log('[GalleryCommands] Nenhum folderId fornecido, mídia será criada sem relação com folder')
     }
 
     return upload

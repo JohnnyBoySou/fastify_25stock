@@ -180,6 +180,100 @@ export const findByQuery: FastifySchema = {
   },
 }
 
+export const createMessage: FastifySchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+  body: {
+    type: 'object',
+    required: ['message'],
+    properties: {
+      message: { type: 'string', minLength: 1 },
+      attachments: { type: 'object' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        ticketId: { type: 'string' },
+        senderId: { type: 'string' },
+        message: { type: 'string' },
+        attachments: { type: 'object' },
+        createdAt: { type: 'string', format: 'date-time' },
+        sender: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+}
+
+export const findMessagesByTicket: FastifySchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+  querystring: {
+    type: 'object',
+    properties: {
+      page: { type: 'number', minimum: 1, default: 1 },
+      limit: { type: 'number', minimum: 1, maximum: 100, default: 10 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              ticketId: { type: 'string' },
+              senderId: { type: 'string' },
+              message: { type: 'string' },
+              attachments: { type: 'object' },
+              createdAt: { type: 'string', format: 'date-time' },
+              sender: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  name: { type: 'string' },
+                  email: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        pagination: {
+          type: 'object',
+          properties: {
+            page: { type: 'number' },
+            limit: { type: 'number' },
+            total: { type: 'number' },
+            totalPages: { type: 'number' },
+          },
+        },
+      },
+    },
+  },
+}
+
 export const SupportSchemas = {
   create,
   findById,
@@ -188,4 +282,6 @@ export const SupportSchemas = {
   update,
   remove,
   bulkRemove,
+  createMessage,
+  findMessagesByTicket,
 }

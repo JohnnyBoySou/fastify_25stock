@@ -23,7 +23,6 @@ export const FolderQueries = {
     if (parentId) {
       where.parentId = parentId
     } else {
-      // Se não especificou parentId, retornar apenas pastas raiz
       where.parentId = null
     }
 

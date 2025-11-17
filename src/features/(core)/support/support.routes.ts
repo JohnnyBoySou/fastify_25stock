@@ -42,4 +42,14 @@ export async function SupportRoutes(fastify: FastifyInstance) {
     handler: SupportController.findByQuery,
   })
 
+  fastify.post('/:id/messages', {
+    schema: SupportSchemas.createMessage,
+    handler: SupportController.createMessage,
+  })
+
+  fastify.get('/:id/messages', {
+    schema: SupportSchemas.findMessagesByTicket,
+    handler: SupportController.findMessagesByTicket,
+  })
+
 }

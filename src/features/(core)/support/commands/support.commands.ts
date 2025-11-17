@@ -35,4 +35,25 @@ export const SupportCommands = {
         })
         return supports
     },
+
+    async createMessage(data: { ticketId: string; senderId: string; message: string; attachments?: any }) {
+        const supportMessage = await db.supportMessage.create({
+            data: {
+                ticketId: data.ticketId,
+                senderId: data.senderId,
+                message: data.message,
+                attachments: data.attachments,
+            },
+            include: {
+                sender: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        })
+        return supportMessage
+    },
 }

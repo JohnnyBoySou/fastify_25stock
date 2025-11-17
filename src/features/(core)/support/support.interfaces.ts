@@ -50,3 +50,23 @@ export interface BulkRemoveSupportRequest extends FastifyRequest {
     ids: string[]
   }
 }
+
+export interface CreateMessageRequest extends FastifyRequest {
+  params: {
+    id: string
+  }
+  body: {
+    message: string
+    attachments?: any
+  }
+}
+
+export interface FindMessagesByTicketRequest extends FastifyRequest {
+  params: {
+    id: string
+  }
+  query: {
+    page?: number
+    limit?: number
+  }
+}

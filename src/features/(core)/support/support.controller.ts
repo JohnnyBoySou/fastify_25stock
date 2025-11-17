@@ -8,7 +8,9 @@ import type {
     FindByQuerySupportRequest,
     RemoveSupportRequest,
     UpdateSupportRequest,
-    BulkRemoveSupportRequest
+    BulkRemoveSupportRequest,
+    CreateMessageRequest,
+    FindMessagesByTicketRequest
 } from './support.interfaces'
 
 export const SupportController = {
@@ -151,6 +153,88 @@ export const SupportController = {
             return reply.send(supports)
         } catch (error) {
             request.log.error(error)
+            return reply.status(500).send({
+                error: 'Internal server error',
+            })
+        }
+    },
+
+    async createMessage(request: CreateMessageRequest, reply: FastifyReply) {
+        try {
+            const { id: ticketId } = request.params
+            const { message, attachments } = request.body
+
+            const senderId = request.user?.id
+
+            if (!senderId) {
+                return reply.status(401).send({
+                    error: 'User not authenticated',
+                })
+            }
+
+            // Verificar se o ticket existe
+            const ticket = await SupportQueries.findById(ticketId)
+            if (!ticket) {
+                return reply.status(404).send({
+                    error: 'Ticket not found',
+                })
+            }
+
+            const supportMessage = await SupportCommands.createMessage({
+                ticketId,
+                senderId,
+                message,
+                attachments,
+            })
+
+            return reply.status(201).send(supportMessage)
+        } catch (error: any) {
+            request.log.error(error)
+
+            if (error.message === 'Ticket not found') {
+                return reply.status(404).send({
+                    error: error.message,
+                })
+            }
+
+            return reply.status(500).send({
+                error: 'Internal server error',
+            })
+        }
+    },
+
+    async findMessagesByTicket(
+        request: FindMessagesByTicketRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { id: ticketId } = request.params
+            const { page = 1, limit = 10 } = request.query
+
+            // Verificar se o ticket existe
+            const ticket = await SupportQueries.findById(ticketId)
+            if (!ticket) {
+                return reply.status(404).send({
+                    error: 'Ticket not found',
+                })
+            }
+
+            const result = await SupportQueries.findMessagesByTicketId(
+                ticketId,
+                page,
+                limit
+            )
+
+            return reply.send(result)
+        } catch (error: any) {
+            request.log.error(error)
+
+            if (error.message === 'Ticket not found') {
+                return reply.status(404).send({
+                    error: error.message,
+                })
+            }
+
             return reply.status(500).send({
                 error: 'Internal server error',
             })
