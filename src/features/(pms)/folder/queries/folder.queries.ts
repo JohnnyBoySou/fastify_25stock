@@ -51,13 +51,14 @@ export const FolderQueries = {
             },
           },
           media: {
+            where: {
+              media: {
+                deletedAt: null,
+              },
+            },
             orderBy: { sortOrder: 'asc' },
             include: {
-              media: {
-                where: {
-                  deletedAt: null,
-                },
-              },
+              media: true,
             },
           },
           createdBy: {
@@ -131,13 +132,14 @@ export const FolderQueries = {
           },
         },
         media: {
+          where: {
+            media: {
+              deletedAt: null,
+            },
+          },
           orderBy: { sortOrder: 'asc' },
           include: {
-            media: {
-              where: {
-                deletedAt: null,
-              },
-            },
+            media: true,
           },
         },
         createdBy: {
