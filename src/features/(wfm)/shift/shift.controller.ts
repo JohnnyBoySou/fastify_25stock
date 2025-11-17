@@ -7,6 +7,7 @@ import type {
   AddParticipantRequest,
   UpdateParticipantRequest,
 } from './shift.interfaces'
+import { db } from '@/plugins/prisma'
 
 export const ShiftController = {
   async create(request: CreateShiftRequest, reply: FastifyReply) {
@@ -27,19 +28,30 @@ export const ShiftController = {
 
       // Validar se occurrenceId existe e pertence à loja (se fornecido)
       if (occurrenceId) {
-        const { db } = await import('@/plugins/prisma')
-        const occurrence = await db.scheduleOccurrence.findFirst({
-          where: {
-            id: occurrenceId,
+        
+        // Primeiro verificar se o occurrence existe
+        const occurrenceExists = await db.scheduleOccurrence.findUnique({
+          where: { id: occurrenceId },
+          include: {
             schedule: {
-              storeId: request.store.id,
+              select: {
+                id: true,
+                storeId: true,
+              },
             },
           },
         })
 
-        if (!occurrence) {
+        if (!occurrenceExists) {
           return reply.status(404).send({
-            error: 'Schedule occurrence not found in this store',
+            error: 'Schedule occurrence not found',
+          })
+        }
+
+        // Depois verificar se pertence à loja
+        if (occurrenceExists.schedule.storeId !== request.store.id) {
+          return reply.status(403).send({
+            error: 'Schedule occurrence does not belong to this store',
           })
         }
       }
@@ -134,19 +146,31 @@ export const ShiftController = {
 
       // Validar occurrenceId se fornecido
       if (occurrenceId) {
-        const { db } = await import('@/plugins/prisma')
-        const occurrence = await db.scheduleOccurrence.findFirst({
-          where: {
-            id: occurrenceId,
+       
+        
+        // Primeiro verificar se o occurrence existe
+        const occurrenceExists = await db.scheduleOccurrence.findUnique({
+          where: { id: occurrenceId },
+          include: {
             schedule: {
-              storeId: request.store.id,
+              select: {
+                id: true,
+                storeId: true,
+              },
             },
           },
         })
 
-        if (!occurrence) {
+        if (!occurrenceExists) {
           return reply.status(404).send({
-            error: 'Schedule occurrence not found in this store',
+            error: 'Schedule occurrence not found',
+          })
+        }
+
+        // Depois verificar se pertence à loja
+        if (occurrenceExists.schedule.storeId !== request.store.id) {
+          return reply.status(403).send({
+            error: 'Schedule occurrence does not belong to this store',
           })
         }
       }
@@ -243,7 +267,7 @@ export const ShiftController = {
       }
 
       // Verificar se o usuário já é participante
-      const { db } = await import('@/plugins/prisma')
+     
       const existingParticipant = await db.shiftParticipant.findFirst({
         where: {
           shiftId,
@@ -294,7 +318,7 @@ export const ShiftController = {
       }
 
       // Verificar se o participante existe e pertence ao shift
-      const { db } = await import('@/plugins/prisma')
+     
       const participant = await db.shiftParticipant.findFirst({
         where: {
           id: participantId,
@@ -345,7 +369,6 @@ export const ShiftController = {
       }
 
       // Verificar se o participante existe e pertence ao shift
-      const { db } = await import('@/plugins/prisma')
       const participant = await db.shiftParticipant.findFirst({
         where: {
           id: participantId,
