@@ -31,9 +31,9 @@ const fastify = Fastify({
           }
         : undefined,
   },
-  requestTimeout: 60000, // 30 segundos para timeout de requisições
+  requestTimeout: 60000, // 60 segundos para timeout de requisições
   keepAliveTimeout: 5000, // 5 segundos para keep-alive
-  bodyLimit: 1048576, // 1MB para limite do body
+  bodyLimit: 10 * 1024 * 1024, // 10MB para limite do body (suporta uploads)
   routerOptions: {
     maxParamLength: 200, // Limite de caracteres para parâmetros de rota
   },
@@ -110,7 +110,13 @@ async function startServer() {
           origin: true,
           credentials: true,
           methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-          allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+          allowedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'X-Requested-With',
+            'Accept',
+            'Origin',
+          ],
         })
       },
     },
@@ -119,9 +125,9 @@ async function startServer() {
       action: async () => {
         await fastify.register(fastifyRawBody, {
           field: 'rawBody',
-          global: true,
+          global: false, // Não global para não interferir com multipart
           encoding: 'utf8',
-          runFirst: true,
+          runFirst: false, // Não executar primeiro para não consumir o body antes do multipart
         })
       },
     },

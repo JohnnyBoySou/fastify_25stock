@@ -5,9 +5,7 @@ import { GallerySchemas } from './gallery.schema'
 import { Middlewares } from '@/middlewares'
 
 export async function GalleryRoutes(fastify: FastifyInstance) {
-  fastify.addHook('preHandler', Middlewares.auth)
-  fastify.addHook('preHandler', Middlewares.store)
-
+  // Registrar multipart ANTES dos hooks para garantir que funcione corretamente
   await fastify.register(require('@fastify/multipart'), {
     limits: {
       fileSize: 10 * 1024 * 1024, // 10MB
@@ -16,6 +14,10 @@ export async function GalleryRoutes(fastify: FastifyInstance) {
     attachFieldsToBody: false, // Manter arquivos separados do body
     sharedSchemaId: 'MultipartFileType', // Schema para validação
   })
+
+  // Hooks após o registro do multipart
+  fastify.addHook('preHandler', Middlewares.auth)
+  fastify.addHook('preHandler', Middlewares.store)
 
   // === CRUD BÁSICO ===
   fastify.post('/', {
