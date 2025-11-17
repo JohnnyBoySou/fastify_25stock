@@ -619,11 +619,39 @@ export const GalleryController = {
   // === UPLOAD DE ARQUIVOS FÍSICOS ===
   async uploadSingle(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await (request as any).file()
+      // Verificar Content-Type
+      const contentType = request.headers['content-type'] || ''
+      console.log('Content-Type recebido:', contentType)
+      
+      if (!contentType.includes('multipart/form-data')) {
+        return reply.status(400).send({
+          error: `Content-Type deve ser multipart/form-data. Recebido: ${contentType}`,
+        })
+      }
+
+      // Tentar obter o arquivo
+      let data: any = null
+      try {
+        data = await (request as any).file()
+      } catch (multipartError: unknown) {
+        const error = multipartError as Error
+        request.log.error({ err: error }, 'Erro ao processar multipart')
+        
+        // Se o erro for sobre boundary, dar mensagem mais clara
+        if (error.message?.includes('Boundary') || error.message?.includes('boundary')) {
+          return reply.status(400).send({
+            error: 'Erro no formato multipart. Certifique-se de que o Content-Type inclui o boundary. Use FormData no cliente sem definir Content-Type manualmente.',
+            details: error.message,
+          })
+        }
+        
+        // Re-lançar outros erros
+        throw error
+      }
 
       if (!data) {
         return reply.status(400).send({
-          error: 'Nenhum arquivo enviado',
+          error: 'Nenhum arquivo enviado. Certifique-se de usar o campo "file" no FormData.',
         })
       }
 
