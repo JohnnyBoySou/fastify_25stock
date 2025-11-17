@@ -30,8 +30,35 @@ export const ShiftQueries = {
             startTime: true,
             endTime: true,
             status: true,
+            schedule: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                startTime: true,
+                endTime: true,
+                rrule: true,
+                timezone: true,
+                status: true,
+                space: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         },
+       
         createdBy: {
           select: {
             id: true,
@@ -86,6 +113,32 @@ export const ShiftQueries = {
             startTime: true,
             endTime: true,
             status: true,
+            schedule: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                startTime: true,
+                endTime: true,
+                rrule: true,
+                timezone: true,
+                status: true,
+                space: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         },
         createdBy: {
@@ -151,6 +204,32 @@ export const ShiftQueries = {
             startTime: true,
             endTime: true,
             status: true,
+            schedule: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                startTime: true,
+                endTime: true,
+                rrule: true,
+                timezone: true,
+                status: true,
+                space: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         },
         createdBy: {
