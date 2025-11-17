@@ -12,13 +12,65 @@ import { db } from '@/plugins/prisma'
 export const ShiftController = {
   async create(request: CreateShiftRequest, reply: FastifyReply) {
     try {
-      const { name, description, occurrenceId } = request.body
+      const { name, description, occurrenceId, scheduleId } = request.body
 
-      request.log.info(request.body)
-      if (occurrenceId) {
-        
-        const occurrenceExists = await db.scheduleOccurrence.findUnique({
-          where: { id: occurrenceId },
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: 'Store not found for this user',
+        })
+      }
+
+      let finalOccurrenceId: string | undefined = occurrenceId
+
+      // Se scheduleId foi fornecido, buscar a primeira occurrence do schedule
+      if (scheduleId && !occurrenceId) {
+        // Verificar se o schedule existe e pertence à loja
+        const schedule = await db.schedule.findFirst({
+          where: {
+            id: scheduleId,
+            storeId: request.store.id,
+          },
+          include: {
+            occurrences: {
+              select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+              },
+              orderBy: {
+                startTime: 'asc',
+              },
+              take: 1, // Pegar apenas a primeira
+            },
+          },
+        })
+
+        if (!schedule) {
+          return reply.status(404).send({
+            error: 'Schedule not found or does not belong to this store',
+          })
+        }
+
+        if (!schedule.occurrences || schedule.occurrences.length === 0) {
+          return reply.status(404).send({
+            error: 'Schedule has no occurrences',
+          })
+        }
+
+        finalOccurrenceId = schedule.occurrences[0].id
+      }
+
+      // Se occurrenceId foi fornecido (ou encontrado via scheduleId), validar
+      if (finalOccurrenceId) {
+        // Verificar se a ocorrência existe e pertence à loja
+        const occurrenceExists = await db.scheduleOccurrence.findFirst({
+          where: { 
+            id: finalOccurrenceId,
+            schedule: {
+              storeId: request.store.id,
+            },
+          },
           include: {
             schedule: {
               select: {
@@ -29,18 +81,9 @@ export const ShiftController = {
           },
         })
 
-        request.log.info(occurrenceExists)
-
         if (!occurrenceExists) {
           return reply.status(404).send({
-            error: 'Schedule occurrence not found',
-          })
-        }
-
-        // Depois verificar se pertence à loja
-        if (occurrenceExists.schedule.storeId !== request.store.id) {
-          return reply.status(403).send({
-            error: 'Schedule occurrence does not belong to this store',
+            error: 'Schedule occurrence not found or does not belong to this store',
           })
         }
       }
@@ -49,7 +92,7 @@ export const ShiftController = {
         name,
         description,
         storeId: request.store.id,
-        occurrenceId,
+        occurrenceId: finalOccurrenceId,
         createdById: request.user.id,
       })
       return reply.status(201).send(shift)
@@ -117,7 +160,7 @@ export const ShiftController = {
   async update(request: UpdateShiftRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { name, description, occurrenceId } = request.body
+      const { name, description, occurrenceId, scheduleId } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -133,13 +176,57 @@ export const ShiftController = {
         })
       }
 
-      // Validar occurrenceId se fornecido
-      if (occurrenceId) {
-       
-        
-        // Primeiro verificar se o occurrence existe
-        const occurrenceExists = await db.scheduleOccurrence.findUnique({
-          where: { id: occurrenceId },
+      let finalOccurrenceId: string | undefined = occurrenceId
+
+      // Se scheduleId foi fornecido, buscar a primeira occurrence do schedule
+      if (scheduleId && !occurrenceId) {
+        // Verificar se o schedule existe e pertence à loja
+        const schedule = await db.schedule.findFirst({
+          where: {
+            id: scheduleId,
+            storeId: request.store.id,
+          },
+          include: {
+            occurrences: {
+              select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+              },
+              orderBy: {
+                startTime: 'asc',
+              },
+              take: 1, // Pegar apenas a primeira
+            },
+          },
+        })
+
+        if (!schedule) {
+          return reply.status(404).send({
+            error: 'Schedule not found or does not belong to this store',
+          })
+        }
+
+        if (!schedule.occurrences || schedule.occurrences.length === 0) {
+          return reply.status(404).send({
+            error: 'Schedule has no occurrences',
+          })
+        }
+
+        finalOccurrenceId = schedule.occurrences[0].id
+      }
+
+      // Validar occurrenceId se fornecido (ou encontrado via scheduleId)
+      if (finalOccurrenceId) {
+        // Verificar se a ocorrência existe e pertence à loja
+        const occurrenceExists = await db.scheduleOccurrence.findFirst({
+          where: { 
+            id: finalOccurrenceId,
+            schedule: {
+              storeId: request.store.id,
+            },
+          },
           include: {
             schedule: {
               select: {
@@ -152,14 +239,7 @@ export const ShiftController = {
 
         if (!occurrenceExists) {
           return reply.status(404).send({
-            error: 'Schedule occurrence not found',
-          })
-        }
-
-        // Depois verificar se pertence à loja
-        if (occurrenceExists.schedule.storeId !== request.store.id) {
-          return reply.status(403).send({
-            error: 'Schedule occurrence does not belong to this store',
+            error: 'Schedule occurrence not found or does not belong to this store',
           })
         }
       }
@@ -167,7 +247,7 @@ export const ShiftController = {
       const shift = await ShiftCommands.update(id, {
         name,
         description,
-        occurrenceId,
+        occurrenceId: finalOccurrenceId,
       })
       return reply.status(200).send(shift)
     } catch (error: any) {

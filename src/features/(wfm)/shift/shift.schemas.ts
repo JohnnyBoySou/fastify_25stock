@@ -8,6 +8,7 @@ export const create: FastifySchema = {
       name: { type: 'string' },
       description: { type: 'string' },
       occurrenceId: { type: 'string' },
+      scheduleId: { type: 'string' },
     },
   },
 }
@@ -48,6 +49,7 @@ export const update: FastifySchema = {
       name: { type: 'string' },
       description: { type: 'string' },
       occurrenceId: { type: 'string' },
+      scheduleId: { type: 'string' },
     },
   },
 }

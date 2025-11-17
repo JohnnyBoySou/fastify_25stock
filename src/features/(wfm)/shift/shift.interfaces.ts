@@ -5,6 +5,7 @@ export interface CreateShiftRequest extends FastifyRequest {
     name: string
     description?: string
     occurrenceId?: string
+    scheduleId?: string
   }
 }
 
@@ -13,6 +14,7 @@ export interface UpdateShiftRequest extends FastifyRequest {
     name?: string
     description?: string
     occurrenceId?: string
+    scheduleId?: string
   }
 }
 

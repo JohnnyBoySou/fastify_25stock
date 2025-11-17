@@ -3,6 +3,7 @@ import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.interfaces'
 import { checkScheduleConflicts, processScheduleTimes } from './schedule.utils'
+import { db } from '@/plugins/prisma'
 
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
@@ -23,8 +24,6 @@ export const ScheduleController = {
         })
       }
 
-      // Validar se o space existe e pertence à loja
-      const { db } = await import('@/plugins/prisma')
       const spaceExists = await db.space.findFirst({
         where: {
           id: spaceId,
@@ -38,7 +37,6 @@ export const ScheduleController = {
         })
       }
 
-      // Processar horários baseado na presença de rrule
       let start: Date
       let end: Date
 
@@ -52,7 +50,6 @@ export const ScheduleController = {
         })
       }
 
-      // Verificar conflitos com agendamentos existentes
       const conflictCheck = await checkScheduleConflicts(
         spaceId,
         start,
@@ -177,7 +174,7 @@ export const ScheduleController = {
       // Validar spaceId se fornecido
       const finalSpaceId = spaceId || existingSchedule.spaceId
       if (spaceId) {
-        const { db } = await import('@/plugins/prisma')
+        
         const spaceExists = await db.space.findFirst({
           where: {
             id: spaceId,
@@ -263,7 +260,7 @@ export const ScheduleController = {
 
       // Se rrule foi alterado, precisamos recriar as ocorrências
       if (rrule !== undefined && rrule !== existingSchedule.rrule) {
-        const { db } = await import('@/plugins/prisma')
+        
         const { generateOccurrences, createScheduleOccurrences } = await import('./schedule.utils')
         
         // Deletar ocorrências antigas
