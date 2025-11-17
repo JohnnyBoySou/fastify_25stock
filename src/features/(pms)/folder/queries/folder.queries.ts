@@ -83,7 +83,6 @@ export const FolderQueries = {
       db.folder.count({ where }),
     ])
 
-    // Se parentId foi passado, também buscar mídias diretamente naquela pasta
     let directMedia: any[] = []
     let parentFolderName: string | undefined
     if (parentId) {
@@ -120,15 +119,12 @@ export const FolderQueries = {
       parentFolderName = parentFolder?.name
     }
 
-    // Buscar todas as pastas que correspondem ao filtro para contar mídias totais
     const allMatchingFolders = await db.folder.findMany({
       where,
       select: { id: true },
     })
     const allFolderIds = allMatchingFolders.map(f => f.id)
 
-    // Contar total de mídias relacionadas a todas as pastas que correspondem ao filtro
-    // Se parentId foi passado, também contar mídias diretamente naquela pasta
     const folderIdsForMediaCount = parentId 
       ? [...allFolderIds, parentId]
       : allFolderIds
@@ -143,21 +139,18 @@ export const FolderQueries = {
       },
     }) : 0
 
-    // Transformar mídias em itens separados
     const items: any[] = []
     
-    // Se parentId foi passado, adicionar primeiro as mídias diretamente naquela pasta
+    // Se parentId foi passado, adicionar primeiro as mídias diretamente naquela pasta  
     if (parentId && directMedia.length > 0) {
       for (const folderMedia of directMedia) {
         const media = folderMedia.media
-        // Extrair o MIME type do campo 'type' da mídia e renomear para 'mimeType'
         const { type: mimeType, ...restMediaData } = media
         
-        // Criar item de mídia com todos os dados da mídia + type: 'media' para diferenciar
         items.push({
           ...restMediaData,
-          type: 'media', // Tipo do item para diferenciar de pastas
-          mimeType: mimeType, // MIME type do arquivo (image/jpeg, etc)
+          type: 'media',
+          mimeType: mimeType,
           folderId: parentId,
           folderName: parentFolderName || 'Unknown',
           sortOrder: folderMedia.sortOrder,
@@ -165,15 +158,12 @@ export const FolderQueries = {
       }
     }
     
-    // Adicionar pastas e suas mídias
     for (const folder of folders) {
-      // Adicionar a pasta como item
       items.push({
         ...folder,
-        type: 'folder', // Tipo do item para diferenciar de mídias
+        type: 'folder',
       })
       
-      // Adicionar cada mídia relacionada como item separado
       if (folder.media && folder.media.length > 0) {
         for (const folderMedia of folder.media) {
           const media = folderMedia.media

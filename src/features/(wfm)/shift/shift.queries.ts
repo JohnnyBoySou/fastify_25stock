@@ -106,7 +106,7 @@ export const ShiftQueries = {
       },
     })
 
-    return PaginationUtils.transformPaginationResult(result, 'shifts')
+    return PaginationUtils.transformPaginationResult(result, 'items')
   },
 
   async getById(id: string, storeId: string) {
