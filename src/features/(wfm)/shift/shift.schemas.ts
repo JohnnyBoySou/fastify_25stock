@@ -124,6 +124,15 @@ export const removeParticipant: FastifySchema = {
   },
 }
 
+export const getParticipants: FastifySchema = {
+  params: {
+    type: 'object',
+    required: ['shiftId'],
+    properties: {
+      shiftId: { type: 'string' },
+    },
+  },
+}
 export const ShiftSchemas = {
   create,
   getAll,
@@ -134,4 +143,5 @@ export const ShiftSchemas = {
   addParticipant,
   updateParticipant,
   removeParticipant,
+  getParticipants,
 }

@@ -58,7 +58,7 @@ export const ShiftQueries = {
             },
           },
         },
-       
+
         createdBy: {
           select: {
             id: true,
@@ -264,6 +264,28 @@ export const ShiftQueries = {
       take: query?.limit ? Number.parseInt(query.limit) : undefined,
       orderBy: {
         createdAt: 'desc',
+      },
+    })
+  },
+
+  async getParticipants(shiftId: string) {
+    return await db.shiftParticipant.findMany({
+      where: { shiftId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     })
   },

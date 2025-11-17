@@ -45,6 +45,13 @@ export async function ShiftRoutes(fastify: FastifyInstance) {
   })
 
   // Rotas de Participantes
+
+  fastify.get('/:shiftId/participants', {
+    preHandler: [Middlewares.permission('SHIFTS', 'READ')],
+    schema: ShiftSchemas.getParticipants,
+    handler: ShiftController.getParticipants,
+  })
+
   fastify.post('/:shiftId/participants', {
     preHandler: [Middlewares.permission('SHIFTS', 'CREATE')],
     schema: ShiftSchemas.addParticipant,

@@ -461,4 +461,17 @@ export const ShiftController = {
       })
     }
   },
+
+  async getParticipants(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { shiftId } = request.params as { shiftId: string }
+      const participants = await ShiftQueries.getParticipants(shiftId)
+      return reply.status(200).send(participants)
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: error.message || 'Internal server error',
+      })
+    }
+  },
 }
