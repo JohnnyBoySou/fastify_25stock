@@ -27,7 +27,7 @@ export const FolderQueries = {
       where.parentId = null
     }
 
-    const [data, total] = await Promise.all([
+    const [folders, totalFolders] = await Promise.all([
       db.folder.findMany({
         where,
         skip,
@@ -59,7 +59,17 @@ export const FolderQueries = {
             },
             orderBy: { sortOrder: 'asc' },
             include: {
-              media: true, // Não pode usar where aqui, o filtro já está no nível acima
+              media: {
+                include: {
+                  uploadedBy: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
             },
           },
           createdBy: {
@@ -74,8 +84,55 @@ export const FolderQueries = {
       db.folder.count({ where }),
     ])
 
+    // Buscar todas as pastas que correspondem ao filtro para contar mídias totais
+    const allMatchingFolders = await db.folder.findMany({
+      where,
+      select: { id: true },
+    })
+    const allFolderIds = allMatchingFolders.map(f => f.id)
+
+    // Contar total de mídias relacionadas a todas as pastas que correspondem ao filtro
+    const totalMedia = allFolderIds.length > 0 ? await db.folderMedia.count({
+      where: {
+        folderId: { in: allFolderIds },
+        media: {
+          deletedAt: null,
+          storeId: storeId,
+        },
+      },
+    }) : 0
+
+    // Transformar mídias em itens separados
+    const items: any[] = []
+    
+    for (const folder of folders) {
+      // Adicionar a pasta como item
+      items.push({
+        ...folder,
+        type: 'folder',
+      })
+      
+      // Adicionar cada mídia relacionada como item separado
+      if (folder.media && folder.media.length > 0) {
+        for (const folderMedia of folder.media) {
+          const { type: mimeType, ...mediaData } = folderMedia.media
+          items.push({
+            ...mediaData,
+            type: 'media',
+            mimeType,
+            folderId: folder.id,
+            folderName: folder.name,
+            sortOrder: folderMedia.sortOrder,
+          })
+        }
+      }
+    }
+
+    // Total inclui pastas + mídias relacionadas
+    const total = totalFolders + totalMedia
+
     return {
-      items: data,
+      items,
       pagination: {
         page,
         limit,
