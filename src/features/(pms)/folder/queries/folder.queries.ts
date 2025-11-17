@@ -54,11 +54,17 @@ export const FolderQueries = {
             where: {
               media: {
                 deletedAt: null,
+                storeId: storeId, // Garantir que a mídia pertence ao mesmo store
               },
             },
             orderBy: { sortOrder: 'asc' },
             include: {
-              media: true,
+              media: {
+                where: {
+                  deletedAt: null,
+                  storeId: storeId, // Filtro adicional para garantir
+                },
+              },
             },
           },
           createdBy: {
@@ -135,11 +141,17 @@ export const FolderQueries = {
           where: {
             media: {
               deletedAt: null,
+              storeId: storeId, // Garantir que a mídia pertence ao mesmo store
             },
           },
           orderBy: { sortOrder: 'asc' },
           include: {
-            media: true,
+            media: {
+              where: {
+                deletedAt: null,
+                storeId: storeId, // Filtro adicional para garantir
+              },
+            },
           },
         },
         createdBy: {
