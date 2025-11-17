@@ -629,10 +629,25 @@ export const GalleryController = {
         })
       }
 
-      // Tentar obter o arquivo
+      // Coletar arquivo e campos do formulário do multipart
       let data: any = null
+      const formFields: Record<string, any> = {}
+      
       try {
-        data = await (request as any).file()
+        const parts = (request as any).parts()
+        
+        for await (const part of parts) {
+          if (part.type === 'file') {
+            // Se ainda não encontrou um arquivo, usar este
+            // Priorizar arquivo com fieldname "file", mas aceitar qualquer arquivo
+            if (!data || part.fieldname === 'file') {
+              data = part
+            }
+          } else if (part.type === 'field') {
+            // Coletar campos do formulário
+            formFields[part.fieldname] = part.value
+          }
+        }
       } catch (multipartError: unknown) {
         const error = multipartError as Error
         request.log.error({ err: error }, 'Erro ao processar multipart')
@@ -678,8 +693,13 @@ export const GalleryController = {
         )
       )
 
-      // Obter configurações do body ou query
-      const { entityType = 'general', folderId } = (request.body as any) || (request.query as any)
+      // Obter configurações dos campos do formulário ou query
+      const entityType = formFields.entityType || (request.query as any)?.entityType || 'general'
+      const folderId = formFields.folderId || (request.query as any)?.folderId
+      
+      // Debug: Log dos campos coletados
+      console.log('Campos do formulário coletados:', formFields)
+      console.log('folderId coletado:', folderId)
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id
