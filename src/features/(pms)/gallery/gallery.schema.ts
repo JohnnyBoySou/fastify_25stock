@@ -135,7 +135,7 @@ export const listUploadsSchema: FastifySchema = {
       type: { type: 'string' },
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string' },
     },
@@ -220,7 +220,7 @@ export const attachMediaSchema: FastifySchema = {
     properties: {
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string', minLength: 1 },
       isPrimary: { type: 'boolean', default: false },
@@ -274,7 +274,7 @@ export const detachMediaSchema: FastifySchema = {
     properties: {
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string', minLength: 1 },
     },
@@ -309,7 +309,7 @@ export const getEntityMediaSchema: FastifySchema = {
     properties: {
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string', minLength: 1 },
     },
@@ -374,7 +374,7 @@ export const setPrimaryMediaSchema: FastifySchema = {
     properties: {
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string', minLength: 1 },
     },
@@ -630,7 +630,7 @@ export const getPrimaryMediaSchema: FastifySchema = {
     properties: {
       entityType: {
         type: 'string',
-        enum: ['product', 'supplier', 'user', 'store', 'folder'],
+        enum: ['product', 'supplier', 'user', 'store', 'folder', 'space'],
       },
       entityId: { type: 'string', minLength: 1 },
     },

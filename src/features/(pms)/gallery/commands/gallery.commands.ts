@@ -96,6 +96,10 @@ export const GalleryCommands = {
       where: { mediaId: id },
     })
 
+    await db.spaceMedia.deleteMany({
+      where: { mediaId: id },
+    })
+
     // Depois deletar a mídia
     await db.media.delete({
       where: { id },
@@ -221,6 +225,64 @@ export const GalleryCommands = {
     return attachment
   },
 
+  async attachToSpace(data: AttachMediaData) {
+    if (data.entityType !== 'space') {
+      throw new Error('Invalid entity type for space attachment')
+    }
+
+    // Verificar se o space existe
+    const space = await db.space.findFirst({
+      where: {
+        id: data.entityId,
+      },
+    })
+
+    if (!space) {
+      throw new Error('Space not found')
+    }
+
+    // Verificar se já existe a relação
+    const existing = await db.spaceMedia.findFirst({
+      where: {
+        spaceId: data.entityId,
+        mediaId: data.mediaId,
+      },
+    })
+
+    if (existing) {
+      throw new Error('Media already attached to this space')
+    }
+
+    // Obter o maior sortOrder para adicionar no final
+    const maxSortOrder = await db.spaceMedia.findFirst({
+      where: { spaceId: data.entityId },
+      orderBy: { sortOrder: 'desc' },
+      select: { sortOrder: true },
+    })
+
+    const attachment = await db.spaceMedia.create({
+      data: {
+        spaceId: data.entityId,
+        mediaId: data.mediaId,
+        isPrimary: data.isPrimary || false,
+        sortOrder: maxSortOrder ? maxSortOrder.sortOrder + 1 : 0,
+      },
+    })
+
+    // Se esta é a imagem principal, remover a flag de principal das outras
+    if (data.isPrimary) {
+      await db.spaceMedia.updateMany({
+        where: {
+          spaceId: data.entityId,
+          id: { not: attachment.id },
+        },
+        data: { isPrimary: false },
+      })
+    }
+
+    return attachment
+  },
+
   async detachFromProduct(mediaId: string, entityId: string) {
     const attachment = await db.productMedia.findFirst({
       where: {
@@ -316,6 +378,25 @@ export const GalleryCommands = {
     return attachment
   },
 
+  async detachFromSpace(mediaId: string, entityId: string) {
+    const attachment = await db.spaceMedia.findFirst({
+      where: {
+        mediaId,
+        spaceId: entityId,
+      },
+    })
+
+    if (!attachment) {
+      throw new Error('Media attachment not found')
+    }
+
+    await db.spaceMedia.delete({
+      where: { id: attachment.id },
+    })
+
+    return attachment
+  },
+
   async setPrimaryForProduct(mediaId: string, productId: string) {
     // Primeiro, remover a flag de principal de todas as outras mídias
     await db.productMedia.updateMany({
@@ -331,6 +412,28 @@ export const GalleryCommands = {
       where: {
         mediaId,
         productId,
+      },
+      data: { isPrimary: true },
+    })
+
+    return attachment
+  },
+
+  async setPrimaryForSpace(mediaId: string, spaceId: string) {
+    // Primeiro, remover a flag de principal de todas as outras mídias
+    await db.spaceMedia.updateMany({
+      where: {
+        spaceId,
+        mediaId: { not: mediaId },
+      },
+      data: { isPrimary: false },
+    })
+
+    // Depois, definir esta como principal
+    const attachment = await db.spaceMedia.updateMany({
+      where: {
+        mediaId,
+        spaceId,
       },
       data: { isPrimary: true },
     })
@@ -354,6 +457,9 @@ export const GalleryCommands = {
         where: { mediaId: { in: mediaIds } },
       }),
       db.folderMedia.deleteMany({
+        where: { mediaId: { in: mediaIds } },
+      }),
+      db.spaceMedia.deleteMany({
         where: { mediaId: { in: mediaIds } },
       }),
     ])

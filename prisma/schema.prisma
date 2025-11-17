@@ -980,6 +980,7 @@ model Media {
   userMedia     UserMedia[]
   storeMedia    StoreMedia[]
   folderMedia   FolderMedia[]
+  spaceMedia    SpaceMedia[]
 
   // Índices
   @@index([storeId])
@@ -1045,6 +1046,21 @@ model StoreMedia {
 
   @@unique([storeId, mediaId])
   @@map("store_media")
+}
+
+model SpaceMedia {
+  id       String  @id @default(cuid())
+  spaceId  String
+  mediaId  String
+  isPrimary Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  space Space @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([spaceId, mediaId])
+  @@index([spaceId])
+  @@map("space_media")
 }
 
 /// ===============================
@@ -1604,6 +1620,7 @@ model Space {
 
   schedules Schedule[]
   resources Resource[]
+  spaceMedia SpaceMedia[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

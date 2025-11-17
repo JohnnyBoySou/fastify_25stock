@@ -27,6 +27,23 @@ export const SpaceQueries = {
             endTime: true,
           },
         },
+        spaceMedia: {
+          include: {
+            media: {
+              select: {
+                id: true,
+                url: true,
+                name: true,
+                type: true,
+                size: true,
+              },
+            },
+          },
+          orderBy: [
+            { isPrimary: 'desc' },
+            { sortOrder: 'asc' },
+          ],
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -75,6 +92,23 @@ export const SpaceQueries = {
             endTime: true,
           },
         },
+        spaceMedia: {
+          include: {
+            media: {
+              select: {
+                id: true,
+                url: true,
+                name: true,
+                type: true,
+                size: true,
+              },
+            },
+          },
+          orderBy: [
+            { isPrimary: 'desc' },
+            { sortOrder: 'asc' },
+          ],
+        },
       },
     })
   },
@@ -107,6 +141,23 @@ export const SpaceQueries = {
             name: true,
             email: true,
           },
+        },
+        spaceMedia: {
+          include: {
+            media: {
+              select: {
+                id: true,
+                url: true,
+                name: true,
+                type: true,
+                size: true,
+              },
+            },
+          },
+          orderBy: [
+            { isPrimary: 'desc' },
+            { sortOrder: 'asc' },
+          ],
         },
       },
       take: limit ? Number.parseInt(limit.toString()) : undefined,

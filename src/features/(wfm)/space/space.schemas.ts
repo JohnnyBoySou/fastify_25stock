@@ -9,6 +9,7 @@ export const create: FastifySchema = {
       description: { type: 'string' },
       capacity: { type: 'number' },
       location: { type: 'string' },
+      mediaId: { type: 'string' },
     },
   },
 }

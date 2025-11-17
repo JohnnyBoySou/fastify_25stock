@@ -66,6 +66,11 @@ export const GalleryQueries = {
             where: { folderId: entityId },
           }
           break
+        case 'space':
+          include.spaceMedia = {
+            where: { spaceId: entityId },
+          }
+          break
       }
     }
 
@@ -96,6 +101,8 @@ export const GalleryQueries = {
                 return upload.storeMedia && upload.storeMedia.length > 0
               case 'folder':
                 return upload.folderMedia && upload.folderMedia.length > 0
+              case 'space':
+                return upload.spaceMedia && upload.spaceMedia.length > 0
               default:
                 return true
             }
@@ -201,6 +208,19 @@ export const GalleryQueries = {
         })
         break
 
+      case 'space':
+        media = await db.spaceMedia.findMany({
+          where: { spaceId: entityId },
+          include: {
+            media: true,
+          },
+          orderBy: [
+            { isPrimary: 'desc' },
+            { sortOrder: 'asc' },
+          ],
+        })
+        break
+
       default:
         throw new Error('Invalid entity type')
     }
@@ -232,6 +252,20 @@ export const GalleryQueries = {
           },
         })
         media = productMedia
+        break
+      }
+
+      case 'space': {
+        const spaceMedia = await db.spaceMedia.findFirst({
+          where: {
+            spaceId: entityId,
+            isPrimary: true,
+          },
+          include: {
+            media: true,
+          },
+        })
+        media = spaceMedia || null
         break
       }
 
@@ -320,6 +354,7 @@ export const GalleryQueries = {
         { userMedia: { none: {} } },
         { storeMedia: { none: {} } },
         { folderMedia: { none: {} } },
+        { spaceMedia: { none: {} } },
       ],
     }
 
@@ -337,7 +372,7 @@ export const GalleryQueries = {
   },
 
   async getMediaUsage(mediaId: string) {
-    const [productUsage, supplierUsage, userUsage, storeUsage, folderUsage] = await Promise.all([
+    const [productUsage, supplierUsage, userUsage, storeUsage, folderUsage, spaceUsage] = await Promise.all([
       db.productMedia.findMany({
         where: { mediaId },
         include: {
@@ -378,6 +413,14 @@ export const GalleryQueries = {
           },
         },
       }),
+      db.spaceMedia.findMany({
+        where: { mediaId },
+        include: {
+          space: {
+            select: { id: true, name: true },
+          },
+        },
+      }),
     ])
 
     return {
@@ -386,12 +429,14 @@ export const GalleryQueries = {
       users: userUsage,
       stores: storeUsage,
       folders: folderUsage,
+      spaces: spaceUsage,
       totalUsage:
         productUsage.length +
         supplierUsage.length +
         userUsage.length +
         storeUsage.length +
-        folderUsage.length,
+        folderUsage.length +
+        spaceUsage.length,
     }
   },
 

@@ -2,11 +2,12 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { SpaceCommands } from './space.commands'
 import { SpaceQueries } from './space.queries'
 import type { CreateSpaceRequest, UpdateSpaceRequest } from './space.interfaces'
+import { GalleryCommands } from '@/features/(pms)/gallery/commands/gallery.commands'
 
 export const SpaceController = {
   async create(request: CreateSpaceRequest, reply: FastifyReply) {
     try {
-      const { name, description, capacity, location } = request.body
+      const { name, description, capacity, location, mediaId } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -28,7 +29,26 @@ export const SpaceController = {
         storeId: request.store.id,
         createdById: request.user.id,
       })
-      return reply.status(201).send(space)
+
+      // Se mediaId foi fornecido, anexar a imagem ao space
+      if (mediaId) {
+        try {
+          await GalleryCommands.attachToSpace({
+            mediaId,
+            entityType: 'space',
+            entityId: space.id,
+            isPrimary: true,
+          })
+        } catch (mediaError: any) {
+          request.log.warn({ err: mediaError }, 'Erro ao anexar imagem ao space')
+          // Não falha a criação do space se houver erro ao anexar a imagem
+          // Apenas loga o erro
+        }
+      }
+
+      // Buscar o space novamente com as mídias incluídas
+      const spaceWithMedia = await SpaceQueries.getById(space.id, request.store.id)
+      return reply.status(201).send(spaceWithMedia)
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({

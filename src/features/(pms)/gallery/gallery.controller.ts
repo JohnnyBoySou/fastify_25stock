@@ -497,6 +497,14 @@ export const GalleryController = {
             entityId,
           })
           break
+        case 'space':
+          result = await GalleryCommands.attachToSpace({
+            mediaId: id,
+            entityType,
+            entityId,
+            isPrimary,
+          })
+          break
         default:
           return reply.status(400).send({
             error: 'Invalid entity type',
@@ -544,6 +552,9 @@ export const GalleryController = {
         case 'folder':
           await GalleryCommands.detachFromFolder(id, entityId)
           break
+        case 'space':
+          await GalleryCommands.detachFromSpace(id, entityId)
+          break
         default:
           return reply.status(400).send({
             error: 'Invalid entity type',
@@ -579,9 +590,11 @@ export const GalleryController = {
 
       if (entityType === 'product') {
         await GalleryCommands.setPrimaryForProduct(id, entityId)
+      } else if (entityType === 'space') {
+        await GalleryCommands.setPrimaryForSpace(id, entityId)
       } else {
         return reply.status(400).send({
-          error: 'Primary media is only supported for products',
+          error: 'Primary media is only supported for products and spaces',
         })
       }
 
@@ -938,7 +951,7 @@ export const GalleryController = {
           'text/plain',
         ],
         uploadDir: uploadService.getUploadDir(),
-        entityTypes: ['product', 'supplier', 'user', 'store', 'general'],
+        entityTypes: ['product', 'supplier', 'user', 'store', 'folder', 'space', 'general'],
       }
 
       return reply.send(config)
