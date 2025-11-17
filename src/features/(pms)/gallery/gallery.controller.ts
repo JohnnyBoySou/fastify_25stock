@@ -619,11 +619,18 @@ export const GalleryController = {
   // === UPLOAD DE ARQUIVOS FÍSICOS ===
   async uploadSingle(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await (request as any).file()
+      // Tentar obter o arquivo com o nome de campo padrão "file"
+      // Se não encontrar, tentar sem especificar (pega o primeiro arquivo)
+      let data = await (request as any).file('file')
+      
+      if (!data) {
+        // Se não encontrou com "file", tentar sem especificar campo
+        data = await (request as any).file()
+      }
 
       if (!data) {
         return reply.status(400).send({
-          error: 'Nenhum arquivo enviado',
+          error: 'Nenhum arquivo enviado. Use o campo "file" no formulário multipart/form-data.',
         })
       }
 
