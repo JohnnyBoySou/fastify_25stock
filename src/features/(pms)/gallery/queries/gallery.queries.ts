@@ -61,6 +61,11 @@ export const GalleryQueries = {
             where: { storeId: entityId },
           }
           break
+        case 'folder':
+          include.folderMedia = {
+            where: { folderId: entityId },
+          }
+          break
       }
     }
 
@@ -89,6 +94,8 @@ export const GalleryQueries = {
                 return upload.userMedia && upload.userMedia.length > 0
               case 'store':
                 return upload.storeMedia && upload.storeMedia.length > 0
+              case 'folder':
+                return upload.folderMedia && upload.folderMedia.length > 0
               default:
                 return true
             }
@@ -184,6 +191,16 @@ export const GalleryQueries = {
         })
         break
 
+      case 'folder':
+        media = await db.folderMedia.findMany({
+          where: { folderId: entityId },
+          include: {
+            media: true,
+          },
+          orderBy: { sortOrder: 'asc' },
+        })
+        break
+
       default:
         throw new Error('Invalid entity type')
     }
@@ -194,6 +211,7 @@ export const GalleryQueries = {
       entityType,
       entityId,
       isPrimary: 'isPrimary' in item ? item.isPrimary : null,
+      sortOrder: 'sortOrder' in item ? item.sortOrder : null,
       createdAt: item.createdAt,
       media: item.media,
     }))
@@ -219,7 +237,8 @@ export const GalleryQueries = {
 
       case 'supplier':
       case 'user':
-      case 'store': {
+      case 'store':
+      case 'folder': {
         // Para essas entidades, pegar a primeira mídia (não têm conceito de principal)
         const firstMedia = await this.getEntityMedia(entityType, entityId)
         media = firstMedia[0] || null
@@ -300,6 +319,7 @@ export const GalleryQueries = {
         { supplierMedia: { none: {} } },
         { userMedia: { none: {} } },
         { storeMedia: { none: {} } },
+        { folderMedia: { none: {} } },
       ],
     }
 
@@ -317,7 +337,7 @@ export const GalleryQueries = {
   },
 
   async getMediaUsage(mediaId: string) {
-    const [productUsage, supplierUsage, userUsage, storeUsage] = await Promise.all([
+    const [productUsage, supplierUsage, userUsage, storeUsage, folderUsage] = await Promise.all([
       db.productMedia.findMany({
         where: { mediaId },
         include: {
@@ -350,6 +370,14 @@ export const GalleryQueries = {
           },
         },
       }),
+      db.folderMedia.findMany({
+        where: { mediaId },
+        include: {
+          folder: {
+            select: { id: true, name: true },
+          },
+        },
+      }),
     ])
 
     return {
@@ -357,7 +385,13 @@ export const GalleryQueries = {
       suppliers: supplierUsage,
       users: userUsage,
       stores: storeUsage,
-      totalUsage: productUsage.length + supplierUsage.length + userUsage.length + storeUsage.length,
+      folders: folderUsage,
+      totalUsage:
+        productUsage.length +
+        supplierUsage.length +
+        userUsage.length +
+        storeUsage.length +
+        folderUsage.length,
     }
   },
 

@@ -47,6 +47,17 @@ export const FolderQueries = {
                   deletedAt: null,
                 },
               },
+              media: true,
+            },
+          },
+          media: {
+            orderBy: { sortOrder: 'asc' },
+            include: {
+              media: {
+                where: {
+                  deletedAt: null,
+                },
+              },
             },
           },
           createdBy: {
@@ -99,6 +110,7 @@ export const FolderQueries = {
                     deletedAt: null,
                   },
                 },
+                media: true,
               },
             },
           },
@@ -114,6 +126,16 @@ export const FolderQueries = {
                 id: true,
                 name: true,
                 email: true,
+              },
+            },
+          },
+        },
+        media: {
+          orderBy: { sortOrder: 'asc' },
+          include: {
+            media: {
+              where: {
+                deletedAt: null,
               },
             },
           },
@@ -164,6 +186,7 @@ export const FolderQueries = {
                 deletedAt: null,
               },
             },
+            media: true,
           },
         },
         createdBy: {
@@ -203,6 +226,7 @@ export const FolderQueries = {
                 deletedAt: null,
               },
             },
+            media: true,
           },
         },
         createdBy: {

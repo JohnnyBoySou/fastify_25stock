@@ -24,6 +24,34 @@ export const GalleryCommands = {
       },
     })
 
+    // Se folderId foi fornecido, criar a relação
+    if (data.folderId) {
+      // Verificar se a pasta existe
+      const folder = await db.folder.findFirst({
+        where: {
+          id: data.folderId,
+          deletedAt: null,
+        },
+      })
+
+      if (folder) {
+        // Obter o maior sortOrder para adicionar no final
+        const maxSortOrder = await db.folderMedia.findFirst({
+          where: { folderId: data.folderId },
+          orderBy: { sortOrder: 'desc' },
+          select: { sortOrder: true },
+        })
+
+        await db.folderMedia.create({
+          data: {
+            folderId: data.folderId,
+            mediaId: upload.id,
+            sortOrder: maxSortOrder ? maxSortOrder.sortOrder + 1 : 0,
+          },
+        })
+      }
+    }
+
     return upload
   },
 
@@ -56,6 +84,10 @@ export const GalleryCommands = {
     })
 
     await db.storeMedia.deleteMany({
+      where: { mediaId: id },
+    })
+
+    await db.folderMedia.deleteMany({
       where: { mediaId: id },
     })
 
@@ -131,6 +163,53 @@ export const GalleryCommands = {
       data: {
         storeId: data.entityId,
         mediaId: data.mediaId,
+      },
+    })
+
+    return attachment
+  },
+
+  async attachToFolder(data: AttachMediaData) {
+    if (data.entityType !== 'folder') {
+      throw new Error('Invalid entity type for folder attachment')
+    }
+
+    // Verificar se a pasta existe
+    const folder = await db.folder.findFirst({
+      where: {
+        id: data.entityId,
+        deletedAt: null,
+      },
+    })
+
+    if (!folder) {
+      throw new Error('Folder not found')
+    }
+
+    // Verificar se já existe a relação
+    const existing = await db.folderMedia.findFirst({
+      where: {
+        folderId: data.entityId,
+        mediaId: data.mediaId,
+      },
+    })
+
+    if (existing) {
+      throw new Error('Media already attached to this folder')
+    }
+
+    // Obter o maior sortOrder para adicionar no final
+    const maxSortOrder = await db.folderMedia.findFirst({
+      where: { folderId: data.entityId },
+      orderBy: { sortOrder: 'desc' },
+      select: { sortOrder: true },
+    })
+
+    const attachment = await db.folderMedia.create({
+      data: {
+        folderId: data.entityId,
+        mediaId: data.mediaId,
+        sortOrder: maxSortOrder ? maxSortOrder.sortOrder + 1 : 0,
       },
     })
 
@@ -213,6 +292,25 @@ export const GalleryCommands = {
     return attachment
   },
 
+  async detachFromFolder(mediaId: string, entityId: string) {
+    const attachment = await db.folderMedia.findFirst({
+      where: {
+        mediaId,
+        folderId: entityId,
+      },
+    })
+
+    if (!attachment) {
+      throw new Error('Media attachment not found')
+    }
+
+    await db.folderMedia.delete({
+      where: { id: attachment.id },
+    })
+
+    return attachment
+  },
+
   async setPrimaryForProduct(mediaId: string, productId: string) {
     // Primeiro, remover a flag de principal de todas as outras mídias
     await db.productMedia.updateMany({
@@ -248,6 +346,9 @@ export const GalleryCommands = {
         where: { mediaId: { in: mediaIds } },
       }),
       db.storeMedia.deleteMany({
+        where: { mediaId: { in: mediaIds } },
+      }),
+      db.folderMedia.deleteMany({
         where: { mediaId: { in: mediaIds } },
       }),
     ])

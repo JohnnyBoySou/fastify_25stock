@@ -27,7 +27,7 @@ export interface ListUploadsRequest extends FastifyRequest {
     limit?: number
     search?: string
     type?: string
-    entityType?: 'product' | 'supplier' | 'user' | 'store'
+    entityType?: 'product' | 'supplier' | 'user' | 'store' | 'folder'
     entityId?: string
   }
 }
@@ -37,7 +37,7 @@ export interface AttachMediaRequest extends FastifyRequest {
     id: string
   }
   body: {
-    entityType: 'product' | 'supplier' | 'user' | 'store'
+    entityType: 'product' | 'supplier' | 'user' | 'store' | 'folder'
     entityId: string
     isPrimary?: boolean
   }
@@ -59,7 +59,7 @@ export interface DetachMediaRequest extends FastifyRequest {
     id: string
   }
   body: {
-    entityType: 'product' | 'supplier' | 'user' | 'store'
+    entityType: 'product' | 'supplier' | 'user' | 'store' | 'folder'
     entityId: string
   }
 }
@@ -102,6 +102,7 @@ export interface CreateUploadData {
   size?: number
   storeId?: string
   uploadedById?: string
+  folderId?: string
 }
 
 export interface ListUploadsFilters {

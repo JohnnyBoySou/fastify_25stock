@@ -489,6 +489,13 @@ export const GalleryController = {
             entityId,
           })
           break
+        case 'folder':
+          result = await GalleryCommands.attachToFolder({
+            mediaId: id,
+            entityType,
+            entityId,
+          })
+          break
         default:
           return reply.status(400).send({
             error: 'Invalid entity type',
@@ -499,7 +506,11 @@ export const GalleryController = {
     } catch (error: any) {
       request.log.error(error)
 
-      if (error.message === 'Invalid entity type for attachment') {
+      if (
+        error.message === 'Invalid entity type for attachment' ||
+        error.message === 'Folder not found' ||
+        error.message === 'Media already attached to this folder'
+      ) {
         return reply.status(400).send({
           error: error.message,
         })
@@ -528,6 +539,9 @@ export const GalleryController = {
           break
         case 'store':
           await GalleryCommands.detachFromStore(id, entityId)
+          break
+        case 'folder':
+          await GalleryCommands.detachFromFolder(id, entityId)
           break
         default:
           return reply.status(400).send({
@@ -636,7 +650,7 @@ export const GalleryController = {
       )
 
       // Obter configurações do body ou query
-      const { entityType = 'general' } = (request.body as any) || (request.query as any)
+      const { entityType = 'general', folderId } = (request.body as any) || (request.query as any)
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id
@@ -729,6 +743,7 @@ export const GalleryController = {
         size: uploadResult.size,
         storeId,
         uploadedById: userId,
+        folderId: folderId || undefined,
       })
 
       // Limpar arquivo temporário se foi criado
@@ -773,7 +788,7 @@ export const GalleryController = {
       const uploadedFiles: any[] = []
 
       // Obter configurações do body ou query
-      const { entityType = 'general', maxFiles = 10 } =
+      const { entityType = 'general', maxFiles = 10, folderId } =
         (request.body as any) || (request.query as any)
 
       // Obter userId do contexto de autenticação
@@ -834,6 +849,7 @@ export const GalleryController = {
           size: uploadResult.size,
           storeId,
           uploadedById: userId,
+          folderId: folderId || undefined,
         })
 
         // Gerar URL completa baseada no request
