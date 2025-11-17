@@ -14,22 +14,8 @@ export const ShiftController = {
     try {
       const { name, description, occurrenceId } = request.body
 
-      if (!request.store?.id) {
-        return reply.status(404).send({
-          error: 'Store not found for this user',
-        })
-      }
-
-      if (!request.user?.id) {
-        return reply.status(401).send({
-          error: 'Authentication required',
-        })
-      }
-
-      // Validar se occurrenceId existe e pertence à loja (se fornecido)
       if (occurrenceId) {
         
-        // Primeiro verificar se o occurrence existe
         const occurrenceExists = await db.scheduleOccurrence.findUnique({
           where: { id: occurrenceId },
           include: {
@@ -41,6 +27,8 @@ export const ShiftController = {
             },
           },
         })
+        
+        console.log(occurrenceExists)
 
         if (!occurrenceExists) {
           return reply.status(404).send({
