@@ -619,13 +619,22 @@ export const GalleryController = {
   // === UPLOAD DE ARQUIVOS FÍSICOS ===
   async uploadSingle(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // Tentar obter o arquivo com o nome de campo padrão "file"
-      // Se não encontrar, tentar sem especificar (pega o primeiro arquivo)
-      let data = await (request as any).file('file')
-      
-      if (!data) {
-        // Se não encontrou com "file", tentar sem especificar campo
-        data = await (request as any).file()
+      let data: any = null
+      const parts = (request as any).parts()
+      const formFields: Record<string, any> = {}
+
+      // Iterar pelos parts para encontrar o arquivo e campos do formulário
+      for await (const part of parts) {
+        if (part.type === 'file') {
+          // Se ainda não encontrou um arquivo, usar este
+          // Priorizar arquivo com fieldname "file", mas aceitar qualquer arquivo
+          if (!data || part.fieldname === 'file') {
+            data = part
+          }
+        } else if (part.type === 'field') {
+          // Coletar campos do formulário
+          formFields[part.fieldname] = part.value
+        }
       }
 
       if (!data) {
@@ -657,8 +666,9 @@ export const GalleryController = {
         )
       )
 
-      // Obter configurações do body ou query
-      const { entityType = 'general', folderId } = (request.body as any) || (request.query as any)
+      // Obter configurações dos campos do formulário ou query
+      const entityType = formFields.entityType || (request.query as any)?.entityType || 'general'
+      const folderId = formFields.folderId || (request.query as any)?.folderId
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id
