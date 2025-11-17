@@ -107,11 +107,12 @@ export const SpaceController = {
   async update(request: UpdateSpaceRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { name, description, capacity, location } = request.body as {
+      const { name, description, capacity, location, mediaId } = request.body as {
         name?: string
         description?: string
         capacity?: number
         location?: string
+        mediaId?: string
       }
 
       if (!request.store?.id) {
@@ -120,7 +121,6 @@ export const SpaceController = {
         })
       }
 
-      // Verificar se o space pertence à loja
       const existingSpace = await SpaceQueries.getById(id, request.store.id)
       if (!existingSpace) {
         return reply.status(404).send({
@@ -133,6 +133,7 @@ export const SpaceController = {
         description,
         capacity,
         location,
+        mediaId,
       })
       return reply.status(200).send(space)
     } catch (error: any) {

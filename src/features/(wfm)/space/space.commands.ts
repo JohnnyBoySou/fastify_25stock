@@ -43,6 +43,7 @@ export const SpaceCommands = {
       description?: string
       capacity?: number
       location?: string
+      mediaId?: string
     }
   ) {
     return await db.space.update({
@@ -52,6 +53,12 @@ export const SpaceCommands = {
         description: data.description,
         capacity: data.capacity,
         location: data.location,
+        spaceMedia: {
+          create: {
+            mediaId: data.mediaId,
+            isPrimary: true,
+          },
+        },
       },
       include: {
         store: {
