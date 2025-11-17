@@ -785,6 +785,7 @@ export const GalleryController = {
       })
 
       // Criar registro no banco
+      console.log('Criando registro no banco com folderId:', folderId)
       const dbResult = await GalleryCommands.create({
         url: uploadResult.url,
         name: uploadResult.name,
@@ -794,6 +795,7 @@ export const GalleryController = {
         uploadedById: userId,
         folderId: folderId || undefined,
       })
+      console.log('Registro criado com sucesso. Media ID:', dbResult.id)
 
       // Limpar arquivo temporário se foi criado
       if (filePath?.includes('temp-')) {
