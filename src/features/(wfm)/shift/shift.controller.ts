@@ -14,6 +14,7 @@ export const ShiftController = {
     try {
       const { name, description, occurrenceId } = request.body
 
+      request.log.info(request.body)
       if (occurrenceId) {
         
         const occurrenceExists = await db.scheduleOccurrence.findUnique({
@@ -27,8 +28,8 @@ export const ShiftController = {
             },
           },
         })
-        
-        console.log(occurrenceExists)
+
+        request.log.info(occurrenceExists)
 
         if (!occurrenceExists) {
           return reply.status(404).send({
