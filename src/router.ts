@@ -25,6 +25,7 @@ import { UserRoutes } from '@/features/(core)/user/user.routes'
 import { ShiftRoutes } from './features/(wfm)/shift/shift.routes'
 import { ScheduleRoutes } from './features/(wfm)/schedule/schedule.routes'
 import { SpaceRoutes } from './features/(wfm)/space/space.routes'
+import { SupportRoutes } from './features/(core)/support/support.routes'
 
 export async function registerRoutes(fastify: FastifyInstance) {
   // Auth
@@ -55,4 +56,5 @@ export async function registerRoutes(fastify: FastifyInstance) {
   await fastify.register(ShiftRoutes, { prefix: '/shifts' })
   await fastify.register(ScheduleRoutes, { prefix: '/schedules' })
   await fastify.register(SpaceRoutes, { prefix: '/spaces' })
+  await fastify.register(SupportRoutes, { prefix: '/support' })
 }
