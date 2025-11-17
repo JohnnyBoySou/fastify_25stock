@@ -53,38 +53,41 @@ model User {
   lastLoginAt  DateTime?
   lastActiveAt DateTime?
 
-  emailVerified        Boolean   @default(false)
-  emailVerificationToken String?
-  emailVerificationCode  String?
+  emailVerified                Boolean   @default(false)
+  emailVerificationToken       String?
+  emailVerificationCode        String?
   emailVerificationCodeExpires DateTime?
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
+  resetPasswordToken           String?
+  resetPasswordExpires         DateTime?
 
   // Relações
-  permissions   UserPermission[]
-  preferences   UserPreferences?
-  notifications Notification[]
-  media         UserMedia[]
-  uploadedMedia Media[]
-  quotes        Quote[]
-  createdFolders Folder[] @relation("FolderCreatedBy")
-  createdDocuments Document[] @relation("DocumentCreatedBy")
-  updatedDocuments Document[] @relation("DocumentUpdatedBy")
-  createdDocumentVersions DocumentVersion[] @relation("DocumentVersionCreatedBy")
-  createdSpaces Space[] @relation("SpaceCreatedBy")
-  createdShifts Shift[] @relation("ShiftCreatedBy")
-  createdSchedules Schedule[] @relation("ScheduleCreatedBy")
+  permissions              UserPermission[]
+  preferences              UserPreferences?
+  notifications            Notification[]
+  media                    UserMedia[]
+  uploadedMedia            Media[]
+  quotes                   Quote[]
+  createdFolders           Folder[]           @relation("FolderCreatedBy")
+  createdDocuments         Document[]         @relation("DocumentCreatedBy")
+  updatedDocuments         Document[]         @relation("DocumentUpdatedBy")
+  createdDocumentVersions  DocumentVersion[]  @relation("DocumentVersionCreatedBy")
+  createdSpaces            Space[]            @relation("SpaceCreatedBy")
+  createdShifts            Shift[]            @relation("ShiftCreatedBy")
+  createdSchedules         Schedule[]         @relation("ScheduleCreatedBy")
   createdShiftParticipants ShiftParticipant[] @relation("ShiftParticipantCreatedBy")
-  schedules                 Schedule[] @relation("ScheduleUser")
-  shiftParticipants         ShiftParticipant[] @relation("ShiftParticipantUser")
+  schedules                Schedule[]         @relation("ScheduleUser")
+  shiftParticipants        ShiftParticipant[] @relation("ShiftParticipantUser")
 
-  auditLogs         AuditLog[]
-  movements         Movement[]
-  roadmaps          Roadmap[] 
-  createdFlows      Flow[]
-  flowExecutions    FlowExecution[]
-  crmClients        CrmClient[]
-  chatSessions      ChatSession[]
+  auditLogs       AuditLog[]
+  movements       Movement[]
+  roadmaps        Roadmap[]
+  createdFlows    Flow[]
+  flowExecutions  FlowExecution[]
+  crmClients      CrmClient[]
+  chatSessions    ChatSession[]
+  createdTickets  SupportTicket[]  @relation("TicketCreatedBy")
+  assignedTickets SupportTicket[]  @relation("TicketAssignedTo")
+  supportMessages SupportMessage[]
 
   // Relações auto-referenciais
   invitedUsers User[] @relation("UserInviter")
@@ -166,7 +169,6 @@ model UserPreferences {
   @@map("user_preferences")
 }
 
-
 // ========== store.prisma ==========
 /// ===============================
 ///  STORE STRUCTURE
@@ -177,7 +179,7 @@ model UserPreferences {
 /// ===============================
 
 model Store {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   ownerId String? @unique
   owner   User?   @relation("StoreOwner", fields: [ownerId], references: [id])
 
@@ -190,10 +192,10 @@ model Store {
   logoUrl     String? // opcional: imagem da loja
   website     String? // opcional
 
-  subdomain     String?    // opcional
-  customDomain  String?    // ex: espaco.cbvn.com
+  subdomain            String? // opcional
+  customDomain         String? // ex: espaco.cbvn.com
   cloudflareHostnameId String?
-  cloudflareStatus String? @default("pending_validation")
+  cloudflareStatus     String? @default("pending_validation")
 
   // Endereço
   cep     String?
@@ -213,29 +215,30 @@ model Store {
   updatedAt DateTime @updatedAt
 
   // Relações com módulos do sistema
-  users         User[] // todos os usuários dessa loja
-  products      Product[]
-  categories    Category[]
-  suppliers     Supplier[]
-  movements     Movement[]
-  media         StoreMedia[]
-  uploadedMedia Media[]
-  roadmaps      Roadmap[]
-  crmStages     CrmStage[]
-  crmClients    CrmClient[]
-  flows         Flow[]
-  flowExecutions FlowExecution[]
-  auditLogs     AuditLog[]
-  notifications Notification[]
-  quotes        Quote[]
-  chatSessions  ChatSession[]
-  subscription  Subscription?
-  folders        Folder[]
-  documents     Document[]
-  spaces        Space[]
-  shifts        Shift[]
-  schedules     Schedule[]
+  users             User[] // todos os usuários dessa loja
+  products          Product[]
+  categories        Category[]
+  suppliers         Supplier[]
+  movements         Movement[]
+  media             StoreMedia[]
+  uploadedMedia     Media[]
+  roadmaps          Roadmap[]
+  crmStages         CrmStage[]
+  crmClients        CrmClient[]
+  flows             Flow[]
+  flowExecutions    FlowExecution[]
+  auditLogs         AuditLog[]
+  notifications     Notification[]
+  quotes            Quote[]
+  chatSessions      ChatSession[]
+  subscription      Subscription?
+  folders           Folder[]
+  documents         Document[]
+  spaces            Space[]
+  shifts            Shift[]
+  schedules         Schedule[]
   shiftParticipants ShiftParticipant[]
+  supportTickets    SupportTicket[]
 
   // Configurações adicionais (JSON flexível)
   settings Json? // ex: { "autoStockAlerts": true, "defaultCurrency": "BRL" }
@@ -245,9 +248,8 @@ model Store {
   @@index([deletedAt])
   @@index([ownerId])
   @@index([city])
-  @@index([state])  
+  @@index([state])
 }
-
 
 // ========== product.prisma ==========
 /// ===============================
@@ -259,56 +261,55 @@ model Store {
 /// ===============================
 
 model Product {
-  id              String          @id @default(cuid())
+  id String @id @default(cuid())
 
   // Identificação
-  name            String
-  sku             String?         @unique // SKU interno (opcional)
-  barcode         String?         @unique // EAN/UPC opcional
-  referenceCode   String?         // código interno curto (ex: "PRD-001")
-  description     String?
+  name          String
+  sku           String? @unique // SKU interno (opcional)
+  barcode       String? @unique // EAN/UPC opcional
+  referenceCode String? // código interno curto (ex: "PRD-001")
+  description   String?
 
   // Unidade e precificação
-  unitOfMeasure   UnitOfMeasure
-  referencePrice  Decimal         @db.Decimal(10, 2) // preço de referência
-  costPrice       Decimal?        @db.Decimal(10, 2) // custo médio
-  markupPercent   Decimal?        @db.Decimal(5, 2)  // margem sobre o custo (%)
-  currency        String          @default("BRL")
+  unitOfMeasure  UnitOfMeasure
+  referencePrice Decimal       @db.Decimal(10, 2) // preço de referência
+  costPrice      Decimal?      @db.Decimal(10, 2) // custo médio
+  markupPercent  Decimal?      @db.Decimal(5, 2) // margem sobre o custo (%)
+  currency       String        @default("BRL")
 
   // Estoque
-  stockCurrent    Int             @default(0)
-  stockMin        Int             @default(0)
-  stockMax        Int             @default(0)
-  alertPercentage Int             @default(20) @db.SmallInt
-  allowNegative   Boolean         @default(false)
+  stockCurrent    Int     @default(0)
+  stockMin        Int     @default(0)
+  stockMax        Int     @default(0)
+  alertPercentage Int     @default(20) @db.SmallInt
+  allowNegative   Boolean @default(false)
 
   // Controle de lote / validade (para alimentos, medicamentos etc.)
-  batchTracked    Boolean         @default(false)
-  expirationDate  DateTime?       // validade do produto principal (se aplicável)
+  batchTracked   Boolean   @default(false)
+  expirationDate DateTime? // validade do produto principal (se aplicável)
 
   // Associação
-  storeId         String
-  supplierId      String?
-  store           Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  supplier        Supplier?       @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  storeId    String
+  supplierId String?
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
 
   // Status e auditoria
-  status          Boolean         @default(true)
-  deletedAt       DateTime?       // soft delete
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  status    Boolean   @default(true)
+  deletedAt DateTime? // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relações
-  movements       Movement[]
-  categories      ProductCategory[]
-  media           ProductMedia[]
-  quotes          QuoteItem[]
-  resources       Resource[]
+  movements  Movement[]
+  categories ProductCategory[]
+  media      ProductMedia[]
+  quotes     QuoteItem[]
+  resources  Resource[]
 
   // Extensões e metadados
-  tags            Json?           // ex: ["bebida", "perecível"]
-  metadata        Json?           // ex: { "ncm": "2202.10.00", "origem": "nacional" }
-
+  tags     Json? // ex: ["bebida", "perecível"]
+  metadata Json? // ex: { "ncm": "2202.10.00", "origem": "nacional" }
 
   // Índices e constraints
   @@index([storeId])
@@ -318,7 +319,6 @@ model Product {
   @@index([name])
   @@index([sku])
 }
-
 
 enum UnitOfMeasure {
   UNIDADE
@@ -338,7 +338,6 @@ enum UnitOfMeasure {
   D
 }
 
-
 // ========== category.prisma ==========
 /// ===============================
 ///  CATEGORY STRUCTURE
@@ -349,37 +348,36 @@ enum UnitOfMeasure {
 /// ===============================
 
 model Category {
-  id            String     @id @default(cuid())
+  id String @id @default(cuid())
 
   // Identificação e exibição
-  name          String
-  description   String?
-  code          String?    // código interno (opcional, ex: CAT-001)
-  color         String?    // cor no painel ex: "#3B82F6"
-  icon          String?    // ícone do front ex: "box", "truck", "chart"
+  name        String
+  description String?
+  code        String? // código interno (opcional, ex: CAT-001)
+  color       String? // cor no painel ex: "#3B82F6"
+  icon        String? // ícone do front ex: "box", "truck", "chart"
 
   // Hierarquia
-  parentId      String?
-  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children      Category[] @relation("CategoryHierarchy")
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
 
   // Loja
-  storeId       String
-  store         Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Status e controle
-  status        Boolean    @default(true)
-  deletedAt     DateTime?  // soft delete
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  status    Boolean   @default(true)
+  deletedAt DateTime? // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relacionamentos
-  products      ProductCategory[]
+  products ProductCategory[]
 
   // Extensões e metadados
-  tags          Json?      // ex: ["perecível", "embalagem"]
-  metadata      Json?      // ex: { "priority": 1, "visibleInMenu": true }
-
+  tags     Json? // ex: ["perecível", "embalagem"]
+  metadata Json? // ex: { "priority": 1, "visibleInMenu": true }
 
   // Restrições e índices
   @@unique([code, storeId])
@@ -390,19 +388,18 @@ model Category {
 }
 
 model ProductCategory {
-  id          String   @id @default(cuid())
-  productId   String
-  categoryId  String
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  productId  String
+  categoryId String
+  createdAt  DateTime @default(now())
 
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([productId, categoryId])
   @@index([categoryId])
   @@index([productId])
 }
-
 
 // ========== supplier.prisma ==========
 /// ===============================
@@ -413,44 +410,44 @@ model ProductCategory {
 /// ===============================
 
 model Supplier {
-  id              String     @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Identificação básica
-  corporateName   String     // Razão social
-  tradeName       String?    // Nome fantasia
-  cnpj            String
-  ie              String?    // Inscrição estadual opcional
-  email           String?
-  phone           String?
-  website         String?
-  description     String?    // Observação interna
+  corporateName String // Razão social
+  tradeName     String? // Nome fantasia
+  cnpj          String
+  ie            String? // Inscrição estadual opcional
+  email         String?
+  phone         String?
+  website       String?
+  description   String? // Observação interna
 
   // Localização
-  cep             String?
-  city            String?
-  state           String?
-  address         String?
-  complement      String?
+  cep        String?
+  city       String?
+  state      String?
+  address    String?
+  complement String?
 
   // Relacionamento com a loja
-  storeId         String
-  store           Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Status e auditoria
-  status          Boolean     @default(true)
-  deletedAt       DateTime?   // soft delete
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  status    Boolean   @default(true)
+  deletedAt DateTime? // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relacionamentos
-  products        Product[]
-  movements       Movement[]
-  responsibles    SupplierResponsible[]
-  media           SupplierMedia[]
+  products     Product[]
+  movements    Movement[]
+  responsibles SupplierResponsible[]
+  media        SupplierMedia[]
 
   // Configurações / metadados (extensível)
-  tags            Json?       // Ex: ["distribuidor", "nacional"]
-  metadata        Json?       // Ex: { "frete": "próprio", "tempoEntrega": "48h" }
+  tags     Json? // Ex: ["distribuidor", "nacional"]
+  metadata Json? // Ex: { "frete": "próprio", "tempoEntrega": "48h" }
 
   @@unique([cnpj, storeId])
   @@index([storeId])
@@ -459,28 +456,27 @@ model Supplier {
 }
 
 model SupplierResponsible {
-  id           String    @id @default(cuid())
-  supplierId   String
-  supplier     Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  name         String
-  role         String?   // cargo ex: "Vendas", "Financeiro", "Logística"
-  phone        String?
-  email        String?
-  cpf          String?
-  whatsapp     Boolean   @default(false) // se esse contato é via WhatsApp
-  mainContact  Boolean   @default(false) // define se é o contato principal
-  notes        String?   // observações internas
-  status       Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime? // soft delete
+  name        String
+  role        String? // cargo ex: "Vendas", "Financeiro", "Logística"
+  phone       String?
+  email       String?
+  cpf         String?
+  whatsapp    Boolean   @default(false) // se esse contato é via WhatsApp
+  mainContact Boolean   @default(false) // define se é o contato principal
+  notes       String? // observações internas
+  status      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // soft delete
 
   @@index([supplierId])
   @@index([status])
   @@index([mainContact])
 }
-
 
 // ========== movement.prisma ==========
 /// ===============================
@@ -491,63 +487,63 @@ model SupplierResponsible {
 /// ===============================
 
 model Movement {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    // Identificação e contexto
-    type          MovementType // ENTRADA, SAIDA, PERDA
-    origin        MovementOrigin? // motivo ou contexto da movimentação
-    referenceCode String? // código externo opcional (nota, pedido, etc.)
-    note          String? // observações gerais
+  // Identificação e contexto
+  type          MovementType // ENTRADA, SAIDA, PERDA
+  origin        MovementOrigin? // motivo ou contexto da movimentação
+  referenceCode String? // código externo opcional (nota, pedido, etc.)
+  note          String? // observações gerais
 
-    // Estoque e valores
-    quantity      Int
-    price         Decimal?  @db.Decimal(10, 2) // valor unitário da movimentação
-    totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price
-    balanceBefore Int? // estoque antes da movimentação
-    balanceAfter  Int? // estoque após a movimentação
-    batch         String? // lote
-    expiration    DateTime? // validade (se aplicável)
+  // Estoque e valores
+  quantity      Int
+  price         Decimal?  @db.Decimal(10, 2) // valor unitário da movimentação
+  totalValue    Decimal?  @db.Decimal(10, 2) // quantity * price
+  balanceBefore Int? // estoque antes da movimentação
+  balanceAfter  Int? // estoque após a movimentação
+  batch         String? // lote
+  expiration    DateTime? // validade (se aplicável)
 
-    // Relacionamentos
-    storeId String
-    store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  // Relacionamentos
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-    productId String
-    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-    supplierId String?
-    supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  supplierId String?
+  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
 
-    userId String? // quem registrou
-    user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String? // quem registrou
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-    // Verificação e controle
-    verified         Boolean   @default(false)
-    verifiedAt       DateTime?
-    verifiedBy       String?
-    verificationNote String?
+  // Verificação e controle
+  verified         Boolean   @default(false)
+  verifiedAt       DateTime?
+  verifiedBy       String?
+  verificationNote String?
 
-    // Cancelamento
-    cancelled          Boolean   @default(false)
-    cancelledAt        DateTime?
-    cancelledBy        String?
-    cancellationReason String?
+  // Cancelamento
+  cancelled          Boolean   @default(false)
+  cancelledAt        DateTime?
+  cancelledBy        String?
+  cancellationReason String?
 
-    // Auditoria e status
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime? // soft delete, se precisar reverter algo manualmente
+  // Auditoria e status
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete, se precisar reverter algo manualmente
 
-    // Metadados e IA
-    metadata Json? // dados extras: { "source": "import", "autoGenerated": true }
+  // Metadados e IA
+  metadata Json? // dados extras: { "source": "import", "autoGenerated": true }
 
-    // Índices e otimizações
-    @@index([storeId])
-    @@index([productId])
-    @@index([type])
-    @@index([createdAt])
-    @@index([cancelled])
-    @@index([verified])   
+  // Índices e otimizações
+  @@index([storeId])
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([cancelled])
+  @@index([verified])
 }
 
 /// ===============================
@@ -557,24 +553,23 @@ model Movement {
 /// ===============================
 
 enum MovementType {
-    INBOUND // Entrada de produtos no estoque
-    OUTBOUND // Saída de produtos
-    LOSS // Perda ou descarte
+  INBOUND // Entrada de produtos no estoque
+  OUTBOUND // Saída de produtos
+  LOSS // Perda ou descarte
 }
 
 enum MovementOrigin {
-    PURCHASE // Compra de fornecedor
-    SALE // Venda a cliente
-    RETURN // Devolução de cliente
-    SUPPLIER_RETURN // Devolução ao fornecedor
-    ADJUSTMENT // Ajuste manual de estoque
-    TRANSFER // Transferência entre locais
-    INVENTORY // Ajuste por contagem/inventário
-    DAMAGE // Quebra ou dano
-    EXPIRATION // Produto vencido
-    OTHER // Outro motivo não especificado  
+  PURCHASE // Compra de fornecedor
+  SALE // Venda a cliente
+  RETURN // Devolução de cliente
+  SUPPLIER_RETURN // Devolução ao fornecedor
+  ADJUSTMENT // Ajuste manual de estoque
+  TRANSFER // Transferência entre locais
+  INVENTORY // Ajuste por contagem/inventário
+  DAMAGE // Quebra ou dano
+  EXPIRATION // Produto vencido
+  OTHER // Outro motivo não especificado  
 }
-
 
 // ========== billing.prisma ==========
 /// ===============================
@@ -584,32 +579,32 @@ enum MovementOrigin {
 /// ===============================
 
 model Subscription {
-  id                   String          @id @default(cuid())
-  storeId              String          @unique
-  store                Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Polar references
-  polarCustomerId      String?         @unique
-  polarSubscriptionId  String?         @unique
-  polarProductId       String?         // plano ativo no Polar
-  polarPlanName        String?         // redundância para exibição rápida no painel
+  polarCustomerId     String? @unique
+  polarSubscriptionId String? @unique
+  polarProductId      String? // plano ativo no Polar
+  polarPlanName       String? // redundância para exibição rápida no painel
 
   // Status tracking
-  status               SubscriptionStatus @default(ACTIVE)
-  currentPeriodEnd     DateTime?        // data de renovação ou expiração
-  trialEndsAt          DateTime?
-  cancelledAt          DateTime?
-  renewalCount         Int              @default(0)
+  status           SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd DateTime? // data de renovação ou expiração
+  trialEndsAt      DateTime?
+  cancelledAt      DateTime?
+  renewalCount     Int                @default(0)
 
   // Dados financeiros básicos
-  priceAmount          Decimal?         @db.Decimal(10, 2)
-  priceInterval        PlanInterval?    // MONTHLY, YEARLY (espelhado do Polar)
-  currency             String?          @default("BRL")
+  priceAmount   Decimal?      @db.Decimal(10, 2)
+  priceInterval PlanInterval? // MONTHLY, YEARLY (espelhado do Polar)
+  currency      String?       @default("BRL")
 
   // Auditoria
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  invoices             Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  invoices  Invoice[]
 
   @@index([status])
   @@index([polarSubscriptionId])
@@ -617,18 +612,18 @@ model Subscription {
 }
 
 model Invoice {
-  id               String          @id @default(cuid())
-  subscriptionId   String
-  subscription     Subscription    @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   // Dados do Polar
-  polarInvoiceId   String?         @unique
-  amount           Decimal         @db.Decimal(10, 2)
-  currency         String?         @default("BRL")
-  status           InvoiceStatus   @default(PENDING)
-  paymentDate      DateTime?
-  dueDate          DateTime?
-  createdAt        DateTime        @default(now())
+  polarInvoiceId String?       @unique
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String?       @default("BRL")
+  status         InvoiceStatus @default(PENDING)
+  paymentDate    DateTime?
+  dueDate        DateTime?
+  createdAt      DateTime      @default(now())
 
   @@index([status])
   @@index([subscriptionId])
@@ -655,7 +650,6 @@ enum InvoiceStatus {
   REFUNDED
 }
 
-
 // ========== quote.prisma ==========
 /// ===============================
 ///  QUOTATION (QUOTE) STRUCTURE
@@ -665,59 +659,58 @@ enum InvoiceStatus {
 /// ===============================
 
 model Quote {
-  id              String        @id @default(cuid())
+  id String @id @default(cuid())
 
   // Associação principal
-  storeId         String
-  store           Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  customerId      String?       // futuro: cliente vinculado (CRM)
-  customerName    String?       // nome do cliente externo (sem login)
+  storeId      String
+  store        Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerId   String? // futuro: cliente vinculado (CRM)
+  customerName String? // nome do cliente externo (sem login)
 
   // Identificação
-  title           String
-  description     String?
-  publicId        String        @unique @default(uuid())   // usado no link público
-  authCode        String        @default(uuid())           // valida acesso sem login
+  title       String
+  description String?
+  publicId    String  @unique @default(uuid()) // usado no link público
+  authCode    String  @default(uuid()) // valida acesso sem login
 
   // Status e controle
-  status          QuoteStatus   @default(DRAFT)
-  expiresAt       DateTime?
-  viewedAt        DateTime?
-  approvedAt      DateTime?
-  rejectedAt      DateTime?
-  convertedAt     DateTime?
-  canceledAt      DateTime?
-  approvalNote    String?       // observação do cliente (motivo ou comentário)
-  ipAddress       String?       // IP de quem visualizou/aprovou
-  viewedBy        String?       // email ou nome informado ao visualizar
+  status       QuoteStatus @default(DRAFT)
+  expiresAt    DateTime?
+  viewedAt     DateTime?
+  approvedAt   DateTime?
+  rejectedAt   DateTime?
+  convertedAt  DateTime?
+  canceledAt   DateTime?
+  approvalNote String? // observação do cliente (motivo ou comentário)
+  ipAddress    String? // IP de quem visualizou/aprovou
+  viewedBy     String? // email ou nome informado ao visualizar
 
   // Valores
-  subtotal        Decimal       @db.Decimal(10, 2)
-  discount        Decimal?      @db.Decimal(10, 2)
-  interest        Decimal?      @db.Decimal(10, 2)
-  total           Decimal       @db.Decimal(10, 2)
-  currency        String        @default("BRL")
+  subtotal Decimal  @db.Decimal(10, 2)
+  discount Decimal? @db.Decimal(10, 2)
+  interest Decimal? @db.Decimal(10, 2)
+  total    Decimal  @db.Decimal(10, 2)
+  currency String   @default("BRL")
 
   // Pagamento
-  paymentType     PaymentType   @default(UNDEFINED)
-  paymentTerms    String?       // ex: "6x sem juros"
-  paymentDueDays  Int?          // ex: 15 dias no boleto
+  paymentType    PaymentType @default(UNDEFINED)
+  paymentTerms   String? // ex: "6x sem juros"
+  paymentDueDays Int? // ex: 15 dias no boleto
 
   // Observações e anotações
-  observations    String?
-  notesInternal   String?       // observação visível apenas internamente (não pública)
+  observations  String?
+  notesInternal String? // observação visível apenas internamente (não pública)
 
   // Auditoria
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  deletedAt       DateTime?     // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete
 
   // Relações
-  items           QuoteItem[]
-  installments    QuoteInstallment[]
-
+  items        QuoteItem[]
+  installments QuoteInstallment[]
 
   // Índices
   @@index([storeId])
@@ -733,17 +726,17 @@ model Quote {
 /// ===============================
 
 model QuoteItem {
-  id          String   @id @default(cuid())
-  quoteId     String
-  productId   String
-  quantity    Int
-  unitPrice   Decimal  @db.Decimal(10, 2)
-  subtotal    Decimal  @db.Decimal(10, 2)
-  discount    Decimal? @db.Decimal(10, 2)
-  note        String?
+  id        String   @id @default(cuid())
+  quoteId   String
+  productId String
+  quantity  Int
+  unitPrice Decimal  @db.Decimal(10, 2)
+  subtotal  Decimal  @db.Decimal(10, 2)
+  discount  Decimal? @db.Decimal(10, 2)
+  note      String?
 
-  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([quoteId, productId])
   @@index([quoteId])
@@ -755,18 +748,18 @@ model QuoteItem {
 /// ===============================
 
 model QuoteInstallment {
-  id          String   @id @default(cuid())
-  quoteId     String
-  number      Int          // número da parcela
-  dueDate     DateTime
-  amount      Decimal      @db.Decimal(10, 2)
-  interest    Decimal?     @db.Decimal(10, 2)
-  paidAt      DateTime?
+  id       String    @id @default(cuid())
+  quoteId  String
+  number   Int // número da parcela
+  dueDate  DateTime
+  amount   Decimal   @db.Decimal(10, 2)
+  interest Decimal?  @db.Decimal(10, 2)
+  paidAt   DateTime?
 
-  quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
-  @@map("quote_installments")
   @@index([quoteId])
+  @@map("quote_installments")
 }
 
 /// ===============================
@@ -783,17 +776,16 @@ enum PaymentType {
 }
 
 enum QuoteStatus {
-  DRAFT        // Em edição
-  PUBLISHED    // Link público ativo
-  SENT         // Enviado ao cliente
-  VIEWED       // Cliente visualizou
-  APPROVED     // Cliente aprovou
-  REJECTED     // Cliente recusou
-  EXPIRED      // Passou da validade
-  CONVERTED    // Virou venda
-  CANCELED     // Cancelado
+  DRAFT // Em edição
+  PUBLISHED // Link público ativo
+  SENT // Enviado ao cliente
+  VIEWED // Cliente visualizou
+  APPROVED // Cliente aprovou
+  REJECTED // Cliente recusou
+  EXPIRED // Passou da validade
+  CONVERTED // Virou venda
+  CANCELED // Cancelado
 }
-
 
 // ========== notification.prisma ==========
 /// ===============================
@@ -805,41 +797,39 @@ enum QuoteStatus {
 /// ===============================
 
 model Notification {
-  id           String               @id @default(cuid())
+  id String @id @default(cuid())
 
   // Associação principal
-  userId       String
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  storeId      String?
-  store        Store?               @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
 
   // Conteúdo
-  title        String
-  message      String
-  type         NotificationType     @default(INFO)
-  priority     NotificationPriority @default(MEDIUM)
+  title    String
+  message  String
+  type     NotificationType     @default(INFO)
+  priority NotificationPriority @default(MEDIUM)
 
   // Estado de leitura
-  isRead       Boolean              @default(false)
-  readAt       DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
   // Entrega e canais
-  channel      NotificationChannel  @default(IN_APP)
-  sentAt       DateTime?
-  deliveredAt  DateTime?
+  channel       NotificationChannel @default(IN_APP)
+  sentAt        DateTime?
+  deliveredAt   DateTime?
   deliveryError String?
 
   // Expiração e ação
-  actionUrl    String?
-  expiresAt    DateTime?
-  data         Json? // dados adicionais (ex: { productId, movementId, severity })
+  actionUrl String?
+  expiresAt DateTime?
+  data      Json? // dados adicionais (ex: { productId, movementId, severity })
 
   // Auditoria e controle
-  deletedAt    DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@map("notifications")
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Índices
   @@index([userId])
@@ -848,19 +838,20 @@ model Notification {
   @@index([isRead])
   @@index([priority])
   @@index([createdAt])
+  @@map("notifications")
 }
 
 enum NotificationType {
-  INFO          // Informação geral
-  SUCCESS       // Sucesso/confirmação
-  WARNING       // Aviso ou atenção
-  ERROR         // Erro ou falha
-  STOCK_ALERT   // Alerta de estoque baixo
-  MOVEMENT      // Movimentação de estoque
-  PERMISSION    // Permissão / acesso
-  SYSTEM        // Sistema / manutenção
-  BILLING       // Assinatura, cobrança, pagamento
-  WORKFLOW      // Fluxo automatizado
+  INFO // Informação geral
+  SUCCESS // Sucesso/confirmação
+  WARNING // Aviso ou atenção
+  ERROR // Erro ou falha
+  STOCK_ALERT // Alerta de estoque baixo
+  MOVEMENT // Movimentação de estoque
+  PERMISSION // Permissão / acesso
+  SYSTEM // Sistema / manutenção
+  BILLING // Assinatura, cobrança, pagamento
+  WORKFLOW // Fluxo automatizado
 }
 
 enum NotificationPriority {
@@ -871,13 +862,12 @@ enum NotificationPriority {
 }
 
 enum NotificationChannel {
-  IN_APP     // Notificação interna do app
-  PUSH       // Push Notification
-  EMAIL      // E-mail
-  SMS        // SMS
-  SYSTEM     // Notificação do sistema
-  }
-
+  IN_APP // Notificação interna do app
+  PUSH // Push Notification
+  EMAIL // E-mail
+  SMS // SMS
+  SYSTEM // Notificação do sistema
+}
 
 // ========== audit.prisma ==========
 /// ===============================
@@ -888,32 +878,30 @@ enum NotificationChannel {
 /// ===============================
 
 model AuditLog {
-  id             String     @id @default(cuid())
+  id String @id @default(cuid())
 
   // Entidade e ação auditada
-  entity         AuditEntity
-  entityId       String?
-  action         AuditAction
+  entity   AuditEntity
+  entityId String?
+  action   AuditAction
 
   // Contexto e origem
-  userId         String?
-  user           User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  storeId        String?     // para rastrear logs por loja
-  store          Store?      @relation(fields: [storeId], references: [id], onDelete: SetNull)
-  ipAddress      String?     // IP de origem da ação
-  userAgent      String?     // navegador / dispositivo
-  source         String?     // origem da ação: "web", "mobile", "api", "system"
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  storeId   String? // para rastrear logs por loja
+  store     Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  ipAddress String? // IP de origem da ação
+  userAgent String? // navegador / dispositivo
+  source    String? // origem da ação: "web", "mobile", "api", "system"
 
   // Dados de mudança
-  before         Json?       // estado anterior do registro
-  after          Json?       // estado após a mudança
-  metadata       Json?       // informações adicionais (ex: rota, payload, headers)
+  before   Json? // estado anterior do registro
+  after    Json? // estado após a mudança
+  metadata Json? // informações adicionais (ex: rota, payload, headers)
 
   // Auditoria temporal
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-
-  @@map("audit_logs")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Índices e otimização
   @@index([entity])
@@ -921,6 +909,7 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@index([createdAt])
+  @@map("audit_logs")
 }
 
 enum AuditAction {
@@ -945,7 +934,6 @@ enum AuditEntity {
   SYSTEM
 }
 
-
 // ========== media.prisma ==========
 /// ===============================
 ///  MEDIA STRUCTURE
@@ -955,36 +943,36 @@ enum AuditEntity {
 /// ===============================
 
 model Media {
-  id           String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Identificação básica
-  url          String   // link público (Cloudinary, S3, Supabase, etc.)
-  name         String?  // nome do arquivo original
-  type         String?  // MIME type (ex: image/png, application/pdf)
-  extension    String?  // extensão (ex: jpg, pdf)
-  size         Int?     // tamanho em bytes
-  hash         String?  // hash opcional (para evitar duplicações)
+  url       String // link público (Cloudinary, S3, Supabase, etc.)
+  name      String? // nome do arquivo original
+  type      String? // MIME type (ex: image/png, application/pdf)
+  extension String? // extensão (ex: jpg, pdf)
+  size      Int? // tamanho em bytes
+  hash      String? // hash opcional (para evitar duplicações)
 
   // Origem e propriedade
   storeId      String?
-  store        Store?   @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
   uploadedById String?
-  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 
   // Armazenamento e provider
-  provider     StorageProvider @default(SYSTEM)
-  storagePath  String?  // caminho interno no provider (ex: /products/uuid.png)
-  bucket       String?  // bucket do S3 / Supabase
-  visibility   MediaVisibility @default(PRIVATE) // controle de acesso
-  status       MediaStatus @default(ACTIVE)
+  provider    StorageProvider @default(SYSTEM)
+  storagePath String? // caminho interno no provider (ex: /products/uuid.png)
+  bucket      String? // bucket do S3 / Supabase
+  visibility  MediaVisibility @default(PRIVATE) // controle de acesso
+  status      MediaStatus     @default(ACTIVE)
 
   // Metadados
-  metadata     Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }
+  metadata Json? // ex: { width, height, tags, detectedLabels, thumbnailUrl }
 
   // Auditoria
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   // Relações
   productMedia  ProductMedia[]
@@ -993,14 +981,13 @@ model Media {
   storeMedia    StoreMedia[]
   folderMedia   FolderMedia[]
 
-  @@map("media")
-
   // Índices
   @@index([storeId])
   @@index([uploadedById])
   @@index([status])
   @@index([visibility])
   @@index([deletedAt])
+  @@map("media")
 }
 
 /// ===============================
@@ -1009,55 +996,55 @@ model Media {
 /// ===============================
 
 model ProductMedia {
-  id         String   @id @default(cuid())
-  productId  String
-  mediaId    String
-  isPrimary  Boolean  @default(false)
-  altText    String?  // descrição alternativa para SEO / acessibilidade
-  sortOrder  Int      @default(0)
+  id        String  @id @default(cuid())
+  productId String
+  mediaId   String
+  isPrimary Boolean @default(false)
+  altText   String? // descrição alternativa para SEO / acessibilidade
+  sortOrder Int     @default(0)
 
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  media      Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@map("product_media")
   @@unique([productId, mediaId])
   @@index([productId])
+  @@map("product_media")
 }
 
 model SupplierMedia {
-  id          String   @id @default(cuid())
-  supplierId  String
-  mediaId     String
+  id         String @id @default(cuid())
+  supplierId String
+  mediaId    String
 
-  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  media       Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@map("supplier_media")
   @@unique([supplierId, mediaId])
+  @@map("supplier_media")
 }
 
 model UserMedia {
-  id         String   @id @default(cuid())
-  userId     String
-  mediaId    String
+  id      String @id @default(cuid())
+  userId  String
+  mediaId String
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  media      Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@map("user_media")
   @@unique([userId, mediaId])
+  @@map("user_media")
 }
 
 model StoreMedia {
-  id         String   @id @default(cuid())
-  storeId    String
-  mediaId    String
+  id      String @id @default(cuid())
+  storeId String
+  mediaId String
 
-  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  media      Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@map("store_media")
   @@unique([storeId, mediaId])
+  @@map("store_media")
 }
 
 /// ===============================
@@ -1065,16 +1052,16 @@ model StoreMedia {
 /// ===============================
 
 enum StorageProvider {
-  SYSTEM       // Armazenamento local padrão
-  S3           // Amazon S3 / R2 / Wasabi
-  SUPABASE     // Supabase Storage
-  CLOUDINARY   // Cloudinary
+  SYSTEM // Armazenamento local padrão
+  S3 // Amazon S3 / R2 / Wasabi
+  SUPABASE // Supabase Storage
+  CLOUDINARY // Cloudinary
   GOOGLE_DRIVE // Google Drive API
 }
 
 enum MediaVisibility {
   PRIVATE // visível apenas internamente
-  PUBLIC  // acessível publicamente
+  PUBLIC // acessível publicamente
   RESTRICTED // acessível sob regra (ex: usuários logados)
 }
 
@@ -1085,7 +1072,6 @@ enum MediaStatus {
   PROCESSING
 }
 
-
 // ========== roadmap.prisma ==========
 /// ===============================
 ///  ROADMAP STRUCTURE
@@ -1095,44 +1081,42 @@ enum MediaStatus {
 /// ===============================
 
 model Roadmap {
-  id           String          @id @default(cuid())
+  id String @id @default(cuid())
 
   // Associação
-  storeId      String?
-  store        Store?          @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  userId       String?
-  user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId  String?
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Identificação e descrição
-  title        String
-  description  String?
+  title       String
+  description String?
 
   // Controle e status
-  status       RoadmapStatus   @default(ACTIVE)
-  visibility   RoadmapVisibility @default(PRIVATE)
-  priority     RoadmapPriority @default(MEDIUM)
-  progress     Int             @default(0) // progresso geral (média das milestones)
-  archived     Boolean         @default(false)
-  deletedAt    DateTime?       // soft delete
+  status     RoadmapStatus     @default(ACTIVE)
+  visibility RoadmapVisibility @default(PRIVATE)
+  priority   RoadmapPriority   @default(MEDIUM)
+  progress   Int               @default(0) // progresso geral (média das milestones)
+  archived   Boolean           @default(false)
+  deletedAt  DateTime? // soft delete
 
   // Datas
-  startDate    DateTime?
-  endDate      DateTime?
+  startDate DateTime?
+  endDate   DateTime?
 
   // Auditoria
-  createdById  String?
-  updatedById  String?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdById String?
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relações
-  milestones   Milestone[]
+  milestones Milestone[]
 
   // Metadados
-  tags         Json?           // ex: ["estoque", "IA", "meta de venda"]
-  metadata     Json?           // configurações extras ou IA
-
-  @@map("roadmaps")
+  tags     Json? // ex: ["estoque", "IA", "meta de venda"]
+  metadata Json? // configurações extras ou IA
 
   // Índices
   @@index([storeId])
@@ -1141,6 +1125,7 @@ model Roadmap {
   @@index([archived])
   @@index([deletedAt])
   @@index([createdAt])
+  @@map("roadmaps")
 }
 
 /// ===============================
@@ -1150,44 +1135,43 @@ model Roadmap {
 /// ===============================
 
 model Milestone {
-  id           String           @id @default(cuid())
-  roadmapId    String
-  roadmap      Roadmap          @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  roadmapId String
+  roadmap   Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
 
   // Identificação
-  title        String
-  description  String?
+  title       String
+  description String?
 
   // Controle
-  status       MilestoneStatus  @default(PENDING)
-  progress     Int              @default(0) // % concluída (0–100)
-  order        Int              @default(0) // posição na timeline
-  priority     RoadmapPriority  @default(MEDIUM)
-  blockedById  String?          // milestone dependente (opcional)
-  blockedBy    Milestone?       @relation("MilestoneDependency", fields: [blockedById], references: [id])
-  blocking     Milestone[]      @relation("MilestoneDependency") // milestones bloqueados por este
+  status      MilestoneStatus @default(PENDING)
+  progress    Int             @default(0) // % concluída (0–100)
+  order       Int             @default(0) // posição na timeline
+  priority    RoadmapPriority @default(MEDIUM)
+  blockedById String? // milestone dependente (opcional)
+  blockedBy   Milestone?      @relation("MilestoneDependency", fields: [blockedById], references: [id])
+  blocking    Milestone[]     @relation("MilestoneDependency") // milestones bloqueados por este
 
   // Datas
-  startDate    DateTime?
-  endDate      DateTime?
-  completedAt  DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  completedAt DateTime?
 
   // Auditoria
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  deletedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   // Metadados
-  metadata     Json?            // informações adicionais ou IA
-
-  @@map("milestones")
+  metadata Json? // informações adicionais ou IA
 
   // Índices
   @@index([roadmapId])
   @@index([status])
   @@index([priority])
   @@index([order])
-  }
+  @@map("milestones")
+}
 
 enum RoadmapStatus {
   ACTIVE
@@ -1215,7 +1199,6 @@ enum MilestoneStatus {
   BLOCKED
 }
 
-
 // ========== crm.prisma ==========
 /// ===============================
 ///  CRM STAGE STRUCTURE
@@ -1224,24 +1207,24 @@ enum MilestoneStatus {
 /// ===============================
 
 model CrmStage {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   storeId     String
   name        String
-  color       String?     // cor no front-end
-  order       Int          @default(0) // posição na ordem do pipeline
-  description String?      // ex: "Clientes interessados"
-  isDefault   Boolean      @default(false) // primeira etapa padrão
-  isFinal     Boolean      @default(false) // etapa de fechamento (ganho/perda)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  color       String? // cor no front-end
+  order       Int      @default(0) // posição na ordem do pipeline
+  description String? // ex: "Clientes interessados"
+  isDefault   Boolean  @default(false) // primeira etapa padrão
+  isFinal     Boolean  @default(false) // etapa de fechamento (ganho/perda)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  clients     CrmClient[]
+  store   Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  clients CrmClient[]
 
-  @@map("crm_stages")
+  @@unique([storeId, name])
   @@index([storeId])
   @@index([order])
-  @@unique([storeId, name])
+  @@map("crm_stages")
 }
 
 /// ===============================
@@ -1251,38 +1234,38 @@ model CrmStage {
 /// ===============================
 
 model CrmClient {
-  id             String        @id @default(cuid())
-  storeId        String
-  stageId        String?
-  name           String
-  email          String?
-  phone          String?
-  cpfCnpj        String?
-  company        String?
-  position       String?       // cargo (ex: comprador, gerente)
-  source         String?       // origem do lead (ex: site, whatsapp, indicação)
-  status         CrmClientStatus @default(ACTIVE)
-  tags           Json?         // ex: ["venda recorrente", "novo cliente"]
-  notes          String?
-  lastContactAt  DateTime?
-  nextContactAt  DateTime?
-  lastInteraction Json?        // ex: { type: "call", date: "2025-10-31", userId: "..." }
-  ownerId        String?       // responsável pelo cliente
-  owner          User?         @relation(fields: [ownerId], references: [id], onDelete: SetNull)
-  archivedAt     DateTime?     // lead arquivado
-  deletedAt      DateTime?     // soft delete
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id              String          @id @default(cuid())
+  storeId         String
+  stageId         String?
+  name            String
+  email           String?
+  phone           String?
+  cpfCnpj         String?
+  company         String?
+  position        String? // cargo (ex: comprador, gerente)
+  source          String? // origem do lead (ex: site, whatsapp, indicação)
+  status          CrmClientStatus @default(ACTIVE)
+  tags            Json? // ex: ["venda recorrente", "novo cliente"]
+  notes           String?
+  lastContactAt   DateTime?
+  nextContactAt   DateTime?
+  lastInteraction Json? // ex: { type: "call", date: "2025-10-31", userId: "..." }
+  ownerId         String? // responsável pelo cliente
+  owner           User?           @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  archivedAt      DateTime? // lead arquivado
+  deletedAt       DateTime? // soft delete
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
-  store          Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  stage          CrmStage?     @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  store Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  stage CrmStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
 
-  @@map("crm_clients")
   @@index([storeId])
   @@index([stageId])
   @@index([ownerId])
   @@index([status])
   @@index([archivedAt])
+  @@map("crm_clients")
 }
 
 /// ===============================
@@ -1290,13 +1273,12 @@ model CrmClient {
 /// ===============================
 
 enum CrmClientStatus {
-  ACTIVE       // Lead ativo no pipeline
-  WON          // Negócio fechado com sucesso
-  LOST         // Negócio perdido
-  INACTIVE     // Cliente desativado
-  ARCHIVED     // Lead arquivado manualmente
+  ACTIVE // Lead ativo no pipeline
+  WON // Negócio fechado com sucesso
+  LOST // Negócio perdido
+  INACTIVE // Cliente desativado
+  ARCHIVED // Lead arquivado manualmente
 }
-
 
 // ========== flow.prisma ==========
 /// ===============================
@@ -1308,100 +1290,99 @@ enum CrmClientStatus {
 /// ===============================
 
 model Flow {
-  id            String          @id @default(cuid())
+  id String @id @default(cuid())
 
   // Identificação
-  name          String
-  description   String?
-  version       Int             @default(1) // para controle de versões
-  category      String?         // ex: "notificação", "estoque", "CRM"
+  name        String
+  description String?
+  version     Int     @default(1) // para controle de versões
+  category    String? // ex: "notificação", "estoque", "CRM"
 
   // Estrutura do workflow (ReactFlow)
-  nodes         Json            // array de nodes
-  edges         Json            // conexões entre nodes
-  metadata      Json?           // metadados do flow (layout, variáveis globais, etc.)
+  nodes    Json // array de nodes
+  edges    Json // conexões entre nodes
+  metadata Json? // metadados do flow (layout, variáveis globais, etc.)
 
   // Controle de status
-  status        FlowStatus      @default(DRAFT)
-  isPublic      Boolean         @default(false)
-  deletedAt     DateTime?       // soft delete
+  status    FlowStatus @default(DRAFT)
+  isPublic  Boolean    @default(false)
+  deletedAt DateTime? // soft delete
 
   // Associação
-  storeId       String
-  store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  createdBy     String
-  creator       User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  storeId   String
+  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  createdBy String
+  creator   User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   // Auditoria
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  lastRunAt     DateTime?
-  lastStatus    FlowExecutionStatus?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+  lastRunAt  DateTime?
+  lastStatus FlowExecutionStatus?
 
   // Relações
-  flowNodes     FlowNode[]
-  executions    FlowExecution[]
-
-  @@map("flows")
+  flowNodes  FlowNode[]
+  executions FlowExecution[]
 
   // Índices
   @@index([storeId])
   @@index([status])
   @@index([deletedAt])
   @@index([createdAt])
+  @@map("flows")
 }
 
 model FlowNode {
-  id            String       @id @default(cuid())
-  flowId        String
-  nodeId        String       // ID do node (ReactFlow ID)
-  type          FlowNodeType
-  name          String?      // nome visível no editor
-  config        Json         // configuração do node (ex: { "trigger": "stock_low" })
-  order         Int          @default(0)
-  parentNodeId  String?      // para nodes agrupados
-  position      Json?        // posição no editor (x, y)
-  metadata      Json?        // metadados adicionais
+  id           String       @id @default(cuid())
+  flowId       String
+  nodeId       String // ID do node (ReactFlow ID)
+  type         FlowNodeType
+  name         String? // nome visível no editor
+  config       Json // configuração do node (ex: { "trigger": "stock_low" })
+  order        Int          @default(0)
+  parentNodeId String? // para nodes agrupados
+  position     Json? // posição no editor (x, y)
+  metadata     Json? // metadados adicionais
 
   // Auditoria
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  flow          Flow         @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)
 
-  @@map("flow_nodes")
   @@unique([flowId, nodeId])
   @@index([type])
   @@index([order])
+  @@map("flow_nodes")
 }
 
 model FlowExecution {
-  id             String              @id @default(cuid())
-  flowId         String
-  flow           Flow                @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  flowId String
+  flow   Flow   @relation(fields: [flowId], references: [id], onDelete: Cascade)
 
   // Execução
-  status         FlowExecutionStatus @default(RUNNING)
-  triggerType    String              // ex: "stock_alert", "manual", "schedule"
-  triggerData    Json                // payload do evento disparador
-  context        Json?               // contexto adicional (ex: { "productId": "...", "userId": "..." })
-  executionLog   Json?               // logs detalhados (por node)
-  error          String?
-  durationMs     Int?                // duração total
-  startedAt      DateTime            @default(now())
-  completedAt    DateTime?
+  status       FlowExecutionStatus @default(RUNNING)
+  triggerType  String // ex: "stock_alert", "manual", "schedule"
+  triggerData  Json // payload do evento disparador
+  context      Json? // contexto adicional (ex: { "productId": "...", "userId": "..." })
+  executionLog Json? // logs detalhados (por node)
+  error        String?
+  durationMs   Int? // duração total
+  startedAt    DateTime            @default(now())
+  completedAt  DateTime?
 
   // Auditoria
-  executedById   String?
-  executedBy     User?               @relation(fields: [executedById], references: [id], onDelete: SetNull)
-  storeId        String?
-  store          Store?              @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  executedById String?
+  executedBy   User?   @relation(fields: [executedById], references: [id], onDelete: SetNull)
+  storeId      String?
+  store        Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
 
-  @@map("flow_executions")
   @@index([flowId])
   @@index([status])
   @@index([startedAt])
   @@index([storeId])
+  @@map("flow_executions")
 }
 
 /// ===============================
@@ -1426,8 +1407,7 @@ enum FlowExecutionStatus {
   FAILED
   RUNNING
   CANCELLED
-    }
-
+}
 
 // ========== chat.prisma ==========
 /// ===============================
@@ -1438,32 +1418,32 @@ enum FlowExecutionStatus {
 /// ===============================
 
 model ChatSession {
-  id              String         @id @default(cuid())
-  userId          String
-  storeId         String?
-  title           String?        // título exibido no histórico (ex: "Reajuste de preços")
-  model           String?        // modelo usado (ex: gpt-4-turbo)
-  temperature     Float?         // temperatura padrão da sessão
-  context         Json?          // contexto global da sessão (loja, user, histórico)
-  metadata        Json?          // dados adicionais (ex: tags, origem)
-  active          Boolean        @default(true)
-  isPinned        Boolean        @default(false) // fixado no topo
-  deletedAt       DateTime?      // soft delete
+  id          String    @id @default(cuid())
+  userId      String
+  storeId     String?
+  title       String? // título exibido no histórico (ex: "Reajuste de preços")
+  model       String? // modelo usado (ex: gpt-4-turbo)
+  temperature Float? // temperatura padrão da sessão
+  context     Json? // contexto global da sessão (loja, user, histórico)
+  metadata    Json? // dados adicionais (ex: tags, origem)
+  active      Boolean   @default(true)
+  isPinned    Boolean   @default(false) // fixado no topo
+  deletedAt   DateTime? // soft delete
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  lastActivityAt  DateTime?      // última mensagem trocada
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  lastActivityAt DateTime? // última mensagem trocada
 
   // Relações
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  store           Store?         @relation(fields: [storeId], references: [id], onDelete: SetNull)
-  messages        ChatMessage[]
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store    Store?        @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  messages ChatMessage[]
 
-  @@map("chat_sessions")
   @@index([userId])
   @@index([storeId])
   @@index([createdAt])
   @@index([deletedAt])
+  @@map("chat_sessions")
 }
 
 /// ===============================
@@ -1472,27 +1452,27 @@ model ChatSession {
 /// ===============================
 
 model ChatMessage {
-  id              String          @id @default(cuid())
-  sessionId       String
-  role            ChatMessageRole @default(USER)
-  content         String
-  tokens          Int?            // número de tokens consumidos
-  model           String?         // modelo usado nessa resposta (pode mudar)
-  context         Json?           // contexto adicional (dados da loja, produto, etc.)
-  options         Json?           // parâmetros de geração (temperature, top_p, etc.)
-  error           String?         // erro da geração (se houver)
-  cost            Decimal?        @db.Decimal(10, 4) // custo da requisição
-  latencyMs       Int?            // duração da requisição
-  isFinal         Boolean         @default(false) // resposta finalizada
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id        String          @id @default(cuid())
+  sessionId String
+  role      ChatMessageRole @default(USER)
+  content   String
+  tokens    Int? // número de tokens consumidos
+  model     String? // modelo usado nessa resposta (pode mudar)
+  context   Json? // contexto adicional (dados da loja, produto, etc.)
+  options   Json? // parâmetros de geração (temperature, top_p, etc.)
+  error     String? // erro da geração (se houver)
+  cost      Decimal?        @db.Decimal(10, 4) // custo da requisição
+  latencyMs Int? // duração da requisição
+  isFinal   Boolean         @default(false) // resposta finalizada
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
-  session         ChatSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
-  @@map("chat_messages")
   @@index([sessionId])
   @@index([role])
   @@index([createdAt])
+  @@map("chat_messages")
 }
 
 /// ===============================
@@ -1500,10 +1480,10 @@ model ChatMessage {
 /// ===============================
 
 enum ChatMessageRole {
-  USER       // Usuário humano
-  ASSISTANT  // Resposta da IA
-  SYSTEM     // Mensagem de sistema ou contexto
-  TOOL       // Execução de ferramenta (ex: busca, ação)
+  USER // Usuário humano
+  ASSISTANT // Resposta da IA
+  SYSTEM // Mensagem de sistema ou contexto
+  TOOL // Execução de ferramenta (ex: busca, ação)
 }
 
 /// ===============================
@@ -1513,40 +1493,39 @@ enum ChatMessageRole {
 ///  - Suporte a pastas, versionamento, templates e automações.
 /// ===============================
 model Document {
-  id            String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  storeId       String
-  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  folderId      String?
-  folder        Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  folderId String?
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
-  title         String
-  type          DocumentType     @default(TEXT)
-  format        DocumentFormat?
-  content       Json?
-  path          String?
-  version       Int              @default(1)
-  size          Int?
-  mimeType      String?
-  visibility    DocumentVisibility @default(PRIVATE)
+  title      String
+  type       DocumentType       @default(TEXT)
+  format     DocumentFormat?
+  content    Json?
+  path       String?
+  version    Int                @default(1)
+  size       Int?
+  mimeType   String?
+  visibility DocumentVisibility @default(PRIVATE)
 
-  createdById   String?
-  createdBy     User? @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  updatedById   String?
-  updatedBy     User? @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?   @relation("DocumentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById String?
+  updatedBy   User?   @relation("DocumentUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
-  status        DocumentStatus   @default(ACTIVE)
-  pinned        Boolean          @default(false)
-  deletedAt     DateTime?
+  status    DocumentStatus @default(ACTIVE)
+  pinned    Boolean        @default(false)
+  deletedAt DateTime?
 
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   lastAccessedAt DateTime?
 
-  versions      DocumentVersion[]
+  versions DocumentVersion[]
 
-  @@map("documents")
   @@index([storeId])
   @@index([folderId])
   @@index([status])
@@ -1554,13 +1533,13 @@ model Document {
   @@index([createdById])
   @@index([updatedById])
   @@index([title])
+  @@map("documents")
 }
 
-
 model DocumentVersion {
-  id          String   @id @default(cuid())
-  documentId  String
-  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   version     Int
   content     Json?
@@ -1568,10 +1547,10 @@ model DocumentVersion {
   createdBy   User?    @relation("DocumentVersionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
 
-  @@map("document_versions")
   @@unique([documentId, version])
   @@index([documentId])
   @@index([createdById])
+  @@map("document_versions")
 }
 
 /// ===============================
@@ -1579,10 +1558,10 @@ model DocumentVersion {
 /// ===============================
 
 enum DocumentType {
-  TEXT       // conteúdo JSON (Tiptap, Markdown, etc.)
-  DOCX       // arquivo do Word
-  PDF        // documento PDF
-  TEMPLATE   // modelo reutilizável
+  TEXT // conteúdo JSON (Tiptap, Markdown, etc.)
+  DOCX // arquivo do Word
+  PDF // documento PDF
+  TEMPLATE // modelo reutilizável
   OTHER
 }
 
@@ -1606,30 +1585,28 @@ enum DocumentVisibility {
   INTERNAL
 }
 
-
-
 // =========================================
 // ESPAÇOS
 // =========================================
 
 model Space {
-  id          String     @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
   capacity    Int?
   location    String?
 
-  storeId     String
-  store       Store      @relation(fields: [storeId], references: [id])
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
 
   createdById String
-  createdBy   User       @relation("SpaceCreatedBy", fields: [createdById], references: [id])
+  createdBy   User   @relation("SpaceCreatedBy", fields: [createdById], references: [id])
 
-  schedules   Schedule[]
-  resources   Resource[]
+  schedules Schedule[]
+  resources Resource[]
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // =========================================
@@ -1637,37 +1614,37 @@ model Space {
 // =========================================
 
 model Schedule {
-  id            String         @id @default(cuid())
-  title         String
-  description   String?
+  id          String  @id @default(cuid())
+  title       String
+  description String?
 
   // Horário base (primeira ocorrência)
-  startTime     DateTime
-  endTime       DateTime
+  startTime DateTime
+  endTime   DateTime
 
   // Regra de repetição (RRULE padrão iCal)
-  rrule         String?        // Ex: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR;UNTIL=2026-03-01T00:00:00Z"
-  timezone      String?        // Ex: "America/Sao_Paulo"
+  rrule    String? // Ex: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR;UNTIL=2026-03-01T00:00:00Z"
+  timezone String? // Ex: "America/Sao_Paulo"
 
-  status        ScheduleStatus @default(PENDING)
+  status ScheduleStatus @default(PENDING)
 
-  storeId       String
-  store         Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  spaceId       String
-  space         Space          @relation(fields: [spaceId], references: [id])
+  spaceId String
+  space   Space  @relation(fields: [spaceId], references: [id])
 
-  userId        String
-  user          User           @relation("ScheduleUser", fields: [userId], references: [id])
+  userId String
+  user   User   @relation("ScheduleUser", fields: [userId], references: [id])
 
-  createdById   String
-  createdBy     User           @relation("ScheduleCreatedBy", fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation("ScheduleCreatedBy", fields: [createdById], references: [id])
 
-  resources     Resource[]
-  occurrences   ScheduleOccurrence[]
+  resources   Resource[]
+  occurrences ScheduleOccurrence[]
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ScheduleStatus {
@@ -1681,18 +1658,18 @@ enum ScheduleStatus {
 // =========================================
 
 model ScheduleOccurrence {
-  id            String         @id @default(cuid())
-  scheduleId    String
-  schedule      Schedule       @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
-  startTime     DateTime
-  endTime       DateTime
+  startTime DateTime
+  endTime   DateTime
 
-  status        ScheduleStatus @default(PENDING)
+  status ScheduleStatus @default(PENDING)
 
-  shifts        Shift[]
+  shifts Shift[]
 
-  createdAt     DateTime       @default(now())
+  createdAt DateTime @default(now())
 
   @@index([startTime, endTime])
   @@index([scheduleId])
@@ -1703,46 +1680,46 @@ model ScheduleOccurrence {
 // =========================================
 
 model Shift {
-  id            String          @id @default(cuid())
-  name          String           // Nome da escala ou papel (ex: "Instrutores")
-  description   String?
+  id          String  @id @default(cuid())
+  name        String // Nome da escala ou papel (ex: "Instrutores")
+  description String?
 
-  storeId       String
-  store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  occurrenceId  String?
-  occurrence    ScheduleOccurrence? @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+  occurrenceId String?
+  occurrence   ScheduleOccurrence? @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
 
-  participants  ShiftParticipant[]
-  
-  createdById   String
-  createdBy     User            @relation("ShiftCreatedBy", fields: [createdById], references: [id])
+  participants ShiftParticipant[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdById String
+  createdBy   User   @relation("ShiftCreatedBy", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ShiftParticipant {
-  id            String          @id @default(cuid())
-  shiftId       String
-  shift         Shift           @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  shiftId String
+  shift   Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
 
-  storeId       String
-  store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  userId        String
-  user          User            @relation("ShiftParticipantUser", fields: [userId], references: [id])
+  userId String
+  user   User   @relation("ShiftParticipantUser", fields: [userId], references: [id])
 
-  createdById   String
-  createdBy     User            @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id])
+  createdById String
+  createdBy   User   @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id])
 
-  role          String?         // Ex: "Assistente", "Líder"
-  status        ShiftStatus     @default(PENDING)
-  confirmedAt   DateTime?
-  deniedAt      DateTime?
-  note          String?
+  role        String? // Ex: "Assistente", "Líder"
+  status      ShiftStatus @default(PENDING)
+  confirmedAt DateTime?
+  deniedAt    DateTime?
+  note        String?
 
-  createdAt     DateTime        @default(now())
+  createdAt DateTime @default(now())
 }
 
 enum ShiftStatus {
@@ -1751,21 +1728,20 @@ enum ShiftStatus {
   DECLINED
 }
 
-
 model Resource {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  type          ResourceType
-  isAvailable   Boolean  @default(true)
-  spaceId       String?   // se for vinculado a um espaço físico
-  productId     String?   // se quiser vincular a um produto do ERP
-  schedules     Schedule[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        ResourceType
+  isAvailable Boolean      @default(true)
+  spaceId     String? // se for vinculado a um espaço físico
+  productId   String? // se quiser vincular a um produto do ERP
+  schedules   Schedule[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  product       Product?  @relation(fields: [productId], references: [id])
-  space         Space?    @relation(fields: [spaceId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  space   Space?   @relation(fields: [spaceId], references: [id])
 }
 
 enum ResourceType {
@@ -1776,15 +1752,15 @@ enum ResourceType {
 }
 
 model Folder {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  storeId     String
-  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Hierarquia
-  parentId    String?
-  parent      Folder?    @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children    Folder[]   @relation("FolderHierarchy")
+  parentId String?
+  parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Folder[] @relation("FolderHierarchy")
 
   // Info
   name        String
@@ -1794,32 +1770,109 @@ model Folder {
 
   // Auditoria
   createdById String?
-  createdBy   User? @relation("FolderCreatedBy", fields: [createdById], references: [id])
+  createdBy   User?     @relation("FolderCreatedBy", fields: [createdById], references: [id])
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relacionamentos
-  documents   Document[]
-  media       FolderMedia[]
+  documents Document[]
+  media     FolderMedia[]
 
-  @@map("folders")
+  @@unique([storeId, name, parentId])
   @@index([storeId])
   @@index([parentId])
   @@index([deletedAt])
-  @@unique([storeId, name, parentId])
+  @@map("folders")
 }
 
 model FolderMedia {
-  id        String   @id @default(cuid())
+  id        String @id @default(cuid())
   folderId  String
   mediaId   String
-  sortOrder Int      @default(0)
+  sortOrder Int    @default(0)
 
-  folder    Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  media     Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  media  Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
-  @@map("folder_media")
   @@unique([folderId, mediaId])
   @@index([folderId])
+  @@map("folder_media")
+}
+
+//SUPPORT TICKETS
+
+// ===============================
+// ENUMS
+// ===============================
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketCategory {
+  BUG
+  BILLING
+  FEATURE_REQUEST
+  OTHER
+}
+
+// ===============================
+// MODELS
+// ===============================
+
+model SupportTicket {
+  id           String  @id @default(uuid())
+  storeId      String? // se quiser atrelar a uma loja
+  userId       String // cliente que abriu
+  assignedToId String? // staff 25Stock (superadmin)
+
+  title       String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  category    TicketCategory @default(OTHER)
+
+  messages SupportMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // RELATIONS (ajuste o nome dos models de User/Store conforme seu projeto)
+  store      Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  user       User   @relation("TicketCreatedBy", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo User?  @relation("TicketAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([storeId])
+  @@index([userId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model SupportMessage {
+  id          String @id @default(uuid())
+  ticketId    String
+  senderId    String
+  message     String
+  attachments Json?
+
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([senderId])
+  @@index([createdAt])
 }

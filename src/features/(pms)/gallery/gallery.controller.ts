@@ -19,7 +19,7 @@ export const GalleryController = {
   // === CRUD BÁSICO ===
   async create(request: CreateUploadRequest, reply: FastifyReply) {
     try {
-      const { name, type, size } = request.body
+      const { name, type, size, folderId } = request.body
       const storeId = request.store?.id
       const uploadedById = request.user?.id
 
@@ -36,6 +36,7 @@ export const GalleryController = {
         size,
         storeId,
         uploadedById,
+        folderId,
       })
 
       return reply.status(201).send(result)

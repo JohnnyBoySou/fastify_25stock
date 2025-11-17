@@ -6,10 +6,12 @@ import type { FastifySchema } from 'fastify'
 export const createUploadSchema: FastifySchema = {
   body: {
     type: 'object',
+    required: ['name', 'type', 'size'],
     properties: {
       name: { type: 'string', minLength: 1, maxLength: 255 },
       type: { type: 'string', minLength: 1, maxLength: 100 },
       size: { type: 'number', minimum: 0 },
+      folderId: { type: 'string', nullable: true },
     },
   },
   response: {

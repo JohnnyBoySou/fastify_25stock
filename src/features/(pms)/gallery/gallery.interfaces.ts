@@ -3,9 +3,10 @@ import type { FastifyRequest } from 'fastify'
 // === REQUEST INTERFACES ===
 export interface CreateUploadRequest extends FastifyRequest {
   body: {
-    name?: string
-    type?: string
-    size?: number
+    name: string
+    type: string
+    size: number
+    folderId?: string
   }
 }
 
