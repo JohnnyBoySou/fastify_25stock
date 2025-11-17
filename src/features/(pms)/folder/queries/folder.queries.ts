@@ -59,12 +59,7 @@ export const FolderQueries = {
             },
             orderBy: { sortOrder: 'asc' },
             include: {
-              media: {
-                where: {
-                  deletedAt: null,
-                  storeId: storeId, // Filtro adicional para garantir
-                },
-              },
+              media: true, // Não pode usar where aqui, o filtro já está no nível acima
             },
           },
           createdBy: {
@@ -146,12 +141,7 @@ export const FolderQueries = {
           },
           orderBy: { sortOrder: 'asc' },
           include: {
-            media: {
-              where: {
-                deletedAt: null,
-                storeId: storeId, // Filtro adicional para garantir
-              },
-            },
+            media: true, // Não pode usar where aqui, o filtro já está no nível acima
           },
         },
         createdBy: {
