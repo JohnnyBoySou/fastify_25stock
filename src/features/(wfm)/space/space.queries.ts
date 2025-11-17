@@ -54,8 +54,17 @@ export const SpaceQueries = {
 
     const total = await db.space.count({ where: { storeId } })
 
+    // Transformar spaceMedia em media
+    const spacesWithMedia = spaces.map((space) => {
+      const { spaceMedia, ...rest } = space as any
+      return {
+        ...rest,
+        media: spaceMedia?.map((sm: any) => sm.media) || [],
+      }
+    })
+
     return {
-      items: spaces,
+      items: spacesWithMedia,
       pagination: {
         page,
         limit,
@@ -66,7 +75,7 @@ export const SpaceQueries = {
   },
 
   async getById(id: string, storeId: string) {
-    return await db.space.findFirst({
+    const space = await db.space.findFirst({
       where: {
         id,
         storeId,
@@ -111,6 +120,17 @@ export const SpaceQueries = {
         },
       },
     })
+
+    if (!space) {
+      return null
+    }
+
+    // Transformar spaceMedia em media
+    const { spaceMedia, ...rest } = space as any
+    return {
+      ...rest,
+      media: spaceMedia?.map((sm: any) => sm.media) || [],
+    }
   },
 
   async getByQuery({ page, limit, search }: { page?: number, limit?: number, search?: string }, storeId: string) {
@@ -169,8 +189,17 @@ export const SpaceQueries = {
 
     const total = await db.space.count({ where })
 
+    // Transformar spaceMedia em media
+    const spacesWithMedia = spaces.map((space) => {
+      const { spaceMedia, ...rest } = space as any
+      return {
+        ...rest,
+        media: spaceMedia?.map((sm: any) => sm.media) || [],
+      }
+    })
+
     return {
-      items: spaces,
+      items: spacesWithMedia,
       pagination: {
         page,
         limit,
