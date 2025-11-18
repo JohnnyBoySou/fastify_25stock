@@ -10,6 +10,8 @@ export const create: FastifySchema = {
       capacity: { type: 'number' },
       location: { type: 'string' },
       mediaId: { type: 'string' },
+      minStartTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
+      minEndTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
     },
   },
 }
@@ -50,6 +52,8 @@ export const update: FastifySchema = {
       capacity: { type: 'number' },
       location: { type: 'string' },
       mediaId: { type: 'string' },
+      minStartTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
+      minEndTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
     },
   },
 }

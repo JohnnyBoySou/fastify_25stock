@@ -230,6 +230,98 @@ export async function checkScheduleConflicts(
 }
 
 /**
+ * Valida se o horário do agendamento está dentro do range permitido do Space
+ */
+export async function validateSpaceTimeRange(
+  spaceId: string,
+  startTime: Date,
+  endTime: Date,
+  rrule?: string
+): Promise<{ isValid: boolean; error?: string }> {
+  const { db } = await import('@/plugins/prisma')
+
+  // Buscar o Space com os horários mínimos
+  const space = await db.space.findUnique({
+    where: { id: spaceId },
+    select: {
+      id: true,
+      name: true,
+      minStartTime: true,
+      minEndTime: true,
+    },
+  })
+
+  if (!space) {
+    return {
+      isValid: false,
+      error: 'Space not found',
+    }
+  }
+
+  // Se não há horários mínimos configurados, permitir qualquer horário
+  if (!space.minStartTime || !space.minEndTime) {
+    return { isValid: true }
+  }
+
+  // Converter horários mínimos para minutos do dia (0-1439)
+  const parseTimeToMinutes = (timeStr: string): number => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return hours * 60 + minutes
+  }
+
+  const minStartMinutes = parseTimeToMinutes(space.minStartTime)
+  const minEndMinutes = parseTimeToMinutes(space.minEndTime)
+
+  // Se há rrule, validar todas as ocorrências geradas
+  if (rrule) {
+    const occurrences = await generateOccurrences('', startTime, endTime, rrule, undefined, 365)
+    
+    for (const occurrence of occurrences) {
+      const occurrenceStartMinutes = occurrence.startTime.getHours() * 60 + occurrence.startTime.getMinutes()
+      const occurrenceEndMinutes = occurrence.endTime.getHours() * 60 + occurrence.endTime.getMinutes()
+
+      // Verificar se o início está antes do horário mínimo de abertura
+      if (occurrenceStartMinutes < minStartMinutes) {
+        return {
+          isValid: false,
+          error: `O horário de início (${occurrence.startTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}) está antes do horário mínimo de abertura do espaço (${space.minStartTime})`,
+        }
+      }
+
+      // Verificar se o fim está depois do horário mínimo de fechamento
+      if (occurrenceEndMinutes > minEndMinutes) {
+        return {
+          isValid: false,
+          error: `O horário de fim (${occurrence.endTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}) está depois do horário mínimo de fechamento do espaço (${space.minEndTime})`,
+        }
+      }
+    }
+  } else {
+    // Agendamento único - validar apenas o horário fornecido
+    const startMinutes = startTime.getHours() * 60 + startTime.getMinutes()
+    const endMinutes = endTime.getHours() * 60 + endTime.getMinutes()
+
+    // Verificar se o início está antes do horário mínimo de abertura
+    if (startMinutes < minStartMinutes) {
+      return {
+        isValid: false,
+        error: `O horário de início (${startTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}) está antes do horário mínimo de abertura do espaço (${space.minStartTime})`,
+      }
+    }
+
+    // Verificar se o fim está depois do horário mínimo de fechamento
+    if (endMinutes > minEndMinutes) {
+      return {
+        isValid: false,
+        error: `O horário de fim (${endTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}) está depois do horário mínimo de fechamento do espaço (${space.minEndTime})`,
+      }
+    }
+  }
+
+  return { isValid: true }
+}
+
+/**
  * Cria ocorrências de agendamento no banco de dados
  */
 export async function createScheduleOccurrences(

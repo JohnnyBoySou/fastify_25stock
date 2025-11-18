@@ -1611,6 +1611,10 @@ model Space {
   description String?
   capacity    Int?
   location    String?
+  
+  // Horários mínimos de funcionamento (formato HH:mm, ex: "06:00", "22:00")
+  minStartTime String? // Horário mínimo de início (abertura)
+  minEndTime   String? // Horário mínimo de fim (fechamento)
 
   storeId String
   store   Store  @relation(fields: [storeId], references: [id])

@@ -6,6 +6,8 @@ export const SpaceCommands = {
     description?: string
     capacity?: number
     location?: string
+    minStartTime?: string
+    minEndTime?: string
     storeId: string
     createdById: string
   }) {
@@ -15,6 +17,8 @@ export const SpaceCommands = {
         description: data.description,
         capacity: data.capacity,
         location: data.location,
+        minStartTime: data.minStartTime,
+        minEndTime: data.minEndTime,
         storeId: data.storeId,
         createdById: data.createdById,
       },
@@ -43,6 +47,8 @@ export const SpaceCommands = {
       description?: string
       capacity?: number
       location?: string
+      minStartTime?: string
+      minEndTime?: string
       mediaId?: string
     }
   ) {
@@ -52,6 +58,8 @@ export const SpaceCommands = {
     if (data.description !== undefined) updateData.description = data.description
     if (data.capacity !== undefined) updateData.capacity = data.capacity
     if (data.location !== undefined) updateData.location = data.location
+    if (data.minStartTime !== undefined) updateData.minStartTime = data.minStartTime
+    if (data.minEndTime !== undefined) updateData.minEndTime = data.minEndTime
 
     return await db.space.update({
       where: { id },

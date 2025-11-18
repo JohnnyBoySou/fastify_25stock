@@ -8,7 +8,7 @@ import { db } from '@/plugins/prisma'
 export const SpaceController = {
   async create(request: CreateSpaceRequest, reply: FastifyReply) {
     try {
-      const { name, description, capacity, location, mediaId } = request.body
+      const { name, description, capacity, location, mediaId, minStartTime, minEndTime } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -27,6 +27,8 @@ export const SpaceController = {
         description,
         capacity,
         location,
+        minStartTime,
+        minEndTime,
         storeId: request.store.id,
         createdById: request.user.id,
       })
@@ -108,12 +110,14 @@ export const SpaceController = {
   async update(request: UpdateSpaceRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { name, description, capacity, location, mediaId } = request.body as {
+      const { name, description, capacity, location, mediaId, minStartTime, minEndTime } = request.body as {
         name?: string
         description?: string
         capacity?: number
         location?: string
         mediaId?: string
+        minStartTime?: string
+        minEndTime?: string
       }
 
       if (!request.store?.id) {
@@ -135,6 +139,8 @@ export const SpaceController = {
         description,
         capacity,
         location,
+        minStartTime,
+        minEndTime,
       })
 
       // Se mediaId foi fornecido, anexar/atualizar a imagem ao space

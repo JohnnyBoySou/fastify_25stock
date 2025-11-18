@@ -7,6 +7,8 @@ export interface CreateSpaceRequest extends FastifyRequest {
     capacity?: number
     location?: string
     mediaId?: string
+    minStartTime?: string
+    minEndTime?: string
   }
 }
 

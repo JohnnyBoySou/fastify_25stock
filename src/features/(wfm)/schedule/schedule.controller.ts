@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.interfaces'
-import { checkScheduleConflicts, processScheduleTimes } from './schedule.utils'
+import { checkScheduleConflicts, processScheduleTimes, validateSpaceTimeRange } from './schedule.utils'
 import { db } from '@/plugins/prisma'
 
 export const ScheduleController = {
@@ -47,6 +47,14 @@ export const ScheduleController = {
       } catch (error: any) {
         return reply.status(400).send({
           error: error.message || 'Invalid date/time format',
+        })
+      }
+
+      // Validar se o horário está dentro do range permitido do Space
+      const timeRangeValidation = await validateSpaceTimeRange(spaceId, start, end, rrule)
+      if (!timeRangeValidation.isValid) {
+        return reply.status(400).send({
+          error: timeRangeValidation.error || 'Horário fora do range permitido do espaço',
         })
       }
 
@@ -237,6 +245,21 @@ export const ScheduleController = {
         // Se nenhum campo foi fornecido, usar valores existentes
         start = existingSchedule.startTime
         end = existingSchedule.endTime
+      }
+
+      // Garantir que start e end estão definidos
+      if (!start || !end) {
+        return reply.status(400).send({
+          error: 'Start time and end time are required',
+        })
+      }
+
+      // Validar se o horário está dentro do range permitido do Space
+      const timeRangeValidation = await validateSpaceTimeRange(finalSpaceId, start, end, finalRrule)
+      if (!timeRangeValidation.isValid) {
+        return reply.status(400).send({
+          error: timeRangeValidation.error || 'Horário fora do range permitido do espaço',
+        })
       }
 
       // Verificar conflitos (excluindo o próprio agendamento)
