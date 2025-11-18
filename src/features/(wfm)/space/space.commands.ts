@@ -46,20 +46,18 @@ export const SpaceCommands = {
       mediaId?: string
     }
   ) {
+    // Preparar dados de atualização do space (sem mediaId)
+    const updateData: any = {}
+    if (data.name !== undefined) updateData.name = data.name
+    if (data.description !== undefined) updateData.description = data.description
+    if (data.capacity !== undefined) updateData.capacity = data.capacity
+    if (data.location !== undefined) updateData.location = data.location
+
     return await db.space.update({
       where: { id },
-      data: {
-        name: data.name,
-        description: data.description,
-        capacity: data.capacity,
-        location: data.location,
-        spaceMedia: {
-          create: {
-            mediaId: data.mediaId,
-            isPrimary: true,
-          },
-        },
-      },
+
+      
+      data: updateData,
       include: {
         store: {
           select: {

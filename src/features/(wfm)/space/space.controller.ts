@@ -3,6 +3,7 @@ import { SpaceCommands } from './space.commands'
 import { SpaceQueries } from './space.queries'
 import type { CreateSpaceRequest, UpdateSpaceRequest } from './space.interfaces'
 import { GalleryCommands } from '@/features/(pms)/gallery/commands/gallery.commands'
+import { db } from '@/plugins/prisma'
 
 export const SpaceController = {
   async create(request: CreateSpaceRequest, reply: FastifyReply) {
@@ -128,14 +129,58 @@ export const SpaceController = {
         })
       }
 
+      // Atualizar os dados do space (sem mediaId)
       const space = await SpaceCommands.update(id, {
         name,
         description,
         capacity,
         location,
-        mediaId,
       })
-      return reply.status(200).send(space)
+
+      // Se mediaId foi fornecido, anexar/atualizar a imagem ao space
+      if (mediaId) {
+        try {
+          // Verificar se já existe um relacionamento com este mediaId
+          const existingMedia = await db.spaceMedia.findFirst({
+            where: {
+              spaceId: id,
+              mediaId,
+            },
+          })
+
+          if (existingMedia) {
+            // Se já existe, apenas atualizar para primary se necessário
+            await db.spaceMedia.update({
+              where: { id: existingMedia.id },
+              data: { isPrimary: true },
+            })
+            // Remover a flag de primary das outras mídias
+            await db.spaceMedia.updateMany({
+              where: {
+                spaceId: id,
+                id: { not: existingMedia.id },
+              },
+              data: { isPrimary: false },
+            })
+          } else {
+            // Se não existe, criar novo relacionamento usando GalleryCommands
+            await GalleryCommands.attachToSpace({
+              mediaId,
+              entityType: 'space',
+              entityId: id,
+              isPrimary: true,
+            })
+          }
+        } catch (mediaError: any) {
+          request.log.warn({ err: mediaError }, 'Erro ao anexar imagem ao space')
+          // Não falha a atualização do space se houver erro ao anexar a imagem
+          // Apenas loga o erro
+        }
+      }
+
+      // Buscar o space novamente com as mídias incluídas
+      const spaceWithMedia = await SpaceQueries.getById(id, request.store.id)
+      return reply.status(200).send(spaceWithMedia)
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({
