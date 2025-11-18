@@ -31,15 +31,14 @@ const fastify = Fastify({
           }
         : undefined,
   },
-  requestTimeout: 60000, // 60 segundos para timeout de requisições
-  keepAliveTimeout: 5000, // 5 segundos para keep-alive
-  bodyLimit: 10 * 1024 * 1024, // 10MB para limite do body (suporta uploads)
+  requestTimeout: 60000, 
+  keepAliveTimeout: 5000, 
+  bodyLimit: 10 * 1024 * 1024,
   routerOptions: {
-    maxParamLength: 200, // Limite de caracteres para parâmetros de rota
+    maxParamLength: 200, 
   },
 })
 
-// Healthcheck route (registrada antes do bootstrap)
 fastify.get('/health', async (request, reply) => {
   try {
     return reply.send({
