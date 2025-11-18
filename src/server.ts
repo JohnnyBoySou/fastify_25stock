@@ -107,16 +107,29 @@ async function startServer() {
       name: '✅ Configurando CORS',
       action: async () => {
         await fastify.register(cors, {
-          origin: true,
+          origin: true, // Permite todas as origens
           credentials: true,
-          methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+          methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
           allowedHeaders: [
             'Content-Type',
             'Authorization',
             'X-Requested-With',
             'Accept',
             'Origin',
+            'Access-Control-Allow-Origin',
+            'Access-Control-Allow-Methods',
+            'Access-Control-Allow-Headers',
+            'Access-Control-Allow-Credentials',
           ],
+          exposedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'X-Requested-With',
+            'Accept',
+            'Origin',
+          ],
+          preflight: true, // Responde a requisições OPTIONS
+          strictPreflight: false, // Não é estrito com preflight
         })
       },
     },
