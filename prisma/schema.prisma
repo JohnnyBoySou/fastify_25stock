@@ -1616,6 +1616,13 @@ model Space {
   minStartTime String? // Horário mínimo de início (abertura)
   minEndTime   String? // Horário mínimo de fim (fechamento)
 
+  // Configurações de reserva
+  minBookingDuration      Int?     // Duração mínima de reserva em minutos
+  gapTime                 Int?     // Tempo de intervalo entre reservas em minutos
+  requiresApproval        Boolean  @default(false) // Se a reserva requer aprovação
+  allowOverlapping        Boolean  @default(false) // Se permite reservas sobrepostas
+  maxSimultaneousBookings Int?     // Número máximo de reservas simultâneas
+
   storeId String
   store   Store  @relation(fields: [storeId], references: [id])
 

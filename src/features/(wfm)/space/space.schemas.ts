@@ -12,6 +12,12 @@ export const create: FastifySchema = {
       mediaId: { type: 'string' },
       minStartTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
       minEndTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
+      minBookingDuration: { type: 'number' }, // Duração mínima em minutos
+      gapTime: { type: 'number' }, // Tempo de intervalo em minutos
+      requiresApproval: { type: 'boolean' },
+      allowOverlapping: { type: 'boolean' },
+      maxSimultaneousBookings: { type: 'number' },
+      resources: { type: 'array', items: { type: 'string' } }, // Array de IDs de recursos
     },
   },
 }
@@ -54,6 +60,12 @@ export const update: FastifySchema = {
       mediaId: { type: 'string' },
       minStartTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
       minEndTime: { type: 'string', pattern: '^([0-1][0-9]|2[0-3]):[0-5][0-9]$' }, // Formato HH:mm
+      minBookingDuration: { type: 'number' }, // Duração mínima em minutos
+      gapTime: { type: 'number' }, // Tempo de intervalo em minutos
+      requiresApproval: { type: 'boolean' },
+      allowOverlapping: { type: 'boolean' },
+      maxSimultaneousBookings: { type: 'number' },
+      resources: { type: 'array', items: { type: 'string' } }, // Array de IDs de recursos
     },
   },
 }

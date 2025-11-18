@@ -8,6 +8,12 @@ export const SpaceCommands = {
     location?: string
     minStartTime?: string
     minEndTime?: string
+    minBookingDuration?: number
+    gapTime?: number
+    requiresApproval?: boolean
+    allowOverlapping?: boolean
+    maxSimultaneousBookings?: number
+    resources?: string[]
     storeId: string
     createdById: string
   }) {
@@ -19,8 +25,18 @@ export const SpaceCommands = {
         location: data.location,
         minStartTime: data.minStartTime,
         minEndTime: data.minEndTime,
+        minBookingDuration: data.minBookingDuration,
+        gapTime: data.gapTime,
+        requiresApproval: data.requiresApproval,
+        allowOverlapping: data.allowOverlapping,
+        maxSimultaneousBookings: data.maxSimultaneousBookings,
         storeId: data.storeId,
         createdById: data.createdById,
+        resources: data.resources
+          ? {
+              connect: data.resources.map((resourceId) => ({ id: resourceId })),
+            }
+          : undefined,
       },
       include: {
         store: {
@@ -36,6 +52,7 @@ export const SpaceCommands = {
             email: true,
           },
         },
+        resources: true,
       },
     })
   },
@@ -49,6 +66,12 @@ export const SpaceCommands = {
       location?: string
       minStartTime?: string
       minEndTime?: string
+      minBookingDuration?: number
+      gapTime?: number
+      requiresApproval?: boolean
+      allowOverlapping?: boolean
+      maxSimultaneousBookings?: number
+      resources?: string[]
       mediaId?: string
     }
   ) {
@@ -60,11 +83,21 @@ export const SpaceCommands = {
     if (data.location !== undefined) updateData.location = data.location
     if (data.minStartTime !== undefined) updateData.minStartTime = data.minStartTime
     if (data.minEndTime !== undefined) updateData.minEndTime = data.minEndTime
+    if (data.minBookingDuration !== undefined) updateData.minBookingDuration = data.minBookingDuration
+    if (data.gapTime !== undefined) updateData.gapTime = data.gapTime
+    if (data.requiresApproval !== undefined) updateData.requiresApproval = data.requiresApproval
+    if (data.allowOverlapping !== undefined) updateData.allowOverlapping = data.allowOverlapping
+    if (data.maxSimultaneousBookings !== undefined) updateData.maxSimultaneousBookings = data.maxSimultaneousBookings
+
+    // Atualizar recursos se fornecido
+    if (data.resources !== undefined) {
+      updateData.resources = {
+        set: data.resources.map((resourceId) => ({ id: resourceId })),
+      }
+    }
 
     return await db.space.update({
       where: { id },
-
-      
       data: updateData,
       include: {
         store: {
@@ -80,6 +113,7 @@ export const SpaceCommands = {
             email: true,
           },
         },
+        resources: true,
       },
     })
   },

@@ -27,6 +27,15 @@ export const SpaceQueries = {
             endTime: true,
           },
         },
+        resources: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            type: true,
+            isAvailable: true,
+          },
+        },
         spaceMedia: {
           include: {
             media: {
@@ -99,6 +108,15 @@ export const SpaceQueries = {
             id: true,
             startTime: true,
             endTime: true,
+          },
+        },
+        resources: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            type: true,
+            isAvailable: true,
           },
         },
         spaceMedia: {

@@ -9,6 +9,12 @@ export interface CreateSpaceRequest extends FastifyRequest {
     mediaId?: string
     minStartTime?: string
     minEndTime?: string
+    minBookingDuration?: number
+    gapTime?: number
+    requiresApproval?: boolean
+    allowOverlapping?: boolean
+    maxSimultaneousBookings?: number
+    resources?: string[]
   }
 }
 
@@ -18,5 +24,14 @@ export interface UpdateSpaceRequest extends FastifyRequest {
     description?: string
     capacity?: number
     location?: string
+    mediaId?: string
+    minStartTime?: string
+    minEndTime?: string
+    minBookingDuration?: number
+    gapTime?: number
+    requiresApproval?: boolean
+    allowOverlapping?: boolean
+    maxSimultaneousBookings?: number
+    resources?: string[]
   }
 }

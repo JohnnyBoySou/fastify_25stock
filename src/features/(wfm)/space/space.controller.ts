@@ -8,7 +8,21 @@ import { db } from '@/plugins/prisma'
 export const SpaceController = {
   async create(request: CreateSpaceRequest, reply: FastifyReply) {
     try {
-      const { name, description, capacity, location, mediaId, minStartTime, minEndTime } = request.body
+      const {
+        name,
+        description,
+        capacity,
+        location,
+        mediaId,
+        minStartTime,
+        minEndTime,
+        minBookingDuration,
+        gapTime,
+        requiresApproval,
+        allowOverlapping,
+        maxSimultaneousBookings,
+        resources,
+      } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -29,6 +43,12 @@ export const SpaceController = {
         location,
         minStartTime,
         minEndTime,
+        minBookingDuration,
+        gapTime,
+        requiresApproval,
+        allowOverlapping,
+        maxSimultaneousBookings,
+        resources,
         storeId: request.store.id,
         createdById: request.user.id,
       })
@@ -110,15 +130,21 @@ export const SpaceController = {
   async update(request: UpdateSpaceRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }
-      const { name, description, capacity, location, mediaId, minStartTime, minEndTime } = request.body as {
-        name?: string
-        description?: string
-        capacity?: number
-        location?: string
-        mediaId?: string
-        minStartTime?: string
-        minEndTime?: string
-      }
+      const {
+        name,
+        description,
+        capacity,
+        location,
+        mediaId,
+        minStartTime,
+        minEndTime,
+        minBookingDuration,
+        gapTime,
+        requiresApproval,
+        allowOverlapping,
+        maxSimultaneousBookings,
+        resources,
+      } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -134,13 +160,19 @@ export const SpaceController = {
       }
 
       // Atualizar os dados do space (sem mediaId)
-      const space = await SpaceCommands.update(id, {
+    await SpaceCommands.update(id, {
         name,
         description,
         capacity,
         location,
         minStartTime,
         minEndTime,
+        minBookingDuration,
+        gapTime,
+        requiresApproval,
+        allowOverlapping,
+        maxSimultaneousBookings,
+        resources,
       })
 
       // Se mediaId foi fornecido, anexar/atualizar a imagem ao space
