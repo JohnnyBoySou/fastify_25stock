@@ -156,11 +156,12 @@ export const SpaceQueries = {
       storeId,
     }
 
-    if (search) {
+    if (search?.trim()) {
+      const searchTerm = search.trim()
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { location: { contains: search, mode: 'insensitive' } },
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } },
+        { location: { contains: searchTerm, mode: 'insensitive' } },
       ]
     }
 

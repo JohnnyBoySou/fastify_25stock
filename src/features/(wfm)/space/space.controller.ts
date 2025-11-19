@@ -257,7 +257,7 @@ export const SpaceController = {
 
   async getByQuery(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { page, limit, search } = request.query as { page?: number, limit?: number, search?: string }
+      const { page, limit, query } = request.query as { page?: number, limit?: number, query?: string }
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -265,7 +265,7 @@ export const SpaceController = {
         })
       }
 
-      const spaces = await SpaceQueries.getByQuery({ page, limit, search }, request.store.id)
+      const spaces = await SpaceQueries.getByQuery({ page, limit, search: query }, request.store.id)
       return reply.status(200).send(spaces)
     } catch (error: any) {
       request.log.error(error)

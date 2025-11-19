@@ -84,7 +84,7 @@ export const getByQuery: FastifySchema = {
   querystring: {
     type: 'object',
     properties: {
-      search: { type: 'string' },
+      query: { type: 'string' },
       page: { type: 'number' },
       limit: { type: 'number' },
     },
