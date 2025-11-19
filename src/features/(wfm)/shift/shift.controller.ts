@@ -12,11 +12,17 @@ import { db } from '@/plugins/prisma'
 export const ShiftController = {
   async create(request: CreateShiftRequest, reply: FastifyReply) {
     try {
-      const { name, description, occurrenceId, scheduleId } = request.body
+      const { name, description, occurrenceId, scheduleId, participants } = request.body
 
       if (!request.store?.id) {
         return reply.status(404).send({
           error: 'Store not found for this user',
+        })
+      }
+
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: 'Authentication required',
         })
       }
 
@@ -95,6 +101,35 @@ export const ShiftController = {
         occurrenceId: finalOccurrenceId,
         createdById: request.user.id,
       })
+
+      // Criar participants se fornecidos
+      if (participants && participants.length > 0) {
+        for (const participant of participants) {
+          // Verificar se o usuário já é participante
+          const existingParticipant = await db.shiftParticipant.findFirst({
+            where: {
+              shiftId: shift.id,
+              userId: participant.userId,
+            },
+          })
+
+          if (!existingParticipant) {
+            await ShiftCommands.addParticipant({
+              shiftId: shift.id,
+              userId: participant.userId,
+              storeId: request.store.id,
+              role: participant.role,
+              note: participant.note,
+              createdById: request.user.id,
+            })
+          }
+        }
+
+        // Buscar o shift novamente com os participants
+        const shiftWithParticipants = await ShiftQueries.getById(shift.id, request.store.id)
+        return reply.status(201).send(shiftWithParticipants)
+      }
+
       return reply.status(201).send(shift)
     } catch (error: any) {
       request.log.error(error)

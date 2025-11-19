@@ -6,6 +6,11 @@ export interface CreateShiftRequest extends FastifyRequest {
     description?: string
     occurrenceId?: string
     scheduleId?: string
+    participants?: Array<{
+      userId: string
+      role?: string
+      note?: string
+    }>
   }
 }
 

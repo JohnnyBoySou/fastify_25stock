@@ -9,6 +9,18 @@ export const create: FastifySchema = {
       description: { type: 'string' },
       occurrenceId: { type: 'string' },
       scheduleId: { type: 'string' },
+      participants: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['userId'],
+          properties: {
+            userId: { type: 'string' },
+            role: { type: 'string' },
+            note: { type: 'string' },
+          },
+        },
+      },
     },
   },
 }
