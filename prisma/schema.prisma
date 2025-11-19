@@ -1626,8 +1626,8 @@ model Space {
   storeId String
   store   Store  @relation(fields: [storeId], references: [id])
 
-  createdById String
-  createdBy   User   @relation("SpaceCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+  createdBy   User?   @relation("SpaceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   schedules Schedule[]
   resources Resource[]
@@ -1662,11 +1662,11 @@ model Schedule {
   spaceId String
   space   Space  @relation(fields: [spaceId], references: [id])
 
-  userId String
-  user   User   @relation("ScheduleUser", fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation("ScheduleUser", fields: [userId], references: [id], onDelete: SetNull)
 
-  createdById String
-  createdBy   User   @relation("ScheduleCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+  createdBy   User?   @relation("ScheduleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   resources   Resource[]
   occurrences ScheduleOccurrence[]
@@ -1720,8 +1720,8 @@ model Shift {
 
   participants ShiftParticipant[]
 
-  createdById String
-  createdBy   User   @relation("ShiftCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+  createdBy   User?   @relation("ShiftCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1736,10 +1736,10 @@ model ShiftParticipant {
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   userId String
-  user   User   @relation("ShiftParticipantUser", fields: [userId], references: [id])
+  user   User   @relation("ShiftParticipantUser", fields: [userId], references: [id], onDelete: Cascade)
 
-  createdById String
-  createdBy   User   @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+  createdBy   User?   @relation("ShiftParticipantCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   role        String? // Ex: "Assistente", "Líder"
   status      ShiftStatus @default(PENDING)

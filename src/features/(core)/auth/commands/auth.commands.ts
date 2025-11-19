@@ -502,7 +502,7 @@ export const AuthCommands = {
   },
 
   generateResetToken(): string {
-    return crypto.randomBytes(32).toString('hex')
+    return Math.floor(100000 + Math.random() * 900000).toString()
   },
 
   generateVerificationToken(): string {
