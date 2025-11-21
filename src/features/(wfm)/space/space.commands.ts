@@ -11,6 +11,7 @@ export const SpaceCommands = {
     minBookingDuration?: number
     gapTime?: number
     requiresApproval?: boolean
+    approvalUserId?: string
     allowOverlapping?: boolean
     maxSimultaneousBookings?: number
     resources?: string[]
@@ -28,6 +29,7 @@ export const SpaceCommands = {
         minBookingDuration: data.minBookingDuration,
         gapTime: data.gapTime,
         requiresApproval: data.requiresApproval,
+        approvalUserId: data.approvalUserId,
         allowOverlapping: data.allowOverlapping,
         maxSimultaneousBookings: data.maxSimultaneousBookings,
         storeId: data.storeId,
@@ -69,6 +71,7 @@ export const SpaceCommands = {
       minBookingDuration?: number
       gapTime?: number
       requiresApproval?: boolean
+      approvalUserId?: string
       allowOverlapping?: boolean
       maxSimultaneousBookings?: number
       resources?: string[]
@@ -86,6 +89,7 @@ export const SpaceCommands = {
     if (data.minBookingDuration !== undefined) updateData.minBookingDuration = data.minBookingDuration
     if (data.gapTime !== undefined) updateData.gapTime = data.gapTime
     if (data.requiresApproval !== undefined) updateData.requiresApproval = data.requiresApproval
+    if (data.approvalUserId !== undefined) updateData.approvalUserId = data.approvalUserId
     if (data.allowOverlapping !== undefined) updateData.allowOverlapping = data.allowOverlapping
     if (data.maxSimultaneousBookings !== undefined) updateData.maxSimultaneousBookings = data.maxSimultaneousBookings
 

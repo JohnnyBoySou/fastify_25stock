@@ -15,6 +15,7 @@ export const create: FastifySchema = {
       minBookingDuration: { type: 'number' }, // Duração mínima em minutos
       gapTime: { type: 'number' }, // Tempo de intervalo em minutos
       requiresApproval: { type: 'boolean' },
+      approvalUserId: { type: 'string' }, // ID do usuário que receberá notificações e poderá aprovar
       allowOverlapping: { type: 'boolean' },
       maxSimultaneousBookings: { type: 'number' },
       resources: { type: 'array', items: { type: 'string' } }, // Array de IDs de recursos
@@ -63,6 +64,7 @@ export const update: FastifySchema = {
       minBookingDuration: { type: 'number' }, // Duração mínima em minutos
       gapTime: { type: 'number' }, // Tempo de intervalo em minutos
       requiresApproval: { type: 'boolean' },
+      approvalUserId: { type: 'string' }, // ID do usuário que receberá notificações e poderá aprovar
       allowOverlapping: { type: 'boolean' },
       maxSimultaneousBookings: { type: 'number' },
       resources: { type: 'array', items: { type: 'string' } }, // Array de IDs de recursos

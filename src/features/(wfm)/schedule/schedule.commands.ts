@@ -203,4 +203,102 @@ export const ScheduleCommands = {
       where: { id },
     })
   },
+
+  async approve(id: string, approvedById: string) {
+    // Atualizar o status do schedule e todas as ocorrências para CONFIRMED
+    const schedule = await db.schedule.update({
+      where: { id },
+      data: {
+        status: 'CONFIRMED',
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        space: {
+          select: {
+            id: true,
+            name: true,
+            requiresApproval: true,
+            approvalUserId: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        occurrences: true,
+      },
+    })
+
+    // Atualizar todas as ocorrências para CONFIRMED
+    await db.scheduleOccurrence.updateMany({
+      where: { scheduleId: id },
+      data: { status: 'CONFIRMED' },
+    })
+
+    return schedule
+  },
+
+  async reject(id: string, rejectedById: string, reason?: string) {
+    // Atualizar o status do schedule e todas as ocorrências para CANCELLED
+    const schedule = await db.schedule.update({
+      where: { id },
+      data: {
+        status: 'CANCELLED',
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        space: {
+          select: {
+            id: true,
+            name: true,
+            requiresApproval: true,
+            approvalUserId: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        occurrences: true,
+      },
+    })
+
+    // Atualizar todas as ocorrências para CANCELLED
+    await db.scheduleOccurrence.updateMany({
+      where: { scheduleId: id },
+      data: { status: 'CANCELLED' },
+    })
+
+    return schedule
+  },
 }

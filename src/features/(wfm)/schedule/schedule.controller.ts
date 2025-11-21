@@ -1,9 +1,10 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
-import type { CreateScheduleRequest, UpdateScheduleRequest } from './schedule.interfaces'
+import type { CreateScheduleRequest, UpdateScheduleRequest, ApproveScheduleRequest, RejectScheduleRequest } from './schedule.interfaces'
 import { checkScheduleConflicts, processScheduleTimes, validateSpaceTimeRange } from './schedule.utils'
 import { db } from '@/plugins/prisma'
+import { EmailService } from '@/services/email/email.service'
 
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
@@ -74,6 +75,32 @@ export const ScheduleController = {
         })
       }
 
+      // Verificar se o space requer aprovação
+      const space = await db.space.findFirst({
+        where: {
+          id: spaceId,
+          storeId: request.store.id,
+        },
+        include: {
+          approvalUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      })
+
+      if (!space) {
+        return reply.status(404).send({
+          error: 'Space not found in this store',
+        })
+      }
+
+      // Se o space requer aprovação, o status deve ser PENDING
+      const finalStatus = space.requiresApproval ? 'PENDING' : (status || 'PENDING')
+
       const schedule = await ScheduleCommands.create({
         title,
         description,
@@ -81,12 +108,29 @@ export const ScheduleController = {
         endTime: end,
         rrule,
         timezone,
-        status,
+        status: finalStatus,
         storeId: request.store.id,
         spaceId,
         userId: request.user.id,  
         createdById: request.user.id,
       })
+
+      // Se o space requer aprovação e tem um approvalUser, enviar email de notificação
+      if (space.requiresApproval && space.approvalUser?.email) {
+        try {
+          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${schedule.id}`
+          await EmailService.sendNotificationEmail({
+            email: space.approvalUser.email,
+            title: 'Nova Solicitação de Agendamento',
+            message: `Uma nova solicitação de agendamento "${schedule.title}" foi criada e requer sua aprovação.`,
+            actionUrl: scheduleUrl,
+          })
+        } catch (emailError: any) {
+          request.log.warn({ err: emailError }, 'Erro ao enviar email de notificação de aprovação')
+          // Não falha a criação do schedule se houver erro ao enviar o email
+        }
+      }
+
       return reply.status(201).send(schedule)
     } catch (error: any) {
       request.log.error(error)
@@ -374,6 +418,179 @@ export const ScheduleController = {
 
       const schedules = await ScheduleQueries.getByQuery(query, request.store.id)
       return reply.status(200).send(schedules)
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: error.message || 'Internal server error',
+      })
+    }
+  },
+
+  async approve(request: ApproveScheduleRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string }
+
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: 'Store not found for this user',
+        })
+      }
+
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: 'Authentication required',
+        })
+      }
+
+      // Verificar se o schedule pertence à loja
+      const existingSchedule = await ScheduleQueries.getById(id, request.store.id)
+      if (!existingSchedule) {
+        return reply.status(404).send({
+          error: 'Schedule not found',
+        })
+      }
+
+      // Verificar se o schedule está pendente
+      if (existingSchedule.status !== 'PENDING') {
+        return reply.status(400).send({
+          error: 'Schedule is not pending approval',
+        })
+      }
+
+      // Verificar se o usuário tem permissão para aprovar (deve ser o approvalUser do space)
+      const space = await db.space.findFirst({
+        where: {
+          id: existingSchedule.spaceId,
+          storeId: request.store.id,
+        },
+        include: {
+          approvalUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      })
+
+      if (!space) {
+        return reply.status(404).send({
+          error: 'Space not found',
+        })
+      }
+
+      if (space.requiresApproval && space.approvalUserId && space.approvalUserId !== request.user.id) {
+        return reply.status(403).send({
+          error: 'You do not have permission to approve this schedule',
+        })
+      }
+
+      // Aprovar o schedule
+      const approvedSchedule = await ScheduleCommands.approve(id, request.user.id)
+
+      // Enviar email de notificação para o usuário que criou o agendamento
+      if (approvedSchedule.user?.email) {
+        try {
+          await EmailService.sendNotificationEmail({
+            email: approvedSchedule.user.email,
+            title: 'Agendamento Aprovado',
+            message: `Seu agendamento "${approvedSchedule.title}" foi aprovado.`,
+            actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,
+          })
+        } catch (emailError: any) {
+          request.log.warn({ err: emailError }, 'Erro ao enviar email de aprovação')
+        }
+      }
+
+      return reply.status(200).send(approvedSchedule)
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: error.message || 'Internal server error',
+      })
+    }
+  },
+
+  async reject(request: RejectScheduleRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string }
+      const { reason } = request.body
+
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: 'Store not found for this user',
+        })
+      }
+
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: 'Authentication required',
+        })
+      }
+
+      // Verificar se o schedule pertence à loja
+      const existingSchedule = await ScheduleQueries.getById(id, request.store.id)
+      if (!existingSchedule) {
+        return reply.status(404).send({
+          error: 'Schedule not found',
+        })
+      }
+
+      // Verificar se o schedule está pendente
+      if (existingSchedule.status !== 'PENDING') {
+        return reply.status(400).send({
+          error: 'Schedule is not pending approval',
+        })
+      }
+
+      // Verificar se o usuário tem permissão para rejeitar (deve ser o approvalUser do space)
+      const space = await db.space.findFirst({
+        where: {
+          id: existingSchedule.spaceId,
+          storeId: request.store.id,
+        },
+        include: {
+          approvalUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      })
+
+      if (!space) {
+        return reply.status(404).send({
+          error: 'Space not found',
+        })
+      }
+
+      if (space.requiresApproval && space.approvalUserId && space.approvalUserId !== request.user.id) {
+        return reply.status(403).send({
+          error: 'You do not have permission to reject this schedule',
+        })
+      }
+
+      // Rejeitar o schedule
+      const rejectedSchedule = await ScheduleCommands.reject(id, request.user.id, reason)
+
+      // Enviar email de notificação para o usuário que criou o agendamento
+      if (rejectedSchedule.user?.email) {
+        try {
+          await EmailService.sendNotificationEmail({
+            email: rejectedSchedule.user.email,
+            title: 'Agendamento Rejeitado',
+            message: `Seu agendamento "${rejectedSchedule.title}" foi rejeitado.${reason ? ` Motivo: ${reason}` : ''}`,
+            actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,
+          })
+        } catch (emailError: any) {
+          request.log.warn({ err: emailError }, 'Erro ao enviar email de rejeição')
+        }
+      }
+
+      return reply.status(200).send(rejectedSchedule)
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({

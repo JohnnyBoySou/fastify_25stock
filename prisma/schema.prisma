@@ -72,6 +72,7 @@ model User {
   updatedDocuments         Document[]         @relation("DocumentUpdatedBy")
   createdDocumentVersions  DocumentVersion[]  @relation("DocumentVersionCreatedBy")
   createdSpaces            Space[]            @relation("SpaceCreatedBy")
+  approvalSpaces           Space[]            @relation("SpaceApprovalUser")
   createdShifts            Shift[]            @relation("ShiftCreatedBy")
   createdSchedules         Schedule[]         @relation("ScheduleCreatedBy")
   createdShiftParticipants ShiftParticipant[] @relation("ShiftParticipantCreatedBy")
@@ -1049,9 +1050,9 @@ model StoreMedia {
 }
 
 model SpaceMedia {
-  id       String  @id @default(cuid())
-  spaceId  String
-  mediaId  String
+  id        String  @id @default(cuid())
+  spaceId   String
+  mediaId   String
   isPrimary Boolean @default(false)
   sortOrder Int     @default(0)
 
@@ -1611,17 +1612,18 @@ model Space {
   description String?
   capacity    Int?
   location    String?
-  
+
   // Horários mínimos de funcionamento (formato HH:mm, ex: "06:00", "22:00")
   minStartTime String? // Horário mínimo de início (abertura)
   minEndTime   String? // Horário mínimo de fim (fechamento)
 
   // Configurações de reserva
-  minBookingDuration      Int?     // Duração mínima de reserva em minutos
-  gapTime                 Int?     // Tempo de intervalo entre reservas em minutos
-  requiresApproval        Boolean  @default(false) // Se a reserva requer aprovação
-  allowOverlapping        Boolean  @default(false) // Se permite reservas sobrepostas
-  maxSimultaneousBookings Int?     // Número máximo de reservas simultâneas
+  minBookingDuration      Int? // Duração mínima de reserva em minutos
+  gapTime                 Int? // Tempo de intervalo entre reservas em minutos
+  requiresApproval        Boolean @default(false) // Se a reserva requer aprovação
+  approvalUserId          String? // ID do usuário que receberá notificações e poderá aprovar solicitações
+  allowOverlapping        Boolean @default(false) // Se permite reservas sobrepostas
+  maxSimultaneousBookings Int? // Número máximo de reservas simultâneas
 
   storeId String
   store   Store  @relation(fields: [storeId], references: [id])
@@ -1629,8 +1631,10 @@ model Space {
   createdById String?
   createdBy   User?   @relation("SpaceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
-  schedules Schedule[]
-  resources Resource[]
+  approvalUser User? @relation("SpaceApprovalUser", fields: [approvalUserId], references: [id], onDelete: SetNull)
+
+  schedules  Schedule[]
+  resources  Resource[]
   spaceMedia SpaceMedia[]
 
   createdAt DateTime @default(now())

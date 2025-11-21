@@ -27,3 +27,14 @@ export interface UpdateScheduleRequest extends FastifyRequest {
     spaceId?: string
   }
 }
+
+export interface ApproveScheduleRequest extends FastifyRequest {
+  params: { id: string }
+}
+
+export interface RejectScheduleRequest extends FastifyRequest {
+  params: { id: string }
+  body: {
+    reason?: string
+  }
+}

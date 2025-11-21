@@ -12,6 +12,7 @@ export interface CreateSpaceRequest extends FastifyRequest {
     minBookingDuration?: number
     gapTime?: number
     requiresApproval?: boolean
+    approvalUserId?: string
     allowOverlapping?: boolean
     maxSimultaneousBookings?: number
     resources?: string[]
@@ -30,6 +31,7 @@ export interface UpdateSpaceRequest extends FastifyRequest {
     minBookingDuration?: number
     gapTime?: number
     requiresApproval?: boolean
+    approvalUserId?: string
     allowOverlapping?: boolean
     maxSimultaneousBookings?: number
     resources?: string[]

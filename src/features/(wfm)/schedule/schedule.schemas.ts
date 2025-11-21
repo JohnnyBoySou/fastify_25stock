@@ -111,6 +111,32 @@ export const getByQuery: FastifySchema = {
   },
 }
 
+export const approve: FastifySchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+}
+
+export const reject: FastifySchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+  body: {
+    type: 'object',
+    properties: {
+      reason: { type: 'string' },
+    },
+  },
+}
+
 export const ScheduleSchemas = {
   create,
   getAll,
@@ -118,4 +144,6 @@ export const ScheduleSchemas = {
   update,
   remove,
   getByQuery,
+  approve,
+  reject,
 }

@@ -42,4 +42,16 @@ export async function ScheduleRoutes(fastify: FastifyInstance) {
     schema: ScheduleSchemas.getByQuery,
     handler: ScheduleController.getByQuery,
   })
+
+  fastify.post('/:id/approve', {
+    preHandler: [Middlewares.permission('SCHEDULES', 'APPROVE')],
+    schema: ScheduleSchemas.approve,
+    handler: ScheduleController.approve,
+  })
+
+  fastify.post('/:id/reject', {
+    preHandler: [Middlewares.permission('SCHEDULES', 'APPROVE')],
+    schema: ScheduleSchemas.reject,
+    handler: ScheduleController.reject,
+  })
 }

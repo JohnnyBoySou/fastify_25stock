@@ -20,6 +20,13 @@ export const SpaceQueries = {
             email: true,
           },
         },
+        approvalUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
         schedules: {
           select: {
             id: true,
@@ -97,6 +104,13 @@ export const SpaceQueries = {
           },
         },
         createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        approvalUser: {
           select: {
             id: true,
             name: true,
