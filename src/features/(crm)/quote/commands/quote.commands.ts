@@ -1,7 +1,9 @@
 import { db } from '@/plugins/prisma'
-import { Decimal } from '@prisma/client/runtime/library'
+
 import { MovementCommands } from '@/features/(erp)/movement/commands/movement.commands'
 import type { PaymentType, QuoteStatus } from '../quote.interfaces'
+import Decimal from 'decimal.js'
+
 
 export const QuoteCommands = {
   async create(data: {
