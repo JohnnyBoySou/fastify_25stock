@@ -31,7 +31,7 @@ export async function SupportRoutes(fastify: FastifyInstance) {
     schema: SupportSchemas.remove,
     handler: SupportController.remove,
   })
-  
+
   fastify.delete('/bulk-remove', {
     schema: SupportSchemas.bulkRemove,
     handler: SupportController.bulkRemove,
@@ -51,5 +51,4 @@ export async function SupportRoutes(fastify: FastifyInstance) {
     schema: SupportSchemas.findMessagesByTicket,
     handler: SupportController.findMessagesByTicket,
   })
-
 }

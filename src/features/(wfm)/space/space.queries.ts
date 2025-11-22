@@ -1,7 +1,7 @@
 import { db } from '@/plugins/prisma'
 
 export const SpaceQueries = {
-  async getAll({ page, limit }: { page?: number, limit?: number }, storeId: string) {
+  async getAll({ page, limit }: { page?: number; limit?: number }, storeId: string) {
     const spaces = await db.space.findMany({
       where: {
         storeId,
@@ -55,10 +55,7 @@ export const SpaceQueries = {
               },
             },
           },
-          orderBy: [
-            { isPrimary: 'desc' },
-            { sortOrder: 'asc' },
-          ],
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
         },
       },
       orderBy: {
@@ -145,10 +142,7 @@ export const SpaceQueries = {
               },
             },
           },
-          orderBy: [
-            { isPrimary: 'desc' },
-            { sortOrder: 'asc' },
-          ],
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
         },
       },
     })
@@ -165,7 +159,10 @@ export const SpaceQueries = {
     }
   },
 
-  async getByQuery({ page, limit, search }: { page?: number, limit?: number, search?: string }, storeId: string) {
+  async getByQuery(
+    { page, limit, search }: { page?: number; limit?: number; search?: string },
+    storeId: string
+  ) {
     const where: any = {
       storeId,
     }
@@ -207,10 +204,7 @@ export const SpaceQueries = {
               },
             },
           },
-          orderBy: [
-            { isPrimary: 'desc' },
-            { sortOrder: 'asc' },
-          ],
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
         },
       },
       take: limit ? Number.parseInt(limit.toString()) : undefined,

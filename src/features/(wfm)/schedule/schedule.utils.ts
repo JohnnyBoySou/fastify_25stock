@@ -3,7 +3,7 @@ import { RRule } from 'rrule'
 /**
  * Combina uma data com um horário (HH:mm) e retorna um Date
  */
-export function combineDateAndTime(dateStr: string, timeStr: string, timezone?: string): Date {
+export function combineDateAndTime(dateStr: string, timeStr: string, _timezone?: string): Date {
   // Validar formato de data (YYYY-MM-DD)
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
   if (!dateRegex.test(dateStr)) {
@@ -36,20 +36,20 @@ export function processScheduleTimes(
   date: string,
   startTime: string,
   endTime: string,
-  rrule?: string
+  _rrule?: string
 ): { start: Date; end: Date } {
   // Sempre usar date + startTime/endTime (horários no formato HH:mm)
   if (!date) {
     throw new Error('date is required')
   }
-  
+
   const start = combineDateAndTime(date, startTime)
   const end = combineDateAndTime(date, endTime)
-  
+
   if (start >= end) {
     throw new Error('Start time must be before end time')
   }
-  
+
   return { start, end }
 }
 
@@ -57,11 +57,11 @@ export function processScheduleTimes(
  * Gera ocorrências de agendamento a partir de um rrule
  */
 export async function generateOccurrences(
-  scheduleId: string,
+  _scheduleId: string,
   startTime: Date,
   endTime: Date,
   rrule?: string,
-  timezone?: string,
+  _timezone?: string,
   maxOccurrences = 365 // Limite padrão de 1 ano
 ): Promise<{ startTime: Date; endTime: Date }[]> {
   if (!rrule) {
@@ -72,14 +72,14 @@ export async function generateOccurrences(
   try {
     // Parse do rrule
     const rule = RRule.fromString(rrule)
-    
+
     // Calcular o intervalo de tempo do evento
     const duration = endTime.getTime() - startTime.getTime()
-    
+
     // Gerar ocorrências futuras (até 1 ano ou limite definido)
     const limitDate = new Date()
     limitDate.setFullYear(limitDate.getFullYear() + 1)
-    
+
     // Obter todas as ocorrências e limitar manualmente
     const allOccurrences = rule.between(startTime, limitDate, true)
     const occurrenceDates = allOccurrences.slice(0, maxOccurrences)
@@ -94,19 +94,16 @@ export async function generateOccurrences(
       }
     })
   } catch (error) {
-    throw new Error(`Invalid rrule format: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Invalid rrule format: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
 /**
  * Verifica se há conflito entre dois intervalos de tempo
  */
-function hasTimeConflict(
-  start1: Date,
-  end1: Date,
-  start2: Date,
-  end2: Date
-): boolean {
+function hasTimeConflict(start1: Date, end1: Date, start2: Date, end2: Date): boolean {
   // Conflito se: start1 < end2 && start2 < end1
   return start1 < end2 && start2 < end1
 }
@@ -124,7 +121,7 @@ export async function checkScheduleConflicts(
   maxOccurrences = 365
 ): Promise<{ hasConflict: boolean; conflictingSchedules: any[] }> {
   const { db } = await import('@/plugins/prisma')
-  
+
   // Gerar todas as ocorrências do novo agendamento
   const newOccurrences = await generateOccurrences(
     '', // Não precisa do scheduleId para apenas gerar ocorrências
@@ -159,7 +156,7 @@ export async function checkScheduleConflicts(
 
   // Gerar ocorrências de todos os agendamentos existentes com rrule
   const existingOccurrencesMap = new Map<string, { startTime: Date; endTime: Date }[]>()
-  
+
   for (const existingSchedule of existingSchedules) {
     if (existingSchedule.rrule) {
       // Gerar ocorrências do agendamento existente com rrule
@@ -275,10 +272,12 @@ export async function validateSpaceTimeRange(
   // Se há rrule, validar todas as ocorrências geradas
   if (rrule) {
     const occurrences = await generateOccurrences('', startTime, endTime, rrule, undefined, 365)
-    
+
     for (const occurrence of occurrences) {
-      const occurrenceStartMinutes = occurrence.startTime.getHours() * 60 + occurrence.startTime.getMinutes()
-      const occurrenceEndMinutes = occurrence.endTime.getHours() * 60 + occurrence.endTime.getMinutes()
+      const occurrenceStartMinutes =
+        occurrence.startTime.getHours() * 60 + occurrence.startTime.getMinutes()
+      const occurrenceEndMinutes =
+        occurrence.endTime.getHours() * 60 + occurrence.endTime.getMinutes()
 
       // Verificar se o início está antes do horário mínimo de abertura
       if (occurrenceStartMinutes < minStartMinutes) {
@@ -340,4 +339,3 @@ export async function createScheduleOccurrences(
     })),
   })
 }
-

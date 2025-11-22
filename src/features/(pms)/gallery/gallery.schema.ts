@@ -696,7 +696,6 @@ export const bulkDeleteSchema: FastifySchema = {
   },
 }
 
-
 export const GallerySchemas = {
   create: createUploadSchema,
   update: updateUploadSchema,

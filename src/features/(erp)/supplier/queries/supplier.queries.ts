@@ -271,5 +271,4 @@ export const SupplierQueries = {
 
     return true
   },
-
 }

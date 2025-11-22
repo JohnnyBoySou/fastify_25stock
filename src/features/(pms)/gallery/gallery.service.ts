@@ -62,7 +62,9 @@ export class UploadService {
   constructor() {
     this.uploadDir = UPLOAD_DIR
     console.log(`[UploadService] Diretório de upload configurado: ${this.uploadDir}`)
-    console.log(`[UploadService] STORAGE_PATH: ${process.env.STORAGE_PATH || 'não definido (usando padrão)'}`)
+    console.log(
+      `[UploadService] STORAGE_PATH: ${process.env.STORAGE_PATH || 'não definido (usando padrão)'}`
+    )
     // Inicialização assíncrona não bloqueante - diretórios serão criados quando necessário
     this.ensureUploadDirectories().catch((error) => {
       console.error('[UploadService] Erro na inicialização de diretórios:', error.message)
@@ -104,19 +106,20 @@ export class UploadService {
   // === GERAR NOME ÚNICO ===
   private generateUniqueFilename(originalName: string, storeId?: string, userId?: string): string {
     const ext = path.extname(originalName)
-    const name = path.basename(originalName, ext)
+    const name = path
+      .basename(originalName, ext)
       .replace(/[^a-zA-Z0-9-_]/g, '-') // Remover caracteres especiais
       .toLowerCase()
       .substring(0, 50) // Limitar tamanho do nome
-    
+
     const timestamp = Date.now()
     const parts: string[] = []
-    
+
     if (storeId) parts.push(storeId)
     if (userId) parts.push(userId)
     parts.push(name)
     parts.push(timestamp.toString())
-    
+
     return `${parts.join('-')}${ext}`
   }
 
@@ -157,13 +160,13 @@ export class UploadService {
             `Diretório não existe: ${this.uploadDir}. Certifique-se de que o volume está montado corretamente no Railway.`
           )
         }
-        
+
         if (error.code === 'EACCES') {
           throw new Error(
             `Sem permissão para escrever em ${this.uploadDir}. Verifique as permissões do volume montado.`
           )
         }
-        
+
         throw error
       }
 

@@ -26,7 +26,6 @@ export const GalleryCommands = {
 
     // Se folderId foi fornecido, criar a relação
     if (data.folderId) {
-      
       // Verificar se a pasta existe
       const folder = await db.folder.findFirst({
         where: {
@@ -36,7 +35,6 @@ export const GalleryCommands = {
       })
 
       if (folder) {
-        
         // Obter o maior sortOrder para adicionar no final
         const maxSortOrder = await db.folderMedia.findFirst({
           where: { folderId: data.folderId },
@@ -53,7 +51,6 @@ export const GalleryCommands = {
             sortOrder: newSortOrder,
           },
         })
-        
       }
     }
 

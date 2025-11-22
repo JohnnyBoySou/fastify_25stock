@@ -20,7 +20,7 @@ export const StoreQueries = {
             priceInterval: true,
             currency: true,
             createdAt: true,
-           
+
             updatedAt: true,
             invoices: {
               select: {
@@ -39,7 +39,7 @@ export const StoreQueries = {
             email: true,
           },
         },
-        
+
         _count: {
           select: {
             users: true,
@@ -62,7 +62,6 @@ export const StoreQueries = {
     return store
   },
 
-
   async getStats(storeId: string) {
     const stats = await db.store.findUnique({
       where: { id: storeId },
@@ -79,7 +78,6 @@ export const StoreQueries = {
             documents: true,
             flows: true,
             crmClients: true,
-
           },
         },
       },

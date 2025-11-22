@@ -214,10 +214,7 @@ export const GalleryQueries = {
           include: {
             media: true,
           },
-          orderBy: [
-            { isPrimary: 'desc' },
-            { sortOrder: 'asc' },
-          ],
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
         })
         break
 
@@ -372,56 +369,57 @@ export const GalleryQueries = {
   },
 
   async getMediaUsage(mediaId: string) {
-    const [productUsage, supplierUsage, userUsage, storeUsage, folderUsage, spaceUsage] = await Promise.all([
-      db.productMedia.findMany({
-        where: { mediaId },
-        include: {
-          product: {
-            select: { id: true, name: true },
+    const [productUsage, supplierUsage, userUsage, storeUsage, folderUsage, spaceUsage] =
+      await Promise.all([
+        db.productMedia.findMany({
+          where: { mediaId },
+          include: {
+            product: {
+              select: { id: true, name: true },
+            },
           },
-        },
-      }),
-      db.supplierMedia.findMany({
-        where: { mediaId },
-        include: {
-          supplier: {
-            select: { id: true, corporateName: true },
+        }),
+        db.supplierMedia.findMany({
+          where: { mediaId },
+          include: {
+            supplier: {
+              select: { id: true, corporateName: true },
+            },
           },
-        },
-      }),
-      db.userMedia.findMany({
-        where: { mediaId },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
+        }),
+        db.userMedia.findMany({
+          where: { mediaId },
+          include: {
+            user: {
+              select: { id: true, name: true, email: true },
+            },
           },
-        },
-      }),
-      db.storeMedia.findMany({
-        where: { mediaId },
-        include: {
-          store: {
-            select: { id: true, name: true },
+        }),
+        db.storeMedia.findMany({
+          where: { mediaId },
+          include: {
+            store: {
+              select: { id: true, name: true },
+            },
           },
-        },
-      }),
-      db.folderMedia.findMany({
-        where: { mediaId },
-        include: {
-          folder: {
-            select: { id: true, name: true },
+        }),
+        db.folderMedia.findMany({
+          where: { mediaId },
+          include: {
+            folder: {
+              select: { id: true, name: true },
+            },
           },
-        },
-      }),
-      db.spaceMedia.findMany({
-        where: { mediaId },
-        include: {
-          space: {
-            select: { id: true, name: true },
+        }),
+        db.spaceMedia.findMany({
+          where: { mediaId },
+          include: {
+            space: {
+              select: { id: true, name: true },
+            },
           },
-        },
-      }),
-    ])
+        }),
+      ])
 
     return {
       products: productUsage,

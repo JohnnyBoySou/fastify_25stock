@@ -31,11 +31,11 @@ const fastify = Fastify({
           }
         : undefined,
   },
-  requestTimeout: 60000, 
-  keepAliveTimeout: 5000, 
+  requestTimeout: 60000,
+  keepAliveTimeout: 5000,
   bodyLimit: 10 * 1024 * 1024,
   routerOptions: {
-    maxParamLength: 200, 
+    maxParamLength: 200,
   },
 })
 
@@ -120,13 +120,7 @@ async function startServer() {
             'Access-Control-Allow-Headers',
             'Access-Control-Allow-Credentials',
           ],
-          exposedHeaders: [
-            'Content-Type',
-            'Authorization',
-            'X-Requested-With',
-            'Accept',
-            'Origin',
-          ],
+          exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
           preflight: true, // Responde a requisições OPTIONS
           strictPreflight: false, // Não é estrito com preflight
         })
@@ -150,13 +144,13 @@ async function startServer() {
         const staticRoot = storagePath.startsWith('/')
           ? storagePath // Caminho absoluto (volume montado)
           : path.resolve(storagePath) // Caminho relativo ao projeto
-        
+
         await fastify.register(fastifyStatic, {
           root: staticRoot,
           prefix: '/uploads/',
           decorateReply: false,
         })
-        
+
         console.log(`[Server] Arquivos estáticos servidos de: ${staticRoot}`)
       },
     },

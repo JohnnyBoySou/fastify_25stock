@@ -10,7 +10,7 @@
  */
 
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { JWTPayload } from '@/features/auth/auth.interfaces'
+import type { JWTPayload } from '@/features/(core)/auth/auth.interfaces'
 import { db } from '@/plugins/prisma'
 import jwt from 'jsonwebtoken'
 

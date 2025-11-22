@@ -1,71 +1,68 @@
 // cloudflare.ts
 
-const CF_ZONE_ID = process.env.CF_ZONE_ID as string;
-const CF_API_TOKEN = process.env.CF_API_TOKEN as string;
+const CF_ZONE_ID = process.env.CF_ZONE_ID as string
+const CF_API_TOKEN = process.env.CF_API_TOKEN as string
 
 export async function createCloudflareCustomHostname(hostname: string) {
   try {
-    const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames`;
+    const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames`
 
     const body = {
       hostname,
       ssl: {
-        method: "txt",
-        type: "dv",
+        method: 'txt',
+        type: 'dv',
         settings: {
-          min_tls_version: "1.2",
+          min_tls_version: '1.2',
         },
       },
-    };
-
-
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        "Authorization": `Bearer ${CF_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      const errorMessage = data.errors?.[0]?.message || "Unknown Cloudflare API error";
-      throw new Error(errorMessage);
     }
 
-    const result = data.result;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        Authorization: `Bearer ${CF_API_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok || !data.success) {
+      const errorMessage = data.errors?.[0]?.message || 'Unknown Cloudflare API error'
+      throw new Error(errorMessage)
+    }
+
+    const result = data.result
 
     if (!result || !result.id) {
-      throw new Error('Cloudflare API returned invalid result (missing id)');
+      throw new Error('Cloudflare API returned invalid result (missing id)')
     }
 
     return {
       id: result.id,
       status: result.status,
       ownership: result.ownership_verification,
-    };
-
+    }
   } catch (error: any) {
-    console.error(`[Cloudflare] Exception: ${error.message}`);
-    throw error;
+    console.error(`[Cloudflare] Exception: ${error.message}`)
+    throw error
   }
 }
 
-
 export async function getCloudflareHostnameInfo(hostnameId: string) {
   try {
-    const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames/${hostnameId}`;
+    const url = `https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/custom_hostnames/${hostnameId}`
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Authorization": `Bearer ${CF_API_TOKEN}`,
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${CF_API_TOKEN}`,
+        'Content-Type': 'application/json',
       },
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     console.log('[Cloudflare] Get hostname response:', {
       status: response.status,
@@ -78,13 +75,13 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
       hasValidationRecords: !!data.result?.ssl?.validation_records,
       validationRecordsCount: data.result?.ssl?.validation_records?.length || 0,
       errors: data.errors,
-    });
+    })
 
     // Tratamento especial para 404 - hostname não encontrado
     if (response.status === 404) {
-      const errorCode = data.errors?.[0]?.code;
-      const errorMessage = data.errors?.[0]?.message || 'The custom hostname was not found';
-      
+      const errorCode = data.errors?.[0]?.code
+      const errorMessage = data.errors?.[0]?.message || 'The custom hostname was not found'
+
       console.error('[Cloudflare] Hostname not found (404):', {
         hostnameId,
         errorCode,
@@ -96,41 +93,42 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
           'Hostname was never created successfully',
         ],
         fullResponse: JSON.stringify(data, null, 2),
-      });
-      
+      })
+
       // Criar erro customizado para facilitar tratamento
-      const error: any = new Error(`Cloudflare API error: ${errorMessage}`);
-      error.code = errorCode;
-      error.statusCode = 404;
-      error.hostnameId = hostnameId;
-      throw error;
+      const error: any = new Error(`Cloudflare API error: ${errorMessage}`)
+      error.code = errorCode
+      error.statusCode = 404
+      error.hostnameId = hostnameId
+      throw error
     }
 
     if (!response.ok) {
-      const errorMessage = data.errors?.[0]?.message || `HTTP ${response.status}: ${response.statusText}`;
+      const errorMessage =
+        data.errors?.[0]?.message || `HTTP ${response.status}: ${response.statusText}`
       console.error(`[Cloudflare] Failed to fetch hostname info ${hostnameId}:`, {
         status: response.status,
         statusText: response.statusText,
         errorCode: data.errors?.[0]?.code,
         errorMessage,
         fullResponse: JSON.stringify(data, null, 2),
-      });
-      throw new Error(`Cloudflare API error: ${errorMessage}`);
+      })
+      throw new Error(`Cloudflare API error: ${errorMessage}`)
     }
 
     if (!data.success) {
       console.error(`[Cloudflare] API returned success=false for hostname ${hostnameId}:`, {
         errors: data.errors,
         fullResponse: JSON.stringify(data, null, 2),
-      });
-      throw new Error(`Cloudflare API error: ${data.errors?.[0]?.message || 'Unknown error'}`);
+      })
+      throw new Error(`Cloudflare API error: ${data.errors?.[0]?.message || 'Unknown error'}`)
     }
 
     if (!data.result) {
       console.error(`[Cloudflare] No result returned for hostname ${hostnameId}:`, {
         fullResponse: JSON.stringify(data, null, 2),
-      });
-      throw new Error('Cloudflare API returned no result');
+      })
+      throw new Error('Cloudflare API returned no result')
     }
 
     console.log(`[Cloudflare] Hostname ${hostnameId} fetched successfully:`, {
@@ -142,16 +140,15 @@ export async function getCloudflareHostnameInfo(hostnameId: string) {
         txt_name: r.txt_name,
         txt_value: r.txt_value ? `${r.txt_value.substring(0, 20)}...` : null,
       })),
-    });
+    })
 
-    return data.result;
-
+    return data.result
   } catch (error: any) {
     console.error(`[Cloudflare] Exception while fetching hostname info ${hostnameId}:`, {
       message: error.message,
       stack: error.stack,
       name: error.name,
-    });
-    throw error;
+    })
+    throw error
   }
 }

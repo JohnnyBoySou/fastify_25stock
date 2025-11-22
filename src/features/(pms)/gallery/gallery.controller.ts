@@ -405,7 +405,7 @@ export const GalleryController = {
     try {
       const { id } = request.params
 
-          const result = await GalleryQueries.getMediaUsage(id)
+      const result = await GalleryQueries.getMediaUsage(id)
 
       return reply.send(result)
     } catch (error) {
@@ -634,7 +634,7 @@ export const GalleryController = {
     try {
       // Verificar Content-Type
       const contentType = request.headers['content-type'] || ''
-      
+
       if (!contentType.includes('multipart/form-data')) {
         return reply.status(400).send({
           error: `Content-Type deve ser multipart/form-data. Recebido: ${contentType}`,
@@ -646,10 +646,10 @@ export const GalleryController = {
       const formFields: Record<string, any> = {}
       let filePath: string | undefined
       let fileSize = 0
-      
+
       try {
         const parts = (request as any).parts()
-        
+
         for await (const part of parts) {
           if (part.type === 'file') {
             // Processar o arquivo IMEDIATAMENTE dentro do loop para evitar "Premature close"
@@ -657,7 +657,7 @@ export const GalleryController = {
             if (!fileData || part.fieldname === 'file') {
               // Converter stream para buffer DENTRO do loop, antes que o stream seja fechado
               let buffer: Buffer
-              
+
               if (part.toBuffer) {
                 // Método 1: Usar toBuffer do próprio part
                 buffer = await part.toBuffer()
@@ -667,20 +667,20 @@ export const GalleryController = {
                 // Tentar ler o stream manualmente
                 const chunks: Buffer[] = []
                 const stream = part.file || part
-                
+
                 for await (const chunk of stream) {
                   chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
                 }
                 buffer = Buffer.concat(chunks)
               }
-              
+
               fileSize = buffer.length
-              
+
               // Salvar em arquivo temporário
               const tempPath = path.join(os.tmpdir(), `temp-${Date.now()}-${part.filename}`)
               await fs.writeFile(tempPath, buffer)
               filePath = tempPath
-              
+
               // Armazenar metadados do arquivo
               fileData = {
                 fieldname: part.fieldname || 'file',
@@ -693,7 +693,7 @@ export const GalleryController = {
                 path: filePath,
                 url: '',
               }
-              
+
               console.log(`Arquivo temporário criado: ${tempPath} (${fileSize} bytes)`)
             }
           } else if (part.type === 'field') {
@@ -704,15 +704,16 @@ export const GalleryController = {
       } catch (multipartError: unknown) {
         const error = multipartError as Error
         request.log.error({ err: error }, 'Erro ao processar multipart')
-        
+
         // Se o erro for sobre boundary, dar mensagem mais clara
         if (error.message?.includes('Boundary') || error.message?.includes('boundary')) {
           return reply.status(400).send({
-            error: 'Erro no formato multipart. Certifique-se de que o Content-Type inclui o boundary. Use FormData no cliente sem definir Content-Type manualmente.',
+            error:
+              'Erro no formato multipart. Certifique-se de que o Content-Type inclui o boundary. Use FormData no cliente sem definir Content-Type manualmente.',
             details: error.message,
           })
         }
-        
+
         // Re-lançar outros erros
         throw error
       }
@@ -726,7 +727,6 @@ export const GalleryController = {
       // Obter configurações dos campos do formulário ou query
       const entityType = formFields.entityType || (request.query as any)?.entityType || 'general'
       const folderId = formFields.folderId || (request.query as any)?.folderId
-      
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id
@@ -811,8 +811,11 @@ export const GalleryController = {
       const uploadedFiles: any[] = []
 
       // Obter configurações do body ou query
-      const { entityType = 'general', maxFiles = 10, folderId } =
-        (request.body as any) || (request.query as any)
+      const {
+        entityType = 'general',
+        maxFiles = 10,
+        folderId,
+      } = (request.body as any) || (request.query as any)
 
       // Obter userId do contexto de autenticação
       const userId = (request as any).user?.id

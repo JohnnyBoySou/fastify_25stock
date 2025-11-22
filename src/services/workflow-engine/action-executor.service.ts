@@ -153,9 +153,9 @@ export const ActionExecutor = {
 
     // Buscar subscriptions de cada usuário
     const subscriptionsResults = await Promise.all(
-      config.userIds.map(async (userId: string) => {
+      config.storeIds.map(async (storeId: string) => {
         const subscriptions = await db.subscription.findMany({
-          where: { userId },
+          where: { storeId },
         })
         return subscriptions
       })

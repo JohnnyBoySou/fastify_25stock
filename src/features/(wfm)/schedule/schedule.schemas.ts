@@ -10,7 +10,8 @@ export const create: FastifySchema = {
       date: {
         type: 'string',
         format: 'date',
-        description: 'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
+        description:
+          'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
       },
       startTime: {
         type: 'string',
@@ -68,7 +69,8 @@ export const update: FastifySchema = {
       date: {
         type: 'string',
         format: 'date',
-        description: 'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
+        description:
+          'Data base do agendamento. Formato: YYYY-MM-DD. Para rrule, será a data de início da recorrência.',
       },
       startTime: {
         type: 'string',

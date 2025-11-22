@@ -15,7 +15,7 @@ export const InvoiceCommands = {
     const subscription = await db.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
-        user: true,
+        store: true,
       },
     })
 
@@ -32,7 +32,7 @@ export const InvoiceCommands = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -65,7 +65,7 @@ export const InvoiceCommands = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -117,7 +117,7 @@ export const InvoiceCommands = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },

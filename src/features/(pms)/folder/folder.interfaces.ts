@@ -59,4 +59,3 @@ export interface SearchFoldersRequest extends FastifyRequest {
     page?: number
   }
 }
-

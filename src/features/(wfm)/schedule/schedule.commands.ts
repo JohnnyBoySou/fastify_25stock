@@ -204,7 +204,7 @@ export const ScheduleCommands = {
     })
   },
 
-  async approve(id: string, approvedById: string) {
+  async approve(id: string, _approvedById: string) {
     // Atualizar o status do schedule e todas as ocorrências para CONFIRMED
     const schedule = await db.schedule.update({
       where: { id },
@@ -253,7 +253,7 @@ export const ScheduleCommands = {
     return schedule
   },
 
-  async reject(id: string, rejectedById: string, reason?: string) {
+  async reject(id: string, _rejectedById: string, _reason?: string) {
     // Atualizar o status do schedule e todas as ocorrências para CANCELLED
     const schedule = await db.schedule.update({
       where: { id },

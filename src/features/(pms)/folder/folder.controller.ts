@@ -11,7 +11,6 @@ import type {
 import { FolderCommands } from './commands/folder.commands'
 import { FolderQueries } from './queries/folder.queries'
 
-
 export const FolderController = {
   // === CRUD BÁSICO DE PASTAS ===
   async create(request: CreateFolderRequest, reply: FastifyReply) {

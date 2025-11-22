@@ -42,7 +42,7 @@ export const AVAILABLE_LIMITATIONS: LimitationDefinition[] = [
 
 export async function getLimitationByResource(
   resource: string,
-  storeId: string,
+  storeId: string
 ): Promise<LimitationDefinition | undefined> {
   if (!isLimitationResource(resource)) {
     return undefined
@@ -93,10 +93,7 @@ function normalizePlanName(plan?: string | null): PlanKey {
     return 'ESSENCIAL'
   }
 
-  const normalized = removeDiacritics(plan)
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, '')
+  const normalized = removeDiacritics(plan).trim().toUpperCase().replace(/\s+/g, '')
 
   if (PLAN_NAME_MAP[normalized]) {
     return PLAN_NAME_MAP[normalized]

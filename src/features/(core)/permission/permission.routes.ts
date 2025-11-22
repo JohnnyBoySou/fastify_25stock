@@ -85,7 +85,6 @@ export async function PermissionRoutes(fastify: FastifyInstance) {
     handler: PermissionController.getUsersWithPermission,
   })
 
-
   fastify.get('/me', {
     handler: PermissionController.getMePermissions,
   })

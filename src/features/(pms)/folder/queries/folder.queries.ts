@@ -123,30 +123,31 @@ export const FolderQueries = {
       where,
       select: { id: true },
     })
-    const allFolderIds = allMatchingFolders.map(f => f.id)
+    const allFolderIds = allMatchingFolders.map((f) => f.id)
 
-    const folderIdsForMediaCount = parentId 
-      ? [...allFolderIds, parentId]
-      : allFolderIds
+    const folderIdsForMediaCount = parentId ? [...allFolderIds, parentId] : allFolderIds
 
-    const totalMedia = folderIdsForMediaCount.length > 0 ? await db.folderMedia.count({
-      where: {
-        folderId: { in: folderIdsForMediaCount },
-        media: {
-          deletedAt: null,
-          storeId: storeId,
-        },
-      },
-    }) : 0
+    const totalMedia =
+      folderIdsForMediaCount.length > 0
+        ? await db.folderMedia.count({
+            where: {
+              folderId: { in: folderIdsForMediaCount },
+              media: {
+                deletedAt: null,
+                storeId: storeId,
+              },
+            },
+          })
+        : 0
 
     const items: any[] = []
-    
-    // Se parentId foi passado, adicionar primeiro as mídias diretamente naquela pasta  
+
+    // Se parentId foi passado, adicionar primeiro as mídias diretamente naquela pasta
     if (parentId && directMedia.length > 0) {
       for (const folderMedia of directMedia) {
         const media = folderMedia.media
         const { type: mimeType, ...restMediaData } = media
-        
+
         items.push({
           ...restMediaData,
           type: 'media',
@@ -157,19 +158,19 @@ export const FolderQueries = {
         })
       }
     }
-    
+
     for (const folder of folders) {
       items.push({
         ...folder,
         type: 'folder',
       })
-      
+
       if (folder.media && folder.media.length > 0) {
         for (const folderMedia of folder.media) {
           const media = folderMedia.media
           // Extrair o MIME type do campo 'type' da mídia e renomear para 'mimeType'
           const { type: mimeType, ...restMediaData } = media
-          
+
           // Criar item de mídia com todos os dados da mídia + type: 'media' para diferenciar
           items.push({
             ...restMediaData,
@@ -277,48 +278,60 @@ export const FolderQueries = {
     const skip = (page - 1) * limit
     const [folders, total] = await Promise.all([
       db.folder.findMany({
-      where: {
-        storeId,
-        deletedAt: null,
-        OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } },
-        ],
-      },
-      skip,
-      take: limit || 10,
-      orderBy: { name: 'asc' },
-      include: {
-        parent: true,
-        _count: {
-          select: {
-            children: {
-              where: {
-                deletedAt: null,
+        where: {
+          storeId,
+          deletedAt: null,
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+        skip,
+        take: limit || 10,
+        orderBy: { name: 'asc' },
+        include: {
+          parent: true,
+          _count: {
+            select: {
+              children: {
+                where: {
+                  deletedAt: null,
+                },
               },
-            },
-            documents: {
-              where: {
-                deletedAt: null,
+              documents: {
+                where: {
+                  deletedAt: null,
+                },
               },
+              media: true,
             },
-            media: true,
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+      }),
+
+      db.folder.count({
+        where: {
+          storeId,
+          deletedAt: null,
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
         },
-      },
-    }),
-    
-    db.folder.count({ where: { storeId, deletedAt: null, OR: [ { name: { contains: query, mode: 'insensitive' } }, { description: { contains: query, mode: 'insensitive' } } ] } })
+      }),
     ])
 
-    return { items: folders, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } }
+    return {
+      items: folders,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    }
   },
 
   async getTree(storeId: string) {

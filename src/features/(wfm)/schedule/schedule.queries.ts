@@ -11,8 +11,7 @@ export const ScheduleQueries = {
       endDate?: Date
       page?: number
       limit?: number
-    },
-    
+    }
   ) {
     const where: any = {
       storeId,
@@ -93,7 +92,9 @@ export const ScheduleQueries = {
         page: filters?.page || 1,
         limit: filters?.limit ? Number.parseInt(filters.limit.toString()) : 10,
         total,
-        totalPages: Math.ceil(total / (filters?.limit ? Number.parseInt(filters.limit.toString()) : 10)),
+        totalPages: Math.ceil(
+          total / (filters?.limit ? Number.parseInt(filters.limit.toString()) : 10)
+        ),
       },
     }
   },
@@ -234,7 +235,9 @@ export const ScheduleQueries = {
         page: query?.page || 1,
         limit: query?.limit ? Number.parseInt(query.limit.toString()) : 10,
         total,
-        totalPages: Math.ceil(total / (query?.limit ? Number.parseInt(query.limit.toString()) : 10)),
+        totalPages: Math.ceil(
+          total / (query?.limit ? Number.parseInt(query.limit.toString()) : 10)
+        ),
       },
     }
   },

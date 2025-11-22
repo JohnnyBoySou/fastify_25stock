@@ -7,7 +7,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -60,7 +60,7 @@ export const InvoiceQueries = {
         include: {
           subscription: {
             include: {
-              user: true,
+              store: true,
             },
           },
         },
@@ -120,7 +120,7 @@ export const InvoiceQueries = {
     return {
       subscription: {
         id: subscription.id,
-        userId: subscription.userId,
+        storeId: subscription.storeId,
         status: subscription.status,
       },
       invoices,
@@ -140,7 +140,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -156,7 +156,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -223,7 +223,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -244,9 +244,9 @@ export const InvoiceQueries = {
         paymentDate: invoice.paymentDate,
       },
       user: {
-        name: invoice.subscription.user.name,
-        email: invoice.subscription.user.email,
-        phone: invoice.subscription.user.phone,
+        name: invoice.subscription.store.name,
+        email: invoice.subscription.store.email,
+        phone: invoice.subscription.store.phone,
       },
     }
 
@@ -274,7 +274,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -295,7 +295,7 @@ export const InvoiceQueries = {
       include: {
         subscription: {
           include: {
-            user: true,
+            store: true,
           },
         },
       },
@@ -306,11 +306,11 @@ export const InvoiceQueries = {
     // Agrupar por plano
     const revenueByPlan = invoices.reduce(
       (acc, invoice) => {
-        if (invoice.subscription.polarProductId) {
-          const planId = invoice.subscription.polarProductId
+        if (invoice.subscription.polarPlanName) {
+          const planId = invoice.subscription.polarPlanName
           if (!acc[planId]) {
             acc[planId] = {
-              plan: invoice.subscription.polarProductId,
+              plan: invoice.subscription.polarPlanName,
               revenue: 0,
               count: 0,
             }

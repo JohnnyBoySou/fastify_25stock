@@ -1,5 +1,5 @@
 import { db } from '@/plugins/prisma'
-import type { FlowExecutionStatus } from '../../(ai)/flow/flow.interfaces'
+import type { FlowExecutionStatus } from '@/features/(ai)/flow/flow.interfaces'
 
 export const FlowExecutionQueries = {
   async getById(id: string) {

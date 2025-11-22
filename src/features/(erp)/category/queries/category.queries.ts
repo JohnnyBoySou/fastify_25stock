@@ -1086,6 +1086,4 @@ export const CategoryQueries = {
 
     return true
   },
-
- 
 }

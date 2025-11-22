@@ -14,10 +14,10 @@ export const ProfileQueries = {
     return user
   },
 
-  async subscription(userId: string) {
+  async subscription(storeId: string) {
     const subscription = await db.subscription.findFirst({
       where: {
-        userId: userId,
+        storeId: storeId,
       },
       select: {
         id: true,

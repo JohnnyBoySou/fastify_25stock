@@ -86,12 +86,14 @@ export const SpaceCommands = {
     if (data.location !== undefined) updateData.location = data.location
     if (data.minStartTime !== undefined) updateData.minStartTime = data.minStartTime
     if (data.minEndTime !== undefined) updateData.minEndTime = data.minEndTime
-    if (data.minBookingDuration !== undefined) updateData.minBookingDuration = data.minBookingDuration
+    if (data.minBookingDuration !== undefined)
+      updateData.minBookingDuration = data.minBookingDuration
     if (data.gapTime !== undefined) updateData.gapTime = data.gapTime
     if (data.requiresApproval !== undefined) updateData.requiresApproval = data.requiresApproval
     if (data.approvalUserId !== undefined) updateData.approvalUserId = data.approvalUserId
     if (data.allowOverlapping !== undefined) updateData.allowOverlapping = data.allowOverlapping
-    if (data.maxSimultaneousBookings !== undefined) updateData.maxSimultaneousBookings = data.maxSimultaneousBookings
+    if (data.maxSimultaneousBookings !== undefined)
+      updateData.maxSimultaneousBookings = data.maxSimultaneousBookings
 
     // Atualizar recursos se fornecido
     if (data.resources !== undefined) {

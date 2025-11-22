@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 import { PolarCommands } from './commands/polar.commands'
 import type { CreateCheckoutRequest, ListPolarRequest } from './polar.interfaces'
 import { PolarQueries } from './queries/polar.queries'
+import type { AuthUser } from '@/features/(core)/auth/auth.interfaces'
 
 export const PolarController = {
   async list(request: ListPolarRequest, reply: FastifyReply) {
@@ -22,7 +23,7 @@ export const PolarController = {
     try {
       const { productId } = request.body
       const customer = request.user
-      const result = await PolarCommands.checkout({ productId, customer })
+      const result = await PolarCommands.checkout({ productId, customer: customer as AuthUser })
 
       return reply.status(201).send(result)
     } catch (error: any) {

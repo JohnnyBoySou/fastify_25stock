@@ -83,8 +83,8 @@ export const StoreCommands = {
           freePlan.recurringInterval === 'month'
             ? 'MONTHLY'
             : freePlan.recurringInterval === 'year'
-            ? 'YEARLY'
-            : null
+              ? 'YEARLY'
+              : null
 
         let polarCustomer = null
         if (owner.email) {
@@ -219,7 +219,11 @@ export const StoreCommands = {
     })
   },
 
-  async defaultStore(data: { ownerId: string; ownerName?: string | null; ownerEmail?: string | null }) {
+  async defaultStore(data: {
+    ownerId: string
+    ownerName?: string | null
+    ownerEmail?: string | null
+  }) {
     const placeholderName = data.ownerName ? `Loja de ${data.ownerName}` : 'Minha Loja'
     const attempts = 3
     let lastError: any = null
@@ -250,7 +254,12 @@ export const StoreCommands = {
     throw lastError || new Error('Failed to create default store')
   },
 
-  async createCustomDomain(id: string, customDomain: string, cloudflareHostnameId: string | null, cloudflareStatus: string | null) {
+  async createCustomDomain(
+    id: string,
+    customDomain: string,
+    cloudflareHostnameId: string | null,
+    cloudflareStatus: string | null
+  ) {
     console.log('[StoreCommands] createCustomDomain called:', {
       storeId: id,
       customDomain,

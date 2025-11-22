@@ -1,5 +1,8 @@
 import type { FastifyRequest } from 'fastify'
-import type { FlowExecutionLogEntry, FlowExecutionStatus } from '../(ai)/flow/flow.interfaces'
+import type {
+  FlowExecutionLogEntry,
+  FlowExecutionStatus,
+} from '@/features/(ai)/flow/flow.interfaces'
 
 // Request Interfaces
 export interface GetFlowExecutionRequest extends FastifyRequest {

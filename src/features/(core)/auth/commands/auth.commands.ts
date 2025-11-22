@@ -566,7 +566,6 @@ export const AuthCommands = {
             lastLoginAt,
           },
         })
-
       } else {
         // Se usuário existe, atualizar último login
         const lastLoginAt = new Date()

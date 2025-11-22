@@ -71,7 +71,7 @@ export const ShiftController = {
       if (finalOccurrenceId) {
         // Verificar se a ocorrência existe e pertence à loja
         const occurrenceExists = await db.scheduleOccurrence.findFirst({
-          where: { 
+          where: {
             id: finalOccurrenceId,
             schedule: {
               storeId: request.store.id,
@@ -260,7 +260,7 @@ export const ShiftController = {
       if (finalOccurrenceId) {
         // Verificar se a ocorrência existe e pertence à loja
         const occurrenceExists = await db.scheduleOccurrence.findFirst({
-          where: { 
+          where: {
             id: finalOccurrenceId,
             schedule: {
               storeId: request.store.id,
@@ -375,7 +375,7 @@ export const ShiftController = {
       }
 
       // Verificar se o usuário já é participante
-     
+
       const existingParticipant = await db.shiftParticipant.findFirst({
         where: {
           shiftId,
@@ -426,7 +426,7 @@ export const ShiftController = {
       }
 
       // Verificar se o participante existe e pertence ao shift
-     
+
       const participant = await db.shiftParticipant.findFirst({
         where: {
           id: participantId,

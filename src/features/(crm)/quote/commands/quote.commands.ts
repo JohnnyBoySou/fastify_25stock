@@ -4,7 +4,6 @@ import { MovementCommands } from '@/features/(erp)/movement/commands/movement.co
 import type { PaymentType, QuoteStatus } from '../quote.interfaces'
 import Decimal from 'decimal.js'
 
-
 export const QuoteCommands = {
   async create(data: {
     userId: string

@@ -72,6 +72,7 @@
     "build": "tsup src/server.ts --dts --format cjs --clean",
     "start": "bun src/server.ts",
     "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit",
     "type": "tsc-watch --noEmit",
     "lint": "biome check src/",
     "lint:fix": "biome check --write src/",

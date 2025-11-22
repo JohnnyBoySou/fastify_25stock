@@ -84,7 +84,7 @@ export const SpaceController = {
 
   async getAll(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { page, limit } = request.query as { page?: number, limit?: number }
+      const { page, limit } = request.query as { page?: number; limit?: number }
 
       if (!request.store?.id) {
         return reply.status(404).send({
@@ -163,7 +163,7 @@ export const SpaceController = {
       }
 
       // Atualizar os dados do space (sem mediaId)
-    await SpaceCommands.update(id, {
+      await SpaceCommands.update(id, {
         name,
         description,
         capacity,
@@ -261,7 +261,11 @@ export const SpaceController = {
 
   async getByQuery(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { page, limit, query } = request.query as { page?: number, limit?: number, query?: string }
+      const { page, limit, query } = request.query as {
+        page?: number
+        limit?: number
+        query?: string
+      }
 
       if (!request.store?.id) {
         return reply.status(404).send({

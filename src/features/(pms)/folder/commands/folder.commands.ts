@@ -24,7 +24,7 @@ export const FolderCommands = {
         })
 
         if (!parent) {
-          throw new Error("A pasta pai informada não existe.")
+          throw new Error('A pasta pai informada não existe.')
         }
       }
 
@@ -39,7 +39,7 @@ export const FolderCommands = {
       })
 
       if (duplicate) {
-        throw new Error("Já existe uma pasta com esse nome neste nível.")
+        throw new Error('Já existe uma pasta com esse nome neste nível.')
       }
 
       // 3. Criar pasta
@@ -64,7 +64,7 @@ export const FolderCommands = {
           documents: {
             where: { deletedAt: null },
             take: 5,
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
           },
           createdBy: {
             select: {

@@ -1,15 +1,23 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ScheduleCommands } from './schedule.commands'
 import { ScheduleQueries } from './schedule.queries'
-import type { CreateScheduleRequest, UpdateScheduleRequest, ApproveScheduleRequest, RejectScheduleRequest } from './schedule.interfaces'
-import { checkScheduleConflicts, processScheduleTimes, validateSpaceTimeRange } from './schedule.utils'
+import type {
+  CreateScheduleRequest,
+  UpdateScheduleRequest,
+  ApproveScheduleRequest,
+  RejectScheduleRequest,
+} from './schedule.interfaces'
+import {
+  checkScheduleConflicts,
+  processScheduleTimes,
+  validateSpaceTimeRange,
+} from './schedule.utils'
 import { db } from '@/plugins/prisma'
 import { EmailService } from '@/services/email/email.service'
 
 export const ScheduleController = {
   async create(request: CreateScheduleRequest, reply: FastifyReply) {
     try {
-
       const { title, description, date, startTime, endTime, rrule, timezone, status, spaceId } =
         request.body
 
@@ -59,13 +67,7 @@ export const ScheduleController = {
         })
       }
 
-      const conflictCheck = await checkScheduleConflicts(
-        spaceId,
-        start,
-        end,
-        rrule,
-        timezone
-      )
+      const conflictCheck = await checkScheduleConflicts(spaceId, start, end, rrule, timezone)
 
       if (conflictCheck.hasConflict) {
         return reply.status(409).send({
@@ -99,7 +101,7 @@ export const ScheduleController = {
       }
 
       // Se o space requer aprovação, o status deve ser PENDING
-      const finalStatus = space.requiresApproval ? 'PENDING' : (status || 'PENDING')
+      const finalStatus = space.requiresApproval ? 'PENDING' : status || 'PENDING'
 
       const schedule = await ScheduleCommands.create({
         title,
@@ -111,7 +113,7 @@ export const ScheduleController = {
         status: finalStatus,
         storeId: request.store.id,
         spaceId,
-        userId: request.user.id,  
+        userId: request.user.id,
         createdById: request.user.id,
       })
 
@@ -120,7 +122,8 @@ export const ScheduleController = {
         try {
           const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${schedule.id}`
           await EmailService.sendNotificationEmail({
-            email: space.approvalUser.email,
+            email: space.approvalUser.email as string,
+            name: space.approvalUser.name as string,
             title: 'Nova Solicitação de Agendamento',
             message: `Uma nova solicitação de agendamento "${schedule.title}" foi criada e requer sua aprovação.`,
             actionUrl: scheduleUrl,
@@ -226,7 +229,6 @@ export const ScheduleController = {
       // Validar spaceId se fornecido
       const finalSpaceId = spaceId || existingSchedule.spaceId
       if (spaceId) {
-        
         const spaceExists = await db.space.findFirst({
           where: {
             id: spaceId,
@@ -307,7 +309,8 @@ export const ScheduleController = {
       }
 
       // Verificar conflitos (excluindo o próprio agendamento)
-      const finalTimezone = timezone !== undefined ? timezone : existingSchedule.timezone || undefined
+      const finalTimezone =
+        timezone !== undefined ? timezone : existingSchedule.timezone || undefined
       const conflictCheck = await checkScheduleConflicts(
         finalSpaceId,
         start,
@@ -327,9 +330,8 @@ export const ScheduleController = {
 
       // Se rrule foi alterado, precisamos recriar as ocorrências
       if (rrule !== undefined && rrule !== existingSchedule.rrule) {
-        
         const { generateOccurrences, createScheduleOccurrences } = await import('./schedule.utils')
-        
+
         // Deletar ocorrências antigas
         await db.scheduleOccurrence.deleteMany({
           where: { scheduleId: id },
@@ -343,11 +345,7 @@ export const ScheduleController = {
           rrule || undefined,
           finalTimezone
         )
-        await createScheduleOccurrences(
-          id,
-          occurrences,
-          status || existingSchedule.status
-        )
+        await createScheduleOccurrences(id, occurrences, status || existingSchedule.status)
       }
 
       const schedule = await ScheduleCommands.update(id, {
@@ -480,7 +478,11 @@ export const ScheduleController = {
         })
       }
 
-      if (space.requiresApproval && space.approvalUserId && space.approvalUserId !== request.user.id) {
+      if (
+        space.requiresApproval &&
+        space.approvalUserId &&
+        space.approvalUserId !== request.user.id
+      ) {
         return reply.status(403).send({
           error: 'You do not have permission to approve this schedule',
         })
@@ -493,7 +495,8 @@ export const ScheduleController = {
       if (approvedSchedule.user?.email) {
         try {
           await EmailService.sendNotificationEmail({
-            email: approvedSchedule.user.email,
+            email: approvedSchedule.user.email as string,
+            name: approvedSchedule.user.name as string,
             title: 'Agendamento Aprovado',
             message: `Seu agendamento "${approvedSchedule.title}" foi aprovado.`,
             actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,
@@ -567,7 +570,11 @@ export const ScheduleController = {
         })
       }
 
-      if (space.requiresApproval && space.approvalUserId && space.approvalUserId !== request.user.id) {
+      if (
+        space.requiresApproval &&
+        space.approvalUserId &&
+        space.approvalUserId !== request.user.id
+      ) {
         return reply.status(403).send({
           error: 'You do not have permission to reject this schedule',
         })
@@ -580,7 +587,8 @@ export const ScheduleController = {
       if (rejectedSchedule.user?.email) {
         try {
           await EmailService.sendNotificationEmail({
-            email: rejectedSchedule.user.email,
+            email: rejectedSchedule.user.email as string,
+            name: rejectedSchedule.user.name as string,
             title: 'Agendamento Rejeitado',
             message: `Seu agendamento "${rejectedSchedule.title}" foi rejeitado.${reason ? ` Motivo: ${reason}` : ''}`,
             actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,

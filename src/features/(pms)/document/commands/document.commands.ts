@@ -18,7 +18,7 @@ export const DocumentCommands = {
   }) {
     // Se folderId foi fornecido, verificar se existe
     if (data.folderId) {
-      const folder = await db.documentFolder.findUnique({
+      const folder = await db.folder.findUnique({
         where: { id: data.folderId, storeId: data.storeId },
       })
 
@@ -102,7 +102,7 @@ export const DocumentCommands = {
 
     // Se folderId foi fornecido, verificar se existe
     if (data.folderId) {
-      const folder = await db.documentFolder.findUnique({
+      const folder = await db.folder.findUnique({
         where: { id: data.folderId },
       })
 

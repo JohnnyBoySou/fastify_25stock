@@ -19,7 +19,7 @@ export const ProductController = {
         status,
       } = request.body as any
 
-      const storeId = request.store?.id;
+      const storeId = request.store?.id
 
       if (!storeId) {
         return reply.status(400).send({

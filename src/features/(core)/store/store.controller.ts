@@ -7,29 +7,27 @@ import type {
   GetStoreRequest,
   UpdateStoreRequest,
 } from './store.interfaces'
-import dns from "node:dns/promises";
-import { createCloudflareCustomHostname, getCloudflareHostnameInfo } from '@/plugins/cloudflare';
-
+import dns from 'node:dns/promises'
+import { createCloudflareCustomHostname, getCloudflareHostnameInfo } from '@/plugins/cloudflare'
 
 async function validateDomain(domain: string): Promise<boolean> {
   try {
-    const records = await dns.resolveCname(domain);
+    const records = await dns.resolveCname(domain)
     console.log(records)
-    return records.some(r => r.includes("app.25stock.com"));
+    return records.some((r) => r.includes('app.25stock.com'))
   } catch (e: any) {
     // Trata erros DNS (ENOTFOUND, ETIMEDOUT, etc.)
     if (e.code === 'ENOTFOUND' || e.code === 'ETIMEDOUT' || e.code === 'ESERVFAIL') {
       console.log(`DNS error for domain ${domain}:`, e.code)
-      return false;
+      return false
     }
     // Para outros erros, também retorna false mas loga o erro completo
     console.log(`Error validating domain ${domain}:`, e)
-    return false;
+    return false
   }
 }
 
 export const StoreController = {
-
   async create(request: CreateStoreRequest, reply: FastifyReply) {
     try {
       const { name, cnpj, email, phone, cep, city, state, address, status } = request.body
@@ -250,11 +248,14 @@ export const StoreController = {
       } catch (error: any) {
         // Se o hostname não foi encontrado (404), limpar dados inválidos do banco
         if (error.statusCode === 404 || error.code === 1436) {
-          console.error('[StoreController] Hostname not found in Cloudflare, clearing invalid data:', {
-            storeId: store.id,
-            cloudflareHostnameId: store.cloudflareHostnameId,
-            customDomain: store.customDomain,
-          })
+          console.error(
+            '[StoreController] Hostname not found in Cloudflare, clearing invalid data:',
+            {
+              storeId: store.id,
+              cloudflareHostnameId: store.cloudflareHostnameId,
+              customDomain: store.customDomain,
+            }
+          )
 
           // Limpar o cloudflareHostnameId inválido do banco
           await StoreCommands.createCustomDomain(
@@ -266,7 +267,8 @@ export const StoreController = {
 
           return reply.status(404).send({
             error: 'Custom hostname not found in Cloudflare',
-            message: 'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
+            message:
+              'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
             domain: store.customDomain,
             cloudflareHostnameId: store.cloudflareHostnameId,
           })
@@ -300,7 +302,9 @@ export const StoreController = {
       // Se o status é "active", pode ser que o certificado já foi validado
       // e os registros de validação não estão mais disponíveis
       if (!sslValidation && cfInfo.status === 'active') {
-        console.log('[StoreController] SSL is active but no validation records found - certificate already validated')
+        console.log(
+          '[StoreController] SSL is active but no validation records found - certificate already validated'
+        )
       }
 
       // 4️⃣ Formatar resposta com o TXT de validação
@@ -310,15 +314,16 @@ export const StoreController = {
       return reply.send({
         domain: store.customDomain,
         status: cfInfo.status || store.cloudflareStatus,
-        validationRecord: sslValidation && txtValue
-          ? {
-            name: txtName,
-            type: 'TXT',
-            value: txtValue,
-            // Formato legível para exibir ao usuário
-            formatted: `${txtName} TXT ${txtValue}`,
-          }
-          : null,
+        validationRecord:
+          sslValidation && txtValue
+            ? {
+                name: txtName,
+                type: 'TXT',
+                value: txtValue,
+                // Formato legível para exibir ao usuário
+                formatted: `${txtName} TXT ${txtValue}`,
+              }
+            : null,
         sslInfo: {
           status: cfInfo.ssl?.status,
           method: cfInfo.ssl?.method,
@@ -331,11 +336,12 @@ export const StoreController = {
           status: cfInfo.status,
           hostname: cfInfo.hostname,
         },
-        message: cfInfo.status === 'active'
-          ? 'SSL certificate is active. No validation records needed.'
-          : sslValidation
-            ? 'Please add the TXT record to your DNS to validate the SSL certificate.'
-            : 'Waiting for SSL validation records to be generated.',
+        message:
+          cfInfo.status === 'active'
+            ? 'SSL certificate is active. No validation records needed.'
+            : sslValidation
+              ? 'Please add the TXT record to your DNS to validate the SSL certificate.'
+              : 'Waiting for SSL validation records to be generated.',
       })
     } catch (error: any) {
       console.error('[StoreController] Error in getCloudflareHostnameInfo:', {
@@ -387,11 +393,14 @@ export const StoreController = {
       } catch (error: any) {
         // Se o hostname não foi encontrado (404), limpar dados inválidos do banco
         if (error.statusCode === 404 || error.code === 1436) {
-          console.error('[StoreController] Hostname not found in Cloudflare during SSL verification:', {
-            storeId: store.id,
-            cloudflareHostnameId: store.cloudflareHostnameId,
-            customDomain: store.customDomain,
-          })
+          console.error(
+            '[StoreController] Hostname not found in Cloudflare during SSL verification:',
+            {
+              storeId: store.id,
+              cloudflareHostnameId: store.cloudflareHostnameId,
+              customDomain: store.customDomain,
+            }
+          )
 
           // Limpar o cloudflareHostnameId inválido do banco
           await StoreCommands.createCustomDomain(
@@ -403,7 +412,8 @@ export const StoreController = {
 
           return reply.status(404).send({
             error: 'Custom hostname not found in Cloudflare',
-            message: 'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
+            message:
+              'The custom hostname was deleted or never existed in Cloudflare. Please recreate it.',
             isValid: false,
           })
         }
@@ -414,10 +424,10 @@ export const StoreController = {
       // 3️⃣ Verificar o status do certificado SSL
       const hostnameStatus = cfInfo.status // 'active', 'pending_validation', 'pending_deployment', etc.
       const sslStatus = cfInfo.ssl?.status // 'active', 'pending_validation', 'pending_issuance', etc.
-      
+
       // O certificado está validado quando o status do hostname é 'active'
       const isCertificateValid = hostnameStatus === 'active'
-      
+
       // 4️⃣ Atualizar o status no banco de dados se mudou
       if (store.cloudflareStatus !== hostnameStatus) {
         await StoreCommands.createCustomDomain(
