@@ -76,6 +76,15 @@ export const UserCommands = {
       roles?: string[]
       status?: boolean
       emailVerified?: boolean
+      phone?: string | null
+      birthDate?: string | null
+      address?: string | null
+      number?: string | null
+      complement?: string | null
+      city?: string | null
+      state?: string | null
+      country?: string | null
+      cep?: string | null
     }
   ) {
     // Verificar se o usuário existe
@@ -87,7 +96,7 @@ export const UserCommands = {
       throw new Error('User not found')
     }
 
-    const updateData = { ...data }
+    const updateData: any = { ...data }
 
     // Se uma nova senha foi fornecida, fazer hash
     if (updateData.password) {
@@ -105,6 +114,11 @@ export const UserCommands = {
       }
     }
 
+    // Processar campos de endereço
+    if (data.birthDate !== undefined) {
+      updateData.birthDate = data.birthDate ? new Date(data.birthDate) : null
+    }
+
     const user = await db.user.update({
       where: { id },
       data: updateData,
@@ -112,6 +126,15 @@ export const UserCommands = {
         id: true,
         email: true,
         name: true,
+        phone: true,
+        birthDate: true,
+        address: true,
+        number: true,
+        complement: true,
+        city: true,
+        state: true,
+        country: true,
+        cep: true,
         status: true,
         emailVerified: true,
         updatedAt: true,

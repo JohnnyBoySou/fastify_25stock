@@ -36,6 +36,23 @@ export const ProfileCommands = {
     const user = await db.user.update({
       where: { id: userId },
       data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        birthDate: true,
+        address: true,
+        number: true,
+        complement: true,
+        city: true,
+        state: true,
+        country: true,
+        cep: true,
+        status: true,
+        emailVerified: true,
+        updatedAt: true,
+      },
     })
     return user
   },
