@@ -25,6 +25,16 @@ model User {
   password String
   name     String?
   phone    String?
+  birthDate DateTime?
+
+  // Endereço
+  address    String?
+  number     String?
+  complement String?
+  city       String?
+  state      String?
+  country    String?
+  cep        String?
 
   // Associação direta com a loja
   storeId String?

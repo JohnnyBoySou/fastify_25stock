@@ -9,6 +9,14 @@ export const ProfileQueries = {
         name: true,
         email: true,
         phone: true,
+        birthDate: true,
+        address: true,
+        number: true,
+        complement: true,
+        city: true,
+        state: true,
+        country: true,
+        cep: true,
       },
     })
     return user

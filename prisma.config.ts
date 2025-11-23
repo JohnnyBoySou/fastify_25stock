@@ -12,3 +12,4 @@ export default {
         url: env("DATABASE_URL")
     }
 } satisfies PrismaConfig;
+
