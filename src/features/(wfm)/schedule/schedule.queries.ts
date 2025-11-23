@@ -133,11 +133,42 @@ export const ScheduleQueries = {
           },
         },
         occurrences: {
-          select: {
-            id: true,
-            startTime: true,
-            endTime: true,
-            status: true,
+          include: {
+            shifts: {
+              include: {
+                createdBy: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+                participants: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                      },
+                    },
+                    createdBy: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                      },
+                    },
+                  },
+                  orderBy: {
+                    createdAt: 'desc',
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
           orderBy: {
             startTime: 'asc',
