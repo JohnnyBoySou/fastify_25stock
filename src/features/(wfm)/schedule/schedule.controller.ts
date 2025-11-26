@@ -120,7 +120,7 @@ export const ScheduleController = {
       // Se o space requer aprovação e tem um approvalUser, enviar email de solicitação de aprovação
       if (space.requiresApproval && space.approvalUser?.email) {
         try {
-          const approvalUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/approvals`
+          const approvalUrl = `${process.env.FRONTEND_URL || 'https://app.25stock.com'}/schedules/approvals`
           const startTimeFormatted = new Date(schedule.startTime).toLocaleString('pt-BR', {
             dateStyle: 'short',
             timeStyle: 'short',
@@ -507,7 +507,7 @@ export const ScheduleController = {
       // Enviar email de notificação para o usuário que criou o agendamento
       if (approvedSchedule.user?.email) {
         try {
-          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`
+          const scheduleUrl = `${process.env.FRONTEND_URL || 'https://app.25stock.com'}/schedules/${id}`
           const startTimeFormatted = new Date(approvedSchedule.startTime).toLocaleString('pt-BR', {
             dateStyle: 'short',
             timeStyle: 'short',
@@ -611,7 +611,7 @@ export const ScheduleController = {
       // Enviar email de notificação para o usuário que criou o agendamento
       if (rejectedSchedule.user?.email) {
         try {
-          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`
+          const scheduleUrl = `${process.env.FRONTEND_URL || 'https://app.25stock.com'}/schedules/${id}`
           const startTimeFormatted = new Date(rejectedSchedule.startTime).toLocaleString('pt-BR', {
             dateStyle: 'short',
             timeStyle: 'short',
