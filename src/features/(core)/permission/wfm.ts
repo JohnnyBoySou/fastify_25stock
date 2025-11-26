@@ -76,6 +76,12 @@ export const WFM_PERMISSIONS = [
     name: 'Deletar Agendamento',
     description: 'Permite deletar agendamentos',
   },
+  {
+    resource: 'SCHEDULES',
+    action: 'APPROVE',
+    name: 'Aprovar/Rejeitar Agendamentos',
+    description: 'Permite aprovar ou rejeitar agendamentos pendentes',
+  },
 
   // SCHEDULE OCCURRENCES
   {
