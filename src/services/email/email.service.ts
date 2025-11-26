@@ -14,6 +14,15 @@ import {
   generateStoreInviteEmailText,
   generateWelcomeEmailHTML,
   generateWelcomeEmailText,
+  generateScheduleApprovalRequestEmailHTML,
+  generateScheduleApprovalRequestEmailText,
+  generateScheduleApprovedEmailHTML,
+  generateScheduleApprovedEmailText,
+  generateScheduleRejectedEmailHTML,
+  generateScheduleRejectedEmailText,
+  type ScheduleApprovalRequestEmailData,
+  type ScheduleApprovedEmailData,
+  type ScheduleRejectedEmailData,
 } from './templates'
 
 // Configuração do Resend
@@ -70,6 +79,12 @@ export interface InitialPasswordEmailData {
   email: string
   password: string
   loginUrl: string
+}
+
+export type {
+  ScheduleApprovalRequestEmailData,
+  ScheduleApprovedEmailData,
+  ScheduleRejectedEmailData,
 }
 
 export const EmailService = {
@@ -258,6 +273,80 @@ export const EmailService = {
       return true
     } catch (error) {
       console.error('Error sending email:', error)
+      return false
+    }
+  },
+
+  /**
+   * Envia email de solicitação de aprovação de agendamento
+   */
+  sendScheduleApprovalRequestEmail: async (
+    data: ScheduleApprovalRequestEmailData
+  ): Promise<boolean> => {
+    try {
+      const html = generateScheduleApprovalRequestEmailHTML(data)
+      const text = generateScheduleApprovalRequestEmailText(data)
+
+      const result = await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'noreply@25stock.com',
+        to: data.email,
+        subject: `Solicitação de Aprovação de Agendamento - ${data.scheduleTitle}`,
+        html,
+        text,
+      })
+
+      console.log('Schedule approval request email sent:', result.data?.id)
+      return true
+    } catch (error) {
+      console.error('Error sending schedule approval request email:', error)
+      return false
+    }
+  },
+
+  /**
+   * Envia email de agendamento aprovado
+   */
+  sendScheduleApprovedEmail: async (data: ScheduleApprovedEmailData): Promise<boolean> => {
+    try {
+      const html = generateScheduleApprovedEmailHTML(data)
+      const text = generateScheduleApprovedEmailText(data)
+
+      const result = await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'noreply@25stock.com',
+        to: data.email,
+        subject: `Agendamento Aprovado - ${data.scheduleTitle}`,
+        html,
+        text,
+      })
+
+      console.log('Schedule approved email sent:', result.data?.id)
+      return true
+    } catch (error) {
+      console.error('Error sending schedule approved email:', error)
+      return false
+    }
+  },
+
+  /**
+   * Envia email de agendamento rejeitado
+   */
+  sendScheduleRejectedEmail: async (data: ScheduleRejectedEmailData): Promise<boolean> => {
+    try {
+      const html = generateScheduleRejectedEmailHTML(data)
+      const text = generateScheduleRejectedEmailText(data)
+
+      const result = await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'noreply@25stock.com',
+        to: data.email,
+        subject: `Agendamento Rejeitado - ${data.scheduleTitle}`,
+        html,
+        text,
+      })
+
+      console.log('Schedule rejected email sent:', result.data?.id)
+      return true
+    } catch (error) {
+      console.error('Error sending schedule rejected email:', error)
       return false
     }
   },

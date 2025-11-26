@@ -54,4 +54,10 @@ export async function ScheduleRoutes(fastify: FastifyInstance) {
     schema: ScheduleSchemas.reject,
     handler: ScheduleController.reject,
   })
+
+  fastify.get('/approvals', {
+    preHandler: [Middlewares.permission('SCHEDULES', 'APPROVE')],
+    schema: ScheduleSchemas.getPendingApprovals,
+    handler: ScheduleController.getPendingApprovals,
+  })
 }

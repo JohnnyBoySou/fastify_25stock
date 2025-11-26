@@ -1,0 +1,101 @@
+export interface ScheduleApprovedEmailData {
+  name: string
+  email: string
+  scheduleTitle: string
+  spaceName: string
+  startTime: string
+  endTime: string
+  scheduleUrl: string
+}
+
+export const generateScheduleApprovedEmailHTML = (data: ScheduleApprovedEmailData): string => {
+  return `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Agendamento Aprovado - 25Stock</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #019866; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; color: #043721; }
+        .button { display: inline-block; background: #043721; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; text-align: center; }
+        .success-box { background: #d4edda; border: 2px solid #019866; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .info-box { background: #fff; border: 2px solid #019866; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .info-row { margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-weight: 600; color: #043721; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+        .button-container { text-align: center; margin: 30px 0; }
+      </style>
+    </head>
+    <body>
+      <div style="text-align: center;">
+        <img src="data:image/png;base64,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" alt="logo" />
+      </div>
+      <div class="container">
+        <div class="content">
+          <h2>Olá, ${data.name}!</h2>
+          
+          <div class="success-box">
+            <h3 style="margin: 0 0 10px 0; color: #043721;">✅ Agendamento Aprovado!</h3>
+            <p style="margin: 0; color: #043721;">Seu agendamento foi aprovado com sucesso.</p>
+          </div>
+
+          <div class="info-box">
+            <div class="info-row">
+              <span class="info-label">Título:</span> ${data.scheduleTitle}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Espaço:</span> ${data.spaceName}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Data/Hora de Início:</span> ${data.startTime}
+            </div>
+            <div class="info-row">
+              <span class="info-label">Data/Hora de Término:</span> ${data.endTime}
+            </div>
+          </div>
+
+          <div class="button-container">
+            <a href="${data.scheduleUrl}" class="button">Ver Detalhes do Agendamento</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>Este é um email automático, não responda a esta mensagem.</p>
+          <p>&copy; 2026 25Stock. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+}
+
+export const generateScheduleApprovedEmailText = (data: ScheduleApprovedEmailData): string => {
+  return `
+Agendamento Aprovado - 25Stock
+
+Olá, ${data.name}!
+
+✅ Seu agendamento foi aprovado com sucesso!
+
+Detalhes do Agendamento:
+- Título: ${data.scheduleTitle}
+- Espaço: ${data.spaceName}
+- Data/Hora de Início: ${data.startTime}
+- Data/Hora de Término: ${data.endTime}
+
+Acesse os detalhes em: ${data.scheduleUrl}
+
+---
+Este é um email automático, não responda a esta mensagem.
+© 2026 25Stock. Todos os direitos reservados.
+  `
+}
+

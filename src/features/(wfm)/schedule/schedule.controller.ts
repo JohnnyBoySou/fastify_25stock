@@ -117,19 +117,32 @@ export const ScheduleController = {
         createdById: request.user.id,
       })
 
-      // Se o space requer aprovação e tem um approvalUser, enviar email de notificação
+      // Se o space requer aprovação e tem um approvalUser, enviar email de solicitação de aprovação
       if (space.requiresApproval && space.approvalUser?.email) {
         try {
-          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${schedule.id}`
-          await EmailService.sendNotificationEmail({
+          const approvalUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/approvals`
+          const startTimeFormatted = new Date(schedule.startTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+          const endTimeFormatted = new Date(schedule.endTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+
+          await EmailService.sendScheduleApprovalRequestEmail({
             email: space.approvalUser.email as string,
             name: space.approvalUser.name as string,
-            title: 'Nova Solicitação de Agendamento',
-            message: `Uma nova solicitação de agendamento "${schedule.title}" foi criada e requer sua aprovação.`,
-            actionUrl: scheduleUrl,
+            scheduleTitle: schedule.title,
+            scheduleDescription: schedule.description || undefined,
+            spaceName: space.name,
+            requesterName: schedule.user?.name || schedule.createdBy?.name || 'Usuário',
+            startTime: startTimeFormatted,
+            endTime: endTimeFormatted,
+            approvalUrl,
           })
         } catch (emailError: any) {
-          request.log.warn({ err: emailError }, 'Erro ao enviar email de notificação de aprovação')
+          request.log.warn({ err: emailError }, 'Erro ao enviar email de solicitação de aprovação')
           // Não falha a criação do schedule se houver erro ao enviar o email
         }
       }
@@ -494,12 +507,24 @@ export const ScheduleController = {
       // Enviar email de notificação para o usuário que criou o agendamento
       if (approvedSchedule.user?.email) {
         try {
-          await EmailService.sendNotificationEmail({
+          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`
+          const startTimeFormatted = new Date(approvedSchedule.startTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+          const endTimeFormatted = new Date(approvedSchedule.endTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+
+          await EmailService.sendScheduleApprovedEmail({
             email: approvedSchedule.user.email as string,
             name: approvedSchedule.user.name as string,
-            title: 'Agendamento Aprovado',
-            message: `Seu agendamento "${approvedSchedule.title}" foi aprovado.`,
-            actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,
+            scheduleTitle: approvedSchedule.title,
+            spaceName: approvedSchedule.space?.name || 'Espaço',
+            startTime: startTimeFormatted,
+            endTime: endTimeFormatted,
+            scheduleUrl,
           })
         } catch (emailError: any) {
           request.log.warn({ err: emailError }, 'Erro ao enviar email de aprovação')
@@ -586,12 +611,25 @@ export const ScheduleController = {
       // Enviar email de notificação para o usuário que criou o agendamento
       if (rejectedSchedule.user?.email) {
         try {
-          await EmailService.sendNotificationEmail({
+          const scheduleUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`
+          const startTimeFormatted = new Date(rejectedSchedule.startTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+          const endTimeFormatted = new Date(rejectedSchedule.endTime).toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })
+
+          await EmailService.sendScheduleRejectedEmail({
             email: rejectedSchedule.user.email as string,
             name: rejectedSchedule.user.name as string,
-            title: 'Agendamento Rejeitado',
-            message: `Seu agendamento "${rejectedSchedule.title}" foi rejeitado.${reason ? ` Motivo: ${reason}` : ''}`,
-            actionUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/schedules/${id}`,
+            scheduleTitle: rejectedSchedule.title,
+            spaceName: rejectedSchedule.space?.name || 'Espaço',
+            startTime: startTimeFormatted,
+            endTime: endTimeFormatted,
+            reason: reason || undefined,
+            scheduleUrl,
           })
         } catch (emailError: any) {
           request.log.warn({ err: emailError }, 'Erro ao enviar email de rejeição')
@@ -599,6 +637,44 @@ export const ScheduleController = {
       }
 
       return reply.status(200).send(rejectedSchedule)
+    } catch (error: any) {
+      request.log.error(error)
+      return reply.status(500).send({
+        error: error.message || 'Internal server error',
+      })
+    }
+  },
+
+  async getPendingApprovals(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      if (!request.store?.id) {
+        return reply.status(404).send({
+          error: 'Store not found for this user',
+        })
+      }
+
+      if (!request.user?.id) {
+        return reply.status(401).send({
+          error: 'Authentication required',
+        })
+      }
+
+      const query = request.query as {
+        page?: number
+        limit?: number
+      }
+
+      // Buscar agendamentos pendentes onde o usuário atual é o approvalUser do space
+      const pendingSchedules = await ScheduleQueries.getPendingApprovals(
+        request.store.id,
+        request.user.id,
+        {
+          page: query?.page,
+          limit: query?.limit,
+        }
+      )
+
+      return reply.status(200).send(pendingSchedules)
     } catch (error: any) {
       request.log.error(error)
       return reply.status(500).send({

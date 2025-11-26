@@ -272,4 +272,113 @@ export const ScheduleQueries = {
       },
     }
   },
+
+  async getPendingApprovals(
+    storeId: string,
+    approvalUserId: string,
+    filters?: {
+      page?: number
+      limit?: number
+    }
+  ) {
+    // Buscar espaços que requerem aprovação e têm o usuário como approvalUser
+    const spaces = await db.space.findMany({
+      where: {
+        storeId,
+        requiresApproval: true,
+        approvalUserId,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    const spaceIds = spaces.map((space) => space.id)
+
+    if (spaceIds.length === 0) {
+      return {
+        items: [],
+        pagination: {
+          page: filters?.page || 1,
+          limit: filters?.limit || 10,
+          total: 0,
+          totalPages: 0,
+        },
+      }
+    }
+
+    const where: any = {
+      storeId,
+      status: 'PENDING',
+      spaceId: {
+        in: spaceIds,
+      },
+    }
+
+    const schedules = await db.schedule.findMany({
+      where,
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        space: {
+          select: {
+            id: true,
+            name: true,
+            requiresApproval: true,
+            approvalUserId: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        occurrences: {
+          select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+          },
+          orderBy: {
+            startTime: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: filters?.limit ? Number.parseInt(filters.limit.toString()) : undefined,
+      skip: filters?.page
+        ? (filters.page - 1) * Number.parseInt((filters.limit || 10).toString())
+        : undefined,
+    })
+
+    const total = await db.schedule.count({ where })
+
+    return {
+      items: schedules,
+      pagination: {
+        page: filters?.page || 1,
+        limit: filters?.limit ? Number.parseInt(filters.limit.toString()) : 10,
+        total,
+        totalPages: Math.ceil(
+          total / (filters?.limit ? Number.parseInt(filters.limit.toString()) : 10)
+        ),
+      },
+    }
+  },
 }

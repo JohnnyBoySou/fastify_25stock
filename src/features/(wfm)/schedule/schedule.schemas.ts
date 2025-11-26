@@ -139,6 +139,16 @@ export const reject: FastifySchema = {
   },
 }
 
+export const getPendingApprovals: FastifySchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      page: { type: 'number' },
+      limit: { type: 'number' },
+    },
+  },
+}
+
 export const ScheduleSchemas = {
   create,
   getAll,
@@ -148,4 +158,5 @@ export const ScheduleSchemas = {
   getByQuery,
   approve,
   reject,
+  getPendingApprovals,
 }
